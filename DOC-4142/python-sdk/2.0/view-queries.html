@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>MapReduce (view) queries | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://docs-staging.couchbase.com/python-sdk/2.5/start-using-sdk.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="python-sdk">
+    <meta name="dcterms.identifier" content="2.0">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://docs-staging.couchbase.com">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/5.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/5.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/5.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/5.5/analytics/introduction.html">Analytics <small>(Developer Preview)</small></a></li>
+                  <li><a href="../../server/5.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.1/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.1/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.1/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/5.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.8/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.6/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.4/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.6/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.5/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.4/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.4/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/5.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/3.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/5.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/5.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="introduction.html"><span class="title">Python SDK</span> <span class="version">2.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.5/start-using-sdk.html">Python SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/start-using-sdk.html">Python SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/start-using-sdk.html">Python SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/start-using-sdk.html">Python SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/start-using-sdk.html">Python SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.8/view-queries.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.6/view-queries.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.4/view-queries.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.6/view-queries.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.5/view-queries.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.4/view-queries.html">PHP SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="introduction.html">Python SDK 2.0</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="overview.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="migrating.html">Migrating from the 1.x SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="getting-started.html">Getting Started</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="hello-couchbase.html">Hello Couchbase</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="tutorial-intro.html">Python tutorial</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="quickstart.html">Quick start</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="tutorial-prep.html">Setting up the project</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="tutorial-welcome.html">Creating a welcome page</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="tutorial-managing-beers.html">Managing beers</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="tutorial-next-steps.html">Wrapping Up</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="asynchronous-frameworks.html">Using asynchronous frameworks</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing server connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="crud.html">Key-Value (CRUD) operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="bulk-operations.html">Bulk operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries.html">N1QL queries</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries.html">MapReduce (view) queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="exception-handling.html">Handling Exceptions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="logging.html">Setting up logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="performance-tuning.html">Performance tuning</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threads.html">Using threads</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="release-notes.html">Release notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.5/start-using-sdk.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="introduction.html">Python SDK</a></li>
+    <li class="crumb"><a href="introduction.html">Python SDK 2.0</a></li>
+    <li class="crumb"><a href="view-queries.html">MapReduce (view) queries</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-python/edit/release/2.0/modules/ROOT/pages/view-queries.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">MapReduce (view) queries</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can use MapReduce views to create queryable indexes in Couchbase Server.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The normal CRUD methods allow you to look up a document by its ID.
+A MapReduce (<em>view</em> query) allows you to look up one or more documents based on various criteria.
+MapReduce views are comprised of a <em>map</em> function that is executed once per document (this is done incrementally, so this is not run each time you query the view) and an optional <em>reduce</em> function that performs aggregation on the results of the <em>map</em> function.
+The <em>map</em> and <em>reduce</em> functions are stored on the server and written in JavaScript.</p>
+</div>
+<div class="paragraph">
+<p>MapReduce queries can be further customized during query time to allow only a subset (or range) of the data to be returned.</p>
+</div>
+<div class="paragraph">
+<p>The following example queries a <code>by_name</code> view in a beer design document.
+This view checks whether a document is a beer and has a name.
+If it does, it emits the beer&#8217;s name into the index.
+This view allows beers to be queried for by name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">function (doc, meta) {
+  if (doc.type &amp;&amp; doc.type == "beer" &amp;&amp; doc.name) {
+     emit(doc.name, null);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Querying a view through the Python client is performed through the <code>query()</code> method on the <code class="api">Bucket</code> class.
+This method returns a Python iterator that yields the results of the query (in the form of a <code class="api">ViewRow</code> object).
+The <code class="api">ViewRow</code> object contains the <code>key</code> and <code>value</code> properties (which are the first and second arguments to the view&#8217;s <code>emit()</code> function, respectively) as well as the <code>docid</code> property, which may be passed to the <code class="api">get()</code> method to return the actual document.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">bkt = Bucket('couchbase://192.168.33.101/beer-sample')
+resiter = bkt.query('beer', 'by_name')
+for row in resiter:
+    print row</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also manually construct a <code class="api">couchbase.views.params.Query</code> object, which allows you to set various properties on the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.bucket import Bucket
+from couchbase.views.params import Query
+
+bkt = Bucket('couchbase://192.168.33.101/beer-sample')
+q = Query()
+q.limit = 5 # Limit to 5 results
+q.mapkey_range = ('A','A'+Query.STRING_RANGE_END)
+
+rows = bkt.query('beer', 'by_name', query=q)
+for row in rows:
+    print row</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s some sample output for the previous query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ViewRow(key=u'A. LeCoq Imperial Extra Double Stout 1999', value=None,
+   docid=u'harvey_son_lewes-a_lecoq_imperial_extra_double_stout_1999', doc=None)
+ViewRow(key=u'A. LeCoq Imperial Extra Double Stout 2000', value=None,
+   docid=u'harvey_son_lewes-a_lecoq_imperial_extra_double_stout_2000', doc=None)
+ViewRow(key=u'Aass Brewery', value=None, docid=u'aass_brewery', doc=None)
+ViewRow(key=u'Abana Amber Ale', value=None, docid=u'mickey_finn_s_brewery-abana_amber_ale', doc=None)
+ViewRow(key=u'Abbaye de Floreffe Double', value=None,
+   docid=u'brasserie_lefebvre-abbaye_de_floreffe_double', doc=None)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also pass the query string directly.
+This is useful if you&#8217;re using the Couchbase Web UI, or if you&#8217;re more familiar with the direct Apache CouchDB interface:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">rows = bkt.query('beer', 'by_name',
+                 query=Query.from_any("startkey=%22A%22&amp;endkey=%22A%5Cuefff%22&amp;limit=5"))</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-geospatial-views"><a class="anchor" href="#querying-geospatial-views"></a>Querying Geospatial Views</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Geospatial queries are present since Couchbase Server 3.0.1 (as experimental), and since Couchbase Server 4.0.0 (as stable).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To query a geospatial view, you will need to construct a <code class="api">SpatialQuery</code> object (<code class="api">couchbase.views.params.SpatialQuery</code>).
+Spatial queries accept a <code class="param">start_range</code> and an <code class="param">end_range</code> parameter which allow you to limit the enclosing bounding boxes of the result.
+The arguments to these parameters are Python lists or tuples, with each element corresponding to a component emitted by the key (the first two components implicitly being the longitude and latitude of the result itself).</p>
+</div>
+<div class="paragraph">
+<p>On output, spatial queries yield instances of <code class="api">SpatialRow</code> classes.
+A <code class="api">SpatialRow</code> is similar to a <code class="api">ViewRow</code>, with an added <code>geometry</code> property.</p>
+</div>
+<div class="listingblock">
+<div class="title">Querying a spatial view</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.views.params import SpatialQuery
+
+q = SpatialQuery(start_range=[0, -90, None], end_range=[180, 90, None])
+for row in bkt.query('geodesign', 'geoview', query=q):
+    print "Key:", row.key
+    print "Value:", row.value
+    print "Geometry", row.geometry</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-views-using-the-twisted-api"><a class="anchor" href="#querying-views-using-the-twisted-api"></a>Querying views using the Twisted API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Because the normal <code class="code">couchbase.bucket</code>'s <code>query()</code> interfaces uses a blocking interface centered around iterators, the <code>txcouchbase</code> provides two different methods for querying.</p>
+</div>
+<div class="paragraph">
+<p>The first is the <code class="api">queryAll()</code> method which returns a <code class="api">Deferred</code> object, which has its callback invoked with a list of all rows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from twisted.internet import reactor
+from txcouchbase.bucket import Bucket
+from couchbase.exceptions import CouchbaseError
+
+def on_view_rows(rows):
+    for row in rows:
+        print row
+
+bkt = Bucket('couchbase://192.168.33.101/beer-sample')
+d = bkt.queryAll("beer", "brewery_beers", limit=5)
+d.addCallback(on_view_rows)
+reactor.run()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A more advanced way to retrieve view results is by using a <code class="api">RowHandler</code>.
+The <code>RowHandler</code> is a class that should be subclassed by the user.
+The subclass must implement one method that is invoked when new results are available and another method that is invoked when all results have been completed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from twisted.internet import reactor
+from txcouchbase.bucket import Bucket
+from couchbase.async.view import AsyncViewBase
+
+class MyRowHandler(AsyncViewBase):
+    def on_rows(self, rows):
+        print "Got new set of rows"
+        for row in rows:
+            print "   ROW:", row
+
+    def on_done(self):
+        print "All rows received!"
+
+bkt = Bucket('couchbase://192.168.33.101/beer-sample')
+bkt.queryEx(MyRowHandler, "beer", "brewery_beers", limit=50)
+reactor.run()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">2440 West El Camino Real
+Mountain View, CA 94040
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://training.couchbase.com" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://training.couchbase.com/online" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
