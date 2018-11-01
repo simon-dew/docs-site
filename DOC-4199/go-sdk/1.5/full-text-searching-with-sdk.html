@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Full Text Search (FTS) Using the Go SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4199/go-sdk/1.5/full-text-searching-with-sdk.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="go-sdk">
+    <meta name="dcterms.identifier" content="1.5">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4199">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/5.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/5.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/5.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/5.5/analytics/introduction.html">Analytics <small>(Developer Preview)</small></a></li>
+                  <li><a href="../../server/5.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.1/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/5.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.8/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.6/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.4/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.6/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.5/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.4/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.4/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/5.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../server/5.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../server/5.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">Go SDK</span> <span class="version">1.5</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../1.4/full-text-searching-with-sdk.html">Go SDK 1.4</a></li>
+                  <li><a class="navbar-item" href="../1.3/full-text-searching-with-sdk.html">Go SDK 1.3</a></li>
+                  <li><a class="navbar-item" href="../1.2/full-text-searching-with-sdk.html">Go SDK 1.2</a></li>
+                  <li><a class="navbar-item" href="../1.1/full-text-searching-with-sdk.html">Go SDK 1.1</a></li>
+                  <li><a class="navbar-item" href="../1.0/introduction.html">Go SDK 1.0</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.8/full-text-searching-with-sdk.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.6/full-text-searching-with-sdk.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.6/full-text-searching-with-sdk.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.5/full-text-searching-with-sdk.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.4/full-text-searching-with-sdk.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.4/full-text-searching-with-sdk.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="encryption.html">Field Level Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="encrypting-using-sdk.html">Field Level Encryption from the Go SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compression-intro.html">Compression</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threshold-logging.html">Threshold Logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="tracing-from-the-sdk.html">Tracing from the SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-go-sdk.html">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">Go SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="full-text-searching-with-sdk.html">Searching from the SDK</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-go/edit/release/1.5/modules/ROOT/pages/full-text-searching-with-sdk.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Full Text Search (FTS) Using the Go SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can use the Full Text Search service (FTS) to create queryable full-text indexes in Couchbase Server.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Couchbase offers Full-text search support, allowing you to search for documents that contain certain words or phrases.
+In the Go SDK you can search full-text indexes by using the <code class="api">SearchQuery</code> object and executing it with the <code class="api">Bucket.ExecuteSearchQuery()</code> API.</p>
+</div>
+<div class="paragraph">
+<p>The following example shows how to send a simple Search query (note that in this example the cbft package also has to be imported independently):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-go hljs" data-lang="go">import (
+  "github.com/couchbase/gocb"
+  "github.com/couchbase/gocb/cbft"
+  "fmt"
+)
+
+// ...
+query := gocb.NewSearchQuery("travel-search", cbft.NewMatchQuery("office"))
+res, _ := bucket.ExecuteSearchQuery(query)
+for _, hit := range res.Hits() {
+        fmt.Printf("%s\n", hit.Id)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code class="api">Bucket.ExecuteSearchQuery()</code> method returns a <code class="api">SearchResults</code>interface which provides access to all of the information returned by the query.</p>
+</div>
+<div class="paragraph">
+<p>Other search result data may be accessed using the various other available methods on the <code class="api">SearchResults</code> interface.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-go hljs" data-lang="go">res, _ := bucket.ExecuteSearchQuery(query)
+for _, facet := range res.Facets() {
+        // ...
+}
+fmt.Printf("Total Hits: %d", res.Status().Total)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-types"><a class="anchor" href="#query-types"></a>Query Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Query types may be found inside the <code>gocb/cbft</code> package.
+The package contains query classes corresponding to those enumerated in <a href="../../server/6.0/fts/fts-query-types.html" class="page">Query Types</a>.
+Query object should be instantiated by using the associated <code>New*Query</code> functions, passing the search term (usually a string) as the first argument, followed by some query modifiers.</p>
+</div>
+<div class="paragraph">
+<p>It is important to distinguish between <em>query options</em> and general <em>search options</em>.
+Some options affect the search process in general (such as the <code class="param">Limit</code>, indicating how many results to return) while others only affect a specific query (such as <code class="param">Fuzziness</code> for a given query).
+Because multiple queries can be combined in a single search operation, <em>query specific options</em> can be specified only in the query object itself, while <em>search options</em> are specified through methods on the <code class="api">SearchQuery</code> object itself.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-facets"><a class="anchor" href="#query-facets"></a>Query Facets</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Query <a href="full-text-search-overview.html#facets" class="page">facets</a> may also be added to the <em>general search parameters</em> by using the <code class="param">AddFacet</code> method.
+The <code class="param">AddFacet</code> method accepts a facet name as well as a facet definiton You can create facets by instantiating a <code class="api">Facet</code> object found in the <code class="api">gocb.cbft</code> package.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-go hljs" data-lang="go">query := gocb.NewSearchQuery("travel-search", cbft.NewMatchQuery("office"))
+query.AddFacet("countries", cbft.NewTermFacet("country", 5))
+res, _ := bucket.ExecuteSearchQuery(query)
+fmt.Printf("Total Countries: %d", res.Facets()["countries"].Total)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="detailed-examples"><a class="anchor" href="#detailed-examples"></a>Detailed Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The code example below demonstrates the Go SDK Full Text Search API.
+The example assumes that Couchbase Server is running, and that the username <code>Administrator</code> and the password <code>password</code> provide authorization for performing the searches.
+It also assumes that the <code>travel-sample</code> bucket has been installed.
+For information on creating users and managing roles, see <a href="../../server/6.0/security/security-authorization.html" class="page">Authorization</a>.
+For information on installing sample buckets, see <a href="#">6.0@server:settings:settings.adoc</a>.</p>
+</div>
+<div class="paragraph">
+<p>The example also assumes the existence of three specific Full Text Indexes, defined on the <code>travel-sample</code> bucket.
+These are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>travel-sample-index-unstored</code>: Uses only the default settings.</p>
+</li>
+<li>
+<p><code>travel-sample-index-stored</code>: Uses default settings, with one exception: dynamic fields are <em>stored</em>, for the whole index.</p>
+</li>
+<li>
+<p><code>travel-sample-index-hotel-description</code>: Indexes only the <code>description</code> fields of <code>hotel</code> documents, and disables the <code>default</code> type mapping.
+The index has a custom analyzer named <code>myUnicodeAnalyzer</code> defined on it: the analyzer&#8217;s main characteristic is that it uses the <strong>unicode</strong> tokenizer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>See <a href="../../server/6.0/fts/fts-creating-indexes.html" class="page">Creating Indexes</a> for details on how to create these indexes: they can be created interactively, by means of the Couchbase Web Console; however, there may be greater efficiency in using the Couchbase REST API, as described in the section <a href="../../server/6.0/fts/fts-creating-indexes.html#index-creation-with-the-rest-api" class="page">Index Creation with the REST API</a>.
+The JSON objects that constitute index-definitions (for inclusion as bodies to the index-creation REST calls), are provided in <a href="../../server/6.0/fts/fts-demonstration-indexes.html" class="page">Demonstration Indexes</a>.</p>
+</div>
+<div class="paragraph">
+<p>The example features the following Full Text Searches on the <code>travel-sample</code> bucket, within Couchbase Server:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Simple Text Query</em> on a single word, targeting an index with dynamic fields unstored.</p>
+</li>
+<li>
+<p><em>Simple Text Query on Non-Default Index</em>, specifying an index that consists only of content derived from a specific field from a specific document-type.</p>
+</li>
+<li>
+<p><em>Simple Text Query on Stored Field</em>, specifying the field to be searched; targeting an index with dynamic fields stored, to ensure that field-content is included in the return object.</p>
+</li>
+<li>
+<p><em>Match Query with Facet</em>, showing how query-results can be displayed either by row or by <em>hits</em>; and demonstrating use of a <em>facet</em>, which provides aggregation-data.</p>
+</li>
+<li>
+<p><em>DocId Query</em>, showing results of a query on two document IDs.</p>
+</li>
+<li>
+<p><em>Unanalyzed Term Query with Fuzziness Level of 0</em>, demonstrating how to query on a term with no analysis.
+<em>Zero fuzziness</em> is specified, to ensure that matches are exact.</p>
+</li>
+<li>
+<p><em>Unanalyzed Term Query with Fuzziness Level of 2</em>, which is almost identical to the immediately preceding query; but which this time specifies a <em>fuzziness</em> factor of 2, allowing partial matches to be made.
+The output from this query can be compared to that of the one immediately preceding.</p>
+</li>
+<li>
+<p><em>Match Phrase Query, using Analysis</em>, for searching on a phrase.</p>
+</li>
+<li>
+<p><em>Phrase Query, without Analysis</em>, for searching on a phrase without analysis supported.</p>
+</li>
+<li>
+<p><em>Query String Query</em>, showing how a query string is specified as search-input.</p>
+</li>
+<li>
+<p><em>Conjunction Query</em>, whereby two separate queries are defined and then run as part of the search, with only the matches returned by both included in the result-object.</p>
+</li>
+<li>
+<p><em>Wild Card Query</em>, whereby a wildcard is used in the string submitted for the search.</p>
+</li>
+<li>
+<p><em>Numeric Range Query</em>, whereby minimum and maximum numbers are specified, and matches within the range returned.</p>
+</li>
+<li>
+<p><em>Regexp Query</em>, whereby a <em>regular expression</em> is submitted, to generate the conditions for successful matches.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-go hljs" data-lang="go">package main
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/couchbase/gocb"
+	"github.com/couchbase/gocb/cbft"
+)
+
+func simpleTextQuery(b *gocb.Bucket) {
+	indexName := "travel-sample-index-unstored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewMatchQuery("swanky")).
+		Limit(10)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Simple Text Query Error:", err.Error())
+	}
+
+	printResult("Simple Text Query", result)
+}
+
+func simpleTextQueryOnStoredField(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName,
+		cbft.NewMatchQuery("MDG").Field("destinationairport")).
+		Limit(10).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Simple Text Query on Stored Field Error:", err.Error())
+	}
+
+	printResult("Simple Text Query on Stored Field", result)
+}
+
+func simpleTextQueryOnNonDefaultIndex(b *gocb.Bucket) {
+	indexName := "travel-sample-index-hotel-description"
+	query := gocb.NewSearchQuery(indexName, cbft.NewMatchQuery("swanky")).
+		Limit(10)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Simple Text Query on Non-Default Index Error:", err.Error())
+	}
+
+	printResult("Simple Text Query on Non-Default Index", result)
+}
+
+func textQueryOnStoredFieldWithFacet(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewMatchQuery("La Rue Saint Denis!!").
+		Field("reviews.content")).Limit(10).Highlight(gocb.DefaultHighlightStyle).
+		AddFacet("Countries Referenced", cbft.NewTermFacet("country", 5))
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Match Query with Facet, Result by Row Error:", err.Error())
+	}
+
+	printResult("Match Query with Facet, Result by hits:", result)
+
+	fmt.Println()
+	fmt.Println("Match Query with Facet, Result by facet:")
+	for _, row := range result.Facets() {
+		jRow, err := json.Marshal(row)
+		if err != nil {
+			fmt.Println("Print Error:", err.Error())
+		}
+		fmt.Println(string(jRow))
+	}
+}
+
+func docIdQueryMethod(b *gocb.Bucket) {
+	indexName := "travel-sample-index-unstored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewDocIdQuery("hotel_26223", "hotel_28960"))
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("DocId Query Error:", err.Error())
+	}
+
+	printResult("DocId Query", result)
+}
+
+func unAnalyzedTermQuery(b *gocb.Bucket, fuzzinessLevel int) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewTermQuery("sushi").Field("reviews.content").
+		Fuzziness(fuzzinessLevel)).Limit(50).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Printf("Unanalyzed Term Query with Fuzziness Level of %d Error: %s\n", fuzzinessLevel, err.Error())
+	}
+
+	printResult(fmt.Sprintf("Unanalyzed Term Query with Fuzziness Level of %d", fuzzinessLevel), result)
+}
+
+func matchPhraseQueryOnStoredField(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName,
+		cbft.NewMatchPhraseQuery("Eiffel Tower").Field("description")).
+		Limit(10).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Match Phrase Query, using Analysis Error:", err.Error())
+	}
+
+	printResult("Match Phrase Query, using Analysis", result)
+}
+
+func unAnalyzedPhraseQuery(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName,
+		cbft.NewPhraseQuery("dorm", "rooms").Field("description")).
+		Limit(10).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Phrase Query, without Analysis Error:", err.Error())
+	}
+
+	printResult("Phrase Query, without Analysis", result)
+}
+
+func conjunctionQueryMethod(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	firstQuery := cbft.NewMatchQuery("La Rue Saint Denis!!").Field("reviews.content")
+	secondQuery := cbft.NewMatchQuery("boutique").Field("description")
+
+	conjunctionQuery := cbft.NewConjunctionQuery(firstQuery, secondQuery)
+
+	result, err := b.ExecuteSearchQuery(gocb.NewSearchQuery(indexName, conjunctionQuery).
+		Limit(10).Highlight(gocb.DefaultHighlightStyle))
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Conjunction Query Error:", err.Error())
+	}
+
+	printResult("Conjunction Query", result)
+}
+
+func queryStringMethod(b *gocb.Bucket) {
+	indexName := "travel-sample-index-unstored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewQueryStringQuery("description: Imperial")).
+		Limit(10)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Query String Query Error:", err.Error())
+	}
+
+	printResult("Query String Query", result)
+}
+
+func wildCardQueryMethod(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewWildcardQuery("bouti*ue").Field("description")).
+		Limit(10).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Wild Card Query Error:", err.Error())
+	}
+
+	printResult("Wild Card Query", result)
+}
+
+func numericRangeQueryMethod(b *gocb.Bucket) {
+	indexName := "travel-sample-index-unstored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewNumericRangeQuery().
+		Min(10100, true).Max(10200, true).Field("id")).
+		Limit(10).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Wild Card Query Error:", err.Error())
+	}
+
+	printResult("Wild Card Query", result)
+}
+
+func regexpQueryMethod(b *gocb.Bucket) {
+	indexName := "travel-sample-index-stored"
+	query := gocb.NewSearchQuery(indexName, cbft.NewRegexpQuery("[a-z]").
+		Field("description")).Limit(10).Highlight(gocb.DefaultHighlightStyle)
+
+	result, err := b.ExecuteSearchQuery(query)
+	if err != nil {
+		fmt.Println()
+		fmt.Println("Regexp Query Error:", err.Error())
+	}
+
+	printResult("Regexp Query", result)
+}
+
+func printResult(label string, results gocb.SearchResults) {
+	fmt.Println()
+	fmt.Println("= = = = = = = = = = = = = = = = = = = = = = =")
+	fmt.Println("= = = = = = = = = = = = = = = = = = = = = = =")
+	fmt.Println()
+	fmt.Println(label)
+	fmt.Println()
+
+	for _, row := range results.Hits() {
+		jRow, err := json.Marshal(row)
+		if err != nil {
+			fmt.Println("Print Error:", err.Error())
+		}
+		fmt.Println(string(jRow))
+	}
+}
+
+func main() {
+	cluster, err := gocb.Connect("couchbase://10.111.180.101")
+	if err != nil {
+		panic("error conencting to cluster:" + err.Error())
+	}
+	cluster.Authenticate(gocb.PasswordAuthenticator{
+		Username: "Administrator",
+		Password: "password",
+	})
+	bucket, err := cluster.OpenBucket("travel-sample", "")
+	if err != nil {
+		panic("error opening bucket:" + err.Error())
+	}
+
+	simpleTextQuery(bucket)
+	simpleTextQueryOnStoredField(bucket)
+	simpleTextQueryOnNonDefaultIndex(bucket)
+	textQueryOnStoredFieldWithFacet(bucket)
+	docIdQueryMethod(bucket)
+	unAnalyzedTermQuery(bucket, 0)
+	unAnalyzedTermQuery(bucket, 2)
+	matchPhraseQueryOnStoredField(bucket)
+	unAnalyzedPhraseQuery(bucket)
+	conjunctionQueryMethod(bucket)
+	queryStringMethod(bucket)
+	wildCardQueryMethod(bucket)
+	numericRangeQueryMethod(bucket)
+	regexpQueryMethod(bucket)
+
+	cluster.Close()
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">2440 West El Camino Real
+Mountain View, CA 94040
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://training.couchbase.com" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://training.couchbase.com/online" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
