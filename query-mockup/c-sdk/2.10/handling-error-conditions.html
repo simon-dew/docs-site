@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Handling Exceptions and other Errors with the C (libcouchbase) SDK in Couchbase | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/query-mockup/c-sdk/2.10/handling-error-conditions.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="c-sdk">
+    <meta name="dcterms.identifier" content="2.10">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/query-mockup">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">C SDK</span> <span class="version">2.10</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.9/handling-error-conditions.html">C SDK 2.9</a></li>
+                  <li><a class="navbar-item" href="../2.8/handling-error-conditions.html">C SDK 2.8</a></li>
+                  <li><a class="navbar-item" href="../2.7/handling-error-conditions.html">C SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/handling-error-conditions.html">C SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/c-intro.html">C SDK 2.5</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/handling-error-conditions.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/handling-error-conditions.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/handling-error-conditions.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/handling-error-conditions.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/handling-error-conditions.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/handling-error-conditions.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="encryption.html">Field Level Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="encrypting-using-sdk.html">Field Level Encryption from the C SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="scan-consistency-examples.html">Using Scan Consistency</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compression-intro.html">Compression</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threshold-logging.html">Threshold Logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="tracing-from-the-sdk.html">Tracing from the SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-c-sdk.html">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">C SDK</a></li>
+    <li class="crumb">Settings, Error Handling &amp; Diagnostics</li>
+    <li class="crumb"><a href="handling-error-conditions.html">Handling Errors</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-c/edit/release/2.10/modules/ROOT/pages/handling-error-conditions.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Handling Exceptions and other Errors with the C (libcouchbase) SDK in Couchbase</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+An error is received if an operation could not be executed.
+Sometimes errors are received directly from the server while other times they are generated internally by the client.
+This page describes how errors are reported in the C SDK, and how some error types should be handled.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-codes"><a class="anchor" href="#error-codes"></a>Error Codes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Most functions in the C SDK return an error code of type <code class="api">lcb_error_t</code>.
+As an application developer, you should be prepared to handle non-successful error codes and treat them appropriately.
+If the library is not behaving as expected then your first action should be to determine if your application is properly handling (and checking) any error codes returned by the library.
+Remember that error codes are only significant when there is an error condition!</p>
+</div>
+<div class="paragraph">
+<p>A successful operation is defined by the return code of <code>LCB_SUCCESS</code>, while any other code indicates an error condition.
+You can find a full list of error codes in the <em class="path">&lt;libcouchbase/error.h&gt;</em> header.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+New applications are advised to enable extended error codes by using the <code>LCB_CNTL_DETAILED_ERRCODES</code> setting (see <a href="client-settings.html" class="page">Client Settings for the C (libcouchbase) SDK with Couchbase Server</a>).
+Extended error codes are not enabled by default to avoid sending older applications error codes that they cannot handle.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="when-to-check-for-errors-and-what-they-mean"><a class="anchor" href="#when-to-check-for-errors-and-what-they-mean"></a>When to Check for Errors, and What They Mean</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Success and failure depend on the context.
+A successful return code for one of the data operation APIs (for example, <code class="api">lcb_store3()</code>) does not mean the operation itself succeeded and the key was successfully stored.
+Rather, it means the key was successfully placed inside the library’s internal queue.
+The actual error code is delivered as the <code class="api">lcb_RESPBASE::rc</code> parameter in the operation callback itself (that is, the callback installed with <code class="api">lcb_install_callback3()</code>).</p>
+</div>
+<div class="paragraph">
+<p>Non-successful error codes received in callbacks are <em>usually</em> a result of a negative server reply or a network connectivity issue.</p>
+</div>
+<div class="paragraph">
+<p>If an error was returned from a scheduling function (e.g.
+<code class="api">lcb_get3())</code>, it may be the result of a bad input (see <code class="api">LCB_EIFINPUT</code>).
+Scheduling functions may also return <code class="api">LCB_NOT_SUPPORTED</code> or <code class="api">LCB_CLIENT_FEATURE_UNAVAILABLE</code> which suggest that the server or the client do not support the given API.</p>
+</div>
+<div class="paragraph">
+<p>If a scheduling API returns anything but <code>LCB_SUCCESS</code>, the callback for that specific request will <em>not</em> be delivered.
+Conversely, it is guaranteed that the callback will always be delivered if the return code for the scheduling function is <code>LCB_SUCCESS</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can print a textual representation of the error by using <code class="api">lcb_strerror</code>.
+This function is always guaranteed to return a valid string</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">lcb_strerror(NULL, LCB_OPTIONS_CONFLICT);</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The first argument to <code class="api">lcb_strerror</code> is ignored and has never been used.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="devguide-data-errors"><a class="anchor" href="#devguide-data-errors"></a>Data Errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Data errors are errors returned by the server because a certain data condition was not met.
+Data errors typically have very clear corrective paths.</p>
+</div>
+<div class="paragraph">
+<p><strong>Document Does not Exist</strong></p>
+</div>
+<div class="paragraph">
+<p>If a document is not found, then it has either not yet been created or has since been deleted.
+It is received on retrieval (<em>get</em>) operations (get a document), <em>replace</em> operations (replace a document that already exists), and <em>remove</em> operations (delete a document).</p>
+</div>
+<div class="paragraph">
+<p>If this error is received when attempting to retrieve a document, then the item should either be created (if possible) or return an error to the user.</p>
+</div>
+<div class="paragraph">
+<p>If this error is received when replacing a document, then it indicates an issue in the application state (perhaps you can raise an exception up the stack).
+If you do not care that the document exists, the <em>upsert</em> method may be used instead which ignores this case.</p>
+</div>
+<div class="paragraph">
+<p>If receiving this error when removing an document, it may safely be ignored: not-found on remove essentially means the item is already removed.</p>
+</div>
+<div class="paragraph">
+<p>The <em>Not Found</em> error is returned by the server.</p>
+</div>
+<div class="paragraph">
+<p><strong>Document Already Exists</strong></p>
+</div>
+<div class="paragraph">
+<p>The <em>insert</em> operation requires that the document does not exist yet; it is intended to create a new unique record (think about inserting a "new user ID").
+This error is returned by the server when a document already exists.
+Applications at this point should probably return an error up the stack to the user (when applicable); for example indicating that a new account could not be registered with the given user name, since it already exists.</p>
+</div>
+<div class="paragraph">
+<p><strong>CAS Mismatch</strong></p>
+</div>
+<div class="paragraph">
+<p>A <a href="concurrent-mutations-cluster.html" class="page">CAS</a> mismatch error is returned when an operation was executed with a CAS value (supplied by the application) and the CAS value passed differs from the CAS value on the server.
+The corrective course of action in this case is for the application to re-try the read-update cycle as explained in detail in the CAS documentation.</p>
+</div>
+<div class="paragraph">
+<p><strong>Document too Big</strong></p>
+</div>
+<div class="paragraph">
+<p>If the maximum content size is larger than 20MB the server responds with an error noting that it can&#8217;t store it since it is too big.
+This error is not transient and must be raised up the stack since it likely indicates an application error that creates too large document contents.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="devguide-transient-errors"><a class="anchor" href="#devguide-transient-errors"></a>Transient and Resource Errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>These errors may be received because of resource starvation.</p>
+</div>
+<div class="paragraph">
+<p><strong>Temporary Failure</strong></p>
+</div>
+<div class="paragraph">
+<p>This error is received when the server is temporarily inhibiting an error that doesn&#8217;t allow it to respond successfully.
+For example during mutations when the cluster node has run out of memory or is currently warming up.
+Its disk and replication queues are full and must wait until items in those queues are stored and replicated before it can begin receiving new operations.</p>
+</div>
+<div class="paragraph">
+<p>While this condition is rare, it may happen under massively concurrent writes from clients and a limited memory allocation on the server.</p>
+</div>
+<div class="paragraph">
+<p>The short-term corrective action for this error is to throttle and slow down the application, giving Couchbase some time for pending operations to complete (or to complete warmup) before issuing new operations.
+The long term corrective action is to increase memory capacity on the cluster, either by adding more RAM to each node, or by adding more nodes.
+The above example shows (in pseudo-code) how to handle a temporary failure error with a linear backoff.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">MAX_RETRIES = 5
+BASE_DELAY = 50 // milliseconds
+
+current_attempts = 1
+do {
+    try {
+        bucket.upsert(id, document)
+        break
+    } catch (TemporaryFailure error) {
+        sleep(BASE_DELAY * current_attempts)
+    }
+} while (++current_attempts != MAX_RETRIES)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Out Of Memory</strong></p>
+</div>
+<div class="paragraph">
+<p>This error indicates a severe condition on the server side and probably needs to be logged and/or signaled to monitoring systems.
+There is not much the application can do there to mitigate the situation other than backing off significantly and waiting until the server side memory shortage is resolved.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="inspecting-http-n1ql-mapreduce-fts-errors"><a class="anchor" href="#inspecting-http-n1ql-mapreduce-fts-errors"></a>Inspecting HTTP (N1QL, MapReduce, FTS) Errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Many of the SDK&#8217;s APIs (<code class="api">lcb_n1ql_query</code>, <code class="api">lcb_view_query</code>, <code class="api">lcb_fts_query</code>) use HTTP internally.
+Unlike Key-Value based APIs which use a binary protocol and have a fixed internal format for errors, APIs using JSON-over-HTTP can report multiple errors anywhere during execution.
+The C SDK itself can only report a single top-level error code (i.e.
+the <code class="param">rc</code> within the response structure).</p>
+</div>
+<div class="paragraph">
+<p>In cases where an HTTP API failed with a non-successful (non-<em>2xx</em>) HTTP reply, the <code class="param">rc</code> field will be set to <code class="api">LCB_HTTP_ERROR</code> and the <code class="api">LCB_RESP_F_FINAL</code> bit set in the <code class="param">rflags</code> field.
+The <em>actual</em> cause may be determined using one or more of the following mechanisms within the response callback:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Inspecting the underlying <code class="api">lcb_RESPHTTP</code> object for details.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">if (rv-&gt;rc == LCB_HTTP_ERROR &amp;&amp; rv-&gt;htresp) {
+    printf("Underlying HTTP failed with code %d\n", rv-&gt;htresp-&gt;htstatus);
+    printf("Raw payload: %.*s\n", (int)rv-&gt;htresp-&gt;nbody, rv-&gt;htresp-&gt;nbody);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>rv</code> may be <code class="api">lcb_RESPN1QL</code> or <code class="api">lcb_RESPVIEWQUERY</code> or other response types using a row-like API.
+Ensure that you verify the <code class="param">hresp</code> pointer is not <code>NULL</code> before dereferencing.
+Be aware that the content of the response body may be empty or only contain partial JSON.</p>
+</div>
+</li>
+<li>
+<p>Inspecting the row&#8217;s <em>metadata</em>.
+The <em>metadata</em> is exposed via the normal row fields (e.g.
+<code class="param">row</code>, <code class="param">nrow</code>) of the response structure, but only when the <code class="api">LCB_RESP_F_FINAL</code> bit is set in the <code class="param">rflags</code> field.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">if ((resp-&gt;rflags &amp; LCB_RESP_F_FINAL) &amp;&amp; resp-&gt;nrow) {
+    printf("Metadata: %.*s\n", (int)resp-&gt;nrow, resp-&gt;row);
+    json_parse(resp-&gt;nrow, resp-&gt;row);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <em>metadata</em> is the raw JSON returned from the server-side API.
+It will be emptied out of any row contents (i.e.
+any actual result set) as they are dynamically parsed out from the stream.
+The metadata may contain errors, warnings, and other metrics which may be useful when debugging.
+Unlike the raw HTTP response, the metadata should always be valid JSON.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that any error codes other than <code class="api">LCB_HTTP_ERROR</code> indicate that either the C SDK has handled and converted HTTP or metadata-reported errors, or that an error occurred at the transport or input validation layer.
+It may still be useful to inspect the raw HTTP response (if any) and/or the metadata as above in such situations.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="program-crashes-and-pitfalls"><a class="anchor" href="#program-crashes-and-pitfalls"></a>Program Crashes and Pitfalls</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If your application abnormally terminates while invoking a function with the library, you may have either encountered a bug or passed the library an invalid pointer.
+Keep in mind the following points:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The library is <em>not</em> thread safe.
+While you may use multiple <em>lcb_t</em> handles in different threads, you must never access the same handle from multiple threads without using external synchronization functions (such as mutexes).</p>
+</li>
+<li>
+<p>The response structures within the callback are valid <em>only</em> in the scope of the callback function itself.
+This means you must copy the structure (and any contained keys and values) into another location in memory if you wish to use it outside the callback.</p>
+</li>
+<li>
+<p>Callbacks will <em>not</em> be invoked if the scheduling function returns a failure status.
+This means that the following code will result in accessing uninitialized memory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">struct myresult {
+  char *value;
+  lcb_error_t err;
+}
+static void get_callback(lcb_t instance, int cbtype, const lcb_RESPGET *resp)
+{
+  struct myresult *mr = (struct myresult *)resp-&gt;cookie;
+  mr-&gt;err = resp-&gt;rc;
+  if (mr-&gt;err == LCB_SUCCESS) {
+    mr-&gt;value = malloc(resp-&gt;nkey + 1);
+    memcpy(mr-&gt;value, resp-&gt;key, resp-&gt;nkey);
+    mr-&gt;value[resp-&gt;nkey] = '\0';
+  } else {
+    mr-&gt;value = NULL;
+  }
+}
+
+// Some lines later
+struct myresult mr;
+lcb_get3(instance, &amp;mr, &amp;cmd);
+lcb_wait(instance);
+if (mr.value) {
+  // If lcb_get() returned an error, this will be uninitialized access!
+  // ...
+}</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A crash can also be a result of a bug in the library.
+Sometimes the library will call abort when it detects an inconsistent state.
+If you think you have found a bug in the library you should file a bug in our <a href="http://www.couchbase.com/issues/browse/CCBC" target="_blank" rel="noopener">issue tracker</a> or contact <a href="http://support.couchbase.com" target="_blank" rel="noopener">Couchbase support</a>.
+When filing a bug, please be sure to include the library version and any relevant code samples.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

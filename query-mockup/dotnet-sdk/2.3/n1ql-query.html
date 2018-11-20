@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Querying with N1QL | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/query-mockup/dotnet-sdk/2.7/n1ql-query.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="dotnet-sdk">
+    <meta name="dcterms.identifier" content="2.3">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/query-mockup">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">.NET SDK</span> <span class="version">2.3</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.7/n1ql-query.html">.NET SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/n1ql-query.html">.NET SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/n1ql-query.html">.NET SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/n1ql-query.html">.NET SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.2/dotnet-intro.html">.NET SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/dotnet-intro.html">.NET SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/n1ql-query.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/n1ql-query.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/n1ql-query.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/n1ql-query.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/n1ql-query.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/n1ql-query.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-dotnet-sdk.html#version-2-3-11-3-jan-2017">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.7/n1ql-query.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">.NET SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="n1ql-query.html">Querying with N1QL</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-dotnet/edit/release/2.3/modules/ROOT/pages/n1ql-query.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Querying with N1QL</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can query for documents in Couchbase using the N1QL query language, a language based on SQL, but designed for structured and flexible JSON documents.
+Querying can solve typical programming tasks such as finding a user profile by email address, facebook login, or user ID.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-execution"><a class="anchor" href="#query-execution"></a>Query Execution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can issue N1QL queries using either a Couchbase SDK, the <em>cbq</em> shell, the <em>cbc</em> command line tool, the REST API, or the <a href="../../server/4.5/tools/query-workbench.html" class="page">Query workbench</a>.</p>
+</div>
+<div class="paragraph">
+<p>A N1QL query is a string parsed by the query service.
+The result for each query is JSON and as a result queries will function the same regardless whether they are executed using the <code class="cmd">cbq</code> shell, an SDK, or using the REST API directly.
+Nevertheless, the result format received using an SDK may be a bit different than that received using <code class="cmd">cbq</code> or the REST API.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-cbq"><a class="anchor" href="#running-cbq"></a>Running cbq</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The interactive shell <a href="../../server/4.5/tools/cbq-shell.html" class="page"><code class="cmd">cbq</code></a> for executing N1QL queries is shipped with Couchbase Server and designed to be run on a cluster node.
+It is <a href="../../server/4.5/cli/cli-intro.html" class="page">located alongside the other couchbase tools</a> (by default, <code>/opt/couchbase/bin/</code> on Linux, <code>/Applications/Couchbase Server.app/Contents/Resources/couchbase-core/bin/cbq</code> on OS X, and <code>C:\Program Files\Couchbase\Server\bin\cbq.exe</code> on Microsoft Windows).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="issuing-queries"><a class="anchor" href="#issuing-queries"></a>Issuing Queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Queries are issued in the SDK using the <em>query</em> operation.
+This API accepts a string which is the statement to execute, and returns the rows (or an iterable object which returns rows) representing the query’s result.
+Here is an example of a query executed in Python:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&gt;&gt;&gt; for row in cb.n1ql_query('SELECT type FROM `travel-sample` LIMIT 4'):
+...   print(row)
+...
+{'type': 'airline'}
+{'type': 'airline'}
+{'type': 'airline'}
+{'type': 'airport'}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above query using <em>cbq</em> (some output truncated for clarity):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>cbq&gt; SELECT type FROM `travel-sample` LIMIT 4;
+{
+    ...
+    "results": [
+        {
+            "type": "airport"
+        },
+        {
+            "type": "airport"
+        },
+        {
+            "type": "airport"
+        },
+        {
+            "type": "airport"
+        }
+    ],
+    "status": "success",
+    "metrics": {
+    ...
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result is a JSON object.
+The important field within the object is the <code>results</code> property, which contains an array of results (a result set).
+Each item within the result set may be considered as a <em>row</em>.
+Each row contains those document fields selected in the <a href="../../server/4.5/n1ql/n1ql-language-reference/selectclause.html" class="page"><code>SELECT</code></a> clause.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Couchbase SDKs provide a row-based API, which returns an object which can be iterated over.
+Internally, however, the response looks like the <em>cbq</em> output above.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you use aliases in your query, then the returned rows contain the aliased name rather than the original one.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">&gt;&gt;&gt; for row in cb.n1ql_query('SELECT airportname as n FROM `travel-sample` where type="airport" LIMIT 4'):
+...   print(row)
+...
+{'n': 'Calais Dunkerque'}
+{'n': 'Peronne St Quentin'}
+{'n': 'Les Loges'}
+{'n': 'Couterne'}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-query-criteria"><a class="anchor" href="#specifying-query-criteria"></a>Specifying Query Criteria</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>N1QL&#8217;s true strength is the ability to query documents satisfying a given criteria or querying for documents whose properties evaluate to certain values or expressions.
+You specify criteria in the same manner as in SQL by using a <a href="../../server/4.5/n1ql/n1ql-language-reference/where.html" class="page"><code>WHERE</code></a> clause.
+Specify multiple predicates using the <code>AND</code> or <code>OR</code> keywords.</p>
+</div>
+<div class="paragraph">
+<p>The following example selects all documents that have a <code>type</code> of <em>airport</em> and a <code>city</code> of <em>Reno</em>.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>cbq&gt; SELECT airportname, city, country FROM `travel-sample` WHERE type="airport" AND city="Reno";
+{
+    ...
+    "results": [
+        {
+            "airportname": "Reno Tahoe Intl",
+            "city": "Reno",
+            "country": "United States"
+        }
+    ],
+    "status": "success",
+    "metrics": {
+    ...
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that you should use <a href="#topic_kgx_xdp_1w/devguide-named-placeholders">query placeholders</a>, as it is not only more secure, but also allows your query to be prepared and optimized for reuse.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-nested-documents"><a class="anchor" href="#querying-nested-documents"></a>Querying Nested Documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The above queries showed how to query top-level fields within a document.
+One of the main differences between JSON and flat rows is that JSON supports a nested structure, allowing documents to contain other documents, also known as sub-documents.
+In N1QL, you can use the path syntax to query and address sub-documents.
+See <a href="../../server/4.5/n1ql/n1ql-intro/queriesandresults.html" class="page">N1QL Queries and Results</a> for more information on the path syntax.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>cbq&gt; SELECT airportname, city, country, geo.alt FROM `travel-sample` WHERE type="airport" AND geo.alt &gt; 4000 AND country="United States" LIMIT 3;
+{
+    ...
+    "results": [
+        {
+            "airportname": "Cheyenne Rgnl Jerry Olson Fld",
+            "alt": 6156,
+            "city": "Cheyenne",
+            "country": "United States"
+        },
+        {
+            "airportname": "Pueblo Memorial",
+            "alt": 4726,
+            "city": "Pueblo",
+            "country": "United States"
+        },
+        {
+            "airportname": "Cedar City Rgnl",
+            "alt": 5622,
+            "city": "Cedar City",
+            "country": "United States"
+        }
+    ],
+    "status": "success",
+    "metrics": {
+    ...
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The actual airport document looks like this.
+Note that the <code>geo</code> field itself contains a JSON object.
+In couchbase, this is known as a <em>sub-document</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+   "geo" : {
+      "lat" : 37.700967,
+      "alt" : 5622,
+      "lon" : -113.098847
+   },
+   "tz" : "America/Denver",
+   "id" : 3824,
+   "type" : "airport",
+   "city" : "Cedar City",
+   "country" : "United States",
+   "icao" : "KCDC",
+   "faa" : "CDC",
+   "airportname" : "Cedar City Rgnl"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="devguide-named-placeholders"><a class="anchor" href="#devguide-named-placeholders"></a>Parameterized Queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Query parameters allow your application to securely use dynamic query arguments for your application.
+In this section, the parameter feature is demonstrated using the SDK.</p>
+</div>
+<div class="paragraph">
+<p>Consider a function which returns all airports located within a given city (passed as input).
+The query may be divided into a <em>fixed</em> or <em>static</em> part (select all airports in a city) and a <em>dynamic</em> part (the actual city to search, specified via user input).</p>
+</div>
+<div class="paragraph">
+<p>A naive implementation of this function might look something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def airports_in_city(city):
+  query_string = "SELECT airportname FROM `travel-sample` WHERE city="
+  query_string += '"' + city + '"'
+  return cb.n1ql_query(query_string)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The approach above is both unwieldy and insecure (subject to SQL injection attacks).</p>
+</div>
+<div class="paragraph">
+<p>N1QL allows the use of placeholders to declare dynamic query parameters.
+Here&#8217;s a version of the above using placeholders:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def airports_in_city(city):
+  query_string = "SELECT airportname FROM `travel-sample` WHERE city=$1"
+  query = N1QLQuery(query_string, city)
+  return cb.n1ql_query(query)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>$1</code> is a positional placeholder.
+When the query is constructed, it may receive arguments, with each argument being used as the placeholder value in the query.
+Thus, <code>$1</code> refers to the first argument,<code>$2</code> to the second, and so on.</p>
+</div>
+<div class="paragraph">
+<p>Placeholders may also be <em>named</em>.
+This is particularly useful when there are many query parameters and ensuring that they are all in the correct order may be cumbersome.
+Name query placeholders take the form of <code>$name</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">query_string = (
+"SELECT airportname FROM `travel-sample`"
+"WHERE country=$country "
+"AND geo.alt &gt; $altitude "
+"AND (geo.lat BETWEEN $min_lat AND $max_lat) "
+"AND (geo.lon BETWEEN $min_lon AND $max_lon "
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then to issue the actual query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">query = N1QLQuery(
+    query_string,
+    country="United States",
+    altitude=500, min_lat=-50, max_lat=50, min_lon=-180, max_lon=0)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prepare-stmts"><a class="anchor" href="#prepare-stmts"></a>Query Optimization Using Prepared (Optimized) Statements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When a N1QL query string is sent to the server, the server will inspect the string and parse it, planning which indexes to query.
+Once this is done, it generates a <em>query plan</em>.
+The computation for the plan adds some additional processing time and overhead for the query.</p>
+</div>
+<div class="paragraph">
+<p>Often-used queries can be <em>prepared</em> so that its <em>plan</em> is generated only once.
+Subsequent queries using the same query string will use the pre-generated <em>plan</em> instead, saving on the overhead and processing of the plan each time.</p>
+</div>
+<div class="paragraph">
+<p>You can indicate to the SDK that a given query should be optimized in the above fashion.
+When an SDK sees that a query should be optimized, it will internally prepare the statement and store the plan in an internal cache.
+When issuing the query again, the SDK will check to see if a plan exists in its cache, and will send the plan to the server.</p>
+</div>
+<div class="paragraph">
+<p>To indicate that an SDK should optimize a query, the <code class="param">adhoc</code> parameter should be set to false.
+When a query is not <em>ad-hoc</em>, the SDK will fetch the plan (if it does not already have it).
+Do not turn off the <em>adhoc</em> flag for each query since only a finite number of query plans (currently 5000) can be stored in the SDK.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">query = N1QLQuery("SELECT airportname FROM `travel-sample` WHERE country=$1", "USA")
+q.adhoc = False</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Parameterized queries are considered the same query for caching and planning purposes, even if the supplied parameters are different.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information on how to optimize queries using prepared statements, see <a href="../../server/4.5/n1ql/n1ql-language-reference/prepare.html" class="page">PREPARE</a> statement in <em class="cite">N1QL language reference</em>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="indexes"><a class="anchor" href="#indexes"></a>Indexes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Couchbase query service makes use of <em>indexes</em> in order to do its work.
+Indexes replicate subsets of documents from data nodes over to index nodes, allowing specific data (for example, specific document properties) to be retrieved quickly, (and to distribute load away from data nodes in MDS topologies).</p>
+</div>
+<div class="paragraph">
+<p>In order to make a bucket queryable, it must have at least one index defined.</p>
+</div>
+<div class="paragraph">
+<p>You can define a <em>primary index</em> on a bucket.
+When a <em>primary</em> index is defined you can issue non-covered queries on the bucket as well.
+This includes using the <code>META</code> function in the queries.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CREATE PRIMARY INDEX ON `users`</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also define indexes over given document fields and then use those fields in the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CREATE INDEX ix_name ON `users`(name);
+CREATE INDEX ix_email ON `users`(email);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Would allow you to query the <em>users</em> bucket regarding a document&#8217;s <code>name</code> or <code>email</code> properties, so e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">SELECT name, email FROM `users` WHERE name="Monty Python" OR email="monty@python.org";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Indexes help improve the performance of a query.
+When an index includes the actual values of all the fields specified in the query, the index covers the query and eliminates the need to fetch the actual values from the Data Service.
+An index, in this case, is called a covering index and the query is called a covered query.
+For more information, see <a href="../../server/4.5/indexes/covering-indexes.html" class="page">Covering Indexes</a>.</p>
+</div>
+<div class="paragraph">
+<p>You can also create and define indexes in the SDK using</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">cb.bucket_manager().create_n1ql_primary_index(ignore_exists=True)
+cb.bucket_manager().create_n1ql_index('index_name', fields['name'])
+cb.bucket_manager().create_n1ql_index('index_email', fields['email'])</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-building"><a class="anchor" href="#index-building"></a>Index Building</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Creating indexes can take a long time on buckets with lots of existing documents.
+You can build indexes in the background, creating <em>deferred</em> indexes and then building all deferred indexes at once.
+This allows multiple indexes to be built at once rather than having to re-scan the entire bucket for each index.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CREATE PRIMARY INDEX ON `users` WITH {"defer_build": true};
+CREATE INDEX ix_name ON `users`(name) WITH {"defer_build": true};
+CREATE INDEX ix_email ON `users`(email) WITH {"defer_build": true};
+BUILD INDEX ON `users`(`#primary`, `ix_name`, `ix_email`);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The indexes are actually built when the <code>BUILD INDEX</code> statement is executed.
+At this point, the server scans all the documents in the <code>users</code> bucket and indexes it for all of the applicable indexes (i.e.
+if it has a <code>name</code> or <code>email</code>) field.</p>
+</div>
+<div class="paragraph">
+<p>Building deferred indexes can also be done via the SDK:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">mgr.create_n1ql_primary_index(ignore_exists=True, defer=True)
+mgr.create_n1ql_index('ix_name', fields=['name'], defer=True)
+mgr.create_n1ql_index('ix_email', fields=['email'], defer=True)
+mgr.build_n1ql_deferred_indexes()
+mgr.watch_n1ql_indexes(('ix_name', 'ix_email', '#primary'), timeout=120)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-consistency"><a class="anchor" href="#index-consistency"></a>Index Consistency</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Because indexes are by design outside the data service, they are eventually consistent with respect to changes to documents and, depending on how you issue the query, may at times not contain the most up-to-date information.
+This may especially be the case when deployed in a write-heavy environment: changes may take some time to propagate over to the index nodes.</p>
+</div>
+<div class="paragraph">
+<p>The asynchronous updating nature of global secondary indexes means that they can be very quick to query and do not require the additional overhead of index recaclculations at the time documents are modified.
+N1QL queries are forwarded to the relevant indexes and the queries are done based on indexed information, rather than the documents as they exist in the data service.</p>
+</div>
+<div class="paragraph">
+<p>With default query options, the query service will rely on the current index state: the most up-to-date document versions are not retrieved, and only the indexed versions are queried.
+This provides the best performance.
+Only updates occurring with a small time frame may not yet have been indexed.</p>
+</div>
+<div class="paragraph">
+<p>The query service can use the latest versions of documents by modifying the <code class="api">consistency</code> of the query.
+This is done by setting the <code class="api">consistency</code> or <code class="api">scan_consistency</code> property of the query to <code class="api">REQUEST_PLUS</code>.
+When using this consistency mode, the query service will ensure that the indexes are synchronized with the data service before querying.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following snippet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.n1ql import N1QLQuery, CONSISTENCY_REQUEST
+
+# Ensure there is a primary index on the default bucket!
+RANDOM_NUMBER = random.randint(0, 10000000)
+
+cb = Bucket('couchbase://10.0.0.31/default')
+cb.upsert('user:{}'.format(RANDOM_NUMBER), {
+    'name': ['Brass', 'Doorknob'],
+    'email': ['brass.doorknob@juno.com'],
+    'random': RANDOM_NUMBER
+})
+
+query = N1QLQuery(
+    'SELECT name, email, random, META(default).id FROM default WHERE $1 IN name', 'Brass')
+row = cb.n1ql_query(query).get_single_result()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above query may not return the newly inserted document because it has not yet been indexed.
+The query is issued immediately after document creation, and in this case the query engine may process the query before the index has been updated.</p>
+</div>
+<div class="paragraph">
+<p>If the above code is modified to use <em>request_plus</em> (currently mapped to the <code class="api">CONSISTENT_REQUEST</code> constant in the Python SDK), query processing will wait until all updates have been processed and recalculated into the index from the point in time the query was received:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">query = N1QLQuery(
+    'SELECT name, email, random, META(default).id FROM default WHERE $1 IN name', 'Brass')
+# If this line is removed, the latest 'random' field might not be present
+query.consistency = CONSISTENCY_REQUEST
+row = cb.n1ql_query(query).get_single_result()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This gives you as an application developer more control over the balance between performance and consistency with respect to other actions on your distributed database.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
