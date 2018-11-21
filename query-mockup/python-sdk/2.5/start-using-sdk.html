@@ -41,8 +41,8 @@
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
-                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
-                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
                 </ul>
                 <ul class="two-cols">
                   <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
@@ -56,7 +56,7 @@
                 </ul>
                 <ul>
                   <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
-                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
@@ -206,6 +206,11 @@
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
     <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
     </span>
   </li>
   <li class="nav-item" data-depth="1">
@@ -395,26 +400,25 @@
 <blockquote>
 The Couchbase Python SDK allows Python applications to access a Couchbase cluster.
 The Python SDK offers a traditional synchronous API as well as integration with <em>twisted</em>, <em>gevent</em>, and <em>asyncio</em>.
-It depends on the C SDK and utilizes it for performance and reliability.
+It depends on the C SDK, libcouchbase, which it uses for performance and reliability.
 </blockquote>
+</div>
+<div class="paragraph">
+<p>First, install libcouchbase following the instructions here: <a href="https://developer.couchbase.com/server/other-products/release-notes-archives/c-sdk" class="bare">https://developer.couchbase.com/server/other-products/release-notes-archives/c-sdk</a>.</p>
+</div>
+<div class="paragraph">
+<p>When libcouchbase is installed, please follow these instructions:</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="installing-on-linux"><a class="anchor" href="#installing-on-linux"></a>Installing on Linux</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>For installation on Linux, install the <em>couchbase-release</em> repository, and then install the <em>libcouchbase</em> packages.
-The following examples download and install <em>couchbase-release</em> repsitory, a C and C++ compiler, the C SDK development files (<em>libcouchbase-devel</em> [RPM] or <em>libcouchbase-dev</em> [DEB]), Python development files, and finally the Python SDK using <em>pip</em>.</p>
-</div>
 <div class="listingblock">
 <div class="title">Debian and Ubuntu</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Only needed during first-time setup:
-wget http://packages.couchbase.com/releases/couchbase-release/couchbase-release-1.0-4-amd64.deb
-sudo dpkg -i couchbase-release-1.0-4-amd64.deb
-sudo apt-get update
-sudo apt-get install libcouchbase-dev build-essential python-dev python-pip
+sudo apt-get install build-essential python-dev python-pip
 sudo pip install couchbase</code></pre>
 </div>
 </div>
@@ -422,10 +426,7 @@ sudo pip install couchbase</code></pre>
 <div class="title">RHEL and CentOS</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Only needed during first-time setup:
-wget http://packages.couchbase.com/releases/couchbase-release/couchbase-release-1.0-4-x86_64.rpm
-sudo rpm -iv couchbase-release-1.0-4-x86_64.rpm
-# Will install or upgrade existing packages
-sudo yum install libcouchbase-devel gcc gcc-c++ python-devel python-pip
+sudo yum install gcc gcc-c++ python-devel python-pip
 sudo pip install couchbase</code></pre>
 </div>
 </div>
@@ -454,7 +455,6 @@ Once <em>homebrew</em> is configured:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">brew update # get list of latest packages
-brew install libcouchbase
 brew install python
 pip install couchbase</code></pre>
 </div>
@@ -533,7 +533,7 @@ cb.n1ql_query('CREATE PRIMARY INDEX ON bucket-name').execute()
 from couchbase.n1ql import N1QLQuery
 row_iter = cb.n1ql_query(N1QLQuery('SELECT name FROM bucket-name WHERE ' +\
 '$1 IN interests', 'African Swallows'))
-for row in row_iter: print row
+for row in row_iter: print(row)
 # {u'name': u'Arthur'}</code></pre>
 </div>
 </div>
@@ -595,8 +595,8 @@ Simply pass the key (and value, if applicable) to the relevant methods.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.n1ql import N1QLQuery
-query = N1QLQuery("SELECT airportname, city, country FROM `travel-sample `
-                  "WHERE type=\"airport\" AND city=$my_city", my_city="Reno")
+query = N1QLQuery("""SELECT airportname, city, country FROM `travel-sample` """
+                  """WHERE type="airport" AND city=$my_city""", my_city="Reno")
 for row in bucket.n1ql_query(query):
     print(row)</code></pre>
 </div>
@@ -607,7 +607,7 @@ for row in bucket.n1ql_query(query):
 <h2 id="api-reference"><a class="anchor" href="#api-reference"></a>API Reference</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The API reference is generated for each release and can be found linked from the <a href="relnotes-python-sdk.html" class="page">release notes for your version of the Python SDK^</a>.
+<p>The API reference is generated for each release and can be found linked from the <a href="relnotes-python-sdk.html" class="page">release notes for your version of the Python SDK</a>.
 Most of the API documentation can also be accessed via <code>pydoc</code>.</p>
 </div>
 </div>

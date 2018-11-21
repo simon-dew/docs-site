@@ -41,8 +41,8 @@
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
-                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
-                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
                 </ul>
                 <ul class="two-cols">
                   <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
@@ -56,7 +56,7 @@
                 </ul>
                 <ul>
                   <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
-                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
@@ -206,6 +206,11 @@
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
     <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
     </span>
   </li>
   <li class="nav-item" data-depth="1">
@@ -461,11 +466,11 @@ Because JSON is a structured format, it can be subsequently searched and queried
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">upsert(docid, document)
-insert(docid, document)
-replace(docid, document)
-get(docid)
-remove(docid)</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">Upsert(key string, value interface{}, expiry uint32) (Cas, error)
+Insert(key string, value interface{}, expiry uint32) (Cas, error)
+Replace(key string, value interface{}, cas Cas, expiry uint32) (Cas, error)
+Get(key string, valuePtr interface{}) (Cas, error)
+Remove(key string, cas Cas) (Cas, error)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -490,7 +495,7 @@ The update methods differ in behavior in respect to the existing state of the do
 <p>Documents can be retrieved using the <em>get</em> operation, and finally removed using the <em>remove</em> operations.</p>
 </div>
 <div class="paragraph">
-<p>Since Couchbase’s KV store may be thought of as a distributed hashmap or dictionary, the following code samples are explanatory of Couchbase’ update operations in pseudo-code:</p>
+<p>Since Couchbase’s KV store may be thought of as a distributed hashmap or dictionary, the following code samples are explanatory of Couchbase’s update operations in pseudo-code:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -580,11 +585,11 @@ See <a href="concurrent-mutations-cluster.html" class="page">CAS</a> for a descr
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">cb.mutate_in('docid', subdoc.array_addunique('tags', 'fast'))</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">bucket.MutateIn("docid", 0, 0).ArrayAddUnique("tags", "fast", true).Execute()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or <a href="../../server/6.0/n1ql/n1ql-language-reference/update.html" class="page">N1QL UPDATE</a> to update documents based on specific query criteria:</p>
+<p>or <a href="#">{version-server}@server:n1ql:n1ql-language-reference/update.adoc</a> to update documents based on specific query criteria:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -609,11 +614,12 @@ Primary key lookups are performed using the key-value API, which simplifies use 
 <p>In Couchbase, documents are stored with their IDs.
 Retrieving a document via its ID is the simplest and quickest operation in Couchbase.</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>&gt;&gt;&gt; result = cb.get('docid')
-&gt;&gt;&gt; print result.value
-{'json': 'value'}</pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">var doc interface{}
+bucket.Get("docid", &amp;doc)
+fmt.Printf("%+v", doc)
+{'json': 'value'}</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -654,7 +660,12 @@ Lookups may be done either by comparing the <code>META(from-term).id</code> or b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">name, email = cb.retrieve_in('user:kingarthur', 'contact.name', 'contact.email')</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">frag, _ := bucket.LookupIn("user:kingarthur").Get("contact.name").Get("contact.email").Execute()
+var name string
+frag.Content("contact.name", &amp;name)
+var email string
+frag.Content("contact.email", &amp;email)
+fmt.Printf("name: %s, email: %s", name, email)</code></pre>
 </div>
 </div>
 </div>
@@ -681,21 +692,24 @@ The same is the case for <code>decr()</code>.
 </div>
 <div class="paragraph">
 <p>A document may be used as a counter if its value is a simple ASCII number, like <code>42</code>.
-Couchbase allows you to increment and decrement these values atomically using a special <code class="api">counter</code> operation.
-The example below (in Python) shows how to use counters:</p>
+Couchbase allows you to increment and decrement these values atomically using a special <code class="api">Counter</code> operation.
+The example below shows how to use counters:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">&gt;&gt;&gt; cb.counter('counter_id', delta=20, initial=100).value
-100L
-&gt;&gt;&gt; cb.counter('counter_id', delta=1).value
-101L
-&gt;&gt;&gt; cb.counter('counter_id', delta=-50).value
-51L</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">&gt;&gt;&gt; initialValue, _, _ := bucket.Counter("counter_id", 20, 100, 0)
+&gt;&gt;&gt; fmt.Print(initialValue)
+100
+&gt;&gt;&gt; initialValue, _, _ := bucket.Counter("counter_id", 1, 100, 0)
+&gt;&gt;&gt; fmt.Print(initialValue)
+101
+&gt;&gt;&gt; initialValue, _, _ := bucket.Counter("counter_id", -50, 100, 0)
+&gt;&gt;&gt; fmt.Print(initialValue)
+51</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example, a counter is created by using the <code class="api">counter</code> Python method with an <code class="param">initial</code> value.
+<p>In the above example, a counter is created by using the <code class="api">Counter</code> method with an <code class="param">initial</code> value.
 The initial value is the value the counter uses if the counter ID does not yet exist.</p>
 </div>
 <div class="paragraph">
@@ -709,19 +723,18 @@ However, counters will wrap around if incremented past their maximum value (whic
 Many SDKs will limit the <em>delta</em> argument to the value of a <em>signed</em> 64-bit integer.</p>
 </div>
 <div class="paragraph">
-<p><a href="#expiry">Expiration</a> times can also be specified when using counter operations.</p>
+<p><a href="#expiry">Expiration</a> times must also be specified when using counter operations, 0 indicates no expiry.</p>
 </div>
 <div class="paragraph">
-<p><a href="concurrent-mutations-cluster.html" class="page">CAS</a> values are not used with counter operations since counter operations are atomic.
-The intent of the counter operation is to simply increment the current server-side value of the document.
-If you wish to only increment the document if it is at a certain value, then you may use a normal <code class="api">upsert</code> function with CAS:</p>
+<p>The intent of the counter operation is to simply increment the current server-side value of the document.
+If you wish to only increment the document if it is at a certain value, then you may use a normal <code class="api">Upsert</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">rv = cb.get('counter_id')
-value, cas = rv.value, rv.cas
-if should_increment_value(value):
-  cb.upsert('counter_id', value + increment_amount, cas=cas)</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">var val int
+bucket.Get("counter_id", &amp;val)
+if shouldUpdateVal(val):
+    bucket.Upsert("counter_id", val + 200, 0)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -737,19 +750,19 @@ if should_increment_value(value):
 These data structures may be manipulated with basic operations without retrieving and storing the entire document.</p>
 </div>
 <div class="paragraph">
-<p>See the data structures <a href="../../python-sdk/2.5/datastructures.html" class="page">documentation for each SDK language</a> for details on implementation.
-Some Python examples are provided below for easy reference, but more advanced Collections frameworks are accessible in <a href="../../java-sdk/2.7/datastructures.html" class="page">Java</a> and <a href="../../dotnet-sdk/2.7/datastructures.html" class="page">.NET</a> as well.</p>
+<p>See the data structures <a href="datastructures.html" class="page">documentation for each SDK language</a> for details on implementation.
+Some Golang examples are provided below for easy reference, but more advanced Collections frameworks are accessible in <a href="../../java-sdk/2.7/datastructures.html" class="page">Java</a> and <a href="../../dotnet-sdk/2.7/datastructures.html" class="page">.NET</a> as well.</p>
 </div>
 <div class="paragraph">
-<p>Data structures in Couchbase are similar in concept to data structures in, for example, Python:</p>
+<p>Data structures in Couchbase are similar in concept to data structures in, for example, Golang:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Map</strong> is like Python <code>dict</code>, and is a key-value structure, where a value is accessed by using a key string.</p>
+<p><strong>Map</strong> is like Golang <code>map[string]interface{}</code>, and is a key-value structure, where a value is accessed by using a key string.</p>
 </li>
 <li>
-<p><strong>List</strong> is like a Python <code>list</code> and is a sequential data structure.
+<p><strong>List</strong> is like a Golang <code>array</code> and is a sequential data structure.
 Values can be placed in the beginning or end of a list, and can be accessed using numeric indexes.</p>
 </li>
 <li>
@@ -770,17 +783,20 @@ the ID which uniquely identifies the map in the server), the key <em>within</em>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">bucket.map_add('map_id', 'name', 'Mark Nunberg', create=True)</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">bucket.MapAdd("map_id", "name", "Jo", true)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Data structures can be accessed using their appropriate methods.
-Most data access methods will return an <code class="api">ValueResult</code>-like object with the actual returned value under the <code class="var">value</code> property.</p>
+<p>Data structures can be accessed using their appropriate methods.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">bucket.list_get(0).value  # 'hello'
-bucket.map_get('map_id', 'name').value  # 'mark nunberg'</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">var listItem string
+bucket.ListGet("list_id", 0, &amp;listItem)
+fmt.Print(listItem) # "hello"
+var mapItem string
+bucket.MapGet("map_id", "name", &amp;mapItem)
+fmt.Print(mapItem) # "Jo Smith"</code></pre>
 </div>
 </div>
 </div>
@@ -810,8 +826,8 @@ You can use <a href="subdocument-operations.html" class="page">sub-document oper
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">append(docid, fragment)
-prepend(docid, fragment)</code></pre>
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">Append(docid, fragment)
+Prepend(docid, fragment)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -822,44 +838,45 @@ They are an efficient alternative to retrieving a binary document in its entiret
 <p>Because these methods do raw string manipulation, they are only suitable for non-JSON documents: Prepending or appending anything to a JSON document will invalidate the JSON and make it unparseable by standard JSON parsers.</p>
 </div>
 <div class="paragraph">
-<p>The semantics of the <em>append</em> and <em>prepend</em> operations are similar to those of the <em>upsert</em> family of operations, except that they accept the fragment to append as their value, rather than the entire document.
-These functions may be used to add efficiency for custom binary data structures (such as logs), as they avoid transferring the contents of the entire document for each operation.
+<p>The semantics of the <em>append</em> and <em>prepend</em> operations are similar to those of the <em>upsert</em> family of operations, except that they accept the string to append as their value, rather than the entire document.
+These functions may be used to add efficiency for custom data structures (such as logs), as they avoid transferring the contents of the entire document for each operation.
 Consider the following versions (which are equivalent)</p>
 </div>
 <div class="listingblock">
 <div class="title">Append using get() and replace() (slow)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># Store the document
-cb.upsert('binary_doc', '\x01', format=couchbase.FMT_BYTES)
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">// Store the document
+binDoc := "somevalue"
+bucket.Upsert("binary_doc", binDoc, 0)
 
-while True:
-    # Retrieve the entire document
-    rv = cb.get('binary_doc')
-    value = rv.value + '\x02'
-    try:
-        # Upload the entire document
-        cb.replace('binary_doc', value, format=couchbase.FMT_BYTES)
-        break
-    except couchbase.exceptions.KeyExistsError:
-        continue
+// Retrieve the entire document
+var doc string
+bucket.Get("binary_doc", &amp;doc)
+value := doc + "someothervalue"
+bucket.Replace("binary_doc", value, 0, 0)
 
-print repr(cb.get('binary_doc').value)</code></pre>
+var resDoc string
+bucket.Get("binary_doc", &amp;resDoc)
+fmt.Printf("%+v", resDoc)</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Append using append() (fast)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># Store the document
-cb.upsert('binary_doc', '\x01', format=couchbase.FMT_BYTES)
+<pre class="highlightjs highlight"><code class="language-golang hljs" data-lang="golang">// Store the document
+binDoc := "somevalue"
+bucket.Upsert("binary_doc", binDoc, 0)
 
-# Append a fragment
-cb.append('binary_doc', '\x02', format=couchbase.FMT_BYTES)
+// Append a fragment
+bucket.Append("binary_doc", "someothervalue")
 
-print repr(cb.get('binary_doc').value)</code></pre>
+var resDoc string
+bucket.Get("binary_doc", &amp;resDoc)
+fmt.Printf("%+v", resDoc)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that since the <em>append</em> operation is done atomically, there is no need for a CAS check (though one can still be supplied if the document must be at a specific state).</p>
+<p>Note that since the <em>append</em> operation is done atomically, there is no need for a CAS check.</p>
 </div>
 <div class="paragraph">
 <p>Users of the <em>append</em> and <em>prepend</em> operations should ensure that the resulting documents do not become too large.

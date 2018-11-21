@@ -41,8 +41,8 @@
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
-                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
-                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
                 </ul>
                 <ul class="two-cols">
                   <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
@@ -56,7 +56,7 @@
                 </ul>
                 <ul>
                   <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
-                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
@@ -216,6 +216,11 @@
     </span>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
+    </span>
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
@@ -858,20 +863,17 @@ This helps to ensure backwards compatibility.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">View Endpoints per Node [Static]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewEndpoints(int)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewEndpoints</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The default is dynamic mode, please see next row.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of actual endpoints (sockets) to open per node in the cluster against the view service.
-By default only one socket is opened to avoid unnecessary wasting resources.
 If you plan to run a view heavy workload, especially paired with larger responses, increasing this value significantly (most likely between 5 and 10) can provide greater throughput.
-Keep in mind that these sockets will then be always open, even when no load is passed through.
-We recommend that you tune this value based on evidence obtained during benchmarking with a real workload.
-If no view load is expected, setting this value explicitly to 0 can avoid one socket to 8092 per node.</p></td>
+We recommend that you tune this value based on evidence obtained during benchmarking with a real workload.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">View Endpoints per Node [Dynamic]</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewServiceConfig(int, int, boolean, int)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewServiceConfig(int, int, int)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewServiceConfig</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Need to set minimum and maximum number of Endpoints; whether or not the service is pipelined (more than one request at the same time on the same socket); and the minimum idle time, in seconds, after which the socket will be closed.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">To allow dynamic pooling, as an alternative to the fixed values of viewEndPoints.
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(0, 12, 300)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To allow dynamic pooling, as an alternative to the fixed values of viewEndPoints. Need to set minimum and maximum number of Endpoints; whether or not the service is pipelined (more than one request at the same time on the same socket); and the minimum idle time, in seconds, after which the socket will be closed.
 Note that if both viewEndpoints and viewServiceConfig are set, viewEndpoints takes priority.
 This helps to ensure backwards compatibility.</p></td>
 </tr>
@@ -880,20 +882,16 @@ This helps to ensure backwards compatibility.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>query \ Endpoints(int)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>query \ Endpoints</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The default is dynamic mode, please see next row.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The number of actual endpoints (sockets) to open per Node in the cluster against the Query (N1QL) service.
-By default only one socket is opened to avoid unnecessary wasting resources.
-If you plan to run a query heavy workload, especially paired with larger responses, increasing this value significantly (most likely between 5 and 10) can provide greater throughput.
-Keep in mind that these sockets will then be always open, even when no load is passed through.
-We are recommending to tune this value based on evidence during benchmarking with a real workload.
-If no query load is expected, setting this value explicitly to 0 can avoid one socket to 8093 per node.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of actual endpoints (sockets) to open per node in the cluster against the query service.
+If you plan to run a view heavy workload, especially paired with larger responses, increasing this value significantly (most likely between 5 and 10) can provide greater throughput.
+We recommend that you tune this value based on evidence obtained during benchmarking with a real workload.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Query Endpoints per Node [Dynamic]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>query \ ServiceConfig(int, int, int)</code> or <code>query \ ServiceConfig(int, int)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>query \ ServiceConfig</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Need to set minimum and maximum number of Endpoints; and optionally the minimum idle time, in seconds, after which the socket will be closed.
-The default minimum and maximum are 1 and 12 respectively."</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">To allow dynamic pooling, as an alternative to the fixed values of queryEndPoints.
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(0, 12, 300)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To allow dynamic pooling, as an alternative to the fixed values of queryEndPoints. Need to set minimum and maximum number of Endpoints; whether or not the service is pipelined (more than one request at the same time on the same socket); and the minimum idle time, in seconds, after which the socket will be closed.
 Note that if both queryEndpoints and queryServiceConfig are set, queryEndpoints takes priority.
 This helps to ensure backwards compatibility.</p></td>
 </tr>
@@ -901,20 +899,17 @@ This helps to ensure backwards compatibility.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Search Endpoints per Node [Static]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>search \Endpoints(int)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>search \Endpoints</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>The default is dynamic mode, please see next row.</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of actual endpoints (sockets) to open per Node in the cluster against the Search (FTS) service.
-By default only one socket is opened to avoid unnecessary wasting resources.
 If you plan to run a query heavy workload, especially paired with larger responses, increasing this value significantly (most likely between 5 and 10) can provide greater throughput.
-Keep in mind that these sockets will then be always open, even when no load is passed through.
-We are recommending to tune this value based on evidence during benchmarking with a real workload.
-If no query load is expected, setting this value explicitly to 0 can avoid one socket to 8094 per node.</p></td>
+We recommend that you tune this value based on evidence obtained during benchmarking with a real workload.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Search Endpoints per Node [Dynamic]</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>search \ServiceConfig(int, int, int)</code> or <code>search \ ServiceConfig(int, int)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>search \ServiceConfig</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Need to set minimum and maximum number of Endpoints; and optionally the minimum idle time, in seconds, after which the socket will be closed.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">To allow dynamic pooling, as an alternative to the fixed values of searchEndPoints.
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(0, 12, 300)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To allow dynamic pooling, as an alternative to the fixed values of searchEndPoints. Need to set minimum and maximum number of Endpoints; whether or not the service is pipelined (more than one request at the same time on the same socket); and the minimum idle time, in seconds, after which the socket will be closed.
 Note that if both searchEndpoints and searchServiceConfig are set, queryEndpoints takes priority.
 This helps to ensure backwards compatibility.</p></td>
 </tr>

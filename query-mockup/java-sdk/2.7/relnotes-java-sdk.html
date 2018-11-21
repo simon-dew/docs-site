@@ -41,8 +41,8 @@
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
-                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
-                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
                 </ul>
                 <ul class="two-cols">
                   <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
@@ -56,7 +56,7 @@
                 </ul>
                 <ul>
                   <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
-                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
@@ -216,6 +216,11 @@
     </span>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
+    </span>
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
@@ -402,16 +407,16 @@
 <h2 id="installation"><a class="anchor" href="#installation"></a>Installation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><strong>Important</strong>: At least Java 6 is required, all newer Java versions are
-supported (and encouraged). Especially Java 8 is recommended since it
-brings performance enhancements and lambda expressions which are very
-convenient when used in an asynchronous context.</p>
+<p>At least Java 7 is required for current releases; all newer, vendor supported Java versions are supported (and encouraged).
+See the <a href="compatibility-versions-features.html" class="page">Compatibility</a> section for details.
+Java 8 or later is recommended since it brings performance enhancements and lambda expressions which are very convenient when using the asynchronous API.</p>
 </div>
 <div class="paragraph">
-<p>All stable releases of the Java SDK are primarily distributed through
-Maven. As a result the dependency can be included easily using your
-favourite package manager. For Maven itself, the current GA release&#8217;s
-coordinates are:</p>
+<p>Version 2.6 and earlier support Java 6, though some transitive dependencies are no longer supported by those projects and have known security issues.</p>
+</div>
+<div class="paragraph">
+<p>All stable releases of the Java SDK are primarily distributed through Maven.
+As a result the dependency can be included easily using your favorite package manager. For Maven itself, the current GA release&#8217;s coordinates are:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -419,18 +424,82 @@ coordinates are:</p>
    &lt;dependency&gt;
      &lt;groupId&gt;com.couchbase.client&lt;/groupId&gt;
      &lt;artifactId&gt;java-client&lt;/artifactId&gt;
-     &lt;version&gt;2.7.0&lt;/version&gt;
+     &lt;version&gt;2.7.1&lt;/version&gt;
    &lt;/dependency&gt;
  &lt;/dependencies&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The java-client dependency will pull in two more transitive
-dependencies. One is called com.couchbase.client.core-io and is a
-internal dependency which performs all the underlying tasks like IO and
-cluster management. The other dependency is RxJava which is both used
-internally and exposed as a first-class API to the user in order to
-perform scalable and performant asynchronous, reactive operations.</p>
+<p>The java-client dependency will pull in two more transitive dependencies. One is called com.couchbase.client.core-io and is an internal dependency which performs all the underlying tasks like IO and cluster management.
+The other dependency is RxJava which is both used internally and exposed as a first-class API to the user in order to perform scalable and performant asynchronous, reactive operations.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="version-2-7-1-6-november-2018"><a class="anchor" href="#version-2-7-1-6-november-2018"></a>Version 2.7.1 (6 November 2018)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Version 2.7.1 is the second release of the 2.7 series, bringing new features, enhancements and bugfixes over the last stable release.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://packages.couchbase.com/clients/java/2.7.1/Couchbase-Java-Client-2.7.1.zip">Download</a> | <a href="http://docs.couchbase.com/sdk-api/couchbase-java-client-2.7.1/">API Reference</a> | <a href="http://docs.couchbase.com/sdk-api/couchbase-core-io-1.7.1/">Core API Reference</a></p>
+</div>
+<div class="paragraph">
+<p>The supported and tested dependencies for this release are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>com.couchbase.client:<strong>java-client:2.7.1</strong></p>
+</li>
+<li>
+<p>com.couchbase.client:<strong>core-io:1.7.1</strong></p>
+</li>
+<li>
+<p>io.reactivex:<strong>rxjava:1.3.8</strong></p>
+</li>
+<li>
+<p>io.opentracing:<strong>opentracing-api:0.31.0</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A special note for this release, the Jackson databind dependency has been upgraded to version to 2.9.7 for security updates.
+As the newer Jackson dependency uses Java 7 language features and older Java 6 compatible versions are no longer maintained, the SDK is no longer compatible with Java 6.
+Couchbase prefers to make such platform changes in minor releases, but is applying the change here given the nature of the issue and that the <a href="https://semver.org/#what-should-i-do-if-i-update-my-own-dependencies-without-changing-the-public-api">semantic versioning standard does allow for a dependency update</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="enhancements-new-features"><a class="anchor" href="#enhancements-new-features"></a>Enhancements &amp; New Features</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://issues.couchbase.com/browse/JCBC-1253">JCBC-1253</a>:
+Adds support for Sub-Document operation expansion of macro in extended attributes. This is intended for internal use for other dependent Couchbase libraries.</p>
+</li>
+<li>
+<p><a href="http://issues.couchbase.com/browse/JCBC-1259">JCBC-1259</a>: Exposes async cluster interface from cluster similar to the bucket interface behavior.</p>
+</li>
+<li>
+<p><a href="http://issues.couchbase.com/browse/JVMCBC-581">JVMCBC-581</a>: Updates Jackson dependency to 2.9.7.</p>
+</li>
+<li>
+<p><a href="http://issues.couchbase.com/browse/JCBC-1251">JCBC-1251</a>: Allows to select "DISTINCT RAW" in N1ql dsl.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fixed-issues"><a class="anchor" href="#fixed-issues"></a>Fixed Issues</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://issues.couchbase.com/browse/JVMCBC-579">JVMCBC-579</a>: Fixes the Response Time Observability threshold logging to use descending order instead of ascending as mandated in the sdk-rfc.</p>
+</li>
+<li>
+<p><a href="http://issues.couchbase.com/browse/JCBC-1255">JCBC-1255</a>: Allows crypto transcoder to also transcode docs with no encryption requirements.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -463,7 +532,7 @@ perform scalable and performant asynchronous, reactive operations.</p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features"><a class="anchor" href="#enhancements-new-features"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-2"><a class="anchor" href="#enhancements-new-features-2"></a>Enhancements &amp; New Features</h3>
 <div class="paragraph">
 <p>The major enhancements are:</p>
 </div>
@@ -523,7 +592,7 @@ Transparently retry certain retryable error codes as identified by sdk-rfc for A
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues"><a class="anchor" href="#fixed-issues"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-2"><a class="anchor" href="#fixed-issues-2"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -574,7 +643,7 @@ This handles the half open connection state in a less penalizing way than recrea
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-2"><a class="anchor" href="#enhancements-new-features-2"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-3"><a class="anchor" href="#enhancements-new-features-3"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -599,7 +668,7 @@ various smaller enhancements overall to improve the analytics experience.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-2"><a class="anchor" href="#fixed-issues-2"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-3"><a class="anchor" href="#fixed-issues-3"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -650,7 +719,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-3"><a class="anchor" href="#enhancements-new-features-3"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-4"><a class="anchor" href="#enhancements-new-features-4"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -662,7 +731,7 @@ configuration on backpressure exception.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-3"><a class="anchor" href="#fixed-issues-3"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-4"><a class="anchor" href="#fixed-issues-4"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -736,7 +805,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-4"><a class="anchor" href="#enhancements-new-features-4"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-5"><a class="anchor" href="#enhancements-new-features-5"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -841,7 +910,7 @@ repository abstraction now allows annotations in parent classes.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-4"><a class="anchor" href="#fixed-issues-4"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-5"><a class="anchor" href="#fixed-issues-5"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -999,7 +1068,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-5"><a class="anchor" href="#fixed-issues-5"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-6"><a class="anchor" href="#fixed-issues-6"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1019,7 +1088,7 @@ reverse lookup on DNS SRV bootstrap</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-5"><a class="anchor" href="#enhancements-new-features-5"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-6"><a class="anchor" href="#enhancements-new-features-6"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1069,7 +1138,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-6"><a class="anchor" href="#fixed-issues-6"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-7"><a class="anchor" href="#fixed-issues-7"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1090,7 +1159,7 @@ consumption</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-6"><a class="anchor" href="#enhancements-new-features-6"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-7"><a class="anchor" href="#enhancements-new-features-7"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1158,7 +1227,7 @@ Reference</a></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-7"><a class="anchor" href="#enhancements-new-features-7"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-8"><a class="anchor" href="#enhancements-new-features-8"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1216,7 +1285,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-7"><a class="anchor" href="#fixed-issues-7"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-8"><a class="anchor" href="#fixed-issues-8"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1233,7 +1302,7 @@ concurrent access but rather returns a CAS mismatch as intended.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-8"><a class="anchor" href="#enhancements-new-features-8"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-9"><a class="anchor" href="#enhancements-new-features-9"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1277,7 +1346,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-8"><a class="anchor" href="#fixed-issues-8"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-9"><a class="anchor" href="#fixed-issues-9"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1290,7 +1359,7 @@ parsing the server sent bucket config.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-9"><a class="anchor" href="#enhancements-new-features-9"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-10"><a class="anchor" href="#enhancements-new-features-10"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1387,7 +1456,7 @@ Reference</a></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-10"><a class="anchor" href="#enhancements-new-features-10"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-11"><a class="anchor" href="#enhancements-new-features-11"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1443,7 +1512,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-9"><a class="anchor" href="#fixed-issues-9"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-10"><a class="anchor" href="#fixed-issues-10"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1456,7 +1525,7 @@ transport optionally again.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-11"><a class="anchor" href="#enhancements-new-features-11"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-12"><a class="anchor" href="#enhancements-new-features-12"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1529,7 +1598,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-10"><a class="anchor" href="#fixed-issues-10"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-11"><a class="anchor" href="#fixed-issues-11"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1543,7 +1612,7 @@ logs, so the logic has been changed to prevent that.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-12"><a class="anchor" href="#enhancements-new-features-12"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-13"><a class="anchor" href="#enhancements-new-features-13"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1598,7 +1667,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-11"><a class="anchor" href="#fixed-issues-11"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-12"><a class="anchor" href="#fixed-issues-12"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1617,7 +1686,7 @@ important on servers &gt; 5.0.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-13"><a class="anchor" href="#enhancements-new-features-13"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-14"><a class="anchor" href="#enhancements-new-features-14"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1678,7 +1747,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-12"><a class="anchor" href="#fixed-issues-12"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-13"><a class="anchor" href="#fixed-issues-13"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1698,7 +1767,7 @@ retry iteration. This has been fixed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-14"><a class="anchor" href="#enhancements-new-features-14"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-15"><a class="anchor" href="#enhancements-new-features-15"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1767,7 +1836,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-13"><a class="anchor" href="#fixed-issues-13"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-14"><a class="anchor" href="#fixed-issues-14"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1837,7 +1906,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-15"><a class="anchor" href="#enhancements-new-features-15"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-16"><a class="anchor" href="#enhancements-new-features-16"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1945,7 +2014,7 @@ Exponential Retry Delay, please check arguments</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-14"><a class="anchor" href="#fixed-issues-14"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-15"><a class="anchor" href="#fixed-issues-15"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2020,7 +2089,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-15"><a class="anchor" href="#fixed-issues-15"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-16"><a class="anchor" href="#fixed-issues-16"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2090,7 +2159,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-16"><a class="anchor" href="#enhancements-new-features-16"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-17"><a class="anchor" href="#enhancements-new-features-17"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2116,7 +2185,7 @@ Couchbase Server 5.0</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-16"><a class="anchor" href="#fixed-issues-16"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-17"><a class="anchor" href="#fixed-issues-17"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2168,7 +2237,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-17"><a class="anchor" href="#enhancements-new-features-17"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-18"><a class="anchor" href="#enhancements-new-features-18"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2198,7 +2267,7 @@ the time.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-17"><a class="anchor" href="#fixed-issues-17"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-18"><a class="anchor" href="#fixed-issues-18"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2256,7 +2325,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-18"><a class="anchor" href="#enhancements-new-features-18"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-19"><a class="anchor" href="#enhancements-new-features-19"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2303,7 +2372,7 @@ builtin to local for Couchbase Server 5.0</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-18"><a class="anchor" href="#fixed-issues-18"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-19"><a class="anchor" href="#fixed-issues-19"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2355,7 +2424,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-19"><a class="anchor" href="#enhancements-new-features-19"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-20"><a class="anchor" href="#enhancements-new-features-20"></a>Enhancements &amp; New Features</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2411,7 +2480,7 @@ LegacyTranscoder encoding for strings</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-19"><a class="anchor" href="#fixed-issues-19"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-20"><a class="anchor" href="#fixed-issues-20"></a>Fixed Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2473,7 +2542,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-20"><a class="anchor" href="#enhancements-new-features-20"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-21"><a class="anchor" href="#enhancements-new-features-21"></a>Enhancements &amp; New Features</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -2545,7 +2614,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="enhancements-new-features-21"><a class="anchor" href="#enhancements-new-features-21"></a>Enhancements &amp; New Features</h3>
+<h3 id="enhancements-new-features-22"><a class="anchor" href="#enhancements-new-features-22"></a>Enhancements &amp; New Features</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -2607,7 +2676,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-20"><a class="anchor" href="#fixed-issues-20"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-21"><a class="anchor" href="#fixed-issues-21"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -2676,7 +2745,7 @@ Reference</a></p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-21"><a class="anchor" href="#fixed-issues-21"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-22"><a class="anchor" href="#fixed-issues-22"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -2790,7 +2859,7 @@ scheduler, similar to onNext calls.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-22"><a class="anchor" href="#fixed-issues-22"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-23"><a class="anchor" href="#fixed-issues-23"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -2861,7 +2930,7 @@ Extract SSL related settings into SecureEnvironment.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-23"><a class="anchor" href="#fixed-issues-23"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-24"><a class="anchor" href="#fixed-issues-24"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -2925,7 +2994,7 @@ optimize network bandwith.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-24"><a class="anchor" href="#fixed-issues-24"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-25"><a class="anchor" href="#fixed-issues-25"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -3003,7 +3072,7 @@ recommend to do so anyways).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-25"><a class="anchor" href="#fixed-issues-25"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-26"><a class="anchor" href="#fixed-issues-26"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -3079,7 +3148,7 @@ be used in a round-robin fashion.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-26"><a class="anchor" href="#fixed-issues-26"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-27"><a class="anchor" href="#fixed-issues-27"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -3177,7 +3246,7 @@ UnicastAutoReleaseSubject by adding an identifier to these subjects.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-27"><a class="anchor" href="#fixed-issues-27"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-28"><a class="anchor" href="#fixed-issues-28"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -3244,7 +3313,7 @@ API
 Reference</a></p>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-28"><a class="anchor" href="#fixed-issues-28"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-29"><a class="anchor" href="#fixed-issues-29"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>
@@ -3345,7 +3414,7 @@ buffer can now be tuned. Use with care!</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="fixed-issues-29"><a class="anchor" href="#fixed-issues-29"></a>Fixed Issues</h3>
+<h3 id="fixed-issues-30"><a class="anchor" href="#fixed-issues-30"></a>Fixed Issues</h3>
 <div class="paragraph">
 <p>This release fixes the following issues:</p>
 </div>

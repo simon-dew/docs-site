@@ -41,8 +41,8 @@
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
-                  <li><a href="../../couchbase-lite/2.0/index.html">Lite</a></li>
-                  <li><a href="../../sync-gateway/2.0/index.html">Sync Gateway</a></li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
                 </ul>
                 <ul class="two-cols">
                   <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
@@ -56,7 +56,7 @@
                 </ul>
                 <ul>
                   <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
-                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
@@ -216,6 +216,11 @@
     </span>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
+    </span>
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
@@ -470,28 +475,28 @@ Because JSON is a structured format, it can be subsequently searched and queried
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">upsert(docid, document)
-insert(docid, document)
-replace(docid, document)
-get(docid)
-remove(docid)</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Upsert(docid, document)
+Insert(docid, document)
+Replace(docid, document)
+Get(docid)
+Remove(docid)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In Couchbase documents are stored using one of the operations: <em>upsert</em>, <em>insert</em>, and <em>replace</em>.
+<p>In Couchbase documents are stored using one of the operations: <em>Upsert</em>, <em>Insert</em>, and <em>Replace</em>.
 These operations will all write a JSON document with a given document ID (key) to the database.
 The update methods differ in behavior in respect to the existing state of the document:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><em>insert</em> will only create the document if the given ID is not found within the database.</p>
+<p><em>Insert</em> will only create the document if the given ID is not found within the database.</p>
 </li>
 <li>
-<p><em>replace</em> will only replace the document if the given ID already exists within the database.</p>
+<p><em>Replace</em> will only replace the document if the given ID already exists within the database.</p>
 </li>
 <li>
-<p><em>upsert</em> will always replace the document, ignoring whether the ID has already existed or not.</p>
+<p><em>Upsert</em> will always replace the document, ignoring whether the ID has already existed or not.</p>
 </li>
 </ul>
 </div>
@@ -499,43 +504,44 @@ The update methods differ in behavior in respect to the existing state of the do
 <p>Documents can be retrieved using the <em>get</em> operation, and finally removed using the <em>remove</em> operations.</p>
 </div>
 <div class="paragraph">
-<p>Since Couchbase’s KV store may be thought of as a distributed hashmap or dictionary, the following code samples are explanatory of Couchbase’ update operations in pseudo-code:</p>
+<p>Since Couchbase’s KV store may be thought of as a distributed hashmap or dictionary, the following code samples are explanatory of Couchbase’s update operations in pseudo-code:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">map&lt;string,object&gt; KV_STORE;
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Dictionary&lt;string,object&gt; kvStore;
 
-void insert(string doc_id, object value) {
-    if (!KV_STORE.contains(doc_id)) {
-        KV_STORE.put(doc_id, value);
-    } else {
-        throw DocumentAlreadyExists();
+void Insert(string docId, object value) {
+    if (!kvStore.ContainsKey(docId)) {
+        kvStore.Add(docId, value);
+    } else
+    {
+        throw new DocumentAlreadyExistsException();
     }
 }
 
-void replace(string doc_id, object value) {
-    if (KV_STORE.contains(doc_id)) {
-        KV_STORE.put(doc_id, value);
+void Replace(string docId, object value) {
+    if (kvStore.ContainsKey(docId)) {
+        kvStore.Add(docId, value);
     } else {
-        throw DocumentNotFound();
+        throw new DocumentDoesNotExistException();
     }
 }
 
-void upsert(string doc_id, object value) {
-    KV_STORE.put(doc_id, value);
+void Upsert(string docId, object value) {
+    kvStore.Add(docId, value);
 }
 
-object get(string doc_id) {
-    if (KV_STORE.contains(doc_id)) {
-        return KV_STORE.get(doc_id);
+object Get(string docId) {
+    if (kvStore.ContainsKey(docId)) {
+        return kvStore[docId];
     } else {
-        throw DocumentNotFound();
+        throw new DocumentDoesNotExistException();
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You can also use <a href="n1ql-query.html" class="page">N1QL queries</a> and <a href="full-text-search-overview.html" class="page">Full Text Search</a> to access documents by means other than their IDs, however these query operations Couchbase eventually translate into primitive key-value operations, and exist as separate services outside the data store.</p>
+<p>You can also use <a href="n1ql-query.html" class="page">N1QL queries</a> and <a href="full-text-search-overview.html" class="page">Full Text Search</a> to access documents by means other than their IDs, however these query operations Couchbase eventually translates into primitive key-value operations, and exist as separate services outside the data store.</p>
 </div>
 </div>
 </div>
@@ -589,15 +595,15 @@ See <a href="concurrent-mutations-cluster.html" class="page">CAS</a> for a descr
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">cb.mutate_in('docid', subdoc.array_addunique('tags', 'fast'))</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">bucket.MutateIn&lt;dynamic&gt;("docid").ArrayAddUnique("tags", "fast").Execute();</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or <a href="../../server/6.0/n1ql/n1ql-language-reference/update.html" class="page">N1QL UPDATE</a> to update documents based on specific query criteria:</p>
+<p>or <a href="#">{version-server}@server:n1ql:n1ql-language-reference/update.adoc</a> to update documents based on specific query criteria:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">update `default` SET sale_price = msrp * 0.75 WHERE msrp &lt; 19.95;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">update `default` SET sale_price = msrp * 0.75 WHERE msrp &lt; 19.95;</code></pre>
 </div>
 </div>
 </td>
@@ -611,7 +617,7 @@ See <a href="concurrent-mutations-cluster.html" class="page">CAS</a> for a descr
 <div class="sectionbody">
 <div class="paragraph">
 <p>FASTPATH: This section discusses retrieving documents using their IDs, or primary keys.
-Documents can also be accessed using secondary lookups via <a href="n1ql-query.html" class="page">N1QL queries</a> and MapReduce.
+Documents can also be accessed using secondary lookups via <a href="n1ql-query.html" class="page">N1QL queries</a> and <a href="view-queries-with-sdk.html" class="page">MapReduce</a>.
 Primary key lookups are performed using the key-value API, which simplifies use and increases performance (as applications may interact with the KV store directly, rather than a secondary index or query processor).</p>
 </div>
 <div class="paragraph">
@@ -620,8 +626,8 @@ Retrieving a document via its ID is the simplest and quickest operation in Couch
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>&gt;&gt;&gt; result = cb.get('docid')
-&gt;&gt;&gt; print result.value
+<pre>&gt;&gt;&gt; var result = bucket.Get&lt;dynamic&gt;("docid");
+&gt;&gt;&gt; Console.WriteLine(result.Value);
 {'json': 'value'}</pre>
 </div>
 </div>
@@ -647,7 +653,7 @@ Lookups may be done either by comparing the <code>META(from-term).id</code> or b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">SELECT * FROM default USE KEYS ["docid"];</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM default USE KEYS ["docid"];</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -655,7 +661,7 @@ Lookups may be done either by comparing the <code>META(from-term).id</code> or b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">SELECT * FROM default WHERE META(default).id = "docid";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM default WHERE META(default).id = "docid";</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -663,7 +669,8 @@ Lookups may be done either by comparing the <code>META(from-term).id</code> or b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">name, email = cb.retrieve_in('user:kingarthur', 'contact.name', 'contact.email')</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var results = bucket.LookupIn&lt;dynamic&gt;("user:kingarthur").Get("contact.name").Get("contact.email").Execute();
+Console.WriteLine("{0} - {1}", results.Content("contact.name"), results.Content("contact.email"));</code></pre>
 </div>
 </div>
 </div>
@@ -682,29 +689,31 @@ Lookups may be done either by comparing the <code>META(from-term).id</code> or b
 </td>
 <td class="content">
 Do not increment or decrement counters if using XDCR.
-Within a single cluster the <code>incr()</code> is atomic, as is <code>decr()</code>; across XDCR however, if two clients connecting to two different (bidirectional) clusters issue <code>incr</code> concurrently, this may (and most likely will) result in the value only getting incremented once in total.
-The same is the case for <code>decr()</code>.
+Within a single cluster the <code>Increment()</code> is atomic, as is <code>Decrement()</code>; across XDCR however, if two clients connecting to two different (bidirectional) clusters issue <code>incr</code> concurrently, this may (and most likely will) result in the value only getting incremented once in total.
+The same is the case for <code>Decrement()</code>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
 <p>A document may be used as a counter if its value is a simple ASCII number, like <code>42</code>.
-Couchbase allows you to increment and decrement these values atomically using a special <code class="api">counter</code> operation.
-The example below (in Python) shows how to use counters:</p>
+Couchbase allows you to increment and decrement these values atomically using a special <code class="api">Increment</code> operation.
+The example below shows how to use counters:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">&gt;&gt;&gt; cb.counter('counter_id', delta=20, initial=100).value
-100L
-&gt;&gt;&gt; cb.counter('counter_id', delta=1).value
-101L
-&gt;&gt;&gt; cb.counter('counter_id', delta=-50).value
-51L</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = bucket.Increment("counter_id", 20, 100);
+Console.WriteLine(result.Value); //100L
+
+result = bucket.Increment("counter_id", 1);
+Console.WriteLine(result.Value); //101L
+
+result = bucket.Decrement("counter_id", 50);
+Console.WriteLine(result.Value); //51L</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example, a counter is created by using the <code class="api">counter</code> Python method with an <code class="param">initial</code> value.
+<p>In the above example, a counter is created by using the <code class="api">Counter</code> CSharp method with an <code class="param">initial</code> value.
 The initial value is the value the counter uses if the counter ID does not yet exist.</p>
 </div>
 <div class="paragraph">
@@ -727,10 +736,11 @@ If you wish to only increment the document if it is at a certain value, then you
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">rv = cb.get('counter_id')
-value, cas = rv.value, rv.cas
-if should_increment_value(value):
-  cb.upsert('counter_id', value + increment_amount, cas=cas)</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = bucket.Get&lt;dynamic&gt;("counter_id");
+if (shouldIncrementCounter)
+{
+    bucket.Upsert("counter_id", result.Value + incrementAmount, result.Cas);
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -743,22 +753,19 @@ if should_increment_value(value):
 <div class="sectionbody">
 <div class="paragraph">
 <p>You can use collection data structures such as lists, maps, sets and queues in Couchbase.
-These data structures may be manipulated with basic operations without retrieving and storing the entire document.</p>
+These data structures may be manipulated with basic operations without retrieving and storing the entire document.
+See the <a href="datastructures.html" class="page">data structures documentation</a> for details on implementation.</p>
 </div>
 <div class="paragraph">
-<p>See the data structures <a href="../../python-sdk/2.5/datastructures.html" class="page">documentation for each SDK language</a> for details on implementation.
-Some Python examples are provided below for easy reference, but more advanced Collections frameworks are accessible in <a href="../../java-sdk/2.7/datastructures.html" class="page">Java</a> and <a href="datastructures.html" class="page">.NET</a> as well.</p>
-</div>
-<div class="paragraph">
-<p>Data structures in Couchbase are similar in concept to data structures in, for example, Python:</p>
+<p>Data structures in Couchbase are similar in concept to data structures in, for example, C#:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Map</strong> is like Python <code>dict</code>, and is a key-value structure, where a value is accessed by using a key string.</p>
+<p><strong>Map</strong> is like C# <code>Dictionary&lt;K,V&gt;</code>, and is a key-value structure, where a value is accessed by using a key string.</p>
 </li>
 <li>
-<p><strong>List</strong> is like a Python <code>list</code> and is a sequential data structure.
+<p><strong>List</strong> is like a C# <code>List&lt;T&gt;</code> and is a sequential data structure.
 Values can be placed in the beginning or end of a list, and can be accessed using numeric indexes.</p>
 </li>
 <li>
@@ -779,7 +786,7 @@ the ID which uniquely identifies the map in the server), the key <em>within</em>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">bucket.map_add('map_id', 'name', 'Mark Nunberg', create=True)</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = bucket.MapAdd("map_id", "name", "Mike Goldsmith", true);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -788,8 +795,8 @@ Most data access methods will return an <code class="api">ValueResult</code>-lik
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">bucket.list_get(0).value  # 'hello'
-bucket.map_get('map_id', 'name').value  # 'mark nunberg'</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = bucket.ListGet&lt;dynamic&gt;("Id", 0).Value;
+var result = bucket.MapGet&lt;dynamic&gt;("map_id", "name").Value;</code></pre>
 </div>
 </div>
 </div>
@@ -819,63 +826,64 @@ You can use <a href="subdocument-operations.html" class="page">sub-document oper
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">append(docid, fragment)
-prepend(docid, fragment)</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Append(docid, fragment)
+Prepend(docid, fragment)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The <em>append</em> and <em>prepend</em> operations atomically add bytes to the end or beginning of a binary document.
+<p>The <em>Append</em> and <em>Prepend</em> operations atomically add bytes to the end or beginning of a binary document.
 They are an efficient alternative to retrieving a binary document in its entirety, appending the contents locally, and then saving the contents back to the server.</p>
 </div>
 <div class="paragraph">
 <p>Because these methods do raw string manipulation, they are only suitable for non-JSON documents: Prepending or appending anything to a JSON document will invalidate the JSON and make it unparseable by standard JSON parsers.</p>
 </div>
 <div class="paragraph">
-<p>The semantics of the <em>append</em> and <em>prepend</em> operations are similar to those of the <em>upsert</em> family of operations, except that they accept the fragment to append as their value, rather than the entire document.
+<p>The semantics of the <em>Append</em> and <em>Prepend</em> operations are similar to those of the <em>upsert</em> family of operations, except that they accept the fragment to append as their value, rather than the entire document.
 These functions may be used to add efficiency for custom binary data structures (such as logs), as they avoid transferring the contents of the entire document for each operation.
 Consider the following versions (which are equivalent)</p>
 </div>
 <div class="listingblock">
-<div class="title">Append using get() and replace() (slow)</div>
+<div class="title">Append using Get() and Replace() (slow)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># Store the document
-cb.upsert('binary_doc', '\x01', format=couchbase.FMT_BYTES)
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp"># Store the document
+bucket.Upsert("binary_doc", new List&lt;byte&gt;{0x0});
 
-while True:
-    # Retrieve the entire document
-    rv = cb.get('binary_doc')
-    value = rv.value + '\x02'
-    try:
-        # Upload the entire document
-        cb.replace('binary_doc', value, format=couchbase.FMT_BYTES)
-        break
-    except couchbase.exceptions.KeyExistsError:
-        continue
+while (true)
+{
+    var value = bucket.Get&lt;List&lt;byte&gt;&gt;("binary_doc").Value;
+    value.Add(0x02);
 
-print repr(cb.get('binary_doc').value)</code></pre>
+    var replace = bucket.Replace("binary_doc", value);
+    if (replace.Success)
+    {
+        break;
+    }
+}
+
+Console.WriteLine(bucket.Get&lt;List&lt;byte&gt;&gt;("binary_doc").Value);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Append using append() (fast)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># Store the document
-cb.upsert('binary_doc', '\x01', format=couchbase.FMT_BYTES)
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp"># Store the document
+bucket.Insert("binary_doc", new  byte[] {0x01});
 
 # Append a fragment
-cb.append('binary_doc', '\x02', format=couchbase.FMT_BYTES)
+bucket.Append("binary_doc", new byte[] {0x02});
 
-print repr(cb.get('binary_doc').value)</code></pre>
+Console.WriteLine(bucket.Get&lt;byte[]&gt;("binary_doc"));</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that since the <em>append</em> operation is done atomically, there is no need for a CAS check (though one can still be supplied if the document must be at a specific state).</p>
+<p>Note that since the <em>Append</em> operation is done atomically, there is no need for a CAS check (though one can still be supplied if the document must be at a specific state).</p>
 </div>
 <div class="paragraph">
-<p>Users of the <em>append</em> and <em>prepend</em> operations should ensure that the resulting documents do not become too large.
+<p>Users of the <em>Append</em> and <em>Prepend</em> operations should ensure that the resulting documents do not become too large.
 Couchbase has a hard document size limit of 20MB.</p>
 </div>
 <div class="paragraph">
-<p>Using <em>append</em> and <em>prepend</em> on larger documents may cause performance degradation and memory fragmentation at the server level, as for each append operation the server must allocate memory for the new document size and then append the fragment to the new memory.
+<p>Using <em>Append</em> and <em>Prepend</em> on larger documents may cause performance degradation and memory fragmentation at the server level, as for each append operation the server must allocate memory for the new document size and then append the fragment to the new memory.
 The performance impact may be significant when document sizes reach beyond 100KB.</p>
 </div>
 <div class="paragraph">
@@ -913,7 +921,7 @@ The server internally handles the process of determining the validity of the doc
 <div class="sectionbody">
 <div class="paragraph">
 <p>By default, Couchbase documents do not expire.
-However, the expiration value may be set for the <em>upsert</em>, <em>replace</em>, and <em>insert</em> operations when modifying data.</p>
+However, the expiration value may be set for the <em>Upsert</em>, <em>Replace</em>, and <em>Insert</em> operations when modifying data.</p>
 </div>
 <div class="paragraph">
 <p>Couchbase offers two additional operations for setting the document&#8217;s expiration without modifying its contents:</p>
@@ -921,7 +929,7 @@ However, the expiration value may be set for the <em>upsert</em>, <em>replace</e
 <div class="ulist">
 <ul>
 <li>
-<p>The <em>get-and-touch</em> operation allows an application to retrieve a document while modifying its expiration time.
+<p>The <em>GetAndTouch</em> operation allows an application to retrieve a document while modifying its expiration time.
 This method is useful when reading session data from the database: since accessing the data is indicative of it still being "alive", <em>get-and-touch</em> provides a natural way to extend its lifetime.</p>
 </li>
 <li>
