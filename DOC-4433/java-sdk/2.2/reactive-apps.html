@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Writing resilient reactive applications | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4433/java-sdk/2.7/start-using-sdk.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="2.2">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4433">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="java-intro.html"><span class="title">Java SDK</span> <span class="version">2.2</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/reactive-apps.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/reactive-apps.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/reactive-apps.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/reactive-apps.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/reactive-apps.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/reactive-apps.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="java-intro.html">Java SDK 2.2</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="overview.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="download-links.html">Download and API reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="migrate.html">Migrating from Java SDK 1.4.x to 2.x</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="getting-started.html">Getting started with the Java SDK</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="hello-couchbase.html">Hello Couchbase Example</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="tutorial4.html">Java SDK tutorial</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-cluster.html">Managing clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="env-config.html">Configuring the environment</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="documents.html">Working with documents</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-basics.html">Document basics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-creating.html">Creating documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-updating.html">Updating documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-retrieving.html">Retrieving documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-deleting.html">Deleting documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-atomic.html">Atomic operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-bulk.html">Bulk operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability requirements</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="querying.html">Querying buckets</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-views.html">Managing views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="querying-views.html">Working with views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="querying-n1ql.html">Working with N1QL</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="rxjava.html">RxJava and reactive programming</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="observables.html">Mastering Observables</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="reactive-apps.html">Writing resilient reactive applications</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="event-bus-metrics.html">Production considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="logging.html">Setting up logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="release-notes.html">Release notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.7/start-using-sdk.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="java-intro.html">Java SDK</a></li>
+    <li class="crumb"><a href="java-intro.html">Java SDK 2.2</a></li>
+    <li class="crumb"><a href="rxjava.html">RxJava and reactive programming</a></li>
+    <li class="crumb"><a href="reactive-apps.html">Writing resilient reactive applications</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/2.2/modules/ROOT/pages/reactive-apps.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Writing resilient reactive applications</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Read this section to learn how to write resilient code for production with the Couchbase Java SDK.
+</blockquote>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Many concepts can be applied for both synchronous and asynchronous access.
+When necessary, both patterns are discussed separately.
+The focus is on database interaction, but if you are using RxJava as part of your stack, you can and should apply most of the principles there as well.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rxjava-101-recap-cold-and-hot-observables"><a class="anchor" href="#rxjava-101-recap-cold-and-hot-observables"></a>RxJava 101 Recap: Cold and Hot Observables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When working with <code>Observables</code>, it is important to understand the difference between <em class="term">cold</em> and <em class="term">hot</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em class="term">Cold Observables</em> will start to emit events once an Observer subscribes, and will do it "fresh" for each Observer.</p>
+</li>
+<li>
+<p><em class="term">Hot Observables</em> instead are starting to emit data as soon as it becomes available, and will return the same (or parts of the same) to each Observer.
+There is also a special category of <code>Hot Observables</code> called <em class="term">Subjects</em> in RxJava (these allow to construct <code>Observables</code> that are also Observers, so you can feed data manually by calling <code class="api">onNext</code>).</p>
+<div class="paragraph">
+<p>The <code>Observables</code> are discussed in more detail in <a href="observables.html" class="page">Mastering Observables</a>.</p>
+</div>
+<div class="paragraph">
+<p>Up to the version 2.2.0, Couchbase Java SDK uses <code>Hot Observables</code> for each database operation, sending a request to the server as soon as you obtain the <code>Observable</code>.
+This initial architectural choice allowed to avoid firing two network operations, such as when doing a get and subscribing twice, but it implied harder to grasp behavior when dealing with failures.</p>
+</div>
+<div class="paragraph">
+<p>One of the most important things to remember is the following: when you resubscribe to a <code>Hot Observable</code>, it won&#8217;t perform the operation against Couchbase Server again.
+In some cases, your Subscriber will only get notified about new emissions coming.
+In some cases, such as with cached/replaying <code>Observables</code> for the SDK, the source will emit the same data again on each new subscription, including if it was an error.
+Emitting the same data is okay in many cases, but not if you want to retry an operation because it has failed.
+That said, RxJava provides ways to turn <code>Hot Observables</code> into <code>cold</code> and vice versa.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example is wrong for the Java SDK versions before 2.2.0 because it will give you the same result over and over again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Will just retry on the same result from the first get request \
+        bucket.async().get("id").retry(5).subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next example is correct, because it will produce a brand new <code>Observable</code> every time you retry (resubscribe).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Will correctly do a new get operation against the server \
+        Observable .defer(new Func0&lt;Observable&lt;JsonDocument&gt;&gt;() { @Override \
+        public Observable&lt;JsonDocument&gt; call() { return \
+        bucket.async().get("id"); } }) .retry(5) .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code class="api">Observable#defer()</code> if you want a new <code>Observable</code> for every subscriber.
+You can also use this technique if you want to defer the execution of an <code>observable</code> until someone subscribes.</p>
+</div>
+<div class="paragraph">
+<p>As of Java SDK 2.2.0, all the requests sent by the SDK are using <code class="api">Observable.defer</code> and as such are now <code>cold</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you want to turn a <code>cold</code> into a <code>hot Observable</code>, take a look at the <code class="api">Observable#cache()</code> or <code class="api">Observable#replay()</code> operators.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the <code>Observable</code> is not converted from <code>cold</code> to <code>hot</code> just because a <code>hot Observable</code> is <code>flatMapped</code>.
+Therefore this code works perfectly fine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   Observable .just("id") .flatMap(new Func1&lt;String, \
+        Observable&lt;JsonDocument&gt;&gt;() { @Override public \
+        Observable&lt;JsonDocument&gt; call(String id) { return \
+        bucket.async().get(id); } }) .retry(5) .subscribe();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-recovery"><a class="anchor" href="#error-recovery"></a>Error recovery</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section discusses different strategies to mitigate errors that might come up during operations (covered in <a href="#errorcauses">Error causes</a>).
+Some of them are shown to make a point, but the techniques apply to all different types of errors and can be applied as you see fit.</p>
+</div>
+<div class="paragraph">
+<p><strong>Logging</strong></p>
+</div>
+<div class="paragraph">
+<p>It is always important to log errors, but even more so in the case of reactive applications.
+Because of the event driven nature, stack traces get harder to look at, and caller context is sometimes lost.</p>
+</div>
+<div class="paragraph">
+<p>RxJava provides operators for "side effects" (additional behavior that doesn&#8217;t change the items flowing through the <code>Observable</code> stream), which should be used to log errors.
+Of course, you can also put logging into the error handlers, but readability is increased if the logging is put explicitly as a side effect.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   Observable .error(new Exception("I'm failing")) .doOnError(new \
+        Action1&lt;Throwable&gt;() { @Override public void call(Throwable \
+        throwable) { // I'm an explicit side effect // use a proper logger of \
+        your choice here LOGGER.warn("Error while doing XYZ", throwable); } }) .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is also recommended to configure your logger to include absolute timestamps.
+While this is always a good idea, if combined with good logging throughout the application it makes it easier to debug error cases and see later what was going on inside your reactive application.</p>
+</div>
+<div class="paragraph">
+<p>You can also utilize the various other side-effect operators for general logging (<code class="api">doOnNext</code>, <code class="api">doOnCompleted</code>).
+If you don&#8217;t want to have different side effects for the same logging operation, you can use <code class="api">doOnEach</code>.
+It will be called for both errors and next events with a <code class="api">Notification</code> object that denotes what kind of event is being processed.</p>
+</div>
+<div class="paragraph">
+<p><strong>Failing</strong></p>
+</div>
+<div class="paragraph">
+<p>Failing is the easiest way to handle errors - because you don&#8217;t.
+While most of the time you want more sophisticated error handling strategies (as discussed later), sometimes you just need to fail.
+It makes no sense for some errors to be retried, either because they are not transient or because you already tried everything to make it work and it still keeps failing.</p>
+</div>
+<div class="paragraph">
+<p>In error-resilient architectures, you want to do everything to keep the error contained.
+However, if the containment is not able to handle the error it needs to propagate it to a parent component that (possibly) can.</p>
+</div>
+<div class="paragraph">
+<p>In the async case, errors are events like every other for your subscribers.
+Once an error happens, your <code>Subscriber</code> is notified in the method <code class="api">onError(Throwable)</code>, and you can handle it the way you want to.
+Note that by <code>Observable</code> contract, after the <code class="api">onError</code> event, no more <code class="api">onNext</code> events will happen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   Observable
+        .error(new Exception("I'm failing"))
+        .subscribe(new Subscriber&lt;Object&gt;() {
+          @Override
+          public void onCompleted() {
+          }
+
+          @Override
+          public void onError(Throwable e) {
+          System.err.println("Got Error: " + e);
+          }
+
+          @Override
+          public void onNext(Object o) {
+          }
+          });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is always a good idea to implement error handling.</p>
+</div>
+<div class="paragraph">
+<p>In the synchronous case, every error is converted into an Exception and thrown so that you can use regular <code class="api">try</code>/<code class="api">catch</code> semantics.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   try {
+        Object data = Observable
+        .error(new Exception("I'm failing"))
+        .toBlocking()
+        .single();
+        } catch(Exception ex) {
+        System.err.println("Got Exception: " + ex);
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you do not catch the Exception, it will bubble up:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java"> Exception in thread "main" java.lang.RuntimeException: java.lang.Exception: I'm failing
+      at rx.observables.BlockingObservable.blockForSingle(BlockingObservable.java:482)
+      at rx.observables.BlockingObservable.single(BlockingObservable.java:349)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Retry</strong></p>
+</div>
+<div class="paragraph">
+<p>Retrying operations is a common technique to ride over transient errors.
+It should not be used for non-transient errors because it will only put a load onto the system without the chance to resolve the error.</p>
+</div>
+<div class="paragraph">
+<p>In practice, the following retry strategies can be applied when a transient error is discovered:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Retry immediately.</p>
+</li>
+<li>
+<p>Retry with a fixed delay.</p>
+</li>
+<li>
+<p>Retry with a linearly increasing delay.</p>
+</li>
+<li>
+<p>Retry with an exponentially increasing delay.</p>
+</li>
+<li>
+<p>Retry with a random delay.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Unless you have a very good reason not to, <em>always</em> apply a maximum number of attempts and then escalate the error.
+Systems stuck in infinite retry loops can cause issues that are very hard to debug.
+It&#8217;s better to fail and propagate at some point.</p>
+</div>
+<div class="paragraph">
+<p>Also, we recommend that you use asynchronous retry even if you are blocking at the very end.
+Retrying in the asynchronous <code>Observables</code> is way more resource efficient and also the only sane way to handle multiple operation steps (and bulk operations) under a single timeout (read more in  <a href="#timeouts">Timeouts</a>).</p>
+</div>
+<div class="paragraph">
+<p>Starting with 2.1.0 the Java SDK comes with a <code class="api">RetryBuilder</code>, a utility class to describe retries with a fluent API (see ).
+In earlier versions use the code provided in the documentation.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Retry without delay</dt>
+<dd>
+<p>Let&#8217;s get one thing straight right away: immediately retrying is almost never a good idea.
+Instead of resolving the error more quickly, it will put more pressure onto the retried system, and there is a good chance it will make resolving errors harder.</p>
+<div class="paragraph">
+<p>One good reason to do so is if you have a specific operation with a very short timeout that you want to keep retrying for a small, fixed amount of times and if it still does not work, fail fast.</p>
+</div>
+<div class="paragraph">
+<p>If you have the feeling you need to retry very quickly, you can also apply a very slight increasing delay to, at least, release some pressure from the target system.</p>
+</div>
+<div class="paragraph">
+<p>RxJava provides the <code class="api">retry</code> operator to resubscribe to the source <code>Observable</code> immediately once it fails (an error event happens).
+Three flavors are available:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">retry()</code>: Instantly retry as long as the source <code>Observable</code> emits an error.
+It is strongly recommend not to use this operator.</p>
+</li>
+<li>
+<p><code class="api">retry(long count)</code>: Instantly retry as long as the source <code>Observable</code> emits an error or the max count is reached.
+If the count is reached, the Observable will not be resubscribed, but the error is propagated down the stream.
+This operator is recommended for use.</p>
+</li>
+<li>
+<p><code class="api">retry(Func2&lt;Integer, Throwable, Boolean&gt; predicate)</code>: Instantly retry as long as the predicate returns true.
+Arguments to the predicate are the number of tries, as well as the exception type.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Since the <code>predicate</code> method provides the most flexibility, it is recommended to use it.
+If you only want to handle a specific exception and retry a maximum of <code>MAX_TRIES</code> times, you can do it like this:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   Observable .error(new CASMismatchException()) .retry(new \
+          Func2&lt;Integer, Throwable, Boolean&gt;() { @Override public Boolean \
+          call(Integer tries, Throwable throwable) { return (throwable \
+          instanceof CASMismatchException) &amp;&amp; tries &lt;MAX_TRIES; } }) .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+Try replacing <code>CASMismatchException</code> with something else and you will see that it does not try to retry, but rather propagates the error downstream.
+You can use this technique to handle specific errors differently by adding more retry operators in the pipeline.</p>
+</div>
+<div class="paragraph">
+<p>+
+Using the <code>retry</code> with <code>predicate</code> also allows you to log the number of retries for a specific error.
+If you use the <code class="api">doOnError</code> for logging, it&#8217;s harder to log the number of retries.</p>
+</div>
+<div class="paragraph">
+<p>+
+The synchronous equivalent to the latest code looks like this:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   int tries = 0; while(true) { tries++; try { pretendWorkThatMaybeThrows(); // \
+          does some work and maybe throws break; } catch(Throwable throwable) { if (!(throwable \
+          instanceof CASMismatchException) || tries &gt;= MAX_TRIES) { throw throwable; // \
+          rethrow exceptions } } }</code></pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+<div id="retrydelay" class="dlist">
+<dl>
+<dt class="hdlist1">Retry with delay</dt>
+<dd>
+<p>When applying a <em class="term">Retry with delay</em>, the main question you need to ask yourself is: how often and how long is it feasible to retry before giving up (and escalate the error).
+Using this retry option depends on the type of operation, use case, and SLA that the application requires, but the techniques are the same.</p>
+<div class="paragraph">
+<p>RxJava provides the <code class="api">retryWhen</code> operator, which allows you more flexibility with the actions performed as well as when the resubscription is happening.
+This section covers the different delay approaches based on this operator.</p>
+</div>
+<div class="paragraph">
+<p>Here is the contract for <code class="api">retryWhen</code> that you should always keep in mind:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It is called when an error on the source <code>Observable</code> happens.</p>
+</li>
+<li>
+<p>The function provided will be called with an <code>Observable</code> containing this error.</p>
+</li>
+<li>
+<p>If you make this <code>Observable</code> error, it is propagated downstream (without retrying).</p>
+</li>
+<li>
+<p>If you make this <code>Observable</code> complete, it is propagated downstream (without retrying).</p>
+</li>
+<li>
+<p>If you make this <code>Observable</code> call <code class="api">onNext</code>, a retry will happen.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Since the version 2.1.0 the Java SDK comes with the <code class="api">RetryBuilder</code>, a helper to describe when and how to retry: only on certain classes of exceptions, max 5 attempts, the exponential delay between attempts, and so on.
+The result of this builder (<code class="api">calling build()</code>) can be used with RxJava&#8217;s <code class="api">retryWhen</code> operator directly:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable.error(new IllegalStateException())
+          .retryWhen(
+          RetryBuilder.anyOf(IllegalStateException.class).max(6).delay(Delay.linear(TimeUnit.SECONDS)).build()
+          );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+This code will ultimately fail after 6 additional attempts.
+It would fail fast if the source errored with something else than an <code class="api">IllegalStateException</code> during retries.
+Each attempt will be made with an increasing delay, which grows linearly (1 second, then 2, 3, 4).
+If an exception occurs that is not managed by the handler, it is propagated as is, allowing you to chain such handlers.</p>
+</div>
+<div class="paragraph">
+<p>+
+If the maximum number of attempts is reached, the last exception that occurred is propagated, wrapped in a <code class="api">CannotRetryException</code>.
+This helper allows to write retry semantics more easily, but in this section it is explained how to write them from scratch.</p>
+</div>
+<div class="paragraph">
+<p>+
+The easiest approach is the <em class="term">fixed delay</em>.
+The source <code>Observable</code> will be resubscribed after a specified amount of time and for a fixed maximum number of times.</p>
+</div>
+<div class="paragraph">
+<p>+
+Because the nested logic is a bit harder to understand in the first place, let&#8217;s talk through it step by step and then put it together.</p>
+</div>
+<div class="paragraph">
+<p>+
+Our <code class="api">retryWhen</code> function is called every time an error happens on the source <code>Observable</code>.
+If we wanted to try forever every second, it could look like this:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    .retryWhen(new Func1&lt;Observable&lt;? extends Throwable&gt;, \
+          Observable&lt;?&gt;&gt;() { @Override public Observable&lt;?&gt; call(Observable&lt;? \
+            extends Throwable&gt; errorNotification) { return \
+            errorNotification.flatMap(new Func1&lt;Throwable, Observable&lt;?&gt;&gt;() { \
+          @Override public Observable&lt;?&gt; call(Throwable throwable) { return \
+            Observable.timer(1, TimeUnit.SECONDS); } }); } })</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+We <code class="api">flatMap</code> our notification <code>Observable</code> and utilize the <code class="api">Observable#timer</code> to defer emitting a new event for a second.
+Since we need to stop at some point, after a given number of tries, we can utilize the <code class="api">Observable#zipWith</code> operator to zip our error stream together with a range where we specify the number of tries we want to allow.
+Zipping has the nice side-effect that once one of the <code>Observable</code> is completed, the resulting <code>Observable</code> will also be complete, which triggers our Rule 4 from above.</p>
+</div>
+<div class="paragraph">
+<p>+
+The modified version looks like this:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   .retryWhen(new Func1&lt;Observable&lt;? extends Throwable&gt;, Observable&lt;?&gt;&gt;() {
+                @Override
+                public Observable&lt;?&gt; call(Observable&lt;? extends Throwable&gt; errorNotification) {
+        return errorNotification
+            .zipWith(Observable.range(1, 4), new Func2&lt;Throwable, Integer, Integer&gt;() {
+                @Override
+                public Integer call(Throwable throwable, Integer attempts) {
+                    return attempts;
+                }
+            })
+            .flatMap(new Func1&lt;Integer, Observable&lt;?&gt;&gt;() {
+                @Override
+                public Observable&lt;?&gt; call(Integer attempts) {
+                    return Observable.timer(1, TimeUnit.SECONDS);
+                }
+            });
+    }
+})</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+Technically, we don&#8217;t need the zip function here because we ignore it later on, but it is required for the <code>zipWith</code> operator to work.
+We use the <code class="api">Observable#range</code> operator to create an <code>Observable</code> that emits three events and then completes, so we will never end up with more retries.</p>
+</div>
+<div class="paragraph">
+<p>+
+There is one more enhancement needed: the code as it stands there will swallow the originating exception when moving on, which is not good because it should be propagated if it can&#8217;t be handled in this code block.</p>
+</div>
+<div class="paragraph">
+<p>+
+The following code is modified so that the function of <code>zipWith</code> returns not only the attempted count but also the throwable, so that Couchbase Server has access to it in the <code class="api">flatMap</code> method.
+For this, the Java client has a generic <code class="api">Tuple</code> the server can utilize.
+In the <code class="api">flatMap</code>, Couchbase Server checks for the number of attempts, and if it is over the threshold, it rethrows the exception.
+Keep in mind that you need to change <code class="api">Observable#range</code> call to <code>MAX_ATTEMPTS+1</code>, to give your code a chance to be called again one final time.</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   .retryWhen(new Func1&lt;Observable&lt;? extends Throwable&gt;, \
+          Observable&lt;?&gt;&gt;() { @Override public Observable&lt;?&gt; call(Observable&lt;? extends Throwable&gt; \
+          errorNotification) { return errorNotification .zipWith(Observable.range(1, 5), \
+          new Func2&lt;Throwable, Integer, Tuple2&lt;Throwable, Integer&gt;&gt;() { @Override \
+          public Tuple2&lt;Throwable, Integer&gt; call(Throwable throwable, Integer attempts) { \
+          return Tuple.create(throwable, attempts); } }) .flatMap(new Func1&lt;Tuple2&lt;Throwable, \
+          Integer&gt;, Observable&lt;?&gt;&gt;() { @Override public Observable&lt;?&gt; \
+          call(Tuple2&lt;Throwable, Integer&gt; attempt) { if (attempt.value2() == 3) \
+          { return Observable.error(attempt.value1()); } return Observable.timer(1, TimeUnit.SECONDS); } }); } })</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+If you want to enhance it even further, you can add one more <code class="api">if()</code>clause in the <code class="api">flatMap</code> to see if the throwable that is passed down is actually the one we want to retry.</p>
+</div>
+<div class="paragraph">
+<p>+
+Functionality like this is a great candidate to be generic and encapsulated, so that&#8217;s what we did with <code class="api">RetryBuilder</code>.
+If you are already using Java 8, the code becomes more condensed as well:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">  .retryWhen(notification -&gt; notification .zipWith(Observable.range(1, 5), \
+                Tuple::create) .flatMap(att -&gt; att.value2() == 3 ? Observable.error(att.value1()) : \
+                Observable.timer(1, TimeUnit.SECONDS) ) )</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+Here are the variations for linear, exponential and random delays:</p>
+</div>
+<div class="paragraph">
+<p>+
+<strong>Linear:</strong></p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   // Utilizes the number of attempts for the number of seconds to wait .\
+                retryWhen(notification -&gt; notification .zipWith(Observable.range(1, 5), \
+                Tuple::create) .flatMap(att -&gt; att.value2() == 3 ? Observable.error(att.value1()) : \
+                Observable.timer(att.value2(), TimeUnit.SECONDS) ) )</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+<strong>Exponential:</strong></p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   // Uses the timer with 2^attempts to generate exponential delays \
+                .retryWhen(notification -&gt; notification .zipWith(Observable.range(1, 5), \
+                Tuple::create) .flatMap(att -&gt; att.value2() == 3 ? Observable.error(att.value1()) : \
+                Observable.timer(1 &lt;&lt; att.value2(), TimeUnit.SECONDS) ) )</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+<strong>Random:</strong></p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   // Random between 0 and 5 seconds to retry per attempt .retryWhen(notification -&gt; \
+                notification .zipWith(Observable.range(1, 5), Tuple::create) .flatMap(att -&gt; \
+                att.value2() == 3 ? Observable.error(att.value1()) : \
+                Observable.timer(new Random().nextInt(5), TimeUnit.SECONDS) ) )</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+With the synchronous code, there are not many options other than using <code class="api">Thread.sleep()</code> to keep the current thread waiting until the loop is allowed to proceed:</p>
+</div>
+<div class="paragraph">
+<p>+</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   // Linear Backoff
+                int tries = 0;
+                while(true) {
+                tries++;
+                try {
+                pretendWorkThatMaybeThrows(); // does some work and maybe throws
+                break;
+                } catch(Throwable throwable) {
+                if (!(throwable instanceof CASMismatchException) || tries &gt;= MAX_TRIES) {
+                throw throwable; // rethrow exceptions
+                }
+                }
+
+                Thread.sleep(TimeUnit.SECONDS.toMillis(tries));
+                }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>+
+You can then use the same approaches as with the asynchronous ones on the <code class="api">Thread.sleep()</code> time to accommodate for a static, linear, exponential or random delay.</p>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>Fallback</strong></p>
+</div>
+<div class="paragraph">
+<p>Instead of (or in addition to) retrying, another valid option is falling back to either a different <code>Observable</code> or a default value.</p>
+</div>
+<div class="paragraph">
+<p>RxJava provides you with different operators, prefixed with <code class="api">onError*()</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">onErrorReturn(Func1&lt;Throwable, T&gt;)</code>: It is called when the source <code>Observable</code> errors and allows to return custom data instead.</p>
+</li>
+<li>
+<p><code class="api">onErrorResumeNext(Observable&lt;?&gt;)</code>: It is called when the source <code>Observable</code> errors and allows to resume transparently with a different Observable.</p>
+</li>
+<li>
+<p><code class="api">onErrorResumeNext(Func1&lt;hrowable, Observable&lt;?&gt;)</code>: It is called when the source <code>Observable</code> errors and allows to transparently resume with an <code>Observable</code> (based on a specific <code>Throwable</code>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You should use the <code class="api">onErrorReturn</code> if you want to fallback to static data quickly.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    Observable
+      .&lt;String&gt;error(new Exception("I failed"))
+        .onErrorReturn(new Func1&lt;Throwable, String&gt;() {
+          @Override
+          public String call(Throwable throwable) {
+          // You could return data based on the throwable as well
+          return "Default";
+          }
+          })
+          .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you only want to return default values based on a specific exception or even call another <code>Observable</code> as fallback, <code class="api">onErrorResumeNext</code> is what you&#8217;re looking for.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable
+      .&lt;String&gt;error(new TimeoutException("I failed"))
+        .onErrorResumeNext(new Func1&lt;Throwable, Observable&lt;? extends String&gt;&gt;() {
+          @Override
+          public Observable&lt;? extends String&gt; call(Throwable throwable) {
+            if (throwable instanceof TimeoutException) {
+                return Observable.just("Default");
+            }
+            // Forward anything other than the TimeoutException
+            return Observable.error(throwable);
+        }
+    })
+    .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you just want to fallback onto another <code>Observable</code> that you have in scope without caring about the Exception, you can use the other <code class="api">onErrorResumeNext()</code> overload.
+For example, this loads data from all replicas if the <code class="api">get()</code> call did not succeed with the Java SDK:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   bucket
+      .async()
+      .get("id")
+      .onErrorResumeNext(bucket.async().getFromReplica("id", ReplicaMode.ALL))
+      .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Synchronous fallbacks can be implemented by conditionally setting the default in the <code class="api">catch</code> clause:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   String value;
+      try {
+      value = pretendWorkThatMaybeThrows();
+      } catch(Exception ex) {
+      value = "Default";
+      }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is the gotcha: this synchronous example only works great if the fallback is static.
+If you need to fallback into another database call, for example, you quickly get into nested error handling and timeouts are a pain to handle (since they start to accumulate for every synchronous call).
+It is recommended to use asynchronous fallbacks and then block at the very end through <code class="api">toBlocking().single()</code> or equivalents.</p>
+</div>
+<div class="paragraph">
+<p><strong>Defaults</strong></p>
+</div>
+<div class="paragraph">
+<p>Another possibility that requires intervention on the application side are <code>Observables</code> that do not emit a single value.
+This can happen because operators filtered the <code>Observable</code> so that nothing is left, or they did not produce any values in the first place.
+One common case in the Java SDK is <code class="api">get()</code>.
+If the Document is not found, the <code>Observable</code> will complete without emitting anything.</p>
+</div>
+<div class="paragraph">
+<p>RxJava provides helper operators that all end with <code class="api">*OrDefault()</code> and allow you to return default values if no item is emitted when the <code>Observable</code> completes.</p>
+</div>
+<div class="paragraph">
+<p>In most cases, you want to use <code class="api">singleOrDefault()</code> and return a default value when not a single item is emitted by the source <code>Observable</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable
+      .&lt;String&gt;empty()
+        .singleOrDefault("Default")
+        .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are dealing with potentially more than one item emitted in your <code>Observable</code> and you only want to emit either the first or the last value, there are also operators that allow you to emit a default if it&#8217;s unexpectedly empty.
+See <code class="api">firstOrDefault()</code> as well as <code class="api">lastOrDefault()</code> for more details.</p>
+</div>
+<div class="paragraph">
+<p>Lastly, RxJava offers the method <code class="api">defaultIfEmtpy</code>, which allows you to return a value if the source doesn&#8217;t emit anything.
+In recent versions, the method <code class="api">switchIfEmpty</code> allows you to switch to a different <code>Observable</code> in that same case.</p>
+</div>
+<div class="paragraph">
+<p><strong>Error handling in bulk scenarios</strong></p>
+</div>
+<div class="paragraph">
+<p>Bulk operations are used to handle more data in one batch and, therefore, benefit from better resource utilization.
+However,  error handling becomes more complicated.
+There are three high-level cases to consider:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Best Effort</strong>: Keep going and just use the results that succeeded when errors happen.</p>
+</li>
+<li>
+<p><strong>Full Retry</strong>: Retry the complete Observable when errors happen.</p>
+</li>
+<li>
+<p><strong>Incremental Retry</strong>: Only retry specific events of the Observable.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Before we "dig" into the specific approaches, let&#8217;s revisit the contract of Observables:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">onNext* (onError | onComplete)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zero or more events are followed by either an error event or a complete event.
+This provides an important clue right away: once our <code>Observable</code> fails, no more events can be passed through.
+Therefore, you need to make sure that errors are handled at the smallest scope possible, only letting it proceed if you cannot handle it right away.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Best effort bulk handling</dt>
+<dd>
+<p>Sometimes it is more important to get data in a timeframe, or maybe with a short timeout, then getting all data.
+In general, you want to keep a timeout that lets you fetch all the data, but depending on the use case you are fine with only getting a subset of the data returned.</p>
+<div class="paragraph">
+<p>To ignore errors and turn them into "noops", you can utilize <code class="api">onErrorResumeNext()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    Observable
+          .create(new Observable.OnSubscribe&lt;String&gt;() {
+            @Override
+            public void call(Subscriber&lt;? super String&gt; subscriber) {
+            subscriber.onNext("A");
+            subscriber.onNext("B");
+            subscriber.onError(new IllegalStateException("Woops"));
+            subscriber.onNext("C");
+        }
+    })
+    .onErrorResumeNext(Observable.&lt;String&gt;empty())
+    .toBlocking()
+    .forEach(new Action1&lt;String&gt;() {
+        @Override
+        public void call(String s) {
+            System.out.println("Got: " + s);
+        }
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will not raise any exception to your calling thread, but it will never process "C" because, based on the <code>Observable</code> contract, once <code class="api">onError</code> is called no more events are allowed to be generated.</p>
+</div>
+<div class="paragraph">
+<p>To keep going in case an event fails, you need to turn each event into a single <code>Observable</code> and then merge it back together to either defer the error handling (through <code class="api">Observable#mergeDelayError</code>) or use <code class="api">flatMap</code> and make sure to contain the errors before flattening.</p>
+</div>
+<div class="paragraph">
+<p>This code provides some fake data with which you can work.
+It will emit four <code>Observables</code> where one of them will fail:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    Observable&lt;Observable&lt;String&gt;&gt; dataObservables = Observable
+          .just("a", "b", "c", "d")
+          .map(new Func1&lt;String, Observable&lt;String&gt;&gt;() {
+            @Override
+            public Observable&lt;String&gt; call(String s) {
+              if (s.equals("b")) {
+              return Observable.error(new IllegalStateException("I dont like b"));
+              }
+              return Observable.just(s);
+              }
+              });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then use <code class="api">mergeDelayError</code> to defer error handling until the end.
+If you uncomment the <code class="api">onErrorResumeNext</code>, it will silently discard any errors as well leaving you with an <code>Observable</code> that provides best-effort processing of the source <code>Observables</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">   Observable.mergeDelayError(dataObservables)
+          //.onErrorResumeNext(Observable.&lt;String&gt;empty())
+            .toBlocking()
+            .forEach(new Action1&lt;String&gt;() {
+              @Override
+              public void call(String s) {
+              System.out.println(s);
+              }
+              });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can use <code class="api">flatMap</code> and make sure the errors are contained for each emitted <code>Observable</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    Observable
+          .just("a", "b", "c", "d")
+          .flatMap(new Func1&lt;String, Observable&lt;String&gt;&gt;() {
+            @Override
+            public Observable&lt;String&gt; call(String s) {
+              // Simulate some observable that sometimes fails
+              Observable&lt;String&gt; obs;
+                if (s.equals("b")) {
+                obs = Observable.error(new IllegalStateException("I dont like b"));
+                } else {
+                obs = Observable.just(s);
+                }
+
+                // Here comes the actual handling part before we flatten it back
+                return obs.onErrorResumeNext(Observable.&lt;String&gt;empty());
+                  }
+                  })
+                  .toBlocking()
+                  .forEach(new Action1&lt;String&gt;() {
+                    @Override
+                    public void call(String s) {
+                    System.out.println(s);
+                    }
+                    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As a more practical example here is a best effort bulk loading of documents from Couchbase Server that just discards operations that fail:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    private static Observable&lt;JsonDocument&gt; loadDocsBestEffort(Bucket bucket, List&lt;String&gt; ids) {
+            return Observable
+            .from(ids)
+            .flatMap(new Func1&lt;String, Observable&lt;JsonDocument&gt;&gt;() {
+              @Override
+              public Observable&lt;JsonDocument&gt; call(String id) {
+                return bucket
+                .async()
+                .get(id)
+                .onErrorResumeNext(Observable.&lt;JsonDocument&gt;empty());
+                  }
+                  });
+                  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Of course, you can add more logic onto each emitted <code>Observable</code> and also proper logging so that you at least know which errors occurred.</p>
+</div>
+</dd>
+<dt class="hdlist1">Full retry bulk handling</dt>
+<dd>
+<p>Full retry bulk handling can be done by just chaining one of the retry operators right at the end of the <code>Observable</code> chain.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This example uses Java 8 Lambda syntax for conciseness.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    private static Observable&lt;JsonDocument&gt; loadDocsFullRetry(Bucket bucket, List&lt;String&gt; ids) {
+              return Observable
+              .from(ids)
+              .flatMap(id -&gt; return bucket.async().get(id))
+              .retry(4);
+              }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is, however, a bit crude because the whole list of IDs will be retried if there is an error.
+This is the case even if the error happens late in the stream and some items have already been emitted.
+Imagine that you retrieve items <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code> and that an error occurs just the first time the SDK retrieves C.
+What you will see is <code>A</code>, <code>B</code>, <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>.</p>
+</div>
+<div class="paragraph">
+<p>This can be mitigated by using the <code class="api">distinct()</code> operator, but keep in mind the memory tradeoff (distinct will maintain a set of values it saw in the background, which can be problematic for infinite or very large streams).</p>
+</div>
+</dd>
+<dt class="hdlist1">Incremental retry bulk handling</dt>
+<dd>
+<p>Incremental retry improves on full retry by only actually retrying elements that couldn&#8217;t be loaded.
+It is easily done by chaining the retry operators inside the <code class="api">flatMap</code> instead of outside of it.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    private static Observable&lt;JsonDocument&gt; loadDocsIncrementalRetry(Bucket bucket, List&lt;String&gt; ids) {
+              return Observable
+              .from(ids)
+              .flatMap(id -&gt; return bucket.async().get(id)
+              .retry(4)
+              );
+              }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One thing to keep in mind with <code class="api">flatMap</code> is that the order of emissions isn&#8217;t guaranteed to be the same as the source emissions.
+This can be especially visible in this case since individual streams are retried on their own: retried keys could come back with a value much later than other keys, more often changing the order in which they appear.</p>
+</div>
+</dd>
+<dt class="hdlist1">Bulk pattern, <code class="api">BackpressureException</code> and reactive pull backpressure</dt>
+<dd>
+<p>The bulk pattern is powerful, but if you try it with a very large collection, it is especially susceptible to a <code class="api">BackpressureException</code>.
+This exception is a way for the SDK to tell you that you&#8217;re asking for too much in a short amount of time, and requests have piled up too much while waiting for a server response to free up a spot.</p>
+<div class="paragraph">
+<p>By default, the internal structure that holds pending requests is sized to a little over 16 000 slots.
+Since <code class="api">from</code> iterates over a collection in memory, which is <em>very</em> fast, it can easily flood the SDK if the size of it is over or close to 16K.</p>
+</div>
+<div class="paragraph">
+<p>You could try to react to that by implementing a retry strategy, but it is hard to get it right.
+Fortunately, RxJava comes with an even better solution, a form of flow-control called <em class="term">reactive pull backpressure</em> that you can leverage to avoid getting a <code class="api">BackpressureException</code>.</p>
+</div>
+<div class="paragraph">
+<p>This is done through the Subscriber, its <code class="api">onStart()</code> method and the <code class="api">request(n)</code> method.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You have to use the Subscriber to <code class="api">subscribe()</code> instead of the convenience methods that just take <code class="api">Action</code> individually for <code class="api">next</code>, <code class="api">error</code> and <code class="api">completed</code> handlers.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">    Observable&lt;JsonDocument&gt; largeBulk = Observable
+              .from(oneMillionIds)
+              .flatMap(id -&gt; return bucket.async().get(id));
+
+              //the subscription is where reactive pull backpressure happens
+              largeBulk.subscribe(new Subscriber&lt;JsonDocument&gt;() {
+
+                //onStart initiates the backpressure
+                @Override
+                public void onStart() {
+                request(100);
+                }
+
+                @Override
+                public void onNext(JsonDocument jsonDocument) {
+                System.out.println(jsonDocument.content());
+                request(100); //request more items
+                }
+
+                //onCompleted and onError are less relevant.
+                //Note that if you want to block you'd need a CountDownLatch in this case
+
+                @Override public void onCompleted() { System.out.println("Done"); }
+
+                @Override public void onError(Throwable e) { e.printStackTrace(); }
+
+                });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code class="api">request(n)</code> method allows to notify the upstream source that the consumer is ready for more, and is prepared to consume <code>n</code> items.
+For example, this avoids instant iteration of the collection in the case of <code class="api">from</code>.
+And as long as responses come in from Couchbase Server, we continue asking for more.</p>
+</div>
+<div class="paragraph">
+<p>This is a form of <em class="term">error mitigation</em>, and we&#8217;ll see a few others in the next section.</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-mitigation"><a class="anchor" href="#error-mitigation"></a>Error mitigation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The idea behind <em class="term">error mitigation</em> is to limit the impact a failing piece had on the rest of the system.
+When an error occurs, you don&#8217;t want it to cause failures downstream.
+You also want to prevent as much of the error conditions to happen as possible.</p>
+</div>
+<div class="paragraph">
+<p>The <code class="api">BackpressureException</code> and RxJava&#8217;s <em class="term">reactive pull backpressure</em> are forms of error mitigation we already saw since they both allow a form of flow control that avoids overloading the system.</p>
+</div>
+<div class="paragraph">
+<p><strong>Slowing down</strong></p>
+</div>
+<div class="paragraph">
+<p>Rate limiting of the requests can be a way to keep the system within parameters that are known to be stable, thus mitigating overloading errors.
+This can happen in the client-to-server direction, which avoids making more requests than can be processed later.
+It can also happen in the server-to-client direction, when the client can&#8217;t keep up with the bandwidth at which data is sent from the server because, for instance, it has to process it through long-running tasks.
+Rather than choking on that data when backpressure mechanisms are not available, the client can decide to discard some of the data.
+This is referred to as <em class="term">Load Shedding</em>.</p>
+</div>
+<div class="paragraph">
+<p>For example, consider a system where multiple sensors write data into Couchbase, and the client application reads that data and displays it in a UI.
+The graphs in the UI can be built on a <code>sample</code> of the data, and that&#8217;s the key point.
+The processing rate of the data is lower than its producing rate, but at the same time the resolution is also lower.
+That means we can simply ignore some of the data and only consume what&#8217;s needed, such as take the data point at every second to trigger a refresh of the graph in the UI.</p>
+</div>
+<div class="paragraph">
+<p>RxJava allows you to do that through several operators:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">sample</code> (alternatively <code class="api">throttleLast</code>) periodically looks at an Observable and emits the item last seen during this period.</p>
+</li>
+<li>
+<p><code class="api">throttleFirst</code> does the same except it emits the <code>first</code> item seen during the period.</p>
+</li>
+<li>
+<p><code class="api">debounce</code> only emits an item if a given timespan has passed since the last emission, eliminating items that are rapidly following another item.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The operator <code class="api">sample</code> is useful for sources that are "too chatty" even at a regular rate.
+The operator <code class="api">debounce</code>, on the other hand, is really shining with sources that have a variable rate of emission.
+The sources only trigger a web search for autocomplete suggestions from an input form once the user has stopped typing for 500ms.</p>
+</div>
+<div class="paragraph">
+<p><strong>Semaphore</strong></p>
+</div>
+<div class="paragraph">
+<p>To limit the strain put on dependencies of your application, one possibility is to put hard limits on how many concurrent threads can access a resource.
+This is done with the classic concurrency programming pattern of the <code class="api">Semaphore</code>, which is implemented in <code class="api">java.util.concurrent</code> since Java 7.</p>
+</div>
+<div class="paragraph">
+<p>Note that Semaphores are a bit different from locks since they don&#8217;t have a notion of ownership.
+For example, two different threads can respectively <code class="api">acquire()</code> and <code class="api">release()</code> a <code class="api">Semaphore</code> permit), which can avoid things like deadlocks.</p>
+</div>
+<div class="paragraph">
+<p>The same concept could also be implemented using a fixed-size thread pool.
+Such thread pool adds overhead but allows upstream code to just "walk away" from the call if it takes too long for a slot to become available, providing an even better isolation.</p>
+</div>
+<div class="paragraph">
+<p><strong>Collapsing requests</strong></p>
+</div>
+<div class="paragraph">
+<p>Another way of mitigating errors is to batch similar requests together and "collapse" them into one request to the subsystem.
+If you have multiple threads that potentially ask for the same data, the benefit can be immediate by just putting a facade on your calls that will deduplicate parallel requests.</p>
+</div>
+<div class="paragraph">
+<p>You can go beyond and trade a little bit of latency to allow for more potential deduplication.
+Wait a little longer to see if any duplicate request comes in before firing the actual deduplicated request.</p>
+</div>
+<div class="paragraph">
+<p><strong>Implementation</strong></p>
+</div>
+<div class="paragraph">
+<p>All the mentioned techniques can be easily implemented in an application in a RxJava-compatible way by using another library from Netflix, <a href="https://github.com/Netflix/Hystrix/wiki" target="_blank" rel="noopener">Hystrix</a>.
+It is a very comprehensive library for building resilient applications, including techniques for error mitigation but also failing fast.
+Here, the circuit-breaker pattern short-circuits calls to a service that is known to be down until we detect it is back up, which stops cascading failures, provides fallbacks and gathers metrics.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="errorcauses"><a class="anchor" href="#errorcauses"></a>Error causes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section discusses errors that need to be covered by the application developer to make the application resilient.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="timeouts"><a class="anchor" href="#timeouts"></a>Timeouts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Timeouts are a very important part of a distributed application that needs to be resilient.
+When a network is involved, you can be sure that something will fail, be it a network partition, a server that takes a long time to answer or one that is simply down.
+Timeouts are both your worst nightmare and a very important safety net.
+You should never let a call hang forever.
+On the contrary, it is usually better to fail fast and retry/fallback, as we saw earlier.
+The <code>sane</code> timeouts (not too long, not too short) give you that guarantee that the call won&#8217;t block forever.
+They can keep you awake at night because you are virtually guaranteed to see some of them in production.
+However,  that&#8217;s OK once you embrace them  because they do, in fact, give you control.
+You decide how much time your application will wait before either a result or an error happens, and there are no more random (and potentially very long) outliers.</p>
+</div>
+<div class="paragraph">
+<p>You have to decide on relevant durations for your timeouts, and then put them into place, and finally design and implement the failure-recovery scenarios for the situation when a timeout occurs.
+This should be guided in part by your SLAs: say your SLAs indicate that the app should respond in 1.5s in the 99th percentile, and then you&#8217;ll probably have to set timeouts below this duration.
+Think about the compounding effect as well!
+Note that it is usually a good idea to come up with SLAs internally if your business doesn&#8217;t explicitly define some.</p>
+</div>
+<div class="paragraph">
+<p>There are so many places where you can set a timeout, especially in fan-out requests scenarios where you could set an individual timeout on each fanned-out request or a global timeout, on the whole operation.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Setting timeouts on an async workflow</dt>
+<dd>
+<p>RxJava offers an easy way to set up a timeout on any <code class="api">Observable</code>: simply chain in a call to <code class="api">timeout(long duration, TimeUnit unit)</code>.
+If the timeout is triggered, the Observable is notified of a <code class="api">TimeoutException</code> in its <code class="api">onError</code> handler.</p>
+<div class="paragraph">
+<p>The underlying timer used for enforcing the timeout considers the delay between each emission in the source Observable.
+It is by default running on the <code class="api">Schedulers.computation()</code> Scheduler.
+Note that in the Couchbase blocking API, this <code class="api">TimeoutException</code> is in turn wrapped into a <code class="api">RuntimeException</code> so that only unchecked exceptions are used in the API.</p>
+</div>
+<div class="paragraph">
+<p>There is a <code class="api">timeout</code> variant that will directly switch to a provided fallback Observable instead of propagating an Exception.
+Another variant also accepts a <em class="term">timeout selector</em> instead of a simpler duration, in the form of an Observable for each emission.
+If said Observable completes before a new emission is seen in the source Observable, this is considered a timeout.
+This is a much more flexible implementation should you needs go beyond the simple duration-based timeout.</p>
+</div>
+</dd>
+<dt class="hdlist1">Timeouts in the Couchbase synchronous API</dt>
+<dd>
+<p>The way the synchronous API is built around calling the async API and blocking on it means that you cannot weave in timeouts from RxJava directly.
+So the API offers overloads for every methods that allow you to explicitely set a timeout duration.</p>
+<div class="paragraph">
+<p>If you don&#8217;t provide one explicitly on each operation, a default timeout will be used.
+Each operation belongs to a broad category for which a default timeout can be tuned in the <code class="api">CouchbaseEnvironment</code> used to configure the SDK (for example,<code class="api">connectionTimeout</code> for bootstrapping, <code class="api">kvTimeout</code> for Key/Value operations or <code class="api">viewTimeout</code> for view operations), so there&#8217;ll never be a blocking operation that doesn&#8217;t have a timeout set.</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="code-class-api-backpressureexception-code"><a class="anchor" href="#code-class-api-backpressureexception-code"></a><code class="api">BackpressureException</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sometimes you&#8217;ll see a <code class="api">BackpressureException</code> being propagated in your Observable.
+This error indicates that the SDK was overloaded with too many operations.
+By default, the SDK maintains an internal structure called the <em class="term">Ring Buffer</em>, which has a little over 16K slots for queuing up requests.
+As soon as the server responds, the corresponding request&#8217;s slot is freed.
+<code class="api">BackpressureException</code> happens when this ring buffer becomes full, meaning that 16K requests were still pending, and the server couldn&#8217;t keep up with the load.</p>
+</div>
+<div class="paragraph">
+<p>One very common cause for this is to use a bulk get/set using <code class="api">Observable.from(collection)</code> where <code>collection</code> is larger than or close to the size of the ring buffer.
+Since <code class="api">Observable.from</code> consumes the collection from memory in one sweep, it can be done extremely fast, thus filling the ring buffer almost instantly and causing a <code class="api">BackpressureException</code> (such as clogging the pipes).</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve seen the solution to this in the section "Bulk pattern, <code class="api">BackpressureException</code> and reactive pull backpressure".
+One can use RxJava&#8217;s reactive pull backpressure mechanisms only to consume from the collection as slots free up.
+Another possibility is to implement retry and backoff semantics, especially if the error happens out of a bulk context.
+For example, that happens if the server is under heavy load, and locally the application does many operations in parallel, but these operations are isolated from one another instead of batches.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="correctly-dealing-with-binary-data-code-class-api-bytebuf-code-and-memory-leak"><a class="anchor" href="#correctly-dealing-with-binary-data-code-class-api-bytebuf-code-and-memory-leak"></a>Correctly Dealing with Binary Data, <code class="api">ByteBuf</code>, and Memory Leak</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Java SDK uses Netty for network IO.
+The library has an implementation of byte buffers that go beyond what the JVM currently offers, <code class="api">ByteBuf</code>.
+Such buffers can wrap JVM buffers, use memory from the heap or off the heap, and be pooled or not.
+For performance reasons, the SDK mainly uses <em class="term">pooled off-heap</em> <code class="api">ByteBuf</code>.</p>
+</div>
+<div class="paragraph">
+<p>Netty&#8217;s buffers are <em class="term">reference counted</em>.
+Once their <code class="api">refCnt()</code> (reference count) reaches 0, the buffer is cleaned up, returned to the pool (if it was pooled).
+Most operations will automatically <code class="api">release()</code> the buffers, especially when a buffer is written on the wire.
+But sometimes you&#8217;ll need to <code class="api">retain()</code>the buffer if you need to reuse it after such an automatic cleanup.
+Usually, the symptom for this is an <code class="api">IllegalReferenceCountException</code> mentioning a <code>refCnt: 0.</code></p>
+</div>
+<div class="paragraph">
+<p>The opposite symptom is when you see a trace in the logs that says <code class="out">LEAK: ByteBuf.release() was not called before it&#8217;s garbage-collected</code>.
+This is symptomatic of a buffer that is not released correctly.
+Netty will by default sample 1% of the created buffer, which can be tuned up by using <code class="api">ResourceLeakDetector.setLevel(...)</code> method.
+This message appears in the logs when one of these sampled buffers is detected to be garbage-collected while still having a <code>refCnt &gt; 0.</code></p>
+</div>
+<div class="paragraph">
+<p>One context where both of these are more likely to happen is when you use a <code class="api">BinaryDocument</code>.
+Since this kind of <code>Document</code> exposes the raw <code>ByteBuf</code> to the user, it is your responsibility to manage the buffer correctly.
+On the <code>write</code> path, you create the buffer and you pass it to the SDK through the <code class="api">BinaryDocument</code>.
+The SDK will take it from here and Netty will release the buffer once it writes it down the wire during IO.
+However, on the read path the SDK creates a buffer and passes it to you, giving you responsibility for <code class="api">release()</code>.
+See the <a href="http://netty.io/wiki/reference-counted-objects.html" target="_blank" rel="noopener">Netty</a> documentation for more information about managing buffers.</p>
+</div>
+<div class="paragraph">
+<p>There could also be subtleties with use cases where you reuse a buffer, like in the following code.
+The buffer CAN be used twice, and second time as fallback if the document didn&#8217;t exist:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">  byteBuffer.retain(); //prepare for potential multi usage (+1 refCnt, refCnt = 2)
+        try {
+        bucket.append(document);
+        // refCnt = 2 on success
+        byteBuffer.release(); //refCnt = 1
+        } catch (DocumentDoesNotExistException dneException) {
+        // buffer is released on errors, refCnt = 1
+        //second usage will also release, but we want to be at refCnt = 1 for the finally block
+        byteBuffer.retain(); //refCnt = 2
+        bucket.insert(document); //refCnt = 1
+        } // other uncaught errors will still cause refCnt to be released down to 1
+        finally {
+        //we made sure that at this point refCnt = 1 in any case (success, caught exception, uncaught exception)
+        byteBuffer.release(); //refCnt = 0, returned to the pool
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You have to prepare everything beforehand by calling <code class="api">retain()</code> because once the <code class="api">refCnt</code> reaches 0 you cannot do anything else with the buffer.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="operation-effects"><a class="anchor" href="#operation-effects"></a>Operation Effects</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Most operations have a set of error conditions described in their corresponding Javadoc.
+This section describes a few that are quite common and their usual meaning:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">DocumentDoesNotExistException</code></p>
+</li>
+<li>
+<p><code class="api">DocumentAlreadyExistsException</code></p>
+</li>
+<li>
+<p><code class="api">CASMismatchException</code></p>
+</li>
+<li>
+<p><code class="api">TemporaryLockFailureException</code></p>
+</li>
+<li>
+<p><code class="api">DurabilityException</code></p>
+</li>
+<li>
+<p><code class="api">TemporaryFailureException</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The first two, <code class="api">DocumentDoesNotExistException</code> and <code class="api">DocumentAlreadyExistsException</code>, happen respectively when using the <code class="api">replace()</code> operation and the <code class="api">insert()</code> operation.
+First operation semantics implies that the operation expects a document with the provided key to be already stored in the database.
+If this is not the case, the exception is thrown.
+On the other hand of the spectrum, <code>insert</code> semantics implies that there should not be any document in the database with the given key.
+Hence the <code class="api">DocumentAlreadyExistsException</code> when one such document is found.
+Note that if you want a <code>write</code> operation that works in both cases, you can use <code class="api">upsert()</code>, which will by design also ignore the CAS value.</p>
+</div>
+<div class="paragraph">
+<p>Mutative operations will usually take the Document&#8217;s CAS into account and update it in the returned instance of <code>Document</code>.
+This is optimistic locking, meaning that the database is optimistic about the rarity of a clash of writes.
+Instead of paying the costly overhead of locking the document whenever it is accessed, the engine will instead refuse to execute one of the conflicting operations, detecting such changes by a variation of the CAS metadata.
+This surfaces in the SDK with a <code class="api">CASMismatchException</code>.
+Usually, the way to go in this case is to retry by issuing a <code class="api">get()</code> command to get the latest version of the document, or the one that took precedence.
+Then re-apply the mutation, maybe by reapplying a delta change or maybe by presenting the document to the user for the edition, and re-perform <code class="api">replace()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Couchbase also allows to perform pessimistic locking, meaning that a particular key cannot be touched by anyone except the performer of a<code class="api">getAndLock()</code> for up to 30 seconds.
+If some code tries to access or mutate a locked document, a <code class="api">TemporaryLockFailureException</code> will be thrown.
+Once again, the best way to deal with that error is to try again later, but you&#8217;ll usually have to make sure that the attempted change does not overwrite the one performed during lock.
+After all, it was important enough that a pessimistic lock was enforced around it.</p>
+</div>
+<div class="paragraph">
+<p>Durability constraints (<code class="api">ReplicateTo</code> and <code class="api">PersistTo</code>) allow you to instruct the SDK not to return until the database has acknowledged a certain level of replication/persistence.
+This is done using the corresponding overloads, on a per-operation basis.
+The SDK will perform the operation and will poll the cluster until enough replicate nodes have acknowledged seeing the mutation in RAM (for <code class="api">ReplicateTo</code>) and/or having persisted it on disk (<code class="api">PersistTo</code>).
+The original operation and the polling for durability constraint requirements are two separate things.
+It the later fails a <code class="api">DurabilityException</code> will be raised mainly for these reasons:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The constraint cannot be met in the first place due to replication factor being set up too low.
+The cause of the exception would be a <code class="api">ReplicaNotConfiguredException</code>.</p>
+</li>
+<li>
+<p>One of the replicas is down and brings the total number of alive replicas under the number required for the durability constraint to be met.
+The cause of the exception would then be a <code class="api">ReplicaNotAvailableException</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Finally, Couchbase Server is sometimes in a very busy state, for example: rebalance, reindexing and heavy load combined.
+In some cases, it will prefer to drop a request rather than failing into an unstable state.
+This <code class="api">TemporaryFailureException</code> indicates that the server couldn&#8217;t answer, but this is due to a transient state.
+Retrying later with that kind of exception is very likely to succeed.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
