@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Managing Connections Using the PHP SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4504/php-sdk/2.6/managing-connections.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="php-sdk">
+    <meta name="dcterms.identifier" content="2.6">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4504">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">PHP SDK</span> <span class="version">2.6</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.5/managing-connections.html">PHP SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/managing-connections.html">PHP SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/managing-connections.html">PHP SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/managing-connections.html">PHP SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/managing-connections.html">PHP SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/managing-connections.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/managing-connections.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/managing-connections.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/managing-connections.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/managing-connections.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/managing-connections.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="encryption.html">Field Level Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="encrypting-using-sdk.html">Field Level Encryption from the PHP SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDKs</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="scan-consistency-examples.html">Using Scan Consistency</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compression-intro.html">Compression</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threshold-logging.html">Threshold Logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="tracing-from-the-sdk.html">Tracing from the SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-php-sdk.html">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">PHP SDK</a></li>
+    <li class="crumb">Deployment Environments</li>
+    <li class="crumb"><a href="managing-connections.html">Managing Connections</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-php/edit/release/2.6/modules/ROOT/pages/managing-connections.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Managing Connections Using the PHP SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+This section describes how to connect the PHP SDK to a Couchbase cluster and bucket.
+It contains best practices as well as information on the connection string, SSL and other advanced connection options.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>To manage Couchbase Server connections, you need to configure the client, connect to a bucket, and configure SSL.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuring-the-client"><a class="anchor" href="#configuring-the-client"></a>Configuring the Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To configure the client, instantiate a new <code>Cluster</code> object:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php hljs" data-lang="php">$myCluster = new CouchbaseCluster('couchbase://10.4.4.1,10.4.4.2,10.4.4.3');</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition to the connection string passed to the <code>Cluster</code> object, you can include a username and password.
+The username and password are required to perform management operations against your cluster.
+If you do not use the cluster management aspects of the SDK, the username and password parameters are optional.
+Keep in mind that these credentials are the same ones you use to log in to the Couchbase administrator console, not those specified for the bucket itself.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>From Couchbase PHP SDK 2.5.0 (using <em>libcouchbase</em> 2.9.2), <code class="api">AlternateAddress</code> is implemented, for connecting to nodes in a NATed environment, such as Docker containers using portmapping.
+It is on by default, if the server provides a topology that includes a multi-network configuration.
+Whichever network is selected at bootstrap will be logged.</p>
+</div>
+<div class="paragraph">
+<p>If using <em>Docker Swarm</em>, or otherwise running the SDK inside the NAT, then you will want to disable with <code>?network = internal</code> in the connection string, or an <a href="client-settings.html" class="page">environmental setting</a> can be made.
+For more details, see the <a href="#c-sdk::managing-conections.doc">libcouchbase notes</a>.</p>
+</div>
+<div class="paragraph">
+<p>Note that any SSL/TLS certificates must be set up at the point where the connections are being made.
+The Couchbase SDKs will honor any valid SSL/TLS certificates.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="authentication"><a class="anchor" href="#authentication"></a>Authentication</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Regular authentication is where you provide a password to the <code>openBucket()</code> and <code>manager()</code> methods.
+It is also possible to define all credentials in single place, and associate with a container, which can be used for all future connections.</p>
+</div>
+<div class="paragraph">
+<p>Since version 2.3.0, the PHP SDK provides the interface <code>\Couchbase\Authenticator</code> which is implemented by all credentials containers.
+The library can pull authentication parameters from it when necessary.
+At the moment there is only one implementation of this interface: <code>\Couchbase\ClassicAuthenticator</code>, but upcoming releases will also have RBAC support.
+The use of the authenticator is simple:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php hljs" data-lang="php">$authenticator = new \Couchbase\ClassicAuthenticator();
+$authenticator-&gt;cluster('Administrator', 'password');
+$authenticator-&gt;bucket('protected', 'secret');
+
+$cluster = new \Couchbase\Cluster("couchbase://localhost");
+$cluster-&gt;authenticate($authenticator);
+
+$cluster-&gt;openBucket('protected'); // successfully opens connection
+$cluster-&gt;manager()-&gt;createBucket('hello'); // automatically use admin credentials</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is still possible to provide a password to the <code>openBucket()</code> or <code>manager()</code> method, which will take precedence over the authenticator.
+Such behaviour is discouraged, and future implementations of the <code>\Couchbase\Authenticator</code> interface are likely to prevent mixing of authentication sources.</p>
+</div>
+<div class="paragraph">
+<p>You can shortcut using the <code>authenticator()</code> method, if you don&#8217;t need to reuse the credentials in several instances of <code>authenticate()</code>, replacing it with <code>authenticateAs()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php hljs" data-lang="php">$cluster = new CouchbaseCluster("couchbase://localhost");
+$cluster-&gt;authenticateAs('Administrator', 'password');</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connecting-to-a-bucket"><a class="anchor" href="#connecting-to-a-bucket"></a>Connecting to a Bucket</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To connect to a bucket, call the <code>openBucket()</code> method against your <code>Cluster</code> instance, passing in the name of the bucket that you want to connect to.
+If no bucket name is specified, the default bucket is opened.
+The following example shows how to connect to a bucket:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php hljs" data-lang="php">$myCluster = new CouchbaseCluster();
+$myBucket = $myCluster-&gt;openBucket('default');</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition to the bucket name, you can optionally include the bucket password if one has been defined, as shown in the following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php hljs" data-lang="php">$myCluster = new CouchbaseCluster();
+$myBucket = $myCluster-&gt;openBucket('default', 'password');</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="disconnecting-from-a-bucket"><a class="anchor" href="#disconnecting-from-a-bucket"></a>Disconnecting from a Bucket</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To close the connection to a bucket, call its <code>disconnect()</code> method.
+This method queues the disconnection of all open connections and causes any pending operations to fail.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="scalability-and-concurrency"><a class="anchor" href="#scalability-and-concurrency"></a>Scalability and concurrency</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Creating a new <code class="api">Bucket</code> object is relatively expensive, and keeping many idle <code class="api">Bucket</code> objects will negatively impact server performance (if done at a large scale).</p>
+</div>
+<div class="paragraph">
+<p>PHP SDK by default uses persistent connections to reuse underlying IO objects if the connection strings are the same.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ssl"><a class="anchor" href="#ssl"></a>Connecting with SSL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can specify additional options when connecting to the cluster by using the <em>connection string</em>.
+It indicates to the client where cluster nodes may be found and how to connect to them.
+Note that it is common to other Couchbase SDKs as well as the <a href="webui-cli-access.html" class="page">command-line client</a>.
+The <em>connection string</em> uses a URI-like format familiar to what is used in other database systems.</p>
+</div>
+<div class="paragraph">
+<p>Couchbase Sever features the ability to have clients communicate securely via SSL.</p>
+</div>
+<div class="paragraph">
+<p>To use SSL, you need Couchbase Server Enterprise 3.0 or later (not available in the Community Edition).</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Obtain the SSL certificate used by the Cluster</p>
+</li>
+<li>
+<p>Make the certificate available to the file system of the client host.</p>
+</li>
+<li>
+<p>Employ the <code>couchbases://</code> scheme for the connection string.</p>
+</li>
+<li>
+<p>Specify the local path to the certificate as the value for the <code>certpath</code> field.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>To connect to a bucket on an SSL-enabled Cluster at the node 10.3.4.33, with the certificate saved as <code>/var/cbcert.pem</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">couchbases://10.3.4.33?certpath=/var/cbcert.pem</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multihost"><a class="anchor" href="#multihost"></a>Specifying Multiple Hosts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can specify multiple hosts in the connection string so that the client may be able to connect even if the cluster topology changed.
+To specify multiple hosts, separate them using a comma:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>couchbase://host1.com,host2.com,host3.com</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See <a href="failure-considerations.html" class="page">Failure Considerations for the C (libcouchbase) SDK in Couchbase</a> for more information about handling cluster topology changes.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You are not required to enumerate or pass all Couchbase cluster nodes to the client.
+The client only needs to know about a <em>single</em> node which is a member of the cluster.
+Once the client has connected to the node, it will query that node about the cluster topology, which in turn contains information about all Couchbase nodes and the services they contain.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-dns-srv-records"><a class="anchor" href="#using-dns-srv-records"></a>Using DNS SRV records</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As an alternative to specifying multiple hosts in your program, you can get the actual bootstrap node list from a DNS SRV record.
+The following steps are necessary to make it work:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set up your DNS server to respond properly from a DNS SRV request.</p>
+</li>
+<li>
+<p>Enable it on the SDK and point it towards the DNS SRV entry.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Your DNS server should be set up like this (one row for each bootstrap node):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>_couchbase._tcp.example.com.  3600  IN  SRV  0  0  0  node1.example.com.
+_couchbase._tcp.example.com.  3600  IN  SRV  0  0  0  node2.example.com.
+_couchbase._tcp.example.com.  3600  IN  SRV  0  0  0  node3.example.com.</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The ordering, priorities, ports and weighting are completely ignored and should not be set on the records to avoid ambiguities.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you plan to use secure connections, you use <code>_couchbases</code> instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>_couchbases._tcp.example.com.  3600  IN  SRV  0  0  0  node1.example.com.
+_couchbases._tcp.example.com.  3600  IN  SRV  0  0  0  node2.example.com.
+_couchbases._tcp.example.com.  3600  IN  SRV  0  0  0  node3.example.com.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, you would specify <code>couchbase://example.com</code> as the bootstrap host, and the library would check for the record.
+If no such record exists, it will treat <code>example.com</code> as an ordinary bootstrap node and try to bootstrap from it.
+Note that if you pass more than one bootstrap host, DNS SRV lookup will not be attempted, and the hosts will be interepreted as normal Couchbase nodes.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configcache"><a class="anchor" href="#configcache"></a>Configuration Cache</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In environments when lots of short-lived connections are made to Couchbase (for example, a small command-line utility or a fork-and-execute CGI application) the overhead in actually bootstrapping the client may be significant.
+This is because the client must retrieve the configuration from the cluster, and involves several additional TCP requests and in many cases an additional TCP connection.</p>
+</div>
+<div class="paragraph">
+<p>You can bypass the initial network bootstrap phase by using the <code>config_cache</code> directive in the connection string.
+The <code>config_cache</code> option accepts a path to a local file (the file should not exist when using for the first time).
+When performing the bootstrap process, the client will first check the contents of the given file to see if it contains an existing cluster configuration, and if it does, will use the file as the bootstrap source.
+If the file does not contain a configuration the client will then retrieve the configuration from the network and then write it to the file, so that future attempts will use the configuration file.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>config_cache</code> feature is intended only for short-lived connections.
+During a cluster-side topology change the client <em>will</em> need to retrieve the configuration from the network as the file-based configuration will become invalid.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="additional-options"><a class="anchor" href="#additional-options"></a>Additional Options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can pass additional options in the connection string using the URL query format: <code>couchbase://location-info?option1=value1&amp;option2=value2&amp;optionN=valueN</code>.
+A list of options may be found in <a href="client-settings.html" class="page">Client Settings</a></p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
