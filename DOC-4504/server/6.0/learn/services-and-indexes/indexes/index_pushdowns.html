@@ -4009,12 +4009,6 @@ Hence, the pagination operators cannot be pushed when a query has JOIN clauses.<
 <div class="paragraph">
 <p>OFFSET pushdown is introduced in Couchbase Server 5.0.</p>
 </div>
-<div class="paragraph">
-<p><mark>Both LIMIT and OFFSET may not be pushed to index in all cases.
-For example, when pushing to the primary index, only LIMIT is pushed (see <a href="#example-page-2">Example 4</a> below).
-Observe that, in that case, LIMIT is pushed with the value of the sum of the limit and offset specified in the query.
-This may not be as efficient because the Query engine will need to drop the first offset number of documents.</mark></p>
-</div>
 <div id="example-page-1" class="exampleblock">
 <div class="title">Example 3. Pagination with Secondary Index</div>
 <div class="content">
@@ -4054,9 +4048,9 @@ OFFSET  4000  LIMIT 10000;</code></pre>
               "primary_key": true
             },
             "keyspace": "travel-sample",
-            "limit": "10000",
+            "limit": "10000", <i class="conum" data-value="1"></i><b>(1)</b>
             "namespace": "default",
-            "offset": "4000",
+            "offset": "4000", <i class="conum" data-value="2"></i><b>(2)</b>
             "spans": [
               {
                 "exact": true,
@@ -4076,11 +4070,23 @@ OFFSET  4000  LIMIT 10000;</code></pre>
 </div>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>IndexScan3</code> operator handles <code>limit</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>IndexScan3</code> operator handles <code>offset</code>.</td>
+</tr>
+</table>
+</div>
 <div id="example-page-2" class="exampleblock">
 <div class="title">Example 4. Pagination with Primary Index</div>
 <div class="content">
 <div class="paragraph">
-<p>When using a primary index, <mark>only LIMIT is pushed</mark>.
+<p>When using a primary index, both LIMIT and OFFSET operators are pushed to index.
 This example uses the <code>def_primary</code> index that comes pre-installed and can be made by the statement:</p>
 </div>
 <div class="listingblock">
@@ -4113,15 +4119,27 @@ OFFSET  4000  LIMIT 10000;</code></pre>
               "primary_key": true
             },
             "keyspace": "travel-sample",
-            "limit": "10000",
+            "limit": "10000", <i class="conum" data-value="1"></i><b>(1)</b>
             "namespace": "default",
-            "offset": "4000",
+            "offset": "4000", <i class="conum" data-value="2"></i><b>(2)</b>
             "using": "gsi"
           },
 ...</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>PrimaryScan3</code> operator handles <code>limit</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>PrimaryScan3</code> operator handles <code>offset</code>.</td>
+</tr>
+</table>
 </div>
 <div id="example-page-3" class="exampleblock">
 <div class="title">Example 5. Pagination with Different Index Order</div>
@@ -4157,7 +4175,7 @@ OFFSET  4000  LIMIT 10000;</code></pre>
         "#operator": "Sequence",
         "~children": [
           {
-            "#operator": "IndexScan3",
+            "#operator": "IndexScan3", <i class="conum" data-value="1"></i><b>(1)</b>
             "index": "def_city",
             "index_id": "796a0018ff906a1a",
             "index_projection": {
@@ -4179,34 +4197,7 @@ OFFSET  4000  LIMIT 10000;</code></pre>
             ],
             "using": "gsi"
           },
-          {
-            "#operator": "Fetch",
-            "keyspace": "travel-sample",
-            "namespace": "default"
-          },
-          {
-            "#operator": "Parallel",
-            "~child": {
-              "#operator": "Sequence",
-              "~children": [
-                {
-                  "#operator": "Filter",
-                  "condition": "((`travel-sample`.`city`) = \"San Francisco\")"
-                },
-                {
-                  "#operator": "InitialProject",
-                  "result_terms": [
-                    {
-                      "expr": "self",
-                      "star": true
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ]
-      },
+...
       {
         "#operator": "Order",
         "limit": "10000",
@@ -4218,23 +4209,36 @@ OFFSET  4000  LIMIT 10000;</code></pre>
         ]
       },
       {
-        "#operator": "Offset",
+        "#operator": "Offset", <i class="conum" data-value="2"></i><b>(2)</b>
         "expr": "4000"
       },
       {
-        "#operator": "Limit",
+        "#operator": "Limit", <i class="conum" data-value="3"></i><b>(3)</b>
         "expr": "10000"
       },
       {
         "#operator": "FinalProject"
       }
-    ]
-  },
-  "text": "SELECT * FROM `travel-sample`\nUSE INDEX(def_city)\nWHERE city = \"San Francisco\"\nORDER BY name\nOFFSET  4000  LIMIT 10000;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>IndexScan3</code> operator does not handle <code>offset</code> or <code>limit</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The Offset operator is handled by the Query engine.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Limit operator is handled by the Query engine.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -4284,43 +4288,7 @@ ORDER BY city;</code></pre>
               "cover ((meta(`travel-sample`).`id`))"
             ],
             "index": "def_city",
-            "index_id": "796a0018ff906a1a",
-            "index_order": [
-              {
-                "keypos": 0
-              }
-            ],
-            "index_projection": {
-              "entry_keys": [
-                0
-              ]
-            },
-            "keyspace": "travel-sample",
-            "namespace": "default",
-            "spans": [
-              {
-                "exact": true,
-                "range": [
-                  {
-                    "high": "\"Sao\"",
-                    "inclusion": 1,
-                    "low": "\"San\""
-                  }
-                ]
-              }
-            ],
-            "using": "gsi"
-          },
-          {
-            "#operator": "Parallel",
-            "maxParallelism": 1,
-            "~child": {
-              "#operator": "Sequence",
-              "~children": [
-                {
-                  "#operator": "Filter",
-                  "condition": "(cover ((`travel-sample`.`city`)) like \"San%\")"
-                },
+...
                 {
                   "#operator": "InitialProject",
                   "result_terms": [
@@ -4335,12 +4303,7 @@ ORDER BY city;</code></pre>
               ]
             }
           }
-        ]
-      }
-    ]
-  },
-  "text": "SELECT city FROM `travel-sample`\nWHERE city LIKE \"San%\"\nORDER BY city;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
@@ -4392,32 +4355,7 @@ ORDER BY meta().id;</code></pre>
               "cover ((meta(`travel-sample`).`id`))"
             ],
             "index": "def_city",
-            "index_id": "796a0018ff906a1a",
-            "keyspace": "travel-sample",
-            "namespace": "default",
-            "spans": [
-              {
-                "exact": true,
-                "range": [
-                  {
-                    "high": "\"Sao\"",
-                    "inclusion": 1,
-                    "low": "\"San\""
-                  }
-                ]
-              }
-            ],
-            "using": "gsi"
-          },
-          {
-            "#operator": "Parallel",
-            "~child": {
-              "#operator": "Sequence",
-              "~children": [
-                {
-                  "#operator": "Filter",
-                  "condition": "(cover ((`travel-sample`.`city`)) like \"San%\")"
-                },
+...
                 {
                   "#operator": "InitialProject",
                   "result_terms": [
@@ -4442,10 +4380,6 @@ ORDER BY meta().id;</code></pre>
       {
         "#operator": "FinalProject"
       }
-    ]
-  },
-  "text": "SELECT city FROM `travel-sample`\nWHERE city LIKE \"San%\"\nORDER BY meta().id;"
-}
 ...</code></pre>
 </div>
 </div>
@@ -4514,38 +4448,7 @@ ORDER BY city DESC;</code></pre>
                 "desc": true,
                 "keypos": 0
               }
-            ],
-            "index_projection": {
-              "entry_keys": [
-                0
-              ]
-            },
-            "keyspace": "travel-sample",
-            "namespace": "default",
-            "spans": [
-              {
-                "exact": true,
-                "range": [
-                  {
-                    "high": "\"Sao\"",
-                    "inclusion": 1,
-                    "low": "\"San\""
-                  }
-                ]
-              }
-            ],
-            "using": "gsi"
-          },
-          {
-            "#operator": "Parallel",
-            "maxParallelism": 1,
-            "~child": {
-              "#operator": "Sequence",
-              "~children": [
-                {
-                  "#operator": "Filter",
-                  "condition": "(cover ((`travel-sample`.`city`)) like \"San%\")"
-                },
+...
                 {
                   "#operator": "InitialProject",
                   "result_terms": [
@@ -4560,12 +4463,7 @@ ORDER BY city DESC;</code></pre>
               ]
             }
           }
-        ]
-      }
-    ]
-  },
-  "text": "SELECT city FROM `travel-sample`\nWHERE city LIKE \"San%\"\nORDER BY city DESC;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
@@ -4642,55 +4540,7 @@ WHERE city is not null;</code></pre>
               "id": 2,
               "keypos": 0
             }
-          ],
-          "depends": [
-            0
-          ]
-        },
-        "index_id": "796a0018ff906a1a",
-        "index_projection": {
-          "entry_keys": [
-            2
-          ]
-        },
-        "keyspace": "travel-sample",
-        "namespace": "default",
-        "spans": [
-          {
-            "exact": true,
-            "range": [
-              {
-                "inclusion": 0,
-                "low": "null"
-              }
-            ]
-          }
-        ],
-        "using": "gsi"
-      },
-      {
-        "#operator": "Parallel",
-        "~child": {
-          "#operator": "Sequence",
-          "~children": [
-            {
-              "#operator": "InitialProject",
-              "result_terms": [
-                {
-                  "expr": "cover (max(cover ((`travel-sample`.`city`))))"
-                }
-              ]
-            },
-            {
-              "#operator": "FinalProject"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  "text": "SELECT MAX(city)\nFROM `travel-sample`\nUSE INDEX (def_city)\nWHERE city is not null;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
@@ -4758,55 +4608,7 @@ WHERE city is not null;</code></pre>
               "id": 2,
               "keypos": 0
             }
-          ],
-          "depends": [
-            0
-          ]
-        },
-        "index_id": "796a0018ff906a1a",
-        "index_projection": {
-          "entry_keys": [
-            2
-          ]
-        },
-        "keyspace": "travel-sample",
-        "namespace": "default",
-        "spans": [
-          {
-            "exact": true,
-            "range": [
-              {
-                "inclusion": 0,
-                "low": "null"
-              }
-            ]
-          }
-        ],
-        "using": "gsi"
-      },
-      {
-        "#operator": "Parallel",
-        "~child": {
-          "#operator": "Sequence",
-          "~children": [
-            {
-              "#operator": "InitialProject",
-              "result_terms": [
-                {
-                  "expr": "cover (min(cover ((`travel-sample`.`city`))))"
-                }
-              ]
-            },
-            {
-              "#operator": "FinalProject"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  "text": "SELECT MIN(city)\nFROM `travel-sample`\nUSE INDEX (def_city)\nWHERE city is not null;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
@@ -4897,56 +4699,7 @@ WHERE city is not null;</code></pre>
               "id": 2,
               "keypos": 0
             }
-          ],
-          "depends": [
-            0
-          ]
-        },
-        "index_id": "796a0018ff906a1a",
-        "index_projection": {
-          "entry_keys": [
-            2
-          ]
-        },
-        "keyspace": "travel-sample",
-        "namespace": "default",
-        "spans": [
-          {
-            "exact": true,
-            "range": [
-              {
-                "inclusion": 0,
-                "low": "null"
-              }
-            ]
-          }
-        ],
-        "using": "gsi"
-      },
-      {
-        "#operator": "Parallel",
-        "~child": {
-          "#operator": "Sequence",
-          "~children": [
-            {
-              "#operator": "InitialProject",
-              "result_terms": [
-                {
-                  "as": "NumberOfCities",
-                  "expr": "cover (count(cover ((`travel-sample`.`city`))))"
-                }
-              ]
-            },
-            {
-              "#operator": "FinalProject"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  "text": "SELECT COUNT(city) AS NumberOfCities\nFROM `travel-sample`\nuse index (def_city)\nWHERE city is not null;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
@@ -4955,7 +4708,7 @@ WHERE city is not null;</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>In Couchbase Server 5.5 and later, the index operator <code>IndexCountScan3</code> counts distinct values so the Query Service does not need to do additional processing.</td>
+<td>In Couchbase Server 5.5 and later, the index operator <code>IndexCountScan3</code> counts values so the Query Service does not need to do additional processing.</td>
 </tr>
 </table>
 </div>
@@ -5045,56 +4798,7 @@ use index (def_city)</code></pre>
               "id": 2,
               "keypos": 0
             }
-          ],
-          "depends": [
-            0
-          ]
-        },
-        "index_id": "796a0018ff906a1a",
-        "index_projection": {
-          "entry_keys": [
-            2
-          ]
-        },
-        "keyspace": "travel-sample",
-        "namespace": "default",
-        "spans": [
-          {
-            "exact": true,
-            "range": [
-              {
-                "inclusion": 0,
-                "low": "null"
-              }
-            ]
-          }
-        ],
-        "using": "gsi"
-      },
-      {
-        "#operator": "Parallel",
-        "~child": {
-          "#operator": "Sequence",
-          "~children": [
-            {
-              "#operator": "InitialProject",
-              "result_terms": [
-                {
-                  "as": "NumberOfDistinctCities",
-                  "expr": "cover (count(distinct cover ((`travel-sample`.`city`))))"
-                }
-              ]
-            },
-            {
-              "#operator": "FinalProject"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  "text": "SELECT COUNT (DISTINCT city) AS NumberOfDistinctCities\nFROM `travel-sample`\nUSE index (def_city)\nWHERE city is not null;"
-}</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
