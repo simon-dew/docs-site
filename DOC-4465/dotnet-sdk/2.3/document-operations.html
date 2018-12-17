@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>CRUD Document Operations Using the .NET SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4465/dotnet-sdk/2.7/document-operations.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="dotnet-sdk">
+    <meta name="dcterms.identifier" content="2.3">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4465">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">.NET SDK</span> <span class="version">2.3</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.7/document-operations.html">.NET SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/document-operations.html">.NET SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/document-operations.html">.NET SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/document-operations.html">.NET SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.2/dotnet-intro.html">.NET SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/dotnet-intro.html">.NET SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/document-operations.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/document-operations.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/document-operations.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/document-operations.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/document-operations.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/document-operations.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-dotnet-sdk.html#version-2-3-11-3-jan-2017">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.7/document-operations.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">.NET SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="document-operations.html">Document Operations</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-dotnet/edit/release/2.3/modules/ROOT/pages/document-operations.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">CRUD Document Operations Using the .NET SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can access documents in Couchbase using methods of the <code class="api">Couchbase.CouchbaseBucket</code> object.
+The methods for retrieving documents are <code class="api">Get&lt;T&gt;()</code> and <code class="api">LookupIn&lt;TDocument&gt;()</code> and the methods for mutating documents are <code class="api">Upsert&lt;T&gt;()</code>, <code class="api">Insert&lt;T&gt;()</code>, <code class="api">Replace&lt;T&gt;()</code> and <code class="api">MutateIn&lt;TDocument&gt;()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Examples are shown using the synchronous methods.
+See the section on <a href="async-programming.html" class="page">Async Programming</a> for information on other methods.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-additional-options"><a class="anchor" href="#net-additional-options"></a>Additional options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Update operations also accept a <a href="core-operations.html#expiry" class="page">TTL (expiry)</a> value (<code class="param">Expiry</code>) on the passed <code class="param">IDocument</code> which will instruct the server to delete the document after a given amount of time.
+This option is useful for transient data (such as sessions).
+By default documents do not expire.
+See <a href="core-operations.html#expiry" class="page">Expiration Overview</a> for more information on expiration.</p>
+</div>
+<div class="paragraph">
+<p>Update operations can also accept a <a href="concurrent-mutations-cluster.html" class="page">CAS</a> (<code class="param">Cas</code>) value on the passed document to protect against concurrent updates to the same document.
+See <a href="concurrent-mutations-cluster.html" class="page">CAS</a> for a description on how to use CAS values in your application.
+Since CAS values are opaque, they are normally retrieved when a Document is loaded from Couchbase and then used subsequently (without modification) on the mutation operations.
+If a mutation did succeed, the returned Document will contain the new CAS value.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-mutation-input"><a class="anchor" href="#net-mutation-input"></a>Document input and output types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase stores documents.
+From an SDK point of view, those documents contain the actual value (like a JSON object) and associated metadata.
+Every document in the Java SDK contains the following properties, some of them optional depending on the context:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The (per bucket) unique identifier of the document.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The actual content of the document.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Cas</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The CAS (Compare And Swap) value of the document.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Expiry</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The expiration time of the document.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Token</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The optional MutationToken after a mutation.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>There are a few different results using <code>IDocument</code> you may encounter:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">Document</code>: The default one in most methods and is backed by a JSON document when stored to Couchbase.
+Commonly this is a <code class="api">Document&lt;dynamic&gt;</code> object, which the API will handle automatically on behalf of your program.</p>
+</li>
+<li>
+<p><code class="api">DocumentResult</code>: The return type for any <code class="api">IDocument</code> centric operation requests.</p>
+</li>
+<li>
+<p><code class="api">OperationResult&lt;T&gt;</code>: The return type for any binary operations that return a value.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Because Couchbase Server can store anything and not just JSON, there is the possibility for other implementations of the <code class="api">IDocument</code> interface or the <code class="api">IOperationResult</code> interface.
+These are usually returned by other methods on the <code class="api">Bucket</code> or are implemented using an <code class="api">ITypeTranscoder</code>, which is outside the scope of this introduction.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-creating-updating-full-docs"><a class="anchor" href="#net-creating-updating-full-docs"></a>Creating and updating full documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Documents may be created and updated using the <code class="api">IBucket.Upsert&lt;T&gt;()</code>, <code class="api">IBucket.Insert&lt;T&gt;()</code>, and <code class="api">IBucket.Replace&lt;T&gt;()</code> family of methods.
+Read more about the difference between these methods at <a href="core-operations.html#crud-overview" class="page">Primitive Key-Value Operations</a> in the Couchbase developer guide.</p>
+</div>
+<div class="paragraph">
+<p>These methods accept an IDocument instance where the following properties are considered if set:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">Id</code> (mandatory): The ID of the document to modify (String).</p>
+</li>
+<li>
+<p><code class="param">Content</code> (mandatory): The desired new content of the document, this varies per document type used.
+This Type of the content is specified by the generic Type T parameter.</p>
+</li>
+<li>
+<p><code class="param">Expiry</code> (optional): Specify the expiry time for the document.
+If specified, the document will expire and no longer exist after the given number of seconds.
+See <a href="core-operations.html#expiry" class="page">Expiration Overview</a> for more information.</p>
+</li>
+<li>
+<p><code class="param">Cas</code> (optional): The CAS value for the document.
+If the CAS on the server does not match the CAS supplied to the method, the operation will fail.
+See <a href="concurrent-mutations-cluster.html" class="page">Concurrent Document Mutations</a> for more information on the usage of CAS values.
+Note that the Cas is represented here as a <code class="api">UInt64</code>, but you should consider it an opaque value in your programs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Other optional arguments are also available for more advanced usage:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">TimeSpan</code>: A value for the <code class="api">Expiry</code> on this document.</p>
+</li>
+<li>
+<p><code class="param">PersistTo</code>, <code class="param">ReplicateTo</code>: Specify <a href="durability.html" class="page">durability requirements</a> for the operations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Upon success, the returned <code class="api">IDocumentResult</code> instance will contain the new <a href="concurrent-mutations-cluster.html" class="page">CAS</a> value of the document.
+If the document is not mutated successfully, an exception is raised depending on the type of error.
+Further details on the exceptional case may be on the <code class="param">Exception</code> property of the returned <code class="param">IDocumentResult</code>.</p>
+</div>
+<div class="paragraph">
+<p>Inserting a document works like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var doc = new Document&lt;dynamic&gt;{ Id = "document_id", Content = new {Some="value"} };
+var result = bucket.Insert(doc);
+Console.WriteLine(JsonConvert.SerializeObject(result.Document));</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Output: {"Id":"document_id","Cas":1466044876366741504,"Expiry":0,"Content":null,"Token":null}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the same code is called again, a <code>ResponseStatus.KeyExists</code> will be returned.
+If you don&#8217;t care that the document is overridden, you can use <code class="api">Upsert</code> instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var doc = new Document&lt;dynamic&gt;{ Id = "document_id", Content = new {Some="other value"} };
+var result = bucket.Upsert(doc);
+Console.WriteLine(JsonConvert.SerializeObject(result.Document));</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Output: {"Id":"document_id","Cas":1466044876366741599,"Expiry":0,"Content":null,"Token":null}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, a full document can be replaced if it existed before.
+If it didn&#8217;t exist, then a <code>ResponseStatus.KeyExists</code> will be returned:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var doc = new Document&lt;dynamic&gt;{ Id = "document_id", Content = new {Some="other value"} };
+var result = bucket.Replace(doc);
+Console.WriteLine(result.Status);</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Output: KeyExists</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-retrieving-full-docs"><a class="anchor" href="#net-retrieving-full-docs"></a>Retrieving full documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Documents may be retrieved using the <code class="api">IBucket.Get()</code>, <code class="api">IBucket.GetWithLock()</code>, <code class="api">IBucket.GetAndTouch()</code> and <code class="api">IBucket.GetFromReplica()</code>methods.
+All of those serve different distinct purposes and accept different parameters.</p>
+</div>
+<div class="paragraph">
+<p>Most of the time you use the <code class="api">get()</code> method.
+It accepts one mandatory argument:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">id</code>: The document ID to retrieve</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Console.WriteLine(bucket.GetDocument&lt;dynamic&gt;("document_id").Content);</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Output: { "some": "value" }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is also possible to read from a replica if you want to explicitly trade availability for consistency during the timeframe when the active partition is not reachable (for example during a node failure or netsplit).</p>
+</div>
+<div class="paragraph">
+<p><code>GetFromReplica</code> has one mandatory argument as well:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">id</code>: The document ID to retrieve</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = bucket.getFromReplica("document_id");
+Console.WriteLine(result.Status);</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Since a replica is updated asynchronously and eventually consistent, reading from it may return stale and/or outdated results!
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you need to use pessimistic write locking on a document you can use the <code class="param">GetWithLock</code> which will retreive the document if it exists and also return its <code class="param">CAS</code> value.
+You need to provide a time that the document is maximum locked (and the server will unlock it then) if you don&#8217;t update it with the valid cas.
+Also note that this is a pure write lock, reading is still allowed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// Get and Lock for max of 10 seconds
+var ownedDoc = bucket.GetWithLock&lt;dynamic&gt;("document_id", new TimeSpan(0, 0, 10));
+
+// Do something with your document
+var modifiedDoc = ModfiyDocument(ownedDoc.Document);
+
+// Write it back with the correct CAS
+bucket.Replace(modifiedDoc);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is also possible to fetch the document and reset its expiration value at the same time.
+See <a href="#net-modifying-expiration">Modifying Expiration</a> for more information.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-removing-full-docs"><a class="anchor" href="#net-removing-full-docs"></a>Removing full documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Documents may be removed using the <code class="api">IBucket.Remove()</code> method.
+This method takes a single mandatory argument:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">id</code>: The ID of the document to remove.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Some additional options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">PersistTo</code>, <code class="param">ReplicateTo</code>: Specify <a href="durability.html" class="page">durability requirements</a> for the operations.</p>
+</li>
+<li>
+<p><code class="param">Timeout</code>: Specify a custom timeout which overrides the default timeout setting.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the <code>cas</code> value is set on the Document overload, it is used to provide optimistic currency, very much like the <code>Replace</code> operation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// Remove the document
+var result = bucket.Remove("document_id");</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var loaded = bucket.GetDocument&lt;dynamic&gt;("document_id");
+
+// Remove and take the CAS into account
+var removed = bucket.Remove(loaded);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-modifying-expiration"><a class="anchor" href="#net-modifying-expiration"></a>Modifying expiraton</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Modifying the <a href="core-operations.html#expiry" class="page">Document expiration</a> can be performed using the <code class="api">IBucket.Touch()</code> method.
+In addition, many methods support setting the expiry value as part of their other primary operations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">IBucket.Touch</code>: Resets the expiry time for the given document ID to the value provided.</p>
+</li>
+<li>
+<p><code class="api">IBucket.GetAndTouchDocument</code>: Fetches the document and resets the expiry to the given value provided.</p>
+</li>
+<li>
+<p><code class="api">IBucket.Insert</code>, <code class="api">IBucket.Upsert</code>, <code class="api">IBucket.Replace</code>: Stores the expiry value alongside the actual mutation when set on the <code>Document&lt;T&gt;</code> instance.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example stores a document with an expiry, waits a bit longer and as a result no document is found on the subsequent get:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">uint expiry = 2000; // milliseconds
+var stored = bucket.Upsert(new Document&lt;dynamic&gt;
+{
+    Id = "expires",
+    Expiry = expiry,
+    Content = new {Some = "value"}
+});
+
+Thread.Sleep(3000);
+
+//will be expired, thus KeyNotFound
+Console.WriteLine(bucket.GetDocument&lt;dynamic&gt;("expires").Status);</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>KeyNotFound</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-atomic-modifications"><a class="anchor" href="#net-atomic-modifications"></a>Atomic document modifications</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Additional atomic document modifications can be performing using the .NET SDK.
+You can increase or decrease the value of a document using the <code class="api">IBucket.Increment</code> or  <code class="api">IBucket.Decrement</code> methods.
+You can also use the <code class="api">IBucket.Append()</code> and <code class="api">Bucket.Prepend()</code> methods to perform <a href="core-operations.html#devguide_kvcore_append_prepend_generic" class="page">raw byte concatenation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-batching-ops"><a class="anchor" href="#net-batching-ops"></a>Batching Operations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The .NET SDK supports the async/await keywords so batching can easily be done by utilizing the Task.WhenAll method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var tasks = new List&lt;Task&gt;IDocumentResult&lt;string&gt;&gt;&gt;();
+ids.ForEach(x =&gt; tasks.Add(bucket.GetDocumentAsync&lt;string&gt;(x)));
+
+var results = await Task.WhenAll(tasks);
+results.ToList().ForEach(doc =&gt; Console.WriteLine(doc.Status));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, there are overloads of the standard CRUD methonds on IBucket which take a list or dictionary of keys and/or documents and internally batch them asynchronously:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var keys = new []{"key1", "key2", "key3"};
+var results = bucket.Get&lt;dynamic&gt;(keys).Values;
+results.ToList().ForEach(x=&gt;Console.WriteLine(x.Value));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The main difference between the two is that the second way will block while the results are returned (even if they are retrieved in parrallel), and the first is non-blocking from the calling thread.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-subdocs"><a class="anchor" href="#net-subdocs"></a>Operating with sub-documents</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Sub-Document API is available starting Couchbase Server version 4.5.
+See <a href="subdocument-operations.html" class="page">Sub-Document Operations</a> for an overview.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Sub-document operations save network bandwidth by allowing you to specify <em>paths</em> of a document to be retrieved or updated.
+The document is parsed on the server and only the relevant sections (indicated by <em>paths</em>) are transferred between client and server.
+You can execute <a href="subdocument-operations.html" class="page">sub-document</a> operations in the .NET SDK using the <code class="api">IBucket.LookupIn()</code> and <code class="api">IBucket.MutateIn()</code> methods.</p>
+</div>
+<div class="paragraph">
+<p>Each of these methods accepts a <code class="param">key</code> as its mandatory first argument and give you a builder that you can use to chain several <em>command specifications</em>, each specifying the path to be impacted by the specified operation and a document field operand.
+You may find all the operations in the <code class="api">LookupInBuilder</code> and <code class="api">MutateInBuilder</code> classes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">bucket.LookupIn("docid")
+    .Get("path.to.get")
+    .Exists("check.path.exists")
+    .Execute();
+
+boolean createParents = true;
+bucket.MutateIn("docid")
+    .Upsert("path.to.upsert", value, createParents)
+    .Remove("path.to.del"))
+    .Execute();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All sub-document operations return a special <code class="api">IDocumentFragment&lt;T&gt;</code> object rather than a <code class="api">IDocument&lt;T&gt;</code>.
+It shares the <code>Id</code>, <code>Cas</code> and <code>MutationToken</code> fields of a document, but in contrast with a normal <code class="api">IDocument&lt;T&gt;</code> object, a <code class="api">IDocumentFragment&lt;T&gt;</code> object contains multiple results with multiple statuses, one result/status pair for every input operation.
+So it exposes method to get the <code>Content()</code> and <code>Status()</code> of each spec, either by index or by path.
+It also allows to check that a response for a particular spec <code>Exists()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var res =
+bucket.LookupIn("docid")
+    .Get("foo")
+    .Exists("bar")
+    .Exists("baz")
+    .Execute();
+
+// First result
+res.Content("foo");
+
+// or
+res.Content(0);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using the <code>Content(...)</code> methods will raise an exception if the individual spec did not complete successfully.
+You can also use the <code>Status(...)</code> methods to return an error code (a <code class="api">ResponseStatus</code>) rather than throw an exception.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-formats-non-json"><a class="anchor" href="#net-formats-non-json"></a>Formats and Non-JSON Documents</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See <a href="nonjson.html" class="page">Non-JSON Documents</a> for a general overview of using non-JSON documents with Couchbase
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The .NET SDK supports documents in the form of POCOs (plain old csharp objects) as long as they are serializable (public getter/setter properties), dynamic types, and most of the representations of JSON objects from the 3rd party API&#8217;s such as NewtonSoft.JSON.
+In general, if the Type you are storing is an object capable of being serialized, it will be stored natively as JSON in couchbase.
+Exceptions include non-JSON strings, byte arrays, and any value that is not representable as JSON.
+If the value is not serializable to JSON, then it will be treated as a binary document.
+Note that binary documents cannot be queried using N1QL nor do the Sub-Document methods work on them.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

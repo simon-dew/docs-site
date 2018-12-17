@@ -1,0 +1,4251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Text Indexing | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4465/server/6.0/fts/fts-creating-indexes.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="server">
+    <meta name="dcterms.identifier" content="4.6">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4465">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../introduction/intro.html"><span class="title">Couchbase Server</span> <span class="version">4.6</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../../6.0/fts/fts-creating-indexes.html">Couchbase Server 6.0</a></li>
+                  <li><a class="navbar-item" href="../../5.5/fts/fts-creating-indexes.html">Couchbase Server 5.5</a></li>
+                  <li><a class="navbar-item" href="../../5.1/fts/fts-creating-indexes.html">Couchbase Server 5.1</a></li>
+                  <li><a class="navbar-item" href="../../5.0/fts/fts-creating-indexes.html">Couchbase Server 5.0</a></li>
+                  <li><a class="navbar-item" href="../../4.5/fts/fts-creating-indexes.html">Couchbase Server 4.5</a></li>
+                  <li><a class="navbar-item" href="../../4.1/introduction/intro.html">Couchbase Server 4.1</a></li>
+                  <li><a class="navbar-item" href="../../4.0/introduction/intro.html">Couchbase Server 4.0</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Introduction</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../introduction/intro.html">Why Couchbase?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../introduction/whats-new.html">What&#8217;s New?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../introduction/editions.html">Couchbase Server Editions</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Getting Started</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/start-here.html">Start Here!</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/do-a-quick-install.html">Do a Quick Install</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/look-at-the-results.html">Look at the Results</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/try-a-query.html">Run Your First N1QL Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/run-hello-world.html">Run Hello World!</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/choose-your-next-steps.html">Choose Your Next Steps</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Concepts &amp; Architecture</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Key Concepts</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/concepts-intro.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-modeling/concepts-data-modeling-intro.html">Data Model</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-access/data-access-intro.html">Data Access</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-intro/n1ql-sql-differences.html">N1QL and SQL Differences</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/indexing.html">Indexing</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/data-management.html">Data Management</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/distributed-data-management.html">Distributed Data Management</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../ha-dr/ha-dr-intro.html">High Availability and Disaster Recovery</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-conflict-resolution.html">XDCR Conflict Resolution</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/deployment-and-operations.html">Deployment and Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/security.html">Security</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concepts/application-development.html">Application Development</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Data Modeling</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-modeling/intro-data-modeling.html">Data Modeling Basics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-modeling/data-modeling-phases.html">Phases of Data Modeling</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-modeling/entity-relationship-doc-design.html">Entity Relationships and Document Design</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-modeling/modeling-relationships.html">Modeling Relationships</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../data-modeling/evolving-data-models.html">Evolving Data Models</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Architecture</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/architecture-intro.html">Architecture Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/terminology.html">Terminology</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/connectivity-architecture.html">Connectivity Architecture</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/cluster-manager.html">Cluster Manager</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../architecture/data-service-core-data-access.html">Data Service and Core Data Access</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/core-data-access-buckets.html">Buckets</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/core-data-access-vbuckets-bucket-partition.html">vBuckets and vBucket Maps: Bucket Partitions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/core-data-access-bucket-disk-storage.html">Bucket Disk Storage</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/db-engine-architecture.html">Database Engine Architecture</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/bloom-filters.html">Bloom Filters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../developer-guide/sub-doc-api.html">Sub-Document API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../architecture/views-indexing-index-service.html">Views, Indexing, and Index Service</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/incremental-map-reduce-views.html">Incremental MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/spatial-views.html">Spatial Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/global-secondary-indexes.html">Global Secondary Indexes (GSIs)</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/gsi-versus-views.html">Global Secondary Indexes Versus Views</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../architecture/querying-data-and-query-data-service.html">Querying Data and Query Data Service</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/querying-data-with-views.html">Querying Data with Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/querying-geo-data-spatial-views.html">Querying Geographic Data with Spatial Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/querying-data-with-n1ql.html">Querying Data with N1QL</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/services-archi-multi-dimensional-scaling.html">Multidimensional Scaling</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/high-availability-replication-architecture.html">High Availability and Replication Architecture</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/managed-caching-layer-architecture.html">Managed Caching Layer Architecture</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../architecture/storage-architecture.html">Storage Architecture</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Developers</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../sdk/development-intro.html">Developer&#8217;s Intro</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../sdk/overview.html">SDKs</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../c-sdk/2.7/start-using-sdk.html">C</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../dotnet-sdk/2.4/start-using-sdk.html">.NET</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../go-sdk/1.2/start-using-sdk.html">Go</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../java-sdk/2.4/start-using-sdk.html">Java</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../nodejs-sdk/2.3/start-using-sdk.html">Node.js</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../php-sdk/2.3/start-using-sdk.html">PHP</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../python-sdk/2.2/start-using-sdk.html">Python</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../getting-started/starter-kits.html">Starter Kits</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Administrators</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Setup</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/plan-for-production.html">Planning for Production</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-platforms.html">Supported Platforms</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-browsers.html">Supported Web Browsers</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/pre-install.html">Hardware Requirements</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-ports.html">Network Configuration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/synchronize-clocks-using-ntp.html">Using NTP to Synchronize Clocks</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/install-production-deployment.html">Deployment Considerations</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/services-mds.html">Multidimensional Scaling (MDS)</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/sizing-general.html">Sizing Guidelines</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-client-server.html">Client Deployment Strategies</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/deployment-considerations-lt-3nodes.html">Deployment Considerations for Less Than 3 Nodes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/best-practices-vm.html">Best Practices for Virtualized Platforms</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-security-bp.html">Security Considerations</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Installing Couchbase Server</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/install-intro.html">Installing On-Premises</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/install-linux.html">Installing on Linux</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/thp-disable.html">Transparent Huge Pages (THP)</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-swap-space.html">Swap Space and Kernel Swappiness</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/rhel-suse-install-intro.html">Red Hat and CentOS Installation</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/ubuntu-debian-install.html">Ubuntu/Debian Installation</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install_suse.html">SUSE Enterprise Linux installation</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-oracle.html">Oracle Enterprise Linux installation</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/rhel-multiple-instances.html">Installing Multiple Instances</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-package-windows.html">Installing on Windows</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/macos-install.html">Installing on Mac OS X</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Running Couchbase Server Container</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/getting-started-docker.html">Getting Started with Server on Docker Containers</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/deploy-with-docker-hub.html">Deployment with Docker Hub</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/docker-deploy-single-node-cluster.html">Deploying a Single Node Cluster</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/docker-deploy-multi-node-cluster.html">Deploying Multi-node Cluster</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Cloud Deployment</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/cloud-deployment.html">Cloud Deployment Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/deployment-aws.html">AWS Marketplace</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/deployment-azure.html">Azure Marketplace</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/deployments-xdcr.html">XDCR in Cloud Deployments</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/install-uninstalling.html">Uninstalling Couchbase Server</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/post-install.html">Post-installation</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/upgrade.html">Upgrading Couchbase Server</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/upgrade-strategies.html">Upgrade Options</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/upgrade-online.html">Performing the Rolling Online Upgrade</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/upgrade-offline.html">Performing the Offline Upgrade</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/upgrade-individual-nodes.html">Performing the Single Node Upgrade</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/upgrade-matrix.html">Upgrade Matrix</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/migration.html">Migrating Data for the Timestamp-based Conflict Resolution</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/migrating.html">Migrating to and from Other Databases</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/migrate-couchdb.html">Migrating from Apache CouchDB</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/migrate-mysql.html">Migrating from Relational Databases</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../install/init-setup.html">Initialize the Cluster</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/file-locations.html">File Locations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/hostnames.html">Using Hostnames</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/startup-shutdown.html">Couchbase Server Startup and Shutdown</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../install/testing.html">Testing Couchbase Server</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../admin/admin-intro.html">Cluster Administration</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../admin/ui-intro.html">Couchbase Web Console</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../clustersetup/server-setup.html">Cluster Operations</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/adding-nodes.html">Adding a Node</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/remove-nodes.html">Removing a Node</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../clustersetup/failover.html">Failing over a Node</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/setup-failover-graceful.html">Using Graceful Failover</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/hard-failover.html">Using Hard Failover</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/automatic-failover.html">Using Automatic Failover</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/rebalance.html">Rebalancing a Cluster</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/rejoin-cluster.html">Rejoining a Cluster</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../clustersetup/bucket-setup.html">Data Bucket Setup</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/create-bucket.html">Create a New Bucket</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/change-settings-bucket.html">Change Bucket Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/bucket-flush.html">Flush a Bucket</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/delete-bucket.html">Delete a Bucket</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../indexes/indexing-overview.html">Indexing</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/views-intro.html">View Indexes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/views-basics.html">View Concepts</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-streaming.html">Stream-based Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-operation.html">View Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-store-data.html">Views and Stored Data</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-development.html">Development Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-production.html">Production Views</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/views-writing.html">Writing MapReduce Views</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-views.html">Views Best Practices</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-map.html">Map Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-reduce.html">Reduce Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-utility.html">Built-in Utility Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-count.html">Built-in _count Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-sum.html">Built-in _sum Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-stats.html">Built-in _stats Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-rewriting.html">Re-writing Built-in Reduce Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-custom-reduce.html">Custom Reduce Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-rereduce.html">Re-reduce Argument</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-writing-nonjson.html">Views for Non-JSON Objects</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-trans-sql.html">Translating SQL to MapReduce</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-schemaless.html">Views in a Schema-less Database</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/views-querying.html">Querying MapReduce Views</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/views-query-samples.html">View and Query Examples</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/sv-writing-views.html">Writing Spatial Views</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-writing-views-keys.html">Keys in Spatial View Functions</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/sv-query-parameters.html">Querying Spatial Views</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-queries-open-range.html">Open Range Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-queries-closed-range.html">Closed Range Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-queries-bbox.html">Bounding Box Queries</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../views/sv-example1.html">Playing with GeoJSON Polygons</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-ex1-create.html">Creating a Spatial View Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-ex1-query-all.html">Querying All Data</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-ex1-query-east.html">Querying on the East</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-ex1-query-area.html">Querying on the Area</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-ex1-query-nonintersect.html">Querying on Non-intersect</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../views/sv-example2.html">Playing with Non-geographic Spatial Views</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../indexes/n1ql-in-couchbase.html">Indexes for N1QL</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../indexes/gsi-for-n1ql.html">Global Secondary Indexes for N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../indexes/view-indexes-for-n1ql.html">View Indexes for N1QL</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/cluster-settings.html">Cluster Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/update-notificatioin.html">Update Product Notifications</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/change-failover-settings.html">Change Failover Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/configure-alerts.html">Alerts</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/configure-compact-settings.html">Auto-compaction Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/configure-account-settings.html">Account Management Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/configure-audits.html">Administrator Auditing</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../settings/install-sample-buckets.html">Sample Buckets</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../xdcr/xdcr-intro.html">Cross Datacenter Replication (XDCR)</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-create.html">Managing XDCR</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-recover-partitions.html">Recover Partitions from a Remote Cluster</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-tuning-performance.html">Tune XDCR Performance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-managing-security.html">XDCR Data Security</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-timestamp-based-conflict-resolution.html">Timestamp-based Conflict Resolution</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-intro.html">Security</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-watsnew.html">What&#8217;s New</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-authentication.html">Authentication</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-pw-auth.html">Password-Based Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-ldap-new.html">LDAP Authentication</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-saslauthd-new.html">Setting up saslauthd</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-pam-auth.html">Pluggable Authentication Modules</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-authorisation.html">Authorization</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/concepts-rba.html">Role-Based Access Control (RBAC) for Administrators</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-ldap-gui-new.html">External Roles</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/rbac-ro-user.html">Internal Roles</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-author-apps.html">Authorization for Applications</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-auditing.html">Auditing for Administrators</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-audit-events.html">Audit Events</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-audit-targets.html">Audit Targets</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-json-fields-new.html">Audit File Details</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-encryption.html">Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-data-encryption.html">Encryption at Rest</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-comm-encryption.html">Encryption on the Wire</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-x509certsintro.html">X.509 for TLS</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-in-applications.html">Encryption in Applications</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/secret-mgmt.html">Secret Management and Hardening</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../security/security-best-practices.html">Security Best Practices</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-passwords.html">Couchbase Passwords</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-bucket-protection.html">Bucket Protection</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-iptables.html">Network and ACLs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-access-logs.html">Access Logs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-config-cache.html">Client Configuration Cache</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-user-input.html">User Input Validation</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-acls-new.html">Network ACLs and Security Groups</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../security/security-report-vulnerability.html">Reporting a Security Vulnerability</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Monitoring and Troubleshooting</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../monitoring/monitor-intro.html">Monitoring</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../monitoring/monitoring-rest.html">Monitor Using the REST API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../monitoring/monitoring-cli.html">Monitor Using the cbstats Utility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../monitoring/ui-monitoring-statistics.html">Monitoring Statistics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr/xdcr-monitor-timestamp-conflict-resolution.html">Monitoring XDCR Timestamp-based Conflict Resolution</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../monitoring/monitoring-stats-configuration.html">Monitoring Management</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../troubleshooting/troubleshooting-intro.html">Troubleshooting</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../troubleshooting/troubleshooting-general-tips.html">General Tips</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../clustersetup/ui-logs.html">Using Logs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../troubleshooting/troubleshooting-common-errors.html">Common Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../troubleshooting/core-files.html">Core Files</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../backup-restore/backup-restore.html">Backup and Restore</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../backup-restore/enterprise-backup-restore.html">cbbackupmgr Tool</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-strategies.html">Enterprise Backup Strategies</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-tutorial.html">Enterprise Backup Tutorial</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-archivelayout.html">Enterprise Backup Archive Layout</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/incremental-backup.html">cbbackup and cbrestore Tools</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">N1QL Performance</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../performance/indexing-and-query-perf.html">Indexing JSON Documents and Query Performance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../performance/index-scans.html">Understanding Index Scans</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Integrations</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/intro.html">Connector Guides</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/overview.html">Elasticsearch Plug-in 2.2</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/install-and-config.html">Installation and Configuration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/working-with-documents.html">Working with Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/advanced-settings.html">Advanced Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/performance-tuning.html">Performance Tuning</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/troubleshooting.html">Troubleshooting</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/elasticsearch-2.2/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/hadoop-1.2/hadoop.html">Hadoop Connector 1.2</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/kafka-3.1/kafka-intro.html">Kafka Connector 3.1</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.1/quickstart.html">Quickstart</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.1/source-configuration-options.html">Source Configuration Options</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.1/sink-configuration-options.html">Sink Configuration Options</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.1/streams-sample.html">Couchbase Sample with Kafka Streams</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.1/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/kafka-3.0/kafka-intro.html">Kafka Connector 3.0</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.0/quickstart.html">Quickstart</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.0/source-configuration-options.html">Source Configuration Options</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.0/streams-sample.html">Couchbase Sample with Kafka Streams</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/kafka-3.0/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/spark-2.2/spark-intro.html">Spark Connector 2.2</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/dev-workflow.html">Development Workflow</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/working-with-rdds.html">Working With RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/structured-streaming.html">Structured Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.2/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/spark-2.1/spark-intro.html">Spark Connector 2.1</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/dev-workflow.html">Development Workflow</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/working-with-rdds.html">Working With RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/structured-streaming.html">Structured Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.1/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/spark-2.0/spark-intro.html">Spark Connector 2.0</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/dev-workflow.html">Development Workflow</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/working-with-rdds.html">Working With RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/structured-streaming.html">Structured Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-2.0/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/spark-1.2/spark-intro.html">Spark Connector 1.2</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/dev-workflow.html">Development Workflow</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/working-with-rdds.html">Working With RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.2/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/spark-1.1/spark-intro.html">Spark Connector 1.1</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/working-with-rdds.html">Working With RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.1/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../connectors/spark-1.0/spark-intro.html">Spark Connector 1.0</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/working-with-rdds.html">Working with RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/spark-1.0/release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/talend/talend.html">Talend Connector</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../connectors/odbc-jdbc-drivers.html">Couchbase ODBC and JDBC Drivers</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">References</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">N1QL Reference</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/index.html">N1QL Language Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-intro/queriesandresults.html">N1QL Queries and Results</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-intro/sysinfo.html">Getting System Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-intro/cbq.html">Running N1QL Queries from a Command Line</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/conventions.html">Conventions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/reservedwords.html">Reserved Words</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/datatypes.html">Data Types</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/literals.html">Literals</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/identifiers.html">Identifiers</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Operators</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/operators.html">Operators Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/arithmetic.html">Arithmetic Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/collectionops.html">Collection Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/comparisonops.html">Comparison Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/conditionalops.html">Conditional Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/constructionops.html">Construction Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/logicalops.html">Logical Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/nestedops.html">Nested Operators</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/stringops.html">String Operators</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Functions</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/functions.html">Functions Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/aggregatefun.html">Aggregate Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/arrayfun.html">Array Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/comparisonfun.html">Comparison Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/condfununknown.html">Conditional Functions for Unknowns</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/condfunnum.html">Conditional Functions for Numbers</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/datefun.html">Date Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/jsonfun.html">JSON Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/metafun.html">Meta and UUID Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/numericfun.html">Number Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/objectfun.html">Object Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/patternmatchingfun.html">Pattern-matching Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/stringfun.html">String Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/tokenfun.html">Token Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/typefun.html">Type Functions</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/subqueries.html">Subqueries</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/correlated-subqueries.html">Correlated Subqueries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/subquery-examples.html">Examples</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/booleanlogic.html">Boolean Logic</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Statements</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/build-index.html">BUILD INDEX</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/createindex.html">CREATE INDEX</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/indexing-arrays.html">Array Indexing</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../indexes/covering-indexes.html">Covering Indexes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/createprimaryindex.html">CREATE PRIMARY INDEX</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/delete.html">DELETE</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/dropindex.html">DROP INDEX</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/dropprimaryindex.html">DROP PRIMARY INDEX</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/explain.html">EXPLAIN</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/infer.html">INFER</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/insert.html">INSERT</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/merge.html">MERGE</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/prepare.html">PREPARE</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">SELECT</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/selectintro.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/select-syntax.html">SELECT Syntax</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/selectclause.html">SELECT clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/from.html">FROM clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/hints.html">USE INDEX clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/let.html">LET clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/where.html">WHERE clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/groupby.html">GROUP BY clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/union.html">UNION, INTERSECT, and EXCEPT</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/orderby.html">ORDER BY clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/limit.html">LIMIT clause</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/offset.html">OFFSET clause</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/update.html">UPDATE</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/upsert.html">UPSERT</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="full-text-intro.html">Full Text Search Reference</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-whats-new.html">What&#8217;s New in the Current Version?</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-creating-indexes.html">Text Indexing</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-text-analysis.html">Text Analysis</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="fts-queries.html">Queries</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-query-types.html">Types of Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-sorting.html">Sorting Query Results</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-response-object-schema.html">Response Object Schema</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="fts-troubleshooting.html">Troubleshooting and FAQs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../cli/cli-intro.html">CLI Reference</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../backup-restore/cbbackupmgr.html">cbbackupmgr</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-backup.html">cbbackupmgr backup</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-compact.html">cbbackupmgr compact</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-help.html">cbbackupmgr help</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-config.html">cbbackupmgr config</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-list.html">cbbackupmgr list</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-merge.html">cbbackupmgr merge</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-remove.html">cbbackupmgr remove</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-restore.html">cbbackupmgr restore</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../cli/cbcli-intro.html">couchbase-cli</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/alter-role.html">admin-role-manage</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/bucket-compact.html">bucket-compact</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/bucket-create.html">bucket-create</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/bucket-delete.html">bucket-delete</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/bucket-edit.html">bucket-edit</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/bucket-flush.html">bucket-flush</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/bucket-list.html">bucket-list</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/cluster-edit.html">cluster-edit</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/cluster-init.html">cluster-init</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/collect-logs-start.html">collect-logs-start</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/collect-logs-status.html">collect-logs-status</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/collect-logs-stop.html">collect-logs-stop</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/failover.html">failover</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/group-manage.html">group-manage</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/master-password.html">master-password</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/node-init.html">node-init</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/rebalance.html">rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/rebalance-status.html">rebalance-status</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/rebalance-stop.html">rebalance-stop</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/recovery.html">recovery</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/reset-admin-password.html">reset-admin-password</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/server-add.html">server-add</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/server-list.html">server-list</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/server-readd.html">server-readd</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-alert.html">setting-alert</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-audit.html">setting-audit</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-autofailover.html">setting-autofailover</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-cluster.html">setting-cluster</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-compaction.html">setting-compaction</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-index.html">setting-index</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-ldap.html">setting-ldap</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-notification.html">setting-notification</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/setting-xdcr.html">setting-xdcr</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/ssl-manage.html">ssl-manage</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/user-manage.html">user-manage</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/xdcr-replicate.html">xdcr-replicate</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcli/xdcr-setup.html">xdcr-setup</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbanalyze-core-tool.html">cbanalyze-core</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../cli/cbbackup-tool.html">cbbackup</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/backup-cbbackup.html">Backing up with cbbackup</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbbackup-wrapper.html">cbbackupwrapper and cbrestorewrapper</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbcollect-info-tool.html">cbcollect_info</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbdocloader-tool.html">cbdocloader</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../cli/cbepctl-intro.html">cbepctl</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbepctl/set-checkpoint_param.html">set checkpoint_param</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbepctl/set-flush_param.html">set flush_param</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbepctl/set-tap_param.html">set tap_param</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbft-bleve-dump.html">cbft-bleve-dump</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbft-bleve-query.html">cbft-bleve-query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbq-tool.html">cbq</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../cli/cbrestore-tool.html">cbrestore</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/restore-cbrestore.html">Restoring with cbrestore</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbrestore-tween-opsys.html">rehash=1</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../cli/cbstats-intro.html">cbstats</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-all.html">all</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-allocator.html">allocator</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-checkpoint.html">checkpoint</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-config.html">config</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-dcp.html">dcp</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-dcpagg.html">dcpagg</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-diskinfo.html">diskinfo</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-dispatcher-job.html">dispatcher</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-failovers.html">failovers</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-hash.html">hash</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-key.html">key</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-kvstore.html">kvstore</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-kvtimings.html">kvtimings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-memory.html">memory</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-reset.html">reset</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-runtimes.html">runtimes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-scheduler.html">scheduler</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-tap.html">tap</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-tapagg.html">tapagg</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-timing.html">timings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-uuid.html">uuid</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-vbucket.html">vbucket</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-vkey.html">vkey</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-warmup.html">warmup</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbstats/cbstats-workload.html">workload</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbtransfer-tool.html">cbtransfer</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/cbworkloadgen-tool.html">cbworkloadgen</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../cli/mctimings.html">mctimings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-intro.html">REST API reference</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-endpoints-all.html">REST API endpoint list</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-cluster-intro.html">Cluster API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-provisioning.html">Creating a new cluster</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-get.html">Retrieving Cluster Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-details.html">Viewing Cluster Details</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-addnodes.html">Adding Nodes to Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-joinnode.html">Joining Nodes into Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-removenode.html">Removing Nodes from Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-rebalance.html">Rebalancing Nodes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-get-internal-setting.html">Viewing Internal Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-cluster-autofailover-intro.html">Managing Auto-Failover</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-autofailover-settings.html">Retrieving Auto-Failover Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-autofailover-enable.html">Enabling and Disabling Auto-Failover</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-autofailover-reset.html">Resetting Auto-Failover</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-disable-query.html">Disabling Consistent View Query Results on Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-cluster-email-notifications.html">Setting Email Notifications</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-server-nodes.html">Server Nodes API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-get-info.html">Getting Server Node Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-services.html">Enabling Couchbase Server Services</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-failover.html">Failing over Nodes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-recovery-incremental.html">Setting Recovery Type</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-failover-graceful.html">Setting Graceful Failover</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-hostname.html">Setting Hostnames</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-set-username.html">Setting Usernames and Passwords</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-memory-quota.html">Setting Memory Quota</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-index-path.html">Setting Index Paths</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-node-retrieve-stats.html">Retrieving Statistics</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-rza.html">Server Groups API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-servergroup-get.html">Getting Server Group Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-servergroup-post-create.html">Creating Server Groups</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-servergroup-post-add.html">Adding Servers to Server Groups</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-servergroup-put.html">Renaming Server Groups</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-servergroup-put-membership.html">Updating Server Group Memberships</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-servergroup-delete.html">Deleting Server Groups</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-bucket-intro.html">Buckets API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-buckets-summary.html">Getting all Bucket Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-info.html">Getting Single Bucket Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-stats.html">Getting Bucket Statistics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-buckets-streamingURI.html">Getting Bucket Streaming URI</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-create.html">Creating and Editing Buckets</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-set-priority.html">Setting Disk I/O Priority</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-metadata-ejection.html">Setting Metadata Ejection</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-parameters.html">Changing Bucket Parameters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-auth.html">Changing Bucket Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-memory-quota.html">Changing Bucket Memory Quota</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-delete.html">Deleting Buckets</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-bucket-flush.html">Flushing Buckets</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-index-service.html">Index Service API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/get-settings-indexes.html">Retrieve the Global Secondary Index Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/post-settings-indexes.html">Set the Global Secondary Index Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-views-intro.html">Views API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-ddocs-get.html">Getting Design Doc Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-ddocs-create.html">Creating Design Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-ddocs-delete.html">Deleting Design Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-views-get.html">Getting Views Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-views-requests.html">Limiting Views Requests</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-fts.html">Full Text Search API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-fts-node.html">Node Configuration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-fts-indexing.html">Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-fts-advanced.html">Advanced</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-xdcr-intro.html">XDCR API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-create-replication.html">Creating XDCR Replications</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-get-ref.html">Getting a Destination Cluster Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-create-ref.html">Setting Destination Cluster References</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-delete-ref.html">Deleting a Destination Cluster Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-data-encrypt.html">Managing XDCR Data Encryption</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-delete-replication.html">Deleting XDCR Replications</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-adv-settings.html">Managing Advanced XDCR Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-pause-resume.html">Pausing XDCR Replication Streams</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-xdcr-statistics.html">Getting XDCR Stats</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/compaction-rest-api.html">Compaction API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/security-encrypted-access.html">Using REST for Encrypted Access</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-compact-spatialviews.html">Compacting Spatial Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/logs-rest-api.html">Logs API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-logs-get.html">Retrieving Log Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-client-logs.html">Creating Client Logs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-security.html">Security API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-auditing.html">Auditing API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../rest-api/rest-authorization.html">Authorization API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rbac.html">Role Based Admin Access (RBAC)</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-user-create.html">Create a Read-Only Administrator</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-user-getname.html">Retrieve the Read-Only Administrator&#8217;s Name</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-user-password-put.html">Change the Read-Only Administrator&#8217;s Password</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-user-delete.html">Delete the Read-Only Administrator</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-encryption.html">Encryption On-the-Wire API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-secret-mgmt.html">Secret Management API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/index.html">N1QL REST API</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/examplesrest.html">Examples</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exsuccessful.html">Successful request</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/expositional.html">Request with positional parameters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exnamed.html">Request with Named Parameters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/extimeout.html">Request Timeout</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exrequesterror.html">Request error</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exserviceerror.html">Service error</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exn1qlerror.html">N1QL error</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exunsupportedhttp.html">Unsupported HTTP method</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exauthhttp.html">Request with authentication - HTTP header</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-rest-api/exauthrequest.html">Request with authentication - request parameter</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../tools/tools-ref.html">Couchbase Server Tools</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../tools/cbq-shell.html">cbq: The Command Line Shell for N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../tools/query-workbench.html">Query Workbench</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../tools/query-monitoring.html">Query Monitoring</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Data Import/Export Tools</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../tools/cbimport.html">cbimport</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../tools/cbexport.html">cbexport</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Release Notes</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../release-notes/relnotes.html">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Older Release Notes</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../release-notes/relnotes-45-ga.html">Release Notes for Couchbase Server 4.5</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../release-notes/relnotes-41-ga.html">Release Notes for Couchbase Server 4.1</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../release-notes/relnotes-40-ga.html">Release Notes for Couchbase Server 4.0</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../release-notes/giving-feedback.html">Providing Feedback</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Contributing</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../home/contribute/index.html">Contribute to the Documentation</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../../6.0/fts/fts-creating-indexes.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../introduction/intro.html">Couchbase Server</a></li>
+    <li class="crumb">References</li>
+    <li class="crumb"><a href="full-text-intro.html">Full Text Search Reference</a></li>
+    <li class="crumb"><a href="fts-creating-indexes.html">Text Indexing</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/simon-dew/docs-server/edit/release/4.6/modules/fts/pages/fts-creating-indexes.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Text Indexing</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to perform full text queries, you must first create a full text index.
+Unlike N1QL or other SQL systems, you can’t run full text searches directly on data without a full text index: full text search has nothing like a table scan that can inspect documents outside the index.</p>
+</div>
+<div class="paragraph">
+<p>The process of creating an index is called <em class="term">index mapping</em>, in which you specify how you want Couchbase Server to map the different fields in your JSON documents to elements in the full text index.
+You typically want a different index mapping for each type of document you want to search.
+For example, if you’re using the Couchbase <code class="param">beer-sample</code> bucket, you might choose to map documents of type <code class="param">beer</code> one way and documents of type <code class="param">brewery</code> another.</p>
+</div>
+<div class="paragraph">
+<p>An index can contain information from one bucket only.
+Your user must have appropriate access permissions for the bucket they want to search.
+You can enable searches across buckets by using an <a href="#index-alias">index alias</a>.</p>
+</div>
+<div class="paragraph">
+<p>To create an index, go to the Couchbase Server web console &gt; <strong class="ui">Indexes</strong> tab &gt; <strong class="ui">Full Text</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Your URL might look something like this, if you replace <code class="param">localhost</code> with the name of your server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>http://localhost:8091/ui/index.html#/fts_list</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From here, you can create, edit, clone, and delete index definitions.
+If you see a message saying "<code class="out">Full Text not enabled on this node,</code>" access the web console on another node where the full text service is enabled.</p>
+</div>
+<div class="paragraph">
+<p>To create an index in the web console, using your web browser:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to the <strong class="ui">Indexes</strong> tab &gt; <strong class="ui">Full Text</strong>.</p>
+</li>
+<li>
+<p>Click on the <b class="button">New Full Text Index</b> button.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To edit an index definition in the web console, using your web browser:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to the <strong class="ui">Indexes</strong> tab &gt; <strong class="ui">Full Text</strong>.</p>
+</li>
+<li>
+<p>This page displays a list of full text indexes that you had previously defined, , if any.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each listed index, if any, has buttons for the following operations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The index <b class="button">edit</b> button allows you to update an index definition.
+Updating the index definition causes it to be rebuilt.</p>
+</li>
+<li>
+<p>the index <b class="button">clone</b> button allows you to copy an index definition.</p>
+</li>
+<li>
+<p>the index <b class="button">delete</b> button allows you to delete an index definition.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When you click on the index <b class="button">delete</b> button, you will have a chance to first confirm the deletion operation.
+Deleting an index, importantly, is a permanent operation.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fts-index-mapping"><a class="anchor" href="#fts-index-mapping"></a>Index Mapping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The simplest way to create an index is to use the default index mapping with no further customization.
+This is what you did in the <a href="full-text-intro.html#fts-quick-start" class="page">Executing Your First Full Text Query</a> section.
+<em class="term">Default index mapping</em> refers to the index mapping that Couchbase Server uses for JSON documents that don’t match a more specific document mapping based on document type.
+This example relies on dynamic mapping, explained later, to decide how to index the individual fields in the documents.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Using the default index mapping with dynamic mapping is a good way to ensure that full text search is working properly on a small set of data, but it’s not very selective so it tends to write a lot of information into the index.
+For this reason, default index mapping may be slow or result in high load if used on a production-sized dataset.
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click the button <strong class="ui">New Full Text Index</strong>.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/fts-create-index.png" alt="fts create index" width="570">
+</div>
+</div>
+</li>
+<li>
+<p>Give your index a name like "<code class="in">beer-sample-idx</code>" and select the bucket you want to index from the drop-down list.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/fts-create-index-2.png" alt="fts create index 2" width="300">
+</div>
+</div>
+</li>
+<li>
+<p>Starting version 4.6, you can create custom index mappings by document type when the type is specified in the document key.
+FTS uses the type identifier that you specify to determine where to find the type of each document.
+The type mapping then uses the value of type identifier for each document to determine which index mapping rules to apply.
+Select one of the three options for type identifier: "JSON type field", "Doc ID up to separator", and "Doc ID with regex".</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>JSON type field</strong>: Specify the field in the JSON document whose value determines the type of the document.
+Defaults to "type".</p>
+</li>
+<li>
+<p><strong>Doc ID up to separator</strong>: The type identifier is the prefix of the document key, up to but not including the given character.</p>
+</li>
+<li>
+<p><strong>Doc ID with regex</strong>: For advanced users, you can specify a regular expression that matches the type identifier.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example, the Doc ID up to the first underscore is considered the type identifier, so beer name, brewery name, and so on could be specified as type mappings.</p>
+</div>
+<div class="paragraph">
+<p>+
+image::fts-create-index-4.png[,300]</p>
+</div>
+</li>
+<li>
+<p>If you click on "<strong class="ui">Type Mappings</strong>," you will only see one type listed, which is "<code class="out">default</code>."</p>
+</li>
+<li>
+<p>Click the "<strong class="ui">Create Index</strong>" button.
+You will then see a screen that shows you how many documents are in your index and the percentage complete.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/fts-create-index-3.png" alt="fts create index 3" width="300">
+</div>
+</div>
+</li>
+<li>
+<p>Click on the <strong class="ui">Full Text</strong> link again to search the index you just created.</p>
+</li>
+<li>
+<p>Your search shows the list of document IDs that contain the best matches for whatever search you ran, in order of score, with the highest scoring document listed first.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-mapping"><a class="anchor" href="#custom-mapping"></a>Custom Mapping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are many additional controls that can be used to build indexes on your documents just the way you want them.
+These can be found under <strong class="ui">Indexes</strong> &gt; <strong class="ui">Full Text</strong> &gt; <strong>New</strong> or <strong class="ui">Edit Full Text Index</strong> buttons.</p>
+</div>
+<div class="paragraph">
+<p>Document mapping works as follows:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the type of the document you want to include in your index.
+You can include more than one type of document in a single index but you can only index documents in a single bucket.</p>
+</li>
+<li>
+<p>For each type of document, you specify how to index its fields and embedded structures.</p>
+</li>
+<li>
+<p>The term <code class="param">field</code> refers to a name value pair in JSON where the value is simple (i.e.
+not an object).</p>
+</li>
+<li>
+<p>Use a <strong>child mapping</strong> to index embedded objects, i.e.
+name-value pairs where the value is of type object.
+You can add field mappings as in step 3 to describe how the name-value pairs in the embedded object should be indexed.</p>
+</li>
+<li>
+<p>To index arrays, use fields for arrays of simple values and use a child mapping for arrays of objects.
+In other words, you design your mapping so that you essentially ignore the array and FTS "just works" even though there are multiple values.
+For example, to index the following document containing an array, add a field of type <code class="param">text</code> for <code class="param">pachyderms</code>.
+Queries work just like any other field.
+If included in <code>_all</code>, a query for <code class="param">rhinoceros</code> matches this document, or you can scope to the field using the normal field scoping syntax: <code>pachyderms:rhinoceros</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "pachyderms": ["hippopotamus", "rhinoceros",  "elephant"]
+}</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Type Mappings</strong></p>
+</div>
+<div class="paragraph">
+<p>Couchbase Server indexes JSON documents differently depending on the type of the JSON document.
+For example, you can create a full text index that only includes documents of type="brewery," and you can specify exactly how you want the documents mapped.
+To do this, click <strong class="ui">Add Type Mapping</strong> and enter a type name that matches the type attribute of the JSON document you want to index.</p>
+</div>
+<div class="paragraph">
+<p>There is also a special type mapping for the <em>Default Type</em>.
+The default type mapping is created for every index automatically and is used for any document whose type does not match another type mapping or that doesn’t have a type attribute.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You must disable the default mapping if you <em>only</em> want documents of the types that you specify to be in the index.
+If default mapping is enabled, Couchbase Server will use it to include all the documents in your index that don’t match another type mapping, which may or may not be what you want.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each type mapping in an index definition can be enabled or disabled.
+Disabling a type mapping can be used to ignore documents of a certain type.
+For example, if you want to index all documents in the beer-sample bucket <em>except</em> "breweries" you could simply create a type mapping for breweries and then check disabled (assuming the default mapping is also disabled).</p>
+</div>
+<div class="paragraph">
+<p>You can also specify an analyzer to use for a type mapping.
+This defaults to inheriting the Default Analyzer specified in "<strong class="ui">Advanced</strong>".</p>
+</div>
+<div class="paragraph">
+<p><strong>Field Mapping</strong></p>
+</div>
+<div class="paragraph">
+<p>For any type mapping, you can insert a child field to index the values in your JSON document with more control about what appears in the index and how.
+The word "field" in index mapping refers to a name-value pair in JSON whose value is a simple type: string, number, true, false, or null.
+These child fields refer to name-value pairs that are directly under an object.
+In the brewery sample below, <code class="param">name</code>, <code class="param">city</code>, and <code class="param">description</code> are all fields.</p>
+</div>
+<div class="paragraph">
+<p>You can index the <code class="param">description</code> field of every document in the beer-sample bucket, you can create an index, hover over the <em>default index</em>, click on the plus that appears, and select "<strong class="ui">Insert child field</strong>".
+Because both beers and breweries have a description field, this default mapping will end up with every document in it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "21st Amendment Brewery Cafe",
+  "city": "San Francisco",
+  ...
+  "description": "The 21st Amendment Brewery offers a variety of award winning house made brews and American grilled cuisine in a comfortable loft like setting. Join us before and after Giants baseball games in our outdoor beer garden. A great location for functions and parties in our semi-private Brewers Loft. See you soon at the 21A!",
+  "address": [
+    "563 Second Street"
+    ],
+  "geo": {
+    "accuracy": "ROOFTOP",
+    "lat": 37.7825,
+    "lon": -122.393
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are four values and four checkboxes you can specify when you insert a child field.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">field</code>: The name of name-value pair in the JSON document.</p>
+</li>
+<li>
+<p><code class="param">type</code>: Defaults to text, but other possible values are object, number, datetime, and disabled.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Type object is not supported in Developer Preview and will cause an index mapping to fail.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p><code class="param">searchable as</code>: You can change the name that is written into the index, so if a user limits their search to a specific field they would use this value instead of the actual name of the field in the JSON.
+For example, if we mapped the field <code class="param">description</code> "searchable as" <code class="param">info</code>, instead of typing "description:semi-private", users would instead search for "info:semi-private".</p>
+</li>
+<li>
+<p><code class="param">analyzer</code>: The analyzer to use for this specific field.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition, there are four checkboxes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">index</strong>: If unchecked, fields that match this will not be indexed.
+If the store checkbox is checked, they will still be stored.</p>
+</li>
+<li>
+<p><strong class="ui">store</strong>: Normally, only the document IDs are written to the index.
+If this is checked, the document contents are also written to the index.
+This enables highlighting and result snippets but generally results in larger indexes that are slower to build.
+Since gets and multi-gets are quite fast, usually users don’t need to store the additional information in the index.</p>
+</li>
+<li>
+<p><strong class="ui">Include in _all field</strong>: If this is checked, the text in this field will be searchable in query strings without prefixing the field name.
+If unchecked, the query must include this prefix, for example, "description:modern."</p>
+</li>
+<li>
+<p><strong class="ui">include term vectors</strong>: Term vectors are the locations of terms in a particular field.
+Some functionality, such as snippets, highlighting, and phrase search, requires term vectors and can’t be used without them.
+Not storing term vectors results in smaller indexes and faster index build times.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this example, you would create the mapping like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">field: description
+          type: text
+          searchable as: description (automatically filled in)
+          analyzer: inherit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check "<strong class="ui">store</strong>" so that all four checkboxes are checked.
+This makes it easier to test and debug your new index because search results will include snippets with the search terms highlighted.
+The downside of storing the information is the extra size and time it takes to build, but these should be acceptable in this case.</p>
+</div>
+<div class="paragraph">
+<p>Field is the name of the name-value pair in the JSON.
+In our example, the <code class="param">description</code> property is at the top level but if you need to map name-value pairs that are embedded in complex structures, you need to use a <a href="#topic_cmy_jzk_1v/child-mapping">child mapping</a> instead.</p>
+</div>
+<div id="child-mapping" class="paragraph">
+<p><strong>Insert Child Mapping</strong></p>
+</div>
+<div class="paragraph">
+<p>Child Mappings are similar to field mappings, but instead of indexing simple values, they enable you to index embedded structures in a JSON document.
+Use a child mapping when the value of  a name-value pair is an object.</p>
+</div>
+<div class="paragraph">
+<p>For example, consider the brewery document in the beer sample bucket.
+This document contains an embedded object called "geo" that has three fields: accuracy, lat, and lon.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"geo": {
+  "accuracy": "ROOFTOP",
+  "lat": 37.7825,
+  "lon": -122.393
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To create an index with an object mapping for the geo structure using the Web Console, do the following:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a type mapping for breweries.</p>
+</li>
+<li>
+<p>Insert a child mapping for the attribute "<code class="param">geo</code>".</p>
+</li>
+<li>
+<p>In the "<code class="param">geo structure</code>", insert a child field for "<code class="param">accuracy</code>".</p>
+</li>
+<li>
+<p>Insert child fields for "<code class="param">lat</code>" and "<code class="param">lon</code>" and set them to type <code>number</code>.</p>
+</li>
+<li>
+<p>In a search on your newly created index, you can search the accuracy field using a dot syntax: "<code class="code">geo.accuracy:rooftop</code>".</p>
+</li>
+<li>
+<p>You can also do range searches on the geo fields: "<code class="code">geo.accuracy:rooftop +geo.lat:&gt;37 +geo.lon:&gt;141</code>".</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The index definition you created will look like the example below.
+You can create the same index definition with object mappings using the REST API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+          "type": "fulltext-index",
+          "name": "beer-idx",
+          "uuid": "af4c073428d51ed5",
+          "sourceType": "couchbase",
+          "sourceName": "beer-sample",
+          "sourceUUID": "a6e631d6c59692d8a8e4280615afd727",
+          "planParams": {
+          "maxPartitionsPerPIndex": 32,
+          "numReplicas": 0,
+          "hierarchyRules": null,
+          "nodePlanParams": null,
+          "pindexWeights": null,
+          "planFrozen": false
+          },
+          "params": {
+          "mapping": {
+          "analysis": {
+          "analyzers": {},
+          "char_filters": {},
+          "token_filters": {},
+          "token_maps": {},
+          "tokenizers": {}
+          },
+          "byte_array_converter": "json",
+          "default_analyzer": "standard",
+          "default_datetime_parser": "dateTimeOptional",
+          "default_field": "_all",
+          "default_mapping": {
+          "display_order": "1",
+          "dynamic": true,
+          "enabled": false,
+          "fields": [],
+          "properties": {}
+          },
+          "default_type": "_default",
+          "type_field": "type",
+          "types": {
+          "brewery": {
+          "display_order": "0",
+          "dynamic": false,
+          "enabled": true,
+          "fields": [],
+          "properties": {
+          "geo": {
+          "display_order": "0",
+          "dynamic": true,
+          "enabled": true,
+          "fields": [],
+          "properties": {
+          "accuracy": {
+          "dynamic": false,
+          "enabled": true,
+          "fields": [
+          {
+          "analyzer": "",
+          "date_format": null,
+          "display_order": "2",
+          "include_in_all": false,
+          "include_term_vectors": true,
+          "index": true,
+          "name": "accuracy",
+          "store": true,
+          "type": "text"
+          }
+          ],
+          "properties": {}
+          },
+          "lat": {
+          "dynamic": false,
+          "enabled": true,
+          "fields": [
+          {
+          "analyzer": "",
+          "date_format": null,
+          "display_order": "1",
+          "include_in_all": true,
+          "include_term_vectors": true,
+          "index": true,
+          "name": "lat",
+          "store": true,
+          "type": "number"
+          }
+          ],
+          "properties": {}
+          },
+          "lon": {
+          "dynamic": false,
+          "enabled": true,
+          "fields": [
+          {
+          "analyzer": "",
+          "date_format": null,
+          "display_order": "0",
+          "include_in_all": true,
+          "include_term_vectors": true,
+          "index": true,
+          "name": "lon",
+          "store": true,
+          "type": "number"
+          }
+          ],
+          "properties": {}
+          }
+          }
+          }
+          }
+          }
+          }
+          },
+          "store": {
+          "kvStoreName": "forestdb"
+          }
+          },
+          "sourceParams": {
+          "authPassword": "",
+          "authSaslPassword": "",
+          "authSaslUser": "",
+          "authUser": "beer-sample",
+          "clusterManagerBackoffFactor": 0,
+          "clusterManagerSleepInitMS": 0,
+          "clusterManagerSleepMaxMS": 2000,
+          "dataManagerBackoffFactor": 0,
+          "dataManagerSleepInitMS": 0,
+          "dataManagerSleepMaxMS": 2000,
+          "feedBufferAckThreshold": 0,
+          "feedBufferSizeBytes": 0
+          }
+          }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Advanced Index Settings</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Type field</strong></p>
+</div>
+<div class="paragraph">
+<p>By default, Couchbase Server will look for an attribute called "type" in your document and will use that for type mappings.
+You can change the name of the "type" field by clicking on the "<strong class="ui">Advanced</strong>" options and changing the value of the "<strong class="ui">Type Field</strong>".</p>
+</div>
+<div class="paragraph">
+<p><strong>Default Type</strong></p>
+</div>
+<div class="paragraph">
+<p>Documents that match the default type mapping rules are written to the index as being of this type.
+The field defaults to "<code class="code">_default</code>", which you can change to avoid conflicts if "<code class="code">_default</code>" is a valid type field value in your JSON documents.</p>
+</div>
+<div class="paragraph">
+<p><strong>Default Analyzer</strong></p>
+</div>
+<div class="paragraph">
+<p>This analyzer is used by default when creating an index, if no other analyzer is specified.
+When you define your index mapping, you can override this value in a number of places, for example, when you create type mappings or field mappings.</p>
+</div>
+<div class="paragraph">
+<p><strong>Default Date/Time Parser</strong></p>
+</div>
+<div class="paragraph">
+<p>The name of a Date/Time parser that will be used to parse a date stored as a string.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Full text search and Bleve expect dates to be in the format specified by <a href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank" rel="noopener">RFC-3339</a>, which is a specific profile of ISO-8601 that is more restrictive.
+</td>
+</tr>
+</table>
+</div>
+<div id="def-field-all" class="paragraph">
+<p><strong>Default Field</strong></p>
+</div>
+<div class="paragraph">
+<p>The default field is searched when a user query does not limit the scope of a search to a particular field.
+This is highly convenient because most of the time you want a user to be able to search for a term wherever it shows up in the index.
+For example, if you create a text index of breweries, as long as terms are included in the <code>_all</code> field, you can query "<code class="code">La Jolla</code>" and find it without specifying "<code class="code">name:la jolla</code>" or "<code class="code">city:la jolla</code>".
+You would only need to change the name of this value if your JSON documents already include a field called "<code class="code">_all</code>".</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-alias"><a class="anchor" href="#index-alias"></a>Index Aliases</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An <em class="term">index alias</em> is a special "virtual index" that points to other, real full text indexes.</p>
+</div>
+<div class="paragraph">
+<p>Similar to a symbolic link in a file system, an index alias allows a naming level of indirection, so that applications can refer to a stable name (the alias' name) while administrators can dynamically re-target or re-point the index alias to different, real indexes.
+This can be useful for applications that are in production.
+For example, say you build an index my-index.
+You then build my-index-alias and point it to my-index.
+Your production application can search my-index-alias until you need to adjust the index, perhaps to change the index mapping or the analyzer.
+Any such change will require the index to be rebuilt, which would mean the current index will be out of commission.
+Instead, you can clone the index and give it a new name, like my-better-index.
+Once this index has had the time to build, you can test it before putting it into production.
+If you decide it&#8217;s ready, you then modify the definition of my-index-alias to remove my-index and instead point to my-better-index.
+By using an alias like this, the switch to my-better-index will be instantaneous and the index will already be fully ready to use.</p>
+</div>
+<div class="paragraph">
+<p>Similar to an email list alias, an index alias in FTS can also "fan-out" and refer to multiple, real indexes.
+Aliases can also refer to other aliases.
+A query on an index alias will be scatter-gathered by FTS to all of the actual, real indexes and FTS will provide merged results from those scatter-gathered queries.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

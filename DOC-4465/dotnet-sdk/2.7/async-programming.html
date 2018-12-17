@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Asynchronous Programming Using the .NET SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4465/dotnet-sdk/2.7/async-programming.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="dotnet-sdk">
+    <meta name="dcterms.identifier" content="2.7">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4465">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">.NET SDK</span> <span class="version">2.7</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.6/async-programming.html">.NET SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/async-programming.html">.NET SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/async-programming.html">.NET SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/async-programming.html">.NET SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/dotnet-intro.html">.NET SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/dotnet-intro.html">.NET SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/async-programming.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/async-programming.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/async-programming.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/async-programming.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/async-programming.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/async-programming.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="encryption.html">Field Level Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="encrypting-using-sdk.html">Field Level Encryption from the .NET SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="scan-consistency-examples.html">Using Scan Consistency</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compression-intro.html">Compression</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threshold-logging.html">Threshold Logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="tracing-from-the-sdk.html">Tracing from the SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-dotnet-sdk.html">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">.NET SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="async-programming.html">Asynchronous Programming</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-dotnet/edit/release/2.7/modules/ROOT/pages/async-programming.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Asynchronous Programming Using the .NET SDK with Couchbase Server</h1>
+<div class="sect1">
+<h2 id="dotnet-async-programming-intro"><a class="anchor" href="#dotnet-async-programming-intro"></a>Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Asynchronous and reactive methods allow you to utilize system resources better.
+Instead of wasting a thread waiting for network or disk I/O, it can be fully utilized to perform other work instead.</p>
+</div>
+<div class="paragraph">
+<p>If you are programming in .NET there are a wide variety of technologies that support asynchronous programming from the Asynchronous Programming Model (APM) and the Event-based Asynchronous Pattern (EAP) within the .NET Framework to OSS frameworks built for the asynchronous model like Akka.NET.</p>
+</div>
+<div class="paragraph">
+<p>Your database access must meet the following requirements:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Rich functionality</p>
+</li>
+<li>
+<p>Interoperable and not opinionated</p>
+</li>
+<li>
+<p>Performant</p>
+</li>
+<li>
+<p>Small dependency and runtime footprint</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With the addition of the Task-based Asynchronous Pattern (TAP) released in .NET 4 the <code class="api">Task</code> and <code class="api">Task&lt;Result&gt;</code> "futures" Types were added along with language support for the <code>async</code> and <code>await</code> keywords.
+TAP offers an easy to use, consistent model for performing asynchronous programming and it is a natural fit to support TAP in the Couchbase .NET SDK.</p>
+</div>
+<div class="paragraph">
+<p>After becoming more familiar with the concept, you will want to use more asynchronous and reactive approaches in your applications.
+Couchbase fully supports blocking operations as well, so you can still use a traditional blocking-based model if you want to.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dotnet-async-and-await-keywords"><a class="anchor" href="#dotnet-async-and-await-keywords"></a>The Async and Await Keywords</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In modern .NET applications the <code>async</code> and <code>await</code> keywords are used to perform asynchronous programming.
+The <code>async</code> keyword is part of the signature of the method, lambda expression or anonymous that will be executing the non-blocking, asynchronous code.
+A method signature with the the async keyword is called an "async method".</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">public async Task&lt;IDocumentResult&lt;T&gt;&gt; GetDocumentAsync&lt;T&gt;(string id){
+    //code goes here
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Above is the signature of the <code class="api">GetDocumentAsync</code> method of the <code class="api">CouchbaseBucket</code> class in the SDK.
+The <code>async</code> keyword will enable the <code>await</code> keyword to within the method body.
+If the <code>await</code> keyword is not found in the method body, a compiler warning will be generated; if the body of the method contains an await keyword and the signature does not contain the <code>async</code> keyword, a compiler error will be generated.
+A method body can contain multiple await keywords.
+The "Async" suffix is simply a convention to make it easier to tell that a method is an asynchronous method.</p>
+</div>
+<div class="paragraph">
+<p>When the <code class="api">GetDocumentAsync</code> method is called, it will run synchronously until an <code>await</code> keyword is encountered.
+At that point the execution will be suspended until the Task or Task&lt;Result&gt; that was awaited on, returns.
+At this point the control will return back to the caller of the method.
+If the  <code class="api">Task</code> has already completed, execution will continue on synchronously (there is no point in offloading execution to the thread pool if the task has already completed).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dotnet-task-and-task_Result"><a class="anchor" href="#dotnet-task-and-task_Result"></a>Task and Task&lt;Result&gt;</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In TAP, the <code class="api">Task</code> and <code class="api">Task&lt;Result&gt;</code> are equivalent to "futures"– a special type that will notify the caller when they have completed.
+A <code class="api">Task</code> represents a void return type (a method whose return type is void) and a <code class="api">Task&lt;Result&gt;</code> represents the return type of the generic result - in the <code class="api">GetDocumentAsync</code> method above, its a class that implements <code class="api">IDocumentResult</code>.
+Within your code you will await on the <code class="api">Task</code> or <code class="api">Task&lt;Result&gt;</code> returned by the asynchronous method you are calling:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">DocumentResult&lt;string&gt; docResult = await GetDocumentAsync&lt;string&gt;("somekey");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if the await keyword is omitted, then a <code class="api">Task&amp;lt;IDocumentResult&amp;lt;string&gt;&gt;</code> would be returned:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Task&lt;DocumentResult&lt;string&gt;&gt; docTask = GetDocumentAsync&lt;string&gt;("somekey");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case the <code class="api">Task</code> has not been awaited and it may or may have not been executed (remember its a "future").
+In order to execute it the docResult would have to be awaited:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>DocumentResult&lt;string&gt; docResult = await docTask;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case we have seperated out the call to <code class="api">GetDocumentAsync(..)</code> and awaiting for the execution of the <code class="api">Task&lt;DocumentResult&gt;</code> it returned to be completed.
+Note that by the time <code>docTask</code> has been awaited, the execution may actually have already been completed.
+In this case the await will simply return the result of the operation; the document stored under the id or key "somekey".</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dotnet-async-example"><a class="anchor" href="#dotnet-async-example"></a>An In-depth Example</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Continuing from the section above, we will make a call to retrieve a document with an Id of "somekey" and display the results.
+We will assume that the server is installed on localhost and that we have a "default" CouchbaseBucket set up.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">static void Main(string[] args){
+    Console.WriteLine("Before calling PrintDocumentAsync on thread {0}.",
+       Thread.CurrentThread.ManagedThreadId);
+    new AsyncExample().ExecuteAsync().Wait();
+    Console.WriteLine("After calling PrintDocumentAsync on thread {0}.",
+     Thread.CurrentThread.ManagedThreadId);
+}
+
+public override async Task ExecuteAsync(){
+    //call it asynchronously with await
+    await PrintDocumentAsync("somekey");
+}
+
+public async Task PrintDocumentAsync(string id){
+    Console.WriteLine("Before awaiting GetDocumentAsync on thread {0}.",
+        Thread.CurrentThread.ManagedThreadId);
+    var doc = await _bucket.GetDocumentAsync&lt;string&gt;(id);
+    Console.WriteLine("After awaiting GetDocumentAsync on thread {0}.",
+        Thread.CurrentThread.ManagedThreadId);
+    Console.WriteLine(doc.Content);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example (full source in <a href="https://github.com/couchbaselabs/devguide-examples/blob/server-4.5/dotnet/AsyncExample.cs" target="_blank" rel="noopener">AsyncExample.cs</a>) we construct a simple .NET Console application that initializes a ClusterHelper and makes a single call to an async method we have defined called <code class="api">PrintDocumentAsync(..)</code>.
+To demonstrate that we are doing asynchronous programming and that the <code class="api">Task</code> is being executed on a thread other than the main thread, we put some stdio output that shows the order of execution and then thread the code is running on:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Before calling PrintDocumentAsync on thread 8.
+After calling PrintDocumentAsync on thread 8.
+Before awaiting GetDocumentAsync on thread 10.
+After awaiting GetDocumentAsync on thread 15.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the output above we see that the order of execution went from the main thread (8) to the main thread before jumping onto thread ten (10) and finally completing on thread fifteen (15)!
+This make sense because this is completely non-blocking code until we hit <code class="api">Console.Read()</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dotnet-calling-tap-methods-synchronously"><a class="anchor" href="#dotnet-calling-tap-methods-synchronously"></a>Calling TAP Methods Synchronously</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The SDK has an equivalent non-async API with the only difference being that the method signatures are slightly different.
+For example, the synchronous version of <code class="api">GetDocumentAsync()</code> looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">public IDocumentResult&lt;T&gt; GetDocument&lt;T&gt;(string id){
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, in some situations you may want to call the asynchronous methods synchronously.
+To do this you would not use the <code>async</code> and <code>await</code> keywords (since you are not awaiting anything); instead you would use <code class="api">Task.Wait(..)</code> and Task.Result:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">using System;
+static void Main(string[] args){
+    Console.WriteLine("Before calling PrintDocumentAsync on thread {0}.",
+      Thread.CurrentThread.ManagedThreadId);
+    new SyncExample().ExecuteAsync().Wait();
+    Console.WriteLine("After calling PrintDocumentAsync on thread {0}.",
+        Thread.CurrentThread.ManagedThreadId);
+}
+
+public override Task ExecuteAsync(){
+    //call it synchronously with no await
+    PrintDocumentAsync("somekey").Wait();
+    return Task.FromResult(0);
+}
+
+public Task PrintDocumentAsync(string id){
+    Console.WriteLine("Before awaiting GetDocumentAsync on thread {0}.",
+        Thread.CurrentThread.ManagedThreadId);
+    var doc = _bucket.GetDocumentAsync&lt;string&gt;(id).Result;
+    Console.WriteLine("After awaiting GetDocumentAsync on thread {0}.",
+        Thread.CurrentThread.ManagedThreadId);
+    Console.WriteLine(doc.Content);
+    return Task.FromResult(0);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that by calling these asynchronous methods synchronously, you are adding additional overhead which is why in most cases you&#8217;ll want to just use the synchronous API instead.
+The entire source for this example is in <a href="https://github.com/couchbaselabs/devguide-examples/blob/server-4.5/dotnet/SyncExample.cs" target="_blank" rel="noopener">SyncExample.cs</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dotnet-batch-execution-of-tasks"><a class="anchor" href="#dotnet-batch-execution-of-tasks"></a>Batch Execution of Tasks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A common use-case is to execute a series of operations in parallel in a batch-like fashion.
+To do this you&#8217;ll create a list of Task operations and then await on <code class="api">Task.WhenAll(..)</code> to execute them:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">static void Main(string[] args){
+    new AsyncBatch().ExecuteAsync().Wait();
+    Console.Read();
+}
+
+public override async Task ExecuteAsync(){
+    var ids = new List&lt;string&gt; { "doc1", "doc2", "doc4" };
+    await PrintAllDocumentsAsync(ids);
+}
+
+public async Task PrintAllDocumentsAsync(List&lt;string&gt; ids){
+    var tasks = new List&lt;Task&lt;IDocumentResult&lt;string&gt;&gt;&gt;();
+    ids.ForEach(x =&gt; tasks.Add(_bucket.GetDocumentAsync&lt;string&gt;(x)));
+
+    var results = await Task.WhenAll(tasks);
+    results.ToList().ForEach(doc =&gt; Console.WriteLine(doc.Status));
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code class="api">Task.WhenAll(..)</code> method execute the entire list of in parallel in a non-blocking, asynchronous fashion.
+Note that there is a similarly named method for executing the list in a blocking manner: <code class="api">Task.WaitAll(..)</code>.
+Depending upon your use-case you should understand the subtle differences between these two methods and use the one that fits your scenario.
+In most cases this will be <code class="api">Task.WhenAll(..)</code>.
+The source for this example can be found in the <a href="https://github.com/couchbaselabs/devguide-examples/blob/server-4.5/dotnet/AsyncBatch.cs" target="_blank" rel="noopener">AsyncBatch.cs example</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dotnet-synchronization-contexts"><a class="anchor" href="#dotnet-synchronization-contexts"></a>Handling Synchronization Contexts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Every CLR hosting environment (ASP.NET, WinForms, etc) has its own specific SynchronizationContext for handling multi-threaded programs.
+Its important to note that in some cases (especially ASP.NET) using the default SynchronizationContext may cause deadlocks.
+The simplest way to handle these deadlocks is by using <code class="api">Task.ConfigureAwait(false)</code>.
+You can read more about this <a href="http://blog.stephencleary.com/2012/07/dont-block-on-async-code.html" target="_blank" rel="noopener">in Stephen Cleary&#8217;s blog on async and blocking</a>.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
