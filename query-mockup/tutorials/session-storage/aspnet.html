@@ -37,7 +37,7 @@
                   <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
                   <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
                   <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
-                  <li><a href="#">Autonomous Operator</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
@@ -60,7 +60,7 @@
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
-                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
                   <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
                 </ul>
               </div>
@@ -242,8 +242,28 @@
   </div>
 <article class="doc">
 <h1 class="page">Using Couchbase Server as a Session Store</h1>
-<div id="preamble">
+<div class="sect1">
+<h2 id="overview"><a class="anchor" href="#overview"></a>Overview</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>This tutorial contains four main sections:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#what-is-a-session-store">What is a session store?</a> If you&#8217;re new to session stores, this section discusses the how/why of sessions.</p>
+</li>
+<li>
+<p><a href="#how-to-setup-and-configure-a-couchbase-cluster">How to Setup and Configure a Couchbase Cluster</a>. Start here if you&#8217;ve never setup Couchbase before.</p>
+</li>
+<li>
+<p><a href="#web-server-integration">Web server integration</a>. Once you have a Couchbase Cluster set up, this tutorial will show how to integrate it with ASP.NET Core.</p>
+</li>
+<li>
+<p><a href="#exploring-session-data">Exploring Session Data</a>. In contrast to many other session storage options, Couchbase has unique capabilities for exploring session data and gaining insights into your users and customers.</p>
+</li>
+</ul>
+</div>
 <link rel="canonical" href="http://docs.couchbase.com/tutorials/session-storage-tutorial/dotnet.html" />
 </div>
 </div>
@@ -258,6 +278,31 @@
 <div class="paragraph">
 <p>Any state that a user needs can be stored in session. It could be as minimal as the user&#8217;s name. User preferences can also be stored in session: language, preferred retail location, invitation/coupon codes, and more.</p>
 </div>
+<div class="paragraph">
+<p>Some more examples of data you might put in a session store:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Shopping carts / baskets (for ecommerce)</p>
+</li>
+<li>
+<p>Ticket selections (for events/ticket sales)</p>
+</li>
+<li>
+<p>Bet slips (as you build before you submit)</p>
+</li>
+<li>
+<p>Cookie tracking</p>
+</li>
+<li>
+<p>Browse-back (to keep track of where a user came from)</p>
+</li>
+<li>
+<p>Site activity tracking (to watch a customer&#8217;s journey on your site)</p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect2">
 <h3 id="why-do-i-need-one"><a class="anchor" href="#why-do-i-need-one"></a>Why do I need one?</h3>
@@ -268,16 +313,16 @@
 <div class="sect2">
 <h3 id="session-storage-with-web-farms"><a class="anchor" href="#session-storage-with-web-farms"></a>Session storage with web farms</h3>
 <div class="paragraph">
-<p>Another reason to store session data elsewhere is because of web farms.</p>
+<p>Another reason to store session data elsewhere is because of web farms. In the below diagram, an ASP.NET web application is being scaled horizontally. Incoming HTTP requests are routed through a load balancer.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="_images/00101-session-diagram.png" alt="00101 session diagram"></span></p>
+<p><span class="image"><img src="assets/images/00101-session-diagram.png" alt="Session storage diagram"></span></p>
 </div>
 <div class="paragraph">
-<p>If session data is stored on the web server, then a single user can only interact with a single server. This is known as "sticky sessions".</p>
+<p>If session data is stored on the web server <em>itself</em>, then a single user can only interact with a single server. The load balancer must send the user to the same server every time. This is known as "sticky sessions".</p>
 </div>
 <div class="paragraph">
-<p>Sticky sessions can be problematic, so using another location for data avoids the need for sticky sessions.</p>
+<p>Sticky sessions can be problematic, so using a shared location for data avoids the need for sticky sessions.</p>
 </div>
 </div>
 <div class="sect2">
@@ -407,16 +452,143 @@
 <div class="sect2">
 <h3 id="asp-net-session-storage-integration"><a class="anchor" href="#asp-net-session-storage-integration"></a>ASP.NET Session Storage Integration</h3>
 <div class="paragraph">
-<p><a href="https://blog.couchbase.com/distributed-session-aspnet-couchbase/" class="bare">https://blog.couchbase.com/distributed-session-aspnet-couchbase/</a></p>
+<p>The complete source code for this example is <a href="https://github.com/couchbaselabs/tutorials-contrib/tree/master/modules/session-storage/examples/AspNetCoreSession">available on GitHub</a> if you&#8217;d like to follow along.</p>
+</div>
+<div class="paragraph">
+<p>To start with, let&#8217;s create a brand new ASP.NET Core project in Visual Studio or Visual Studio Code. I&#8217;ve used the standard <strong>Web Application (Model-View-Controller)</strong> template.</p>
+</div>
+<div class="paragraph">
+<p>Follow these steps to setup ASP.NET Core session as well as using Couchbase as a session store.</p>
+</div>
+<div class="paragraph">
+<p>First, in Startup.cs, in the <code>Configure</code> function, tell ASP.NET Core to use session:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C# hljs" data-lang="C#">// tell ASP.NET that we want to use session
+app.UseSession();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, install the <code>Couchbase.Extensions.Session</code> package using NuGet. You can do this via the NuGet UI or simply enter <code>Install-Package Couchbase.Extensions.Session</code> in the Package Manager Console.</p>
+</div>
+<div class="paragraph">
+<p>After that is installed, we&#8217;ll use this extension to tell ASP.NET Core where an how to use Couchbase as a session store. Recall that I created a bucket named "mySessionStore" earlier. You should also know the location and credentials for your Couchbase cluster. To tell ASP.NET Core about Couchbase, add this code to <code>ConfigureServices</code> in Startup.cs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C# hljs" data-lang="C#">// sets up Couchbase to be used by other services
+services.AddCouchbase(opt =&gt;
+{
+    opt.Servers = new List&lt;Uri&gt; { new Uri("http://localhost:8091") };
+    opt.Username = "Administrator";
+    opt.Password = "password";
+});
+
+// adds Couchbase as a distributed cache (which the session storage will use)
+services.AddDistributedCouchbaseCache("sessionstore", opt =&gt; { });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>AddCouchbase</code> simply makes Couchbase available to other services in the ASP.NET Core application. In the above example, I hardcoded the cluster location and credentials, but you can also use a config file.</p>
+</div>
+<div class="paragraph">
+<p>The <code>AddDistributedCouchbaseCache</code> sets up ASP.NET Core to use Couchbase as a cache. This is a prerequisite to using the session store, but it can also be used by itself for any caching use cases you have.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the last part of configuration is to tell ASP.NET to use Couchbase for session storage.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C# hljs" data-lang="C#">// add couchbase as the session state provider
+services.AddCouchbaseSession(opt =&gt;
+{
+    opt.IdleTimeout = new TimeSpan(0, 0, 20, 0);
+    opt.Cookie = new CookieBuilder {Name = ".MyApp.Cookie"};
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can specify options like session timeout and cookie name here. In this example, session will timeout after not being used for 20 minutes, and the corresponding cookie will be called ".MyApp.Cookie". At this point, your ASP.NET Core application is ready to read and write session store.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="links-to-more-session-storage-resources"><a class="anchor" href="#links-to-more-session-storage-resources"></a>Links to more session storage resources</h3>
+<h3 id="reading-writing-from-session"><a class="anchor" href="#reading-writing-from-session"></a>Reading/writing from session</h3>
+<div class="paragraph">
+<p>Let&#8217;s start by writing to session.</p>
+</div>
+<div class="paragraph">
+<p>In the sample application, there are three different types of session objects that a given user may store: User, Preferences, Location. <code>User</code> stores username as well as SMS number. <code>Preferences</code> stores region and employer. <code>Location</code> stores address and latitude/longitude. I chose to model these as three different session objects. In your application, you may want to break up different areas of session, as not all users will need every session object. For instance, a customer who is visiting your site may need browse-back and site activity tracking data, but may not need any shopping cart data until they put the first item into their cart.</p>
+</div>
+<div class="paragraph">
+<p>To store an item in session, use <code>HttpContext.Session.SetObject</code>. Here&#8217;s an example of the "User" session data being stored:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C# hljs" data-lang="C#">HttpContext.Session.SetObject("user", new
+{
+    UserName = _faker.Internet.UserName(),
+    SMS = _faker.Phone.PhoneNumber()
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To retrieve an item from session, use <code>HttpContext.Session.GetObject</code>. Here&#8217;s an example of the "User" session data being retrieved:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C# hljs" data-lang="C#">if(HttpContext.Session.Get("user") != null)
+    model.User = HttpContext.Session.GetObject&lt;dynamic&gt;("user");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><em>Notes:</em></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When storing data, the example is using an anonymous type. This could be replaced with a defined C# type instead.</p>
+</li>
+<li>
+<p>When retrieve data, the example is using <code>dynamic</code>. If using a type to set data, you can also use that same type when getting.</p>
+</li>
+<li>
+<p><code>_faker</code> is being used to set random data to these session objects for example purposes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Finally, though session data will be erased automatically after 20 minutes, you can also elect to clear session data at any time by using <code>HttpContext.Session.Remove</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C# hljs" data-lang="C#">HttpContext.Session.Remove("user");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Putting these all together, the example application is able to create objects, read objects, and remove objects from session storage:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="assets/images/00102-session-example.gif" alt="Session storage example in action"></span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="exploring-session-data"><a class="anchor" href="#exploring-session-data"></a>Exploring Session Data</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>interesting n1ql queries on session data</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="links-to-more-session-storage-resources"><a class="anchor" href="#links-to-more-session-storage-resources"></a>Links to more session storage resources</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p><a href="https://github.com/couchbaselabs/couchbase-aspnet/" class="bare">https://github.com/couchbaselabs/couchbase-aspnet/</a>
 <a href="https://github.com/couchbaselabs/Couchbase.Extensions/blob/master/docs/session.md" class="bare">https://github.com/couchbaselabs/Couchbase.Extensions/blob/master/docs/session.md</a>
 <a href="https://blog.couchbase.com/distributed-session-aspnet-couchbase/" class="bare">https://blog.couchbase.com/distributed-session-aspnet-couchbase/</a></p>
-</div>
 </div>
 </div>
 </div>

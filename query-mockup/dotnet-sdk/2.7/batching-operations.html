@@ -37,7 +37,7 @@
                   <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
                   <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
                   <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
-                  <li><a href="#">Autonomous Operator</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
                 </ul>
                 <ul>
                   <li class="heading">Mobile</li>
@@ -60,7 +60,7 @@
                   <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
                   <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
                   <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
-                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
                   <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
                 </ul>
               </div>
@@ -584,60 +584,90 @@ Assuming an average key size of 5 and an average value size of 50:</p>
 <h2 id="batching-operations-using-sdk"><a class="anchor" href="#batching-operations-using-sdk"></a>Batching operations using SDK</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The following example is written in Python, and demonstrates properly splitting operations for batch sizes.
-It uses a 256K batch size and handles errors:</p>
+<p>There are a number options for doing batching in C#; the important part is breaking the operations into smaller batches and optimizing for your unique environment.</p>
+</div>
+<div class="paragraph">
+<p>The following example is written in C# that uses TPL dataflow to send batches to the server:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">#!/usr/bin/env python
-from couchbase.bucket import Bucket
-from couchbase.exceptions import CouchbaseTransientError
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">public async Task SendBatch&lt;T&gt;(int batchSize, IList&lt;IDocument&lt;T&gt;&gt; items)
+{
+    var batcher = new TransformBlock&lt;IDocument&lt;T&gt;, IDocumentResult&lt;T&gt;&gt;(
+        doc =&gt; Bucket.UpsertAsync(doc),
+        new ExecutionDataflowBlockOptions
+        {
+            MaxDegreeOfParallelism = batchSize
+        });
 
-cb = Bucket('couchbase://10.0.0.31/default')
+    var buffer = new BufferBlock&lt;IDocumentResult&lt;T&gt;&gt;();
+    batcher.LinkTo(buffer);
 
-BYTES_PER_BATCH = 1024 * 256 # 256K
+    foreach (var document in items)
+    {
+        batcher.Post(document);
+    }
 
-# Generate our data:
-all_data = {}
-for x in xrange(100000):
-    key = "Key_" + str(x)
-    value = { 'value': x }
-    all_data[key] = value
+    batcher.Complete();
+    await batcher.Completion.ConfigureAwait(false);
 
+    if (buffer.TryReceiveAll(out var results))
+    {
+        foreach (var documentResult in results)
+        {
+            if (documentResult.Success == false)
+            {
+                Console.WriteLine(documentResult.Status);
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is another example using Linq to split the larger set into smaller sets:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">public async Task SendBatch&lt;T&gt;(int batchSize, IList&lt;IDocument&lt;T&gt;&gt; items)
+{
+    for (var i = 0; i &lt; items.Count; i += batchSize)
+    {
+        var batch = items.Skip(i).Take(batchSize).Select(x=&gt;Bucket.UpsertAsync(x));
+        var results = await Task.WhenAll(batch).ConfigureAwait(false);
 
-batches = []
-cur_batch = {}
-cur_size = 0
-batches.append(cur_batch)
+        foreach (var documentResult in results)
+        {
+            if (documentResult.Success == false)
+            {
+                Console.WriteLine(documentResult.Status);
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Couchbase .NET SDK also has batch overloads that can be used for batching once you have a split the larger set into subsets:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">public async Task SendBatch&lt;T&gt;(int batchSize, IList&lt;IDocument&lt;T&gt;&gt; items)
+{
+    for (var i = 0; i &lt; items.Count; i += batchSize)
+    {
+        var batch = items.Skip(i).Take(batchSize).Select(x=&gt;x).ToList();
+        var results = await Bucket.UpsertAsync(batch).ConfigureAwait(false);
 
-for key, value in all_data.items():
-    cur_batch[key] = value
-    cur_size += len(key) + len(value) + 24
-    if cur_size &gt; BYTES_PER_BATCH:
-        cur_batch = {}
-        batches.append(cur_batch)
-        cur_size = 0
-
-print "Have {} batches".format(len(batches))
-num_completed = 0
-while batches:
-    batch = batches[-1]
-    try:
-        cb.upsert_multi(batch)
-        num_completed += len(batch)
-        batches.pop()
-    except CouchbaseTransientError as e:
-        print e
-        ok, fail = e.split_results()
-        new_batch = {}
-        for key in fail:
-            new_batch[key] = all_data[key]
-        batches.pop()
-        batches.append(new_batch)
-        num_completed += len(ok)
-        print "Retrying {}/{} items".format(len(new_batch), len(ok))
-
-    print "Completed {}/{} items".format(num_completed, len(all_data))</code></pre>
+        foreach (var documentResult in results)
+        {
+            if (documentResult.Success == false)
+            {
+                Console.WriteLine(documentResult.Status);
+            }
+        }
+    }
+}</code></pre>
 </div>
 </div>
 </div>
