@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>CRUD Document Operations Using the Python SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4578/python-sdk/2.5/document-operations.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="python-sdk">
+    <meta name="dcterms.identifier" content="2.4">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4578">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">Python SDK</span> <span class="version">2.4</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.5/document-operations.html">Python SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.3/document-operations.html">Python SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/document-operations.html">Python SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/document-operations.html">Python SDK 2.1</a></li>
+                  <li><a class="navbar-item" href="../2.0/introduction.html">Python SDK 2.0</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/document-operations.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/document-operations.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/document-operations.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/document-operations.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/document-operations.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/document-operations.html">PHP SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="encryption.html">Field Level Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="encrypting-using-sdk.html">Field Level Encryption from the Python SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compression-intro.html">Compression</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threshold-logging.html">Threshold Logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="tracing-from-the-sdk.html">Tracing from the SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-python-sdk.html#python-sdk-2-4-2-release-notes-september-7-2018">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.5/document-operations.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">Python SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="document-operations.html">Document Operations</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-python/edit/release/2.4/modules/ROOT/pages/document-operations.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">CRUD Document Operations Using the Python SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can access documents in Couchbase using methods of the <code class="api">couchbase.bucket.Bucket</code> object.
+The method for retrieving documents is <code class="api">get()</code>, <code class="api">get_in()</code> and <code class="api">retrieve_in()</code>and the methods for mutating documents are <code class="api">upsert()</code>, <code class="api">insert()</code>, <code class="api">replace()</code> and <code class="api">mutate_in()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Examples are shown using the synchronous API.
+Semantics of the synchronous API are easily translatable to the <a href="async-programming.html" class="page">Twisted and Gevent APIs</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="py-mutation-input"><a class="anchor" href="#py-mutation-input"></a>Document input and output types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Python requires that document IDs be convertible to <code class="api">unicode</code> objects.
+For document values, by default it requires that the document value be of a type serializable to <code class="api">json.dumps</code>.
+See <a href="#nonjson">Formats and Non-JSON Documents</a> below for more details</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="py-result-object"><a class="anchor" href="#py-result-object"></a>Return value for CRUD operations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All Python SDK operations return a <code>Result</code> object (or a subclass thereof).
+The result object contains general operation information and item metadata retrieved from the server.
+Typically a <em>subclass</em> of <code>Result</code> will be returned which also contains operation-specific result information, such as the <code>value</code> field for a <code class="api">get()</code> operation.
+The most common fields in a <code class="api">Result</code> object are:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="additional-options"><a class="anchor" href="#additional-options"></a>Additional options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Additional options may be specified using <em>keyword arguments</em></p>
+</div>
+<div class="paragraph">
+<p>Update operations also accept a <a href="core-operations.html#expiry" class="page">TTL (expiry)</a> value (<code class="param">ttl</code>) which will instruct the server to delete the document after a given amount of time.
+This option is useful for transient data (such as sessions).
+By default documents do not expire.
+See <a href="core-operations.html#expiry" class="page">Expiration Overview</a> for more information on expiration.</p>
+</div>
+<div class="paragraph">
+<p>Update operations can also accept a <a href="concurrent-mutations-cluster.html" class="page">CAS</a> (<code class="param">cas</code>) value to protect against concurrent updates to the same document.
+See <a href="concurrent-mutations-cluster.html" class="page">CAS</a> for a description on how to use CAS values in your application.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="creating-and-updating-full-documents"><a class="anchor" href="#creating-and-updating-full-documents"></a>Creating and updating full documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Documents may be created and updated using the <code class="api">Bucket.upsert()</code>, <code class="api">Bucket.insert()</code>, and <code class="api">Bucket.replace()</code> family of methods.
+Read more about the difference between these methods at <a href="core-operations.html#crud-overview" class="page">Primitive Key-Value Operations</a> in the Couchbase developer guide.</p>
+</div>
+<div class="paragraph">
+<p>These methods accept two mandatory arguments:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">key</code>: The ID of the document to modify.
+This should be a Python string or unicode object.</p>
+</li>
+<li>
+<p><code class="param">value</code>: The desired new value of the document.
+This may be anything that can be serialized as JSON (other input types can also be specified, see <a href="#py-mutation-input">Document input and output types</a>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Additional options can be specified to the operation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">cas</code>: The CAS value for the document.
+If the CAS on the server does not match the CAS supplied to the method, the operation will fail with a <code class="api">couchbase.exceptions.KeyExistsError</code> error.
+See <a href="concurrent-mutations-cluster.html" class="page">Concurrent Document Mutations</a> for more information on the usage of CAS values.</p>
+</li>
+<li>
+<p><code class="param">ttl</code>: Specify the expiry time for the document.
+If specified, the document will expire and no longer exist after the given number of seconds.
+See <a href="core-operations.html#expiry" class="page">Expiration Overview</a> for more information.</p>
+</li>
+<li>
+<p><code class="param">format</code>: Specify the format of the new value.
+This indicates how the <code class="param">value</code> should be serialized before being sent to the cluster.
+By default only JSON-serializable objects may be supplied as values.
+See <a href="#py-mutation-input">Document input and output types</a>.</p>
+</li>
+<li>
+<p><code class="param">persist_to</code>, <code class="param">replicate_to</code>: Specify <a href="durability.html" class="page">durability requirements</a> for the operations.
+A value of <code>-1</code> indicates that the specific requirement will be set to the maximum possible.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Upon success, the returned <code class="api">Result</code> object will contain the new <a href="concurrent-mutations-cluster.html" class="page">CAS</a> value of the document.
+If the document was not mutated successfully, an exception is raised.
+See <a href="handling-error-conditions.html" class="page">Handling Exceptions and Other Errors with the Python SDK in Couchbase</a> for more information on exception types and how to handle them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">rv = bucket.insert('document_name', {'some': 'value'})
+print rv</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>OperationResult&lt;RC=0x0, Key=u'document_name', CAS=0x707339a4125aaa13&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the document being inserted already exists, the client will raise a <code class="api">couchbase.exceptions.KeyExistsError</code>.
+If your application simply wants to set the value ignoring whether it exists or not, use the <code class="api">upsert()</code> method.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="retrieving-full-documents"><a class="anchor" href="#retrieving-full-documents"></a>Retrieving full documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Documents may be retrieved using the <code class="api">Bucket.get()</code> method.
+The <code class="api">get()</code> method has a single mandatory argument:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">key</code>: The document ID to retrieve</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Other options include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">ttl</code>: Set the expiration for the document.
+This operation is known as a <em>get-and-touch</em> operation.
+See <a href="core-operations.html#expiry" class="page">Expiration Overview</a> for more information.</p>
+</li>
+<li>
+<p><code class="param">replica</code>: This may be passed as a boolean to issue a <em>replica read</em>.
+This may be used if access to the master/primary node is temporarily <a href="failure-considerations.html" class="page">unavailable</a>.</p>
+</li>
+<li>
+<p><code class="param">quiet</code>: Suppress throwing exceptions if the document does not exist.
+Rather than throwing an exception, status can be obtained from the <code class="api">Result.success</code> property.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">rv = bkt.get('maybe', quiet=True)
+if rv.success:
+    handle_value(rv)
+else:
+    print "Item not found"</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Upon success, a <code class="api">ValueResult</code> object is returned.
+The actual document may be access by using the <code class="api">ValueResult.value</code> property.
+Additional properties may also be accessed from the returned object.
+See <a href="#py-result-object">Return value for CRUD operations</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <code class="api">ValueResult.value</code> will contain a native Python object, deserialized from JSON (or another format, per <a href="#py-mutation-input">Document input and output types</a>).</p>
+</div>
+<div class="paragraph">
+<p>If the document does not exist (and <code class="param">quiet=True</code> was not specified), a <code class="api">couchbase.exceptions.NotFoundError</code> will be raised.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">rv = bucket.get('document_name')
+print "Result object is:", rv
+print "Actual value is:", rv.value</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Result object is ValueResult&lt;RC=0x0, Key=u'document_name', Value={u'some': u'value'},
+   CAS=0x20504a5e6a5aaa13, Flags=0x2000000&gt;
+Actual value is {u'some': u'value'}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the item does not exist, the client will raise a <code class="api">couchbase.exceptions.NotFoundError</code>, which you can catch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.exceptions import NotFoundError
+try:
+    rv = bkt.get('NOTEXISTENT')
+except NotFoundError as e:
+    print "Item not found", e</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="removing-full-documents"><a class="anchor" href="#removing-full-documents"></a>Removing full documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Documents may be removed using the <code class="api">Bucket.remove()</code> method.
+This method takes a single mandatory argument:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">key</code>: The ID of the document to remove</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Some additional options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">quiet</code>: Do not raise an exception when attempting to remove a document which does not exist.</p>
+</li>
+<li>
+<p><code class="param">cas</code>: Only remove the document if the <a href="concurrent-mutations-cluster.html" class="page">CAS</a> has not changed.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="modifying-expiraton"><a class="anchor" href="#modifying-expiraton"></a>Modifying expiraton</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="core-operations.html#expiry" class="page">Document expiration</a> can be performed using the <code class="api">Bucket.touch()</code> method.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">cb.touch('document_id', ttl=5)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also set the <code class="param">ttl</code> parameter for methods which support it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">cb.upsert('expires', "i'm getting old...", ttl=5)
+print cb.get('expires').value
+time.sleep(6)
+print cb.get('expires').value</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>i'm getting old...
+Traceback (most recent call last):
+  File "exp.py", line 10, in &lt;module&gt;
+    print cb.get('expires').value
+  File "/usr/local/lib/python2.7/site-packages/couchbase/bucket.py", line 489, in get
+    replica=replica, no_format=no_format)
+couchbase.exceptions._NotFoundError_0xD (generated, catch NotFoundError): &lt;Key=u'expires', RC=0xD[The key does not exist on the server], Operational Error, Results=1, C Source=(src/multiresult.c,309)&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="atomic-document-modifications"><a class="anchor" href="#atomic-document-modifications"></a>Atomic document modifications</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Additional atomic document modifications can be performing using the Python SDK.
+You can modify a <a href="core-operations.html#devguide_kvcore_append_prepend_generic" class="page">counter document</a> using the <code class="api">Bucket.counter()</code> method.
+You can also use the <code class="api">Bucket.append</code> and <code class="api">Bucket.prepend</code> methods to perform raw byte concatenation</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="batching-operations"><a class="anchor" href="#batching-operations"></a>Batching Operations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Many operations can be <a href="batching-operations.html" class="page">batched</a> in the Python SDK using their <code>*_multi</code> equivalent.
+For example, to batch multiple <code class="api">Bucket.get()</code> calls, you would use <code class="api">Bucket.get_multi()</code>.</p>
+</div>
+<div class="paragraph">
+<p>The various <code>*_multi</code> operations all return a <code class="api">MultiResult</code> object which acts like a dictionary: it maps each individual key to its operation which was performed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">cb.upsert_multi({
+    'foo': 'fooval',
+    'bar': 'barval',
+    'baz': 'bazval'})
+
+for key, result in cb.get_multi(('foo', 'bar', 'baz')).items():
+    print '{0}: {1.value}'.format(key, result)</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>baz: bazval
+foo: fooval
+bar: barval</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can use the <a href="http://pythonhosted.org/couchbase/api/items.html" target="_blank" rel="noopener">Item API</a> to pass additional per-operation options to <em>multi</em> methods.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="operating-with-sub-documents"><a class="anchor" href="#operating-with-sub-documents"></a>Operating with sub-documents</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Sub-Document API is available starting Couchbase Server version 4.5.
+See <a href="subdocument-operations.html" class="page">Sub-Document Operations</a> for an overview.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Sub-document operations save network bandwidth by allowing you to specify <em>paths</em> of a document to be retrieved or updated.
+The document is parsed on the server and only the relevant sections (indicated by <em>paths</em>) are transferred between client and server.
+You can execute <a href="subdocument-operations.html" class="page">sub-document</a> operations in the Python SDK using the <code class="api">lookup_in</code>, <code class="api">mutate_in</code>, and <code class="api">retrieve_in</code> methods.</p>
+</div>
+<div class="paragraph">
+<p>Each of these methods accepts a <code class="param">key</code> as its mandatory first argument, followed by one or more <em>command specifications</em> specifying a specifying an operation and a document field operand.
+You may find all the operations in the <code class="api">couchbase.subdocument</code> module.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>import couchbase.subdocument as SD
+res = cb.lookup_in('docid', SD.get('path.to.get'), SD.exists('check.path.exists'))
+res = cb.mutate_in('docid', SD.upsert('path.to.upsert', value, create_parents=True), SD.remove('path.to.del'))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For simply retrieving a list of paths, you may use the <code class="api">retrieve_in</code> convenience method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">res = cb.retrieve_in('docid', 'path1', 'path2', 'path3')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All sub-document operations return a special <code class="api">SubdocResult</code> object which is a subclass of <code class="api">Result</code>.
+In contrast with a normal <code class="api">Result</code> object, a <code class="api">SubdocResult</code> object contains multiple results with multiple statuses, one result/status pair for every input operation.
+You can access an individual result/status pair by addressing the <code class="api">SubdocResult</code> object as a mapping, and then using either the index position or the path of the operation as the key:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">res = cb.lookup_in('docid', SD.get('foo'), SD.exists('bar'), SD.exists('baz'))
+# First result
+res['foo']
+# or
+res[0]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using the <code>[]</code> (<code><em>getitem</em></code>) functionality will raise an exception if the individual operation did not complete successfully.
+You can also use <code class="api">SubdocResult.get()</code> to return a tuple of <code>(errcode, value)</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="nonjson"><a class="anchor" href="#nonjson"></a>Formats and Non-JSON Documents</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See <a href="nonjson.html" class="page">Non-JSON Documents</a> for a general overview of using non-JSON documents with Couchbase
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>All Python objects which can be represented as JSON may be passed unmodified to a storage function, and be received via the <code class="api">get</code> method without any additional modifications.
+You can modify the default JSON encoders used by the Python SDK using the <code class="api">couchbase.set_json_converters</code> function.
+This function accepts a pair of <em>encode</em> and <em>decode</em> functions which are expected to behave similarly to <code class="api">json.dumps</code> and <code class="api">json.loads</code> respectively.</p>
+</div>
+<div class="paragraph">
+<p>Storage operations accept a <code class="param">format</code> keyword argument which may be one of <code class="opt">couchbase.FMT_JSON</code> (to indicate the object should be serialized as JSON), <code class="opt">couchbase.FMT_UTF8</code> (to serialize the object as a UTF-8 encoded string), <code class="opt">couchbase.FMT_BYTES</code> (to serialize an object as a raw set of bytes; note the Python object in question must be of type <code>bytes</code>), <code class="opt">couchbase.FMT_PICKLE</code> (to serialize an object using Python&#8217;s native <code>pickle</code> module).
+You may also define new formats and utilize them via a custom transcoder.</p>
+</div>
+<div class="paragraph">
+<p>You can implement a custom transcoder if none of the pre-configured options are suitable for your application.
+A custom transcoder converts intputs to their serialized forms, and deserializes encoded data based on the item flags.
+The transcoder interface is described in the API documentation (<a href="http://pythonhosted.org/couchbase/api/transcoder.html" class="bare" target="_blank" rel="noopener">http://pythonhosted.org/couchbase/api/transcoder.html</a>), and an example (<a href="http://pythonhosted.org/couchbase/api/transcoder.html" class="bare" target="_blank" rel="noopener">http://pythonhosted.org/couchbase/api/transcoder.html</a>) is also provided in the source repository.
+When implementing a transcoder</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
