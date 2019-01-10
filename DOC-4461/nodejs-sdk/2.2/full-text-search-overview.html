@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Full Text Search | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4461/nodejs-sdk/2.6/full-text-search-overview.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="nodejs-sdk">
+    <meta name="dcterms.identifier" content="2.2">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4461">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">Node.js SDK</span> <span class="version">2.2</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.6/full-text-search-overview.html">Node.js SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/full-text-search-overview.html">Node.js SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/full-text-search-overview.html">Node.js SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/full-text-search-overview.html">Node.js SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.1/introduction.html">Node.js SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/full-text-search-overview.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/full-text-search-overview.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/full-text-search-overview.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/full-text-search-overview.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/full-text-search-overview.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/full-text-search-overview.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-nodejs-sdk.html#version-2-2-5-7-december-2016">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.6/full-text-search-overview.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">Node.js SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="full-text-search-overview.html">Full Text Search</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-nodejs/edit/release/2.2/modules/ROOT/pages/full-text-search-overview.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Full Text Search</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Couchbase Server Full Text Search (FTS) enables you to create, manage, and query full text indexes on JSON documents stored in a Couchbase bucket.
+You should use search instead of query when your application requires natural language processing when searching.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-full-text-search"><a class="anchor" href="#what-is-full-text-search"></a>What is Full Text Search</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase FTS is similar in purpose to other search software such as <em>ElasticSearch</em> or <em>Solr</em>.
+Couchbase FTS is not intended as a replacement for third party search software if search is at the core of your application.
+It is a simple and lightweight way to add search to your Couchbase data without deploying additional software and servers.
+If you have many queries which look like <code>SELECT ... field1 LIKE %pattern% OR field2 LIKE %pattern</code>, then full-text search may be right for you.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="executing-your-first-search"><a class="anchor" href="#executing-your-first-search"></a>Executing Your First Search</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Our first search query will be done against the <code>travel-sample</code> bucket (install it, if you haven&#8217;t done so already).</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the Couchbase Web Console (for example, http://localhost:8091) and log in with your administrative username and password.</p>
+</li>
+<li>
+<p>Select <span class="menuseq"><b class="menu">Indexes</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Full Text</b></span> (at the top bars).</p>
+</li>
+<li>
+<p>In the dropdown menu on the top left (<code>-- choose full text index or alias --</code>) select <code class="in">travel-search</code>.</p>
+</li>
+<li>
+<p>In the input box (on the right), type <code class="in">cheese</code> and click <strong class="ui">Search</strong>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You will see a list of document IDs that contain the given search term.
+You can click on any document ID to see the full document.
+You can also click on <strong class="ui">Advanced</strong> to see the raw query as it is sent over the REST API.
+If you click on the <strong class="ui">command-line curl example</strong> checkbox, you can simply copy/paste the output to your terminal and execute the search again.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a similar version of the search done using <code>curl</code> on the command line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -XPOST -H "Content-Type: application/json" \
+    http://localhost:8094/api/index/travel-search/query \
+    -d '{"query":{"query":"cheese"}, "size": 1}' | json_pp</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(Note that <code>json_pp</code> is just a JSON formatter.
+You can omit the pipe if you do not have it installed).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+   ...
+   "hits" : [
+      {
+         "index" : "travel-search_2c8e9e3d5a3638a8_b7ff6b68",
+         "score" : 1.20476244729454,
+         "locations" : {
+            "name" : {
+               "cheese" : [
+                  {
+                     "end" : 12,
+                     "array_positions" : null,
+                     "start" : 6,
+                     "pos" : 2
+                  }
+               ]
+            },
+            ...
+         },
+         "id" : "landmark_27808"
+      }
+   ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(Most of the output has been redacted)</p>
+</div>
+<div class="paragraph">
+<p>The same query using the Python SDK:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.bucket import Bucket
+import couchbase.fulltext as FT
+
+cb = Bucket()
+results = cb.search('travel-search', FT.StringQuery('cheese'), limit=5)
+for hit in results:
+    print('Found in document ID={}. Score={}'.format(hit['id'], hit['score']))</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Found in document ID=landmark_27808. Score=1.20476244729
+Found in document ID=landmark_8689. Score=0.961675281363
+Found in document ID=landmark_1154. Score=0.883110932061
+Found in document ID=landmark_1163. Score=0.846040674514
+Found in document ID=landmark_15133. Score=0.81847489864</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result contains one or more <em>hits</em>, where each <em>hit</em> contains information about the location of the match within a document.
+This includes the <em>relevance score</em> as well as the <em>location</em> where the match was found.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="making-your-bucket-searchable"><a class="anchor" href="#making-your-bucket-searchable"></a>Making Your Bucket Searchable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to execute a search query you must first define a search index.
+You can define a search index by using the Couchbase Web Console.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the Couchbase Web Console (for example, http://localhost:8091) and log in with your administrative username and password.</p>
+</li>
+<li>
+<p>Select <span class="menuseq"><b class="menu">Indexes</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="submenu">Full Text</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">New Full Text Index</b></span></p>
+</li>
+<li>
+<p>Type the desired <em>name</em> of the search index in the <strong class="ui">Index Name</strong> field.</p>
+</li>
+<li>
+<p>Select the bucket you would like to associate the search with in the <strong class="ui">Bucket</strong> field</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The default settings are sufficient for most cases.
+You can edit the index later, specifying how certain fields may be analyzed and which fields to index.</p>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;ve created your index, your can query it by using the methods above, replacing <code>travel-search</code> with the name you used to create the index.</p>
+</div>
+<div class="paragraph">
+<p>To learn more about making your buckets searchable, see the <a href="../../server/4.5/fts/fts-creating-indexes.html" class="page">Text Indexing</a> section of the full text search documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-types"><a class="anchor" href="#query-types"></a>Query Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The query executed in the previous section is called a <em>string query</em>.
+This type of query searches for terms based on a special type of input string.
+The query string <code>+description:cheese -country:france</code> will match documents which contain <em>cheese</em> in their <code>description</code> field, but are <em>not</em> located in France.
+String queries are ideal for searchbox fields to allow users to provide more specialized query criteria.
+You can read more about the <a href="../../server/4.5/fts/fts-query-types.html#query-string-query-syntax" class="page">Query String syntax</a> in the full text search documentation.</p>
+</div>
+<div class="paragraph">
+<p>There are many other query types available.
+These query types differ primarily in how they interpret the search term: whether it is treated as a phrase, a word, an exact match, or a prefix: A <em class="term">Match</em> query searches for the input text within documents and is the simplest of queries.
+<em class="term">Match Phrase</em> query searches for documents in which a specific <em>phrase</em> (i.e.
+one or more terms, such as <code>"french cheese tasting"</code>) is present.
+A <em class="term">Prefix</em> query searches documents which contain terms beginning with the supplied prefix.</p>
+</div>
+<div class="paragraph">
+<p>There are some other specialized queries, such as <em class="term">Wildcard</em> and <em class="term">Regexp</em> queries which allow you to use wildcards (<code>Couch?base'</code>) or regular expressions (<code>Couchbase (php|python) SDK</code>).</p>
+</div>
+<div class="paragraph">
+<p>Below are two code snippets showing how the query for <code>ch</code> is treated differently when using a <em class="term">Prefix Query</em> versus a <em class="term">Match Query</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">results = cb.search('travel-search', FT.MatchQuery('ch'), limit=5)
+for r in results:
+    print('  Result: ID', r['id'])
+    for location, terms in r['locations'].items():
+        print('   ', location, terms.keys())</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>  Result: ID airline_1442
+    iata dict_keys(['ch'])
+  Result: ID landmark_35848
+    image_direct_url dict_keys(['ch'])</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">results = cb.search('travel-search', FT.PrefixQuery('ch'), limit=5)
+for r in results:
+    print('  Result: ID', r['id'])
+    for location, terms in r['locations'].items():
+        print('   ', location, terms.keys())</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>  Result: ID hotel_15912
+    reviews.content dict_keys(['check', 'cheese', 'charge', 'checkout', 'chairs', 'chances', 'choice', 'checked', 'cheapcaribbean', 'cheeses', 'charged', "church's", 'cheaper', 'chicken', 'change'])
+    reviews.author dict_keys(['christiansen'])
+  Result: ID hotel_33886
+    reviews.content dict_keys(['check', 'chose', 'chips', 'choosing', 'chairs', 'channels', 'changed', 'choice', 'checked', 'chair', 'chocolate', 'chaise', 'checking', 'chicken', 'change', 'choose', 'charter', 'cheerful'])
+    reviews.author dict_keys(['christy'])
+  Result: ID hotel_16634
+    reviews.content dict_keys(['check', 'chocolate', 'chinese', 'chairs', 'children', 'chips', 'chilis', 'chilly', 'checked', 'choice', 'chicago', 'childrens', "church's", 'cheaper', 'chicken', 'choose', 'christina', 'choices'])
+  Result: ID hotel_37318
+    reviews.content dict_keys(['check', 'choices', 'chairs', 'children', 'changed', 'choice', 'charge', 'challenging', 'chair', 'childrens', 'chicken', 'change', 'choose', 'chambermaid', 'chichen', 'child'])
+    city dict_keys(['cheshire'])
+  Result: ID hotel_21723
+    reviews.content dict_keys(['check', 'chairs', 'cheesy', 'changed', 'checked', 'chair', 'charging', 'chaotic', 'charge', 'chapel', 'change', 'choose', 'children', 'cheep', 'chef', 'child'])
+    content dict_keys(['cheapie'])
+    public_likes dict_keys(['christop'])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As can be seen in the above examples, the <em class="term">Term</em> assumes the search input is an actual term to search for (<code>ch</code>) and therefore rejects things such as <code>chose</code>, <code>chairs</code> and similar.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="compound-queries"><a class="anchor" href="#compound-queries"></a>Compound Queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can compose queries made of other queries.
+You can use a <em class="term">Conjunction</em> or <em>Disjunction</em> query which contains one or more queries that the document should match (a <em class="term">Disjunction</em> query can be configured with the number of required subqueries that must be matched).
+You may also use a <em class="term">Boolean</em> query that itself contains sub queries which <em>should</em>, <em>must</em>, and <em>must not</em> be matched.</p>
+</div>
+<div class="paragraph">
+<p>Compound queries can be used to execute searches such as <em>find any landmark containing "cheese" and also containing one of "wine" , "crackers" , or "old", but does not contain "lake" or "ocean"</em>:</p>
+</div>
+<div class="listingblock">
+<div class="title">Compound Query example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">results = cb.search('travel-search',
+        FT.BooleanQuery(
+            must=FT.TermQuery('cheese'),
+            should=[FT.TermQuery('wine'), FT.TermQuery('crackers')],
+            must_not=[FT.TermQuery('lake'), FT.TermQuery('ocean')]),
+        limit=5)
+
+for r in results:
+    print('ID', r['id'])
+    for location, terms in r['locations'].items():
+        print('\t{}: {}'.format(location, terms.keys()))</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>ID landmark_25779
+	content: dict_keys(['cheese', 'crackers'])
+ID landmark_7063
+	content: dict_keys(['wine'])
+	alt: dict_keys(['cheese'])
+	name: dict_keys(['wine'])
+ID landmark_16693
+	content: dict_keys(['cheese', 'wine'])
+ID landmark_27793
+	content: dict_keys(['cheese', 'wine'])
+ID landmark_40690
+	content: dict_keys(['cheese', 'wine'])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When using compoound queries, you can modify any subquery&#8217;s <code class="param">boost</code> setting to increase its relevance and scoring over other subqueries, affecting the ordering.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="other-query-types"><a class="anchor" href="#other-query-types"></a>Other Query Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are other query types you can use, such as <em class="term">Date Range</em> and <em class="term">Numeric Range</em> queries which match documents matching a certain time span or value range.
+There are also debugging queries such as <em class="term">Term</em> and <em class="term">Phrase</em> queries which perform exact queries (without any analysis).</p>
+</div>
+<div class="paragraph">
+<p>For a quick overview of all the available query types, see the <a href="../../server/4.5/fts/fts-query-types.html" class="page">Types of Queries</a> section of the full text search documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-options"><a class="anchor" href="#query-options"></a>Query Options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can specify query options to modify how the search term is treated.
+This section will enumerate some common query options and how they affect query results.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">field</code>: This option restricts searches to a given field.
+By default searches will be executed against all fields.</p>
+</li>
+<li>
+<p><code class="param">fuzziness</code>: Sets the <em>leniency</em> of the matching algorithm.
+A higher fuzziness value may result in less relevant matches being considered</p>
+</li>
+<li>
+<p><code class="param">analyzer</code>: Sets the analyzer to be used for the search term.</p>
+</li>
+<li>
+<p><code class="param">limit</code>: Limits the number of search results to be returned.</p>
+</li>
+<li>
+<p><code class="param">skip</code>: Start returning after this many results.
+This may be used in conjunction with <code class="param">limit</code> to use pagination.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="search-results"><a class="anchor" href="#search-results"></a>Search Results</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After you have executed a search, you will be given a set of results, containing information about documents which match the query.
+In the raw JSON payload, the server returns an object with a <code class="param">hits</code> property, which contains a <em>search result</em>.</p>
+</div>
+<div class="paragraph">
+<p>The <em>search result</em> itself is a JSON object containing:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">id</code>: The document ID of the hit</p>
+</li>
+<li>
+<p><code class="param">score</code>: How relevant the result is to the initial search query.
+Search results are always ordered by score, with highest-scored hits appearing first.</p>
+</li>
+<li>
+<p><code class="param">locations</code>: A JSON object containing information about each match in the document.
+Its keys are <em>document paths</em> (in the <a href="../../server/4.5/n1ql/n1ql-intro/queriesandresults.html#paths" class="page">N1QL sense</a>) where matches may be found, and its values are arrays that contain the <em>match location</em>.
+The <em>match location</em> is a JSON object whose keys are the matched terms found, and whose values are <em>locations</em>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">start</code>: The character offset at which the matched text begins</p>
+</li>
+<li>
+<p><code class="param">end</code>: The character offset at which the matched text ends</p>
+</li>
+<li>
+<p><code class="param">pos</code>: The word-position of the matched result.
+This indicates how far deep the match is, in respect to words.
+For example if the searched term was <code>schema</code>, and the matched text was: <code>Ahout NoSQL schema organization</code>, the <code class="param">pos</code> would be <code>3</code>, or the third word in the field.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To learn more about the response format used by the FTS service, see the <a href="../../server/4.5/fts/fts-response-object-schema.html" class="page">Response Object Schema</a> section of the full text search documentation.
+Couchbase SDKs may abstract some of the fields or provide wrapper methods around them.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="aggregation-and-statistics-facets"><a class="anchor" href="#aggregation-and-statistics-facets"></a>Aggregation and Statistics (Facets)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You may perform search result aggregation and statistics using <em>facets</em>.
+Facets allow you to specify aggregation parameters in your query.
+When the query results are received, aggregation results are returned alongside the actual query hits.</p>
+</div>
+<div class="paragraph">
+<p>You can use a <em>Term Facet</em> to count the number of times a specific term appears in the results</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">results = cb.search('beer-search', FT.MatchQuery('hops'), limit=5,
+                    facets={'terms': FT.TermFacet('description', limit=5)})
+for result in results:
+    # handle results
+    pass
+
+pprint(results.facets['terms'])</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{'field': 'description',
+ 'missing': 9,
+ 'other': 30725,
+ 'terms': [{'count': 782, 'term': 'hops'},
+           {'count': 432, 'term': 'beer'},
+           {'count': 365, 'term': 'ale'},
+           {'count': 327, 'term': 'malt'},
+           {'count': 130, 'term': 'hop'}],
+ 'total': 32761}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can likewise use a <em>Date Range Facet</em> to count the number of results by their age, and <em>Numeric Range Facet</em> to count results using an arbitrary numeric range.</p>
+</div>
+<div class="paragraph">
+<p>To learn more about facets, see the <a href="../../server/4.5/fts/fts-queries.html#search-facets" class="page">Search Facets</a> section of the full text search documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="partial-search-results"><a class="anchor" href="#partial-search-results"></a>Partial Search Results</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The FTS service splits the indexing data between several <em>pindexes</em>.
+Because of that, you may encounter situations where only a subset of the pindexes could provide results (eg.
+if some pindex nodes are not online...).</p>
+</div>
+<div class="paragraph">
+<p>What happens in this case is that FTS returns a list of <em>partial</em> results, and notifies you that one or several <em>errors</em> also happened.
+You can inspect the errors, which will each correspond to an failing pindex, via the SDK.
+Of course, the partial results (the result from healthy pindexes) are still available through the usual methods in the SDK result representation.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

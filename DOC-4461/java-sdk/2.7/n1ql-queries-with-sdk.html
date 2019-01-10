@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>N1QL Queries Using the Java SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4461/java-sdk/2.7/n1ql-queries-with-sdk.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="2.7">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4461">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">2.7</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.6/n1ql-queries-with-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/n1ql-queries-with-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/n1ql-queries-with-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/n1ql-queries-with-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/n1ql-queries-with-sdk.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/n1ql-queries-with-sdk.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/n1ql-queries-with-sdk.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/n1ql-queries-with-sdk.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/n1ql-queries-with-sdk.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/n1ql-queries-with-sdk.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="encryption.html">Field Level Encryption</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="encrypting-using-sdk.html">Field Level Encryption from the Java SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="scan-consistency-examples.html">Using Scan Consistency</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compression-intro.html">Compression</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="threshold-logging.html">Threshold Logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="tracing-from-the-sdk.html">Tracing from the SDK</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-java-sdk.html">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="n1ql-queries-with-sdk.html">N1QL from the SDK</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/2.7/modules/ROOT/pages/n1ql-queries-with-sdk.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">N1QL Queries Using the Java SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can perform N1QL queries via the Java client.
+</blockquote>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+See Couchbase Developer documentation for a quick intro to <a href="n1ql-query.html" class="page">N1QL</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To issue N1QL queries, you should create a <code class="api">N1qlQuery</code> object, and pass it to the <code class="api">query(N1qlQuery q)</code> method in the <code class="api">Bucket</code> class.
+A few variants of such a query exist:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Simple queries, which are only strings and do not use placeholders;</p>
+</li>
+<li>
+<p>Parameterized queries, which use numbered or named placeholders.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can create each via the corresponding factory method on <code>N1qlQuery</code>, which you can create using a Statement produced by the N1QL DSL or using the statement directly as a String.</p>
+</div>
+<div class="paragraph">
+<p>The return value from <code class="api">query()</code> is the object <code class="api">N1qlQueryResult</code>.
+Iterating over the object will yield the rows returned by the server for the given query (as <code>N1qlQueryRow</code>).
+Each row represents a row received for the query.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, you can get the <code class="api">List&lt;N1qlQueryRow&gt;</code> from the <code class="api">allRows()</code> method on the result.
+Note that errors returned by the N1QL service during execution are represented as <code class="api">JsonObject</code> accessible through the <code class="api">errors()</code> method, rather than exceptions.
+Here is the complete list of <code class="api">N1qlQueryResult</code> methods:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>parseSuccess</code>: Returns <code>true</code> if the query could be parsed correctly.
+This information is available immediately even if the actual list of results takes more time to be computed and streamed to the client.</p>
+</li>
+<li>
+<p><code>finalSuccess</code>: Returns <code>true</code> if the whole query could be executed successfully, including retrieving all the results and streaming them to the client.</p>
+</li>
+<li>
+<p><code>allRows</code>: Contains all rows returned by the query; it can be an empty list.</p>
+</li>
+<li>
+<p><code>rows</code>: Same as <code>allRows</code> but in an iterator form (the <code class="api">N1qlQueryResult</code> itself is iterable).</p>
+</li>
+<li>
+<p><code>requestId</code>: The server-generated unique ID for this query (useful to find associated logs on the N1QL server).</p>
+</li>
+<li>
+<p><code>clientContextId</code>: User-provided identifier reflected in the server&#8217;s response.
+The identifier can be useful for grouping several queries (for example, in a kind of in-house transaction) and find all associated queries.</p>
+</li>
+<li>
+<p><code>info</code>: Returns a <code class="api">N1qlMetrics</code> object, which contains metrics for the query (such as the number of results or processing time).</p>
+</li>
+<li>
+<p><code>errors</code>: Returns a list of <code class="api">JsonObject</code> describing errors or warnings (if any occurred during execution).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each <code class="api">N1qlQueryRow</code> exposes the JSON representation of the <code>value()</code> as a <code class="api">JsonObject</code>.
+It also gives the raw bytes for said value (<code>byteValue()</code>), in case you need them to apply your deserialization or <code>SELECT RAW</code> is used which cannot be turned into a <code>JsonObject</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can use N1QL placeholders in the query.
+Placeholders allow you to specify variable constraints for an otherwise constant query.
+A named or positional parameter is a placeholder for a value in the WHERE, LIMIT or OFFSET clause of a query.
+To use placeholders, manually construct a <code>N1QLQuery</code> object with the base query string, and use a <code class="api">JsonObject</code> of names -&gt; keyword or a <code class="api">JsonArray</code> of positional arguments for named or positional placeholders, respectively:</p>
+</div>
+<div class="listingblock">
+<div class="title">N1QL Query with placeholders</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static com.couchbase.client.java.query.Select.select;
+import static com.couchbase.client.java.query.dsl.Expression.*;
+
+// ...
+Statement statement = select("fname", "lname", "age").from(i("default")).where(x("age").gt(x("$age")));
+JsonObject placeholderValues = JsonObject.create().put("age", 22);
+q = N1qlQuery.parameterized(statement, placeholderValues);
+for (N1qlQueryRow row : bkt.query(q)) {
+    System.out.println(row);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>N1QL queries can also be fine tuned by setting options using <code class="api">N1qlParams</code> object.
+These parameters should be added to the query object during creation.
+Here is a subset of options that can be tuned:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="api">serverSideTimeout</code> - sets the maximum server side timeout for the query.</p>
+</li>
+<li>
+<p><code class="api">withContextId</code> - adds client context ID to the request that will be sent back in the response, allowing clients to meaningfully trace requests/responses when many are exchanged.</p>
+</li>
+<li>
+<p><code class="api">consistency</code> - sets the consistency level for the query.</p>
+</li>
+<li>
+<p><code class="api">maxParallelism</code> - can override the max parallelism used by the server.</p>
+</li>
+<li>
+<p><code class="api">adhoc</code> - allows to specify if this query is adhoc or not.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Adding N1QL parameters to Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//Using N1qlParams to set adhoc as false for using prepared statements
+N1qlParams params = N1qlParams.build().adhoc(false);
+N1qlQuery query = N1qlQuery.simple("select count(*) from `mybucket`", params);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on query parameters in N1QL, see <a href="../../server/6.0/n1ql/n1ql-rest-api/index.html" class="page">N1QL REST API</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="building-statements-with-the-dsl"><a class="anchor" href="#building-statements-with-the-dsl"></a>Building Statements with the DSL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The N1QL domain-specific language (DSL) is a powerful way to guide you in building your statements: you obtain type safety and autocompletion of relevant methods / N1QL clauses.</p>
+</div>
+<div class="paragraph">
+<p>As of the <code>2.2.3</code> version of the SDK, the DSL supports the following features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Data selection with <code class="api">Select.select(...)</code> as an entry point (including index hinting).</p>
+</li>
+<li>
+<p>All N1QL functions, organized by topic in the helper classes in the <code class="api">com.couchbase.client.java.query.dsl.functions</code> package (eg.
+<code class="api">AggregateFunctions</code>).</p>
+</li>
+<li>
+<p>A <a href="#case">mini DSL for building CASE constructs</a> via factory methods on the <code class="api">Case</code> class.</p>
+</li>
+<li>
+<p>A <a href="#collections">mini DSL for building collection constructs</a> (ANY, EVERY, ARRAY...) via factory methods on the <code class="api">Collections</code> class.</p>
+</li>
+<li>
+<p>Index management (index and primary index creation/deletion/deferred building) with <code class="api">Index</code> factory methods as an entry point.</p>
+</li>
+<li>
+<p>Data modification with <code class="api">Insert</code>, <code class="api">Update</code>, <code class="api">Upsert</code> and <code class="api">Delete</code> as entry points.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To construct statements, you can use the <code class="api">Expression</code> class that comes in with a variety of factory methods to construct both tokens and literals programmatically.
+Expressions can be combined and chained with operators (like <code class="api">gte</code> for "greater than or equal to" comparison).</p>
+</div>
+<div class="paragraph">
+<p>Use <code class="api">x</code> to construct a token, <code class="api">s</code> to construct a string literal, <code class="api">i</code> to construct a token escaped with backticks (for example, the bucket name <code>beer-sample</code> must be escaped because it contains a dash).</p>
+</div>
+<div class="paragraph">
+<p>If you find out that the DSL doesn&#8217;t support a particular statement, clause or keyword, <strong>you can always revert to providing your statement in plain String form</strong>.
+Using the String form ensures that even if the DSL lags behind the evolutions of the language, users will always have a mean of using new language features.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-asynchronously"><a class="anchor" href="#querying-asynchronously"></a>Querying Asynchronously</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To perform a query asynchronously, use the <code class="api">AsyncBucket</code> interface that you obtain by calling <code class="api">bucket.async()</code>.
+The API is pretty similar except everything is returned as an <code class="api">Observable</code>.
+Some of the components of the query result (an <code class="api">AsyncQueryResult</code>) can also be delayed and so returned as Observables.
+Only <code class="api">requestId</code>, <code class="api">clientContextId</code> and <code class="api">parseSuccess</code> return immediately.</p>
+</div>
+<div class="paragraph">
+<p>The following Java 8 code prints the found documents or errors as they come:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">bucket.async()
+    .query(select("*").from(i("beer-sample")).limit(10))
+    .flatMap(result -&gt;
+        result.errors()
+        .flatMap(e -&gt; Observable.&lt;AsyncN1qlQueryRow&gt;error(new CouchbaseException("N1QL Error/Warning: " + e)))
+        .switchIfEmpty(result.rows())
+    )
+    .map(AsyncN1qlQueryRow::value)
+    .subscribe(
+        rowContent -&gt; System.out.println(rowContent),
+        runtimeError -&gt; runtimeError.printStackTrace()
+    );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First, you can see that asynchronous mode was used.</p>
+</div>
+<div class="paragraph">
+<p>Second, line issues a <code class="api">Statement</code> using the DSL (notice how "beer-sample" is escaped).</p>
+</div>
+<div class="paragraph">
+<p>When receiving a result, first check if there are errors.
+If there are any, the first one is converted to a <code class="api">CouchbaseException</code> that will be propagated in the <code class="api">Observable</code>.
+If no errors are found (<code class="api">errors()</code> is empty), switch to inspecting the rows, then map each received row to its JSON value.</p>
+</div>
+<div class="paragraph">
+<p>Eventually, trigger the whole process by subscribing to the <code class="api">Observable</code> you have built.
+When a row JSON is received, print it; when an error is propagated, print the stack trace.</p>
+</div>
+<div class="paragraph">
+<p><em>Note: All this is done asynchronously so it&#8217;s not suitable for a simple test (where the main thread would potentially exit before any result could have been displayed).</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="long-running-streaming-query"><a class="anchor" href="#long-running-streaming-query"></a>Long running Streaming Query</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For a long-running N1QL query, you need a way of streaming the rows and correctly handling errors.
+Use this helper function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public static Observable&lt;AsyncN1qlQueryRow&gt; query(final Bucket bucket, final N1qlQuery query) {
+    return bucket.async()
+        .query(query).flatMap(new Func1&lt;AsyncN1qlQueryResult, Observable&lt;AsyncN1qlQueryRow&gt;&gt;() {
+        @Override
+        public Observable&lt;AsyncN1qlQueryRow&gt; call(AsyncN1qlQueryResult result) {
+            return Observable
+                .merge(result.rows(), result.errors())
+                .map(new Func1&lt;Object, AsyncN1qlQueryRow&gt;() {
+                    @Override
+                    public AsyncN1qlQueryRow call(Object o) {
+                        if (o instanceof AsyncN1qlQueryRow) {
+                            return (AsyncN1qlQueryRow) o;
+                        } else {
+                            // The actual exception type and format could be improved further
+                            throw new CouchbaseException(o.toString());
+                        }
+                    }
+                });
+        }
+    });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To iterate over the rows, with blocking, call the helper function like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable&lt;AsyncN1qlQueryRow&gt; rows = query(bucket, N1qlQuery.simple("select count(*) as cnt from `travel-sample`"));
+
+for (AsyncN1qlQueryRow row : rows.toBlocking().toIterable()) {
+    System.err.println(row);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example, this will print <code>{"cnt":31591}</code> to the console.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="case"><a class="anchor" href="#case"></a>Conditionals, Case Expressions Mini DSL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code class="api">com.couchbase.client.java.query.dsl.functions.Case</code> class contains a mini-DSL to deal with Conditional operators in N1QL of the <code>CASE</code> family.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Simple CASE</code> expression is defined as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CASE expression  ( WHEN expression THEN expression)
+[ ( WHEN expression THEN expression) ]*
+[  ELSE expression ]  END</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Searched CASE</code> expression is defined as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CASE  ( WHEN  condition THEN expression)
+[( WHEN  condition THEN expression ) ]*
+[ ELSE  expression ] END</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The corresponding mini-DSL are <code class="api">Case.caseSimple</code> and <code class="api">Case.caseSearch</code>.
+Simple Case will compare the initial expression with each <code>WHEN</code> clause for equality, returning the corresponding <code>THEN</code> expression if a match is found.
+Search Case allows for a different condition for each <code>WHEN</code> clause.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s see two examples.
+The first one could be used to map match results to a score:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CASE hist.result WHEN "won" THEN 1 ELSE 0 END</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//import static com.couchbase.client.java.query.dsl.Expression.*;
+//import static com.couchbase.client.java.query.dsl.functions.Case.*;
+
+caseSimple(x("hist.result"))
+    .when(s("won")).then(x(1))
+    .elseReturn(x(0))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The second example implements more complex scoring rule using a Search Case (first match of the day counts as 5 points if won):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CASE WHEN hist.result = "won" AND hist.matchNumber = 1 THEN 5
+WHEN hist.result = "won" THEN 1
+WHEN hist.result = "lost" THEN 0
+END</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//import static com.couchbase.client.java.query.dsl.Expression.*;
+//import static com.couchbase.client.java.query.dsl.functions.Case.*;
+
+caseSearch()
+    .when(x("hist.result").eq(s("won")).and(x("hist.matchNumber").eq(1))).then(x(5))
+    .when(x("hist.result").eq(s("won"))).then(x(1))
+    .when(x("hist.result").eq(s("lost"))).then(x(0))
+    .end(); //no ELSE clause means other values will return NULL, have to explicitly close the CASE</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="collections"><a class="anchor" href="#collections"></a>Collection Operators Mini DSL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code class="api">com.couchbase.client.java.query.dsl.functions.Collections</code> class contains a mini-DSL to deal with Collections operators in N1QL, such as <code>ANY</code>, <code>EVERY</code>, <code>ARRAY</code> and <code>FIRST</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, the <code>ARRAY</code> construct is defined as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">ARRAY expression FOR variable ( IN |  WITHIN ) expression
+[ ,  variable ( IN | WITHIN ) expression ]* [ ( WHEN  condition) ] END</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The corresponding mini-DSL is <code class="api">Collections.arrayIn</code> (or <code class="api">Collections.arrayWithin</code> if you want to start with a <code>WITHIN</code> clause).
+Let&#8217;s see two examples from the following statement, which extracts children and also lists the ones that are "teenagers":</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">SELECT tutorial.fname || ' ' || tutorial.lname AS adult,
+    ARRAY child FOR child IN tutorial.children END AS children,
+    ARRAY child.fname FOR child IN tutorial.children WHEN child.age &gt;= 12 END AS teenagers
+FROM tutorial WHERE tutorial.children IS NOT NULL;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is how to write the second and third lines using the DSL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//import static com.couchbase.client.java.query.dsl.Expression.*;
+//import static com.couchbase.client.java.query.dsl.functions.Collections.*;
+
+//ARRAY child FOR child IN tutorial.children END AS children
+arrayIn(x("child"), "child", path("tutorial", "children")).end().as("children");
+
+//ARRAY child.fname FOR child IN tutorial.children WHEN child.age &gt;= 12 END AS teenagers
+arrayIn(path("child", "fname"), "child", path("tutorial", "children")).when(path("child", "age").gte(12)).as("teenagers"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similarly, <code>ANY</code> allows to test for a condition that applies to at least one member of a nested array (you can also match on <code>EVERY</code> member of the array).
+<code>ANY</code> is defined as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">ANY variable ( IN  | WITHIN ) expression
+[  ,  variable ( IN | WITHIN ) expression  ]*
+SATISFIES condition  END</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the previous example, you would see an entry for a parent that doesn&#8217;t have "teenagers" (its "teenagers" field would be empty), because the statement didn&#8217;t specify that the children should contain a "teenager".
+You can fix that with <code>ANY</code>, by rewriting the <code>WHERE</code> clause:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">#...FROM tutorial
+#replace "WHERE tutorial.children IS NOT NULL" with:
+WHERE ANY child IN tutorial.children SATISFIES child.age &gt;= 12;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//import static com.couchbase.client.java.query.dsl.Expression.*;
+//import static com.couchbase.client.java.query.dsl.functions.Collections.*;
+
+anyIn("child", x("tutorial.children")).satisfies(x("child.age").gte(12))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

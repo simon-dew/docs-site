@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>MapReduce Views Using the Java SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4461/java-sdk/2.7/view-queries-with-sdk.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="2.5">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4461">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">2.5</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.7/view-queries-with-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/view-queries-with-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.4/view-queries-with-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/view-queries-with-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/view-queries-with-sdk.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/view-queries-with-sdk.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/view-queries-with-sdk.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/view-queries-with-sdk.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/view-queries-with-sdk.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/view-queries-with-sdk.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-app-backend.html">Sample App Backend</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Users and Security</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-authentication-overview.html">Authentication</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-user-management-overview.html">User Management</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-user-management-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="datastructures.html">Data Structures</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="scan-consistency-examples.html">Using Scan Consistency</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="sdk-xattr-overview.html">Extended Attributes</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-xattr-example.html">Sample Code</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-java-sdk.html#version-2-5-9-7-june-2018">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.7/view-queries-with-sdk.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="view-queries-with-sdk.html">MapReduce Views</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/2.5/modules/ROOT/pages/view-queries-with-sdk.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">MapReduce Views Using the Java SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can use MapReduce views to create queryable indexes in Couchbase Server.
+</blockquote>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The normal CRUD methods allow you to look up a document by its ID.
+A MapReduce (<em>view</em> query) allows you to look up one or more documents based on various criteria.
+MapReduce views are comprised of a <em>map</em> function that is executed once per document (this is done incrementally, so this is not run each time you query the view) and an optional <em>reduce</em> function that performs aggregation on the results of the <em>map</em> function.
+The <em>map</em> and <em>reduce</em> functions are stored on the server and written in JavaScript.</p>
+</div>
+<div class="paragraph">
+<p>MapReduce queries can be further customized during query time to allow only a subset (or range) of the data to be returned.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See the <a href="../../server/5.1/architecture/incremental-map-reduce-views.html" class="page">Incremental MapReduce Views</a> and <a href="../../server/5.1/architecture/querying-data-with-views.html" class="page">Querying Data with Views</a> sections of the general documentation to learn more about views and their architecture.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The following example is the definition of a <code>by_name</code> view in a <em>"beer"</em> design document.
+This view checks whether a document is a beer and has a name.
+If it does, it emits the beer&#8217;s name into the index.
+This view allows beers to be queried for by name.
+For example, it&#8217;s now possible to ask the question "What beers start with A?"</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">function (doc, meta) {
+    if (doc.type &amp;&amp; doc.type == "beer" &amp;&amp; doc.name) {
+        emit(doc.name, null);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>A Spatial View can instead be queried with a <code class="param">range</code> or <em>bounding box</em>.
+For example, let&#8217;s imagine we have stored landmarks with coordinates for their home city (eg.
+Paris, Vienna, Berlin and New York) under <code class="param">geo</code>, and each city&#8217;s coordinates is represented as two attributes, <code class="param">lon</code> and <code class="param">lat</code>.
+The following spatial view map function could be used to find landmarks within Europe, as a <em>"by_location"</em> view in a <em>"spatial"</em> design document:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">function (doc, meta) {
+    if (doc.type &amp;&amp; doc.type == "landmark" &amp;&amp; doc.geo) {
+        emit([doc.geo.lon, doc.geo.lat], null);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-views-through-the-java-sdk"><a class="anchor" href="#querying-views-through-the-java-sdk"></a>Querying Views through the Java SDK</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Query a view through the Java client through the <code>query(ViewQuery q)</code> method on the <code class="api">Bucket</code> class.
+This method returns a <code class="api">ViewResult</code> whose iterator yields the results of the query (in the form of <code class="api">ViewRow</code> objects).
+The <code class="api">ViewResult</code> also exposes the list of rows (<code>allRows()</code>), the <code>success()</code> status and potential <code>error()</code>.
+The <code class="api">ViewRow</code> object contains the <code>key</code> and <code>value</code> properties (which are the first and second arguments to the view&#8217;s <code>emit()</code> function, respectively) as well as the <code>id</code> property, which may be passed to the <code class="api">get()</code> method to return the actual document.
+Alternatively, directly call the <code class="api">document()</code> method on the view row.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Bucket bkt = CouchbaseCluster.create("192.168.33.101").openBucket("beer-sample");
+ViewResult result = bkt.query(ViewQuery.from("beer", "by_name");
+for (ViewRow row : result) {
+    System.out.println(row); //prints the row
+    System.out.println(row.document().content()); //retrieves the doc and prints content
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also set various properties on the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Bucket bkt = CouchbaseCluster.create("192.168.33.101").openBucket("beer-sample");
+ViewQuery q = ViewQuery.from("beer", "by_name")
+    .limit(5) // Limit to 5 results
+    .startKey("A")
+    .endKey("A\u0fff");
+
+ViewResult result = bkt.query(q);
+for (ViewRow row : result) {
+    System.out.println(row);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s some sample output for the previous query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>DefaultViewRow{id=harvey_son_lewes-a_lecoq_imperial_extra_double_stout_1999, key=A. LeCoq Imperial Extra Double Stout 1999, value=null}
+DefaultViewRow{id=harvey_son_lewes-a_lecoq_imperial_extra_double_stout_2000, key=A. LeCoq Imperial Extra Double Stout 2000, value=null}
+DefaultViewRow{id=mickey_finn_s_brewery-abana_amber_ale, key=Abana Amber Ale, value=null}
+DefaultViewRow{id=brasserie_lefebvre-abbaye_de_floreffe_double, key=Abbaye de Floreffe Double, value=null}
+DefaultViewRow{id=brasserie_de_brunehaut-abbaye_de_saint_martin_blonde, key=Abbaye de Saint-Martin Blonde, value=null}</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code class="param">includeDocs</code>: This parameter allows for eager retrieval of the document associated with each row.</p>
+</div>
+<div class="paragraph">
+<p>It is only beneficial in the synchronous API (in the async API you could just call <code>get(row.id())</code> on the async bucket with the same effects).
+It impacts the row&#8217;s <code>document(...)</code> method by preloading the return value of said method.</p>
+</div>
+<div class="paragraph">
+<p>However, since the simple signature of <code>row.document()</code> assumes a <code>JsonDocument</code>, if you want a different document type you have to call both <code>includeDocs()</code> and <code>document()</code> with the desired target class: <code>query.includeDocs(SomeDocumentClass.class)</code> <strong>and</strong> <code>row.document(SomeDocumentClass.class)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that the <code>ViewQuery</code> has a getter for the target class: <code>includeDocsTarget()</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-geospatial-views"><a class="anchor" href="#querying-geospatial-views"></a>Querying Geospatial Views</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To query a geospatial view, you will need to construct a <code class="api">SpatialViewQuery</code> object (<code class="api">com.couchbase.client.java.view.SpatialViewQuery</code>).
+Spatial queries accept a <code class="param">startRange</code> and an <code class="param">endRange</code> parameter which allow you to limit the enclosing bounding boxes of the result.
+The arguments to these parameters are <code class="api">JsonArray</code> with each element corresponding to a component emitted by the key (the first two components implicitly being the longitude and latitude of the result itself).</p>
+</div>
+<div class="paragraph">
+<p>On output, spatial queries yield instances of <code class="api">SpatialViewRow</code> classes.
+A <code class="api">SpatialViewRow</code> is similar to a <code class="api">ViewRow</code>, with an added <code>geometry</code> property.</p>
+</div>
+<div class="listingblock">
+<div class="title">Querying a spatial view</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SpatialViewQuery q = SpatialViewQuery.from("spatial", "by_location")
+    .startRange(JsonArray.from(0, -90, null))
+    .endRange(JsonArray.from(180, 90, null));
+SpatialViewResult result = bkt.query(q);
+
+for (SpatialViewRow row : result) {
+    System.out.println("Key:" + row.key());
+    System.out.println("Value:" + row.value());
+    System.out.println("Geometry:" + row.geometry());
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code class="api">SpatialView</code> also has the <code class="api">includeDocs()</code> parameter to preload the document for the <code class="api">SpatialViewRow</code>'s <code class="api">document()</code> method.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-results-details"><a class="anchor" href="#view-results-details"></a>View results details</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For all types of views, a <code>ViewResult</code> is always returned, which contains zero to many <code>ViewRows</code>.
+In addition to iterative row access, more methods are available on the result:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 34.0136%;">
+<col style="width: 65.9864%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Method</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>List&lt;ViewRow&gt; allRows()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Accumulates all returned rows in a List and returns it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Iterator&lt;ViewRow&gt; rows()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides iterative access to rows as they arrive.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int totalRows()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The total number of rows in the index can be greater than the number of <code>rows()</code> returned.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean success()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">True if the query was successful, false otherwise.
+Check <code>error()</code> if so.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonObject error()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the error if the query was not successful or null otherwise.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonObject debug()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains debug information if <code>debug()</code> was enabled on the query, null otherwise.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The only difference between regular and spatial view results is the fact that spatial ones do not expose the number of <code>totalRows</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="viewquery-api-details"><a class="anchor" href="#viewquery-api-details"></a>ViewQuery API details</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All options shown here are available on the <code>ViewQuery</code> in a fluent API manner.
+All of them are optional, so only when they are explicitly provided, they will alter the behavior of the query.</p>
+</div>
+<div class="paragraph">
+<p>As a general note, all arguments that accept JSON are provided with a higher number of method overloads to accommodate all combinations in a type-safe manner.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 27.8%;">
+<col style="width: 52.2%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Method</th>
+<th class="tableblock halign-left valign-top">Accepted Types</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>development</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When true queries the development view, false by default.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>reduce</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Explicitly enables/disables the reduce function on the query.
+If not provided and the view has a reduce function, it will be used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>limit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limits the number of the returned documents to the specified number.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Skips the given number of records before starting to return the results.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>group</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Groups the results using the reduce function to a group or single row.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>groupLevel</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the group level to be used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>inclusiveEnd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the specified end key should be included in the result.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stale</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.TRUE, Stale.FALSE, Stale.UPDATE_AFTER (default)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines how stale the view results are allowed to be in the query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>debug</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enabled debugging on view queries.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>onError</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OnError.STOP (default), OnError.CONTINUE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the response in the event of an error.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>descending</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns the documents in descending order by key if <code>true</code>, default is <code>false</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSON</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The exact key to return from the query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>keys</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonArray</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only the given matching keys will be returned.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>startKeyDocId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Where to start searching for the key range.
+Can be used for efficient pagination.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>endKeyDocId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Where to stop searching for the key range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>startKey</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSON</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The key where the row return range should start.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>endKey</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JSON</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The key where the row return range should end.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>includeDocs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code>, optional <code>Class&lt;? extends Document&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wether or not to automatically fetch the document corresponding to each row.
+The second parameter is the target class for the document, <code>JsonDocument</code> if omitted.</p>
+<p class="tableblock">This method is needed only when using the blocking API since on the async API there is no benefit over just calling <code class="api">.document()</code> in the stream.</p>
+<p class="tableblock">See note on <code>includeDocs</code> below.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<strong>Important when using Grouping:</strong><code>group(boolean)</code> and <code>groupLevel(int)</code> should not be used together in the same view query.
+It is sufficient only to set the grouping level only and use this setter in cases where you always want the highest group level implicitly.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="spatialviewquery-api-details"><a class="anchor" href="#spatialviewquery-api-details"></a>SpatialViewQuery API details</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All options shown here are available on the <code>SpatialViewQuery</code> in a fluent API manner.
+All of them are optional, so only when they are explicitly provided, they will alter the behaviour of the query.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20.3252%;">
+<col style="width: 29.878%;">
+<col style="width: 49.7968%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Method</th>
+<th class="tableblock halign-left valign-top">Accepted Types</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>development</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When true queries the development view, false by default.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>limit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limits the number of the returned documents to the specified number.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Skips the given number of records before starting to return the results.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stale</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.TRUE, Stale.FALSE, Stale.UPDATE_AFTER (default)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines how stale the view results are allowed to be on query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>debug</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enabled debugging on view queries.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>onError</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OnError.STOP (default), OnError.CONTINUE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the response in the event of an error.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>startRange</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonArray</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Where the spatial range should start.
+Can be multidimensional.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>endRange</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonArray</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Where the spatial range should end.
+Can be multidimensional.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>range</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonArray, JsonArray</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Convenience method to combine start and endrange in one argument.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>includeDocs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>boolean</code>, optional <code>Class&lt;? extends Document&gt;&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Weather or not to automatically fetch the document corresponding to each row.
+The second parameter is the target class for the document, <code>JsonDocument</code> if omitted.</p>
+<p class="tableblock">This method is needed only when using the blocking API since on the async API there is no benefit over just calling <code class="api">.document()</code> in the stream.</p>
+<p class="tableblock">See note on <code>includeDocs</code> below.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Here is how to use the <code>range</code> parameter to find documents with a location within a bounding box.
+We have stored cities Paris, Vienna, Berlin and New York.
+Each city&#8217;s coordinates is represented as two attributes, <code>lon</code> and <code>lat</code>.
+The spatial view&#8217;s map function is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">function (doc) { if (doc.type == "city") { emit([doc.lon, doc.lat], null); } }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To query the view and find cities within Europe, we use Europe&#8217;s bouding box.
+The startRange is the most south-western point of the bounding box, the endRange is its most north-eastern point:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">JsonArray EUROPE_SOUTH_WEST = JsonArray.from(-10.8, 36.59);
+JsonArray EUROPE_NORTH_EAST = JsonArray.from(31.6, 70.67);
+
+SpatialViewResult result = bucket.query(SpatialViewQuery.from("cities", "by_location")
+            .stale(Stale.FALSE)
+            .range(EUROPE_SOUTH_WEST, EUROPE_NORTH_EAST));
+List&lt;SpatialViewRow&gt; allRows = result.allRows();
+
+for (SpatialViewRow row : allRows) {
+    System.out.println(row.id());
+}
+
+//prints:
+//city::Vienna
+//city::Berlin
+//city::Paris</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="retry"><a class="anchor" href="#retry"></a>Retry Conditions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SDK retries view requests automatically on certain known conditions, which represented in the following table:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 39.0625%;">
+<col style="width: 60.9375%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP status code</th>
+<th class="tableblock halign-left valign-top">Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">200</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do not retry request.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">300, 301, 302, 303, 307, 401, 408, 409, 412, 416, 417, 501, 502, 503, 504</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retry request.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">404</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In case the library detects yet unprovisioned node, it will retry.
+Otherwise, it will report <code>ViewDoesNotExistException</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the error payload reports missing view document or badly formed query, it will not retry.
+Otherwise, it will retry request.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>All codes not listed in the table will not be retried by default.
+But the client code still can use retrying framework or write a custom handler.
+In the example below, it will retry 10 times if the view does not exist:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">bucket.query(SpatialViewQuery.from("spatial", "test"))
+      .retryWhen(
+           RetryBuilder.anyOf(ViewDoesNotExistException.class)
+                       .delay(Delay.exponential(TimeUnit.SECONDS, 1))
+                       .max(10)
+                       .build())
+      .subscribe(new Action1&lt;AsyncSpatialViewResult&gt;() {
+          @Override
+          public void call(AsyncSpatialViewResult result) {
+              // handle result
+          }
+      });</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
