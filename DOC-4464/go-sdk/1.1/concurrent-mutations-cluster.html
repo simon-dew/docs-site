@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Concurrent Document Mutations | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4464/go-sdk/1.5/concurrent-mutations-cluster.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="go-sdk">
+    <meta name="dcterms.identifier" content="1.1">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4464">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="start-using-sdk.html"><span class="title">Go SDK</span> <span class="version">1.1</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../1.5/concurrent-mutations-cluster.html">Go SDK 1.5</a></li>
+                  <li><a class="navbar-item" href="../1.4/concurrent-mutations-cluster.html">Go SDK 1.4</a></li>
+                  <li><a class="navbar-item" href="../1.3/concurrent-mutations-cluster.html">Go SDK 1.3</a></li>
+                  <li><a class="navbar-item" href="../1.2/concurrent-mutations-cluster.html">Go SDK 1.2</a></li>
+                  <li><a class="navbar-item" href="../1.0/introduction.html">Go SDK 1.0</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../c-sdk/2.10/concurrent-mutations-cluster.html">C SDK</a></li>
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/concurrent-mutations-cluster.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/concurrent-mutations-cluster.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/concurrent-mutations-cluster.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/concurrent-mutations-cluster.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/concurrent-mutations-cluster.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Hello World!</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="start-using-sdk.html">Start Using the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sample-application.html">Sample Application</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="webui-cli-access.html">Browser and CLI Access</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="core-operations.html">Core Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="document-operations.html">Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-query.html">Querying with N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">N1QL from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-search-overview.html">Full Text Search</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Searching from the SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries-with-sdk.html">MapReduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="async-programming.html">Asynchronous Programming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="batching-operations.html">Batching Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="nonjson.html">Non-JSON Documents</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Deployment Environments</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-clusters.html">Managing Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Settings, Error Handling &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="client-settings.html">Client Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="handling-error-conditions.html">Handling Errors</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Collecting Information</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="relnotes-go-sdk.html#version-1-1-3-14-december-2016">Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="compatibility-versions-features.html">Compatibility</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../1.5/concurrent-mutations-cluster.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="start-using-sdk.html">Go SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="concurrent-mutations-cluster.html">Concurrent Document Mutations</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-go/edit/release/1.1/modules/ROOT/pages/concurrent-mutations-cluster.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Concurrent Document Mutations</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can use the CAS value to control how concurrent document modifications are handled.
+It helps avoid and control potential race conditions in which some mutations may be inadvertently lost or overridden by other mutations.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The <em class="term">CAS</em> is a value representing the current state of an item.
+Each time the item is modified, its CAS changes.</p>
+</div>
+<div class="paragraph">
+<p>The CAS value itself is returned as part of a document’s metadata whenever a document is accessed.
+In the SDK this is present as the <code class="api">cas</code> field in the applicable document container object when an operation is successful.</p>
+</div>
+<div class="paragraph">
+<p>CAS is an acronym for <em>Compare And Swap</em>, and is known as a form of optimistic locking.
+The CAS can be supplied as parameters to the <em>insert</em>, <em>upsert</em>, <em>replace</em>, and <em>remove</em> operations.
+When applications provide the CAS, server will check the application-provided version of CAS against its own version of the CAS:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the two CAS values match (they compare successfully), then the mutation operation succeeds.</p>
+</li>
+<li>
+<p>If the two CAS values differ, then the mutation operation fails.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>CAS, on the server-side might be implemented along these lines</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">uint Replace(string docid, object newvalue, uint oldCas=0) {
+    object existing = this.kvStore.get(docid);
+    if (!existing) {
+        throw DocumentDoesNotExist();
+    } else if (oldCas != 0 &amp;&amp; oldCas != existing.cas) {
+        throw CasMismatch();
+    }
+    uint newCas = ++existing.cas;
+    existing.value = newValue;
+    return newCas;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="demonstration"><a class="anchor" href="#demonstration"></a>Demonstration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following demonstrates how the server handles CAS.
+A use case for employing the CAS is when adding a new field to an existing document.
+At the application level, this requires the following steps:</p>
+</div>
+<div id="ul_ehb_nts_zs" class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Read entire document.</p>
+</li>
+<li>
+<p>Perform modification locally.</p>
+</li>
+<li>
+<p>Store new document to server.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Assume the following two blocks of code are executing concurrently in different application instances:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. CAS flow</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Thread #1</th>
+<th class="tableblock halign-left valign-top">Thread #2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div><div class="literalblock">
+<div class="content">
+<pre>&gt;&gt;&gt; result = cb1.get('docid')
+&gt;&gt;&gt; new_doc = result.value
+&gt;&gt;&gt; new_doc['field1'] = 'value1'
+&gt;&gt;&gt; cb1.replace('docid', new_doc)</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div><div class="literalblock">
+<div class="content">
+<pre>&gt;&gt;&gt; result = cb2.get('docid')
+&gt;&gt;&gt; new_doc = result.value
+&gt;&gt;&gt; new_doc['field2'] = 'value2'
+&gt;&gt;&gt; cb2.replace('docid', new_doc)</pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Retrieving the document again yields:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">&gt;&gt;&gt; cb1.get('docid').value
+{u'field2': u'value2', u'a_field': u'a_value'}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that <code>field1</code> is not present, even though the application inserted it into the document.
+The reason is because the replace on Thread #2 happened to run after the replace on Thread #1, however Thread #1’s replace was executed after Thread #2’s get: Since the local version of the document on Thread #2 did not contain field1 (because Thread #1’s update was not stored on the server yet), by executing the replace, it essentially overrode the replace performed by Thread #1.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 6.5019%;">
+<col style="width: 93.4981%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0.00ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(#2): <code>new_doc = get("docid").value</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0.00ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(#1): <code>new_doc = get("docid").value</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0.00ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(#1): <code>new_doc["field1"] = "value1"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0.00ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(#2): <code>new_doc["field2"] = "value2"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0.01ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(#1): <code>cb.replace("docid", new_doc)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0.02ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(#2): <code>cb.replace("docid", new_doc)</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-cas-example"><a class="anchor" href="#using-cas-example"></a>Using CAS - Example</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the prior example, we saw that concurrent updates to the same document may result in some updates being lost.
+This is not because Couchbase itself has lost the updates, but because the application was unaware of newer changes made to the document and inadvertently override them.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. CAS flow</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div><div class="literalblock">
+<div class="content">
+<pre>&gt;&gt;&gt; result = cb1.get('docid')
+&gt;&gt;&gt; new_doc = result.value
+&gt;&gt;&gt; print new_doc
+{u'a_field': u'a_value'}
+&gt;&gt;&gt; cur_cas = result.cas
+&gt;&gt;&gt; print cur_cas
+272002471883283
+&gt;&gt;&gt; new_doc['field1'] = 'value1'
+&gt;&gt;&gt; new_result = cb1.replace(
+       'docid',
+       new_doc,
+       cas=cur_cas)</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Server&#8217;s CAS matches <code>cur_cas</code>.
+New CAS assigned
+</td>
+</tr>
+</table>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&gt;&gt;&gt; print new_result.cas
+195896137937427</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div><div class="literalblock">
+<div class="content">
+<pre>&gt;&gt;&gt; result = cb2.get('docid')
+&gt;&gt;&gt; new_doc = result.value
+&gt;&gt;&gt; print new_doc
+{u'a_field': u'a_value'}
+&gt;&gt;&gt; cur_cas = result.cas
+&gt;&gt;&gt; print cur_cas
+272002471883283
+&gt;&gt;&gt; new_doc['field2'] = 'value2'
+&gt;&gt;&gt; new_result = cb2.replace(
+       'docid',
+       new_doc,
+       cas=cur_cas)</pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+CAS on server differs: <code>195896137937427</code> vs <code>272002471883283</code>!
+</td>
+</tr>
+</table>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="handling-cas-errors"><a class="anchor" href="#handling-cas-errors"></a>Handling CAS errors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If the item’s CAS has changed since the last operation performed by the current client (i.e.
+the document has been changed by another client), the CAS used by the application is considered <em>stale</em>.
+If a <em>stale</em> CAS is sent to the server (via one of the mutation commands, as above), the server will reply with an error, and the Couchbase SDK will accordingly return this error to the application (either via return code or exception, depending on the language).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The error returned for a CAS mismatch is the same that is returned when trying to insert an already-existing document.
+The error code is not ambiguous since the CAS option is only accepted (and only makes sense) for documents which already exist.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>How to handle this error depends on the application logic.
+If the application wishes to simply insert a new property within the document (which is not dependent on other properties within the document), then it may simply retry the read-update cycle by retrieving the item (and thus getting the new CAS), performing the local modification and then uploading the change to the server.
+For example, if a document represents a user, and the application is simply updating a user’s information (like an email field), the method to update this information may look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def update_email(cb, user_id, email):
+    while True:
+        result = cb.get(user_id)
+        user_doc = result.value
+        user_doc['email'] = email
+        cb.upsert(user_id, user_doc, cas=result.cas)
+        break # Mutation succeeded
+    except KeyExistsError:
+        # This means the CAS has been modified. We still need to
+        # insert the email field, but do not want to override new changes
+        continue</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sometimes more logic is needed when performing updates, for example, if a property is mutually exclusive with another property; only one or the other can exist, but not both.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="performance-considerations"><a class="anchor" href="#performance-considerations"></a>Performance considerations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CAS operations incur no additional overhead.
+CAS values are always returned from the server for each operation.
+Comparing CAS at the server involves a simple integer comparison which incurs no overhead.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cas-value-format"><a class="anchor" href="#cas-value-format"></a>CAS value format</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The CAS value should be treated as an opaque object at the application level.
+No assumptions should be made with respect to how the value is changed (for example, it is wrong to assume that it is a simple counter value).
+In the SDK, the CAS is represented as a 64 bit integer for efficient copying but should otherwise be treated as an opaque 8 byte buffer.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pessimistic-locking"><a class="anchor" href="#pessimistic-locking"></a>Pessimistic locking</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>While CAS is the recommended way to perform locking and concurrency control, Couchbase also offers explicit <em>locking</em>.
+When a document is locked, attempts to mutate it without supplying the correct CAS will fail.</p>
+</div>
+<div class="paragraph">
+<p>Documents can be locked using the <em>get-and-lock</em> operation and unlocked either explicitly using the <em>unlock</em> operation or implicitly by mutating the document with a valid CAS.
+While a document is locked, it may be retrieved but not modified without using the correct CAS value.
+When a locked document is retrieved, the server will return <code>-1</code> (or <code>0xffffffffffffffff</code>) as the CAS value.</p>
+</div>
+<div class="paragraph">
+<p>This handy table shows various behaviors while an item is locked:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. Behavior of various operations on a locked item</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operation</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>get-and-lock</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary Failure Error.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>get</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Always succeeds, but with an invalid CAS value returned (so it cannot be used as an input to subsequent mutations).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>unlock</em> with bad/missing CAS value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary Failure Error</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>unlock</em> with correct CAS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mutation is performed and item is unlocked.
+It can now be locked again and/or accessed as usual.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mutate (<em>upsert</em>, <em>replace</em>, etc) with bad/missing CAS value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KeyExists/BadCAS Error</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mutate with correct CAS value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mutation is performed and item is unlocked.
+It can now be locked again and/or accessed as usual.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A document can be locked for a maximum of 15 seconds, after which the server will unlock it.
+This is to prevent misbehaving applications from blocking access to documents inadvertently.
+You can modify the time the lock is held for (though it can be no longer than 15 seconds).</p>
+</div>
+<div class="paragraph">
+<p>Be sure to keep note of the <em>cas</em> value when locking a document.
+You will need it when unlocking.
+The following blocks show how to use <code class="api">lock</code> and <code class="api">unlock</code> with the C SDK.
+This process should be similar for other SDKs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">lcb_CMDGET cmd = { 0 };
+LCB_CMD_SET_KEY(&amp;cmd, "key", 3);
+cmd.lock = 1;
+cmd.exptime = 5;
+lcb_get3(instance, NULL, &amp;cmd);
+lcb_wait(instance);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>static int unlock_only = 0;
+
+void get_handler(lcb_t instance, int cbtype, const lcb_RESPBASE *rb)
+{
+    const lcb_RESPGET *resp = (const lcb_RESPGET *)rb;
+
+    union {
+        lcb_CMDBASE base;
+        lcb_CMDSTORE store;
+        lcb_CMDUNLOCK unlock;
+    } u;
+
+    if (rb-&gt;rc == LCB_ETMPFAIL) {
+        printf("Key already locked!");
+    } else if (rb-&gt;rc == LCB_SUCCESS) {
+        memset(&amp;u, 0, sizeof u);
+        LCB_CMD_SET_KEY(&amp;u.base, rb-&gt;key, rb-&gt;nkey);
+        u.base.cas = rb-&gt;cas;
+        if (unlock_only) {
+            lcb_unlock3(instance, NULL, &amp;u.unlock);
+        } else {
+            LCB_CMD_SET_VALUE(&amp;u.store, "value", 5);
+            u.store.operation = LCB_REPLACE;
+            lcb_store3(instance, NULL, &amp;u.store);
+        }
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The handler will unlock the item either via an explicit unlock operation (<code class="api">lcb_unlock3</code>) or implicitly via modifying the item with the correct CAS.</p>
+</div>
+<div class="paragraph">
+<p>If the item has already been locked, the server will respond with <code class="var">LCB_ETMPFAIL</code> which means that the operation could not be executed temporarily, but may succeed later on.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

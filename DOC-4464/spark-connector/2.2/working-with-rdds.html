@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Working With RDDs | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4464/spark-connector/2.2/working-with-rdds.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="spark-connector">
+    <meta name="dcterms.identifier" content="2.2">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4464">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="index.html"><span class="title">Spark Connector</span> <span class="version">2.2</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.1/working-with-rdds.html">Spark Connector 2.1</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="index.html">Spark Connector</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="getting-started.html">Getting Started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="dev-workflow.html">Development Workflow</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="working-with-rdds.html">Working With RDDs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="spark-sql.html">Spark SQL Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="spark-streaming.html">Spark Streaming Integration</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="structured-streaming.html">Structured Streaming</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="java-api.html">Java API</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="spark-shell.html">Using the Spark Shell</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="index.html">Spark Connector</a></li>
+    <li class="crumb"><a href="working-with-rdds.html">Working With RDDs</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/couchbase-spark-connector/edit/master/docs/modules/ROOT/pages/working-with-rdds.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Working With RDDs</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Spark operates on resilient distributed datasets (RDDs).
+When you need to extract data out of Couchbase, the Couchbase Spark connector creates RDDs for you.
+You can create and persist RDDs by using key-value pairs, views, or N1QL.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="creating-rdds"><a class="anchor" href="#creating-rdds"></a>Creating RDDs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To get access to the RDDs through the implicit methods that the Couchbase Spark connector provides, you need to add the following import to your code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">import com.couchbase.spark._</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This import adds Couchbase-specific methods to the <code>SparkContext</code>.
+Each method starts with <code>couchbase</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you want to create an RDD for specific documents stored in a bucket, you can specify the IDs directly.
+The connector fetches them from the server and turns them into an RDD:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">sc
+	.couchbaseGet[JsonDocument](Seq("airline_10123", "airline_10748"))
+	.collect()
+	.foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Because Spark outputs lots of information, you&#8217;ll find the output somewhere in the logs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">JsonDocument{id='airline_10748', cas=314538279043072, expiry=0, content={"country":"United States","iata":"ZQ","name":"Locair","callsign":"LOCAIR","icao":"LOC","id":10748,"type":"airline"}}
+JsonDocument{id='airline_10123', cas=314538278125568, expiry=0, content={"country":"United States","iata":"TQ","name":"Texas Wings","callsign":"TXW","icao":"TXW","id":10123,"type":"airline"}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is critical that you specify the target document type.
+Otherwise, the client does not know how to convert it.
+The main reason is that Couchbase has first-class JSON support, but is also able to store any data.
+You can even store serialized objects or protobuf-encoded documents, but then you&#8217;ll loose the secondary indexing capabilities.</p>
+</div>
+<div class="paragraph">
+<p>If you are unsure what to pick, stick with the <code>JsonDocument</code>.
+If you need raw access to the JSON data, you can also use the <code>RawJsonDocument</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can perform a (spatial) view query to extract rows and turn them into an RDD.
+Given the following view against the <code>travel-sample</code> bucket:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">function(doc, meta) {
+	if (doc.type == "airline") {
+		emit(doc.name, null);
+	}
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creating an RDD for the first 10 results works like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">sc
+  .couchbaseView(ViewQuery.from("airlines", "by_name").limit(10))
+  .collect()
+  .foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And prints the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>CouchbaseViewRow(airline_10,40-Mile Air,null)
+CouchbaseViewRow(airline_792,Access Air,null)
+CouchbaseViewRow(airline_665,AD Aviation,null)
+CouchbaseViewRow(airline_21,Aigle Azur,null)
+CouchbaseViewRow(airline_1191,Air Austral,null)
+CouchbaseViewRow(airline_139,Air Caledonie International,null)
+CouchbaseViewRow(airline_567,Air Carabes,null)
+CouchbaseViewRow(airline_149,Air Cargo Carriers,null)
+CouchbaseViewRow(airline_16881,Air Cudlua,null)
+CouchbaseViewRow(airline_882,Air Florida,null)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to load the full content for each document, you can mix both approaches:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">sc
+  .couchbaseView(ViewQuery.from("airlines", "by_name").limit(10))
+  .map(_.id)
+  .couchbaseGet[JsonDocument]()
+  .collect()
+  .foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here you can see that <code>couchbaseGet</code> is not just available on the context, but also on every <code>RDD[String]</code>.
+Neat, right?
+The exact same approach is also available for spatial views (just use the <code>couchbaseSpatialView()</code> method instead).</p>
+</div>
+<div class="paragraph">
+<p>Finally, if you are using Couchbase Server 4.0 or greater, you can utilize N1QL to perform efficient queries against your JSON data in a Couchbase Bucket.
+The following query is very similar to the one performed before through Views, just to show how the different approaches work.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You need to at least have a primary index created on the <code>travel-sample</code> bucket to make the following examples work.
+If you haven&#8217;t done that already, perform a <code>CREATE PRIMARY INDEX ON `travel-sample`</code> query.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">val query = "SELECT name FROM `travel-sample` WHERE type = 'airline' ORDER BY name ASC LIMIT 10"
+sc
+  .couchbaseQuery(Query.simple(query))
+  .collect()
+  .foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And if you want to fetch the full document contents based on some criteria, here is a little more complex example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">val query = "SELECT META(`travel-sample`).id as id FROM `travel-sample` WHERE type = 'airline' ORDER BY name ASC LIMIT 10"
+sc
+  .couchbaseQuery(Query.simple(query))
+  .map(_.value.getString("id"))
+  .couchbaseGet[JsonDocument]()
+  .collect()
+  .foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>While this gives you the most flexibility with querying, we recommend using the higher level Spark SQL components through the DataFrame API.
+See the Spark SQL section for more information.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="persisting-rdds"><a class="anchor" href="#persisting-rdds"></a>Persisting RDDs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Creating an RDD is only half the story.
+After you&#8217;ve done your aggregation, filtering, and machine learning, you normally want to persist the results somewhere.
+Couchbase provides the <code>saveToCouchbase()</code> method on every <code>RDD[Document]</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following example extracts all airline names through N1QL, aggregates them by country, and stores each list as a separate document.
+Since RDDs are source agnostic, the same approach can be used for example to load data out of HDFS and then store the results back in Couchbase.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">val query = "SELECT name, country FROM `travel-sample` WHERE type = 'airline' ORDER BY name"
+sc
+  .couchbaseQuery(Query.simple(query))
+  .groupBy(_.value.getString("country"))
+  .map(pair =&gt; {
+    val airports = JsonArray.create()
+    val content = JsonObject.create().put("airports", airports)
+    pair._2.map(_.value.getString("name")).foreach(airports.add)
+    JsonDocument.create("airports::" + pair._1, content)
+  })
+  .saveToCouchbase()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will create a document in the bucket for each country containing a list of airports.
+For example the document with the ID <code>airports::United States</code> contains this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "airports": [
+    "40-Mile Air",
+    "ATA Airlines",
+    "Access Air",
+    "Air Cargo Carriers",
+    "Air Florida",
+    ...
+    "United States Air Force",
+    "Usa Sky Cargo",
+    "Virgin America",
+    "Vision Airlines (V2)",
+    "Western Airlines",
+    "World Airways",
+    "XAIR USA",
+    "XOJET",
+    "Yellowtail"
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, the <code>saveToCouchbase()</code> method will use the <code>StoreMode.UPSERT</code>.
+There are more options available, including inserting and replacing (ignoring or failing on error).</p>
+</div>
+<div class="paragraph">
+<p>We are also working on better support for automatic conversions from different types so that you don&#8217;t have to map to a specific document type manually.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="subdocument-api"><a class="anchor" href="#subdocument-api"></a>Subdocument API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you are running Couchbase Server 4.5 or later, you can use the &#8220;subdoc&#8221; API to fetch only a subset of the fields from a Document.
+This allows you to reduce network overhead, and you need to move less data between operations.</p>
+</div>
+<div class="paragraph">
+<p>The <code>couchbaseSubdocLookup</code> method is available on both the SparkContext and the RDD and accepts two/three arguments, depending on the context:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ids:</strong> The list of IDs to fetch the fragments from.</p>
+</li>
+<li>
+<p><strong>get:</strong> The paths of the JSON document that should be returned.</p>
+</li>
+<li>
+<p><strong>exists:</strong> The paths of the JSON document that should be checked for existence.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example fetches only two fields from an airline and checks if the <code>foobar</code> field exists in the document:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">sc.parallelize(Seq("airline_10123"))
+  .couchbaseSubdocLookup(get = Seq("name", "iata"), exists = Seq("foobar"))
+  .collect()
+  .foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This prints:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SubdocLookupResult(airline_10123,0,Map(name -&gt; Texas Wings, iata -&gt; TQ),Map(foobar -&gt; false))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then extract the information from the <code>SubdocLookupResult</code> and use them in your RDD flow.
+Note that the Couchbase SDK also supports subdocument mutations which will be added to the Spark Connector in a future release.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

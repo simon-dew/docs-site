@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Durability requirements for mutations | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4464/c-sdk/2.10/durability.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="c-sdk">
+    <meta name="dcterms.identifier" content="2.5">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4464">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../operator/1.2/overview.html">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="../../couchbase-lite/2.5/index.html">Lite</a></li>
+                  <li><a href="../../sync-gateway/2.5/index.html">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="../../elasticsearch-connector/4.0/index.html">Elasticsearch</a></li>
+                  <li><a href="../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="../../kafka-connector/3.4/index.html">Kafka</a></li>
+                  <li><a href="../../spark-connector/2.2/index.html">Spark</a></li>
+                  <li><a href="../../talend-connector/index.html">Talend</a></li>
+                  <li><a href="../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="c-intro.html"><span class="title">C SDK</span> <span class="version">2.5</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../2.10/durability.html">C SDK 2.10</a></li>
+                  <li><a class="navbar-item" href="../2.9/durability.html">C SDK 2.9</a></li>
+                  <li><a class="navbar-item" href="../2.8/durability.html">C SDK 2.8</a></li>
+                  <li><a class="navbar-item" href="../2.7/durability.html">C SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/durability.html">C SDK 2.6</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="../../dotnet-sdk/2.7/durability.html">.NET SDK</a></li>
+                  <li><a class="navbar-item" href="../../go-sdk/1.5/durability.html">Go SDK</a></li>
+                  <li><a class="navbar-item" href="../../java-sdk/2.7/durability.html">Java SDK</a></li>
+                  <li><a class="navbar-item" href="../../nodejs-sdk/2.6/durability.html">Node.js SDK</a></li>
+                  <li><a class="navbar-item" href="../../php-sdk/2.6/durability.html">PHP SDK</a></li>
+                  <li><a class="navbar-item" href="../../python-sdk/2.5/durability.html">Python SDK</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="c-intro.html">C SDK 2.4/2.5</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="overview.html">Couchbase C Client Library</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="download-install.html">Installation and API Reference</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="download-list.html">Downloads</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="getting-started.html">Getting started</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing server connections</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="documents.html">Working with documents</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="storing.html">Creating documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="retrieving.html">Retrieving documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="updating.html">Updating documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="deleting.html">Deleting documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="bulk-operations.html">Bulk operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="atomic-operations.html">Atomic operations</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="durability.html">Durability requirements for mutations</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="querying.html">Querying buckets</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="view-queries.html">Working with view queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries.html">Working with N1QL queries</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="handling-errors.html">Handling errors</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="preempting-errors.html">Preempting errors from bad servers</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="logging.html">Setting up logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="tuning.html">Tuning and configuring</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="common-settings.html">Common client settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="blocking-and-nonblocking.html">Blocking and non-blocking I/O</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="external-eventloop.html">Using external event loops</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="resources.html">Resources</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="options.html">Connection string reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-diagnostics.html">Collecting diagnostic information</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="cli-tools.html">Client command-line tools</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="common-usage.html">Common usage</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="tools.html">List of tools</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="release-notes.html">Release Notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../2.10/durability.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="c-intro.html">C SDK</a></li>
+    <li class="crumb"><a href="c-intro.html">C SDK 2.4/2.5</a></li>
+    <li class="crumb"><a href="documents.html">Working with documents</a></li>
+    <li class="crumb"><a href="durability.html">Durability requirements for mutations</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-c/edit/release/2.5/modules/ROOT/pages/durability.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Durability requirements for mutations</h1>
+<div class="sect1">
+<h2 id="overview"><a class="anchor" href="#overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To greatly improve performance, normal SDK mutation operations such as store receive a positive reply (meaning that the operation was successful) as soon as the node has managed to store the value in its RAM.
+The item is then asynchronously written to the disk and sent to any applicable replica servers (in no specific order).</p>
+</div>
+<div class="paragraph">
+<p>While the process of replication and persistence is extremely fast, there is nevertheless a small risk of data loss if the server which received the mutation replies with success, but then immediately afterward goes offline.
+For some critical mutations, the application may desire to choose to wait until the item has attained a given redundancy before continuing.</p>
+</div>
+<div class="paragraph">
+<p><em>Durability Requirements</em> provide a means for the user to declare to the library to not continue until a given mutation has been replicated or persisted to a given amount of nodes.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="durability-requirements"><a class="anchor" href="#durability-requirements"></a>Durability Requirements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A durability requirement is a declaration made by the application to the library to wait until the item has been made redundant to some degree.
+The degree of redundancy is configurable.
+For example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Wait until the item is stored on the disk of the master node</p>
+</li>
+<li>
+<p>Wait until the item is propagated to the disk and memory of at least one replica node</p>
+</li>
+<li>
+<p>Wait until the item is propagated to the memory of all nodes</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This allows applications to balance their fault-tolerance and performance demands in a manner they see fit</p>
+</div>
+<div class="paragraph">
+<p>In the C library, durability operations may be performed by using the <code class="api">lcb_durability_poll()</code>.
+To use durability requirements, the CAS of a successful mutation operation (retrieved from its callback) should be placed into an <code class="api">lcb_durability_cmd_t</code>; additionally, a general setting structure (<code class="api">lcb_durability_settings_t</code>) should be populated with the persistence and replication requirements.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">lcb_durability_cmd_t cmd, *cmdp = { &amp;cmd };
+lcb_durability_opts_t opts;
+lcb_error_t err;
+
+memset(&amp;opts, 0, sizeof(opts);
+memset(&amp;cmd, 0, sizeof(cmd);
+
+opts.persist_to = 2;
+opts.replicate_to = 1;
+cmd.v.v0.key = resp-&gt;v.v0.key;
+cmd.v.v0.nkey = resp-&gt;v.v0.nkey;
+cmd.v.v0.cas = resp-&gt;v.v0.cas;
+//schedule the command --
+err = lcb_durability_poll(instance, cookie, &amp;opts, &amp;cmdp, 1);
+// error checking omitted --
+// later on, in the callback. resp is now a durability_resp_t* --
+if (resp-&gt;v.v0.err == LCB_SUCCESS) {
+     printf("Key was endured!\n");
+} else {
+     printf("Key did not endure in time\n");
+     printf("Replicated to: %u replica nodes\n", resp-&gt;v.v0.nreplicated);
+     printf("Persisted to: %u total nodes\n", resp-&gt;v.v0.npersisted);
+     printf("Did we persist to master? %u\n", resp-&gt;v.v0.persisted_master);
+     printf("Does the key exist in the master's cache? %u\n", resp-&gt;v.v0.exists_master);
+     switch (resp-&gt;v.v0.err) {
+     case LCB_KEY_EEXISTS:
+         printf("Seems like someone modified the key already...\n");
+         break;
+     case LCB_ETIMEDOUT:
+         printf("Either key does not exist, or the servers are too slow\n");
+         printf("If persisted_master or exists_master is true, then the"
+             "server is simply slow.",
+             "otherwise, the key does not exist\n");
+         break;
+     default:
+         printf("Got other error. This is probably a network error\n");
+         break;
+     }
+ }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Durability requirements are implemented by the client periodically polling the active and replica nodes to retrieve the current status of an item until the status indicates that the given constraints have been satisfied.
+This means that even if durability fails, it is not a tell-tale indicator that the operation will never persist or replicate to the given nodes, it is merely an indicator that it failed to be replicated or persisted within the given time frame.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lcb_enhanced_dur"><a class="anchor" href="#lcb_enhanced_dur"></a>Enhanced Durability (Couchbase 4.0)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In traditional CAS-based durability, constraints checking is done using the CAS.
+The CAS is a value that is randomly changes each time the item has been mutated and is intended to be used in compare-and-swap operations (this means that if the local version of the CAS differs from the one on the server, the item has changed).</p>
+</div>
+<div class="paragraph">
+<p>CAS-based durability might sometimes report indeterminate results, specifically in the case of server failover or for highly contended items.
+Specifically, if the durability polling operation detects a CAS mismatch, it does not know if this mismatch is due the item not having been replicated, or if this is due to a highly contended item being changed since the last mutation.</p>
+</div>
+<div class="paragraph">
+<p>Couchbase 4.0 and later allows the usage of monotonically incrementing sequence numbers (and an additional identifier) that can be used instead of CAS to check the persistence and replication status of a given mutation.
+Using the sequence number it is possible to distinguish failovers from highly contended items.
+This additional mutation metadata is abstracted in the library in the form of a new structure called <code>lcb_SYNCTOKEN</code>.</p>
+</div>
+<div class="paragraph">
+<p>To enable sequence-number based durability, two settings should be enabled.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="opt">LCB_CNTL_FETCH_SYNCTOKENS</code>, or <code class="opt">fetch_synctokens</code>.</p>
+<div class="paragraph">
+<p>This setting enables the server to return sequence information (which is different than CAS) for each operation.
+Note that this increases the size of each response by 16 bytes.</p>
+</div>
+</li>
+<li>
+<p><code class="opt">LCB_CNTL_DURABILITY_SYNCTOKENS</code> or <code class="opt">dur_synctokens</code>.</p>
+<div class="paragraph">
+<p>This allows <code class="api">lcb_durability_poll()</code> to transparently use this sequence number information (cached internally within the client) rather than CAS values for durability requirement checking.
+In this mode, CAS values passed are actually ignored.
+Note that it is still possible to manually pass the sequence information to the <code class="api">lcb_durability_poll()</code> (the necessary fields are mentioned in the API documentation).
+This mode also allows existing applications to transparently use enhanced durability.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If <code>FETCH_SYNCTOKENS</code> is enabled <em>and</em> you are performing durability checks across multiple client instances (that is, calling <code class="api">lcb_durability_poll()</code> on a mutation performed by another client instance), then this setting should either be disabled or the <code class="api">lcb_SYNCTOKEN</code> object should be explicitly passed to the command structure (<code class="api">lcb_durability_cmd_t</code>)
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This mode is enabled by default if <code class="opt">fetch_synctokens</code> is enabled.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="differences-between-code-class-api-synctoken-code-and-cas"><a class="anchor" href="#differences-between-code-class-api-synctoken-code-and-cas"></a>Differences between <code class="api">SYNCTOKEN</code> and CAS</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This section explains the differences between <code>SYNCTOKEN</code> and CAS values.
+This is written from a higher level architectural perspective.
+From a programming perspective, both of these values are opaque.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>SYNCTOKEN</code> values are per-bucket and reflect a given bucket&#8217;s state moving forward.
+A given <code>SYNCTOKEN</code> can be logically <em>greater then</em> or <em>less than</em> another <code>SYNCTOKEN</code>.
+These values are used internally by Couchbase&#8217;s replication functionality to create checkpoints and determine to which point a bucket has been replicated to a given node.
+Durability checking works by querying replica nodes about the current <code>SYNCTOKEN</code> they contain, and comparing that to the <code>SYNCTOKEN</code> value returned from the point at which the given mutation (the one the application wishes to <em>endure</em>), and ensuring the <code>SYNCTOKEN</code> value from the replica is at least equal to the state of the given mutation.
+Note that the relationship between various <code>SYNCTOKEN</code> values is abstracted in the library, and for programming purposes, are to be treated as opaque (<code>lcb_SYNCTOKEN</code> objects themselves are not simple integer values).</p>
+</div>
+<div class="paragraph">
+<p>CAS values on the other hand are bound to specific items and do not have a <em>less than</em> or <em>greater than</em> relationship to other CAS values.
+CAS values may only be checked for <em>equality</em>: if an item&#8217;s CAS value is equal to the CAS value known to the application, then the application may assume the item has not been modified since the last CAS value was retrieved; if the CAS value differs, then the item no longer contains the same value.</p>
+</div>
+<div class="paragraph">
+<p><code>SYNCTOKEN</code> values are not suited for CAS-like comparisons (checking whether the value is the same or has changed) since the <code>SYNCTOKEN</code> is modified on each mutation within the bucket.
+As such, if a <code>SYNCTOKEN</code> value is higher on the server than it was when the client performed its last mutation on a given item, it is unknown whether this is because the item has changed, or because another item has changed.
+Differing CAS values for the same item however guarantee that the item has since been modified.</p>
+</div>
+<div class="paragraph">
+<p>While theoretically speaking, an equal <code>SYNCTOKEN</code> value is also a positive indicator that an item has <em>not</em> changed, it is not suitable for general purpose use, since the value will change when <em>any</em> item is mutated (not just the one the application is dealing with).
+CAS values on the other hand are per-item.</p>
+</div>
+<div class="paragraph">
+<p>The following sequence will show a simplified version of how CAS and <code>SYNCTOKEN</code> values may change:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Mutation Flow</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Action</th>
+<th class="tableblock halign-left valign-top">CAS Value</th>
+<th class="tableblock halign-left valign-top"><code>SYNCTOKEN</code> Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>STORE("foo", "first foo value")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">589</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>STORE("bar", "first bar value")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">foo=589, bar=943</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>STORE("foo", "second foo value")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">foo=436, bar=943</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>STORE("bar", "second bar value")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">foo=436, bar=216</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
