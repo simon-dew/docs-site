@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>cbimport csv | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4610/server/6.0/tools/cbimport-csv.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="server">
+    <meta name="dcterms.identifier" content="6.0">
+    <meta name="generator" content="Antora 1.1.1">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4610">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.0/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="../../../c-sdk/2.10/start-using-sdk.html">C</a></li>
+                  <li><a href="../../../dotnet-sdk/2.7/start-using-sdk.html">.NET</a></li>
+                  <li><a href="../../../go-sdk/1.5/start-using-sdk.html">Go</a></li>
+                  <li><a href="../../../java-sdk/2.7/start-using-sdk.html">Java</a></li>
+                  <li><a href="../../../nodejs-sdk/2.6/start-using-sdk.html">Node.js</a></li>
+                  <li><a href="../../../php-sdk/2.6/start-using-sdk.html">PHP</a></li>
+                  <li><a href="../../../python-sdk/2.5/start-using-sdk.html">Python</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../index.html"><span class="title">server</span> <span class="version">6.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../../6.5/introduction/intro.html">server 6.5 DRAFT</a></li>
+                  <li><a class="navbar-item" href="../../5.5/index.html">server 5.5</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../index.html">server</a></li>
+    <li class="crumb"><a href="cbimport-csv.html">cbimport csv</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/backup/edit/master/docs/modules/tools/pages/cbimport-csv.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">cbimport csv</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Imports CSV data into Couchbase</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="synopsis"><a class="anchor" href="#synopsis"></a>SYNOPSIS</h2>
+<div class="sectionbody">
+<div class="verseblock">
+<pre class="content">cbimport csv [--cluster &lt;url&gt;] [--bucket &lt;bucket_name&gt;] [--dataset &lt;path&gt;]
+             [--username &lt;username&gt;] [--password &lt;password&gt;] [--generate-key &lt;key_expr&gt;]
+             [--limit-rows &lt;num&gt;] [--skip-rows &lt;num&gt;] [--field-separator &lt;char&gt;]
+             [--cacert &lt;path&gt;] [--no-ssl-verify] [--threads &lt;num&gt;] [--error-log &lt;path&gt;]
+             [--log-file &lt;path&gt;] [--verbose]</pre>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="description"><a class="anchor" href="#description"></a>DESCRIPTION</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Imports CSV and other forms of separated value type data into Couchbase. By
+default data files should contain comma separated values, but if for example you
+are importing data that is tab separated you can use the --field-separator flag
+to specify that tabs are used instead of commas.</p>
+</div>
+<div class="paragraph">
+<p>The cbimport command also supports custom key-generation for each document in
+the imported file. Key generation is done with a combination of pre-existing
+fields in a document and custom generator functions supplied by cbimport. See
+the KEY GENERATION section below for details about key generators.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="options"><a class="anchor" href="#options"></a>OPTIONS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Below are a list of required and optional parameters for the cbimport-csv
+command.</p>
+</div>
+<div class="sect2">
+<h3 id="required"><a class="anchor" href="#required"></a>Required</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">-c,--cluster &lt;url&gt;</dt>
+<dd>
+<p>The hostname of a node in the cluster to import data into. See the HOST
+FORMATS section below for details about hostname specification formats.</p>
+</dd>
+<dt class="hdlist1">-u,--username &lt;username&gt;</dt>
+<dd>
+<p>The username for cluster authentication. The user must have the appropriate
+privileges to write to the bucket in which data will be loaded to.</p>
+</dd>
+<dt class="hdlist1">-p,--password &lt;password&gt;</dt>
+<dd>
+<p>The password for cluster authentication. The user must have the appropriate
+privileges to write to the bucket in which data will be loaded to.
+Specifying this option without a value will allow the user to type a
+non-echoed password to stdin.</p>
+</dd>
+<dt class="hdlist1">-b,--bucket &lt;bucket_name&gt;</dt>
+<dd>
+<p>The name of the bucket to import data into.</p>
+</dd>
+<dt class="hdlist1">-d,--dataset &lt;uri&gt;</dt>
+<dd>
+<p>The URI of the dataset to be loaded. cbimport supports loading data from a
+local file or from a URL. When importing data from a local file the path
+must be prefixed with file://.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="optional"><a class="anchor" href="#optional"></a>Optional</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">-g,--generate-key &lt;key_expr&gt;</dt>
+<dd>
+<p>Specifies a key expression used for generating a key for each document
+imported. See the Key Generation section below for more information on
+specifying key generators.</p>
+</dd>
+<dt class="hdlist1">--field-separator &lt;num&gt;</dt>
+<dd>
+<p>Specifies the field separator to use when reading the dataset. By default
+the separator is a comma. To read tab separated files you can specify a tab
+in this field. Tabs are specified as <em>\t</em>.</p>
+</dd>
+<dt class="hdlist1">--limit-rows &lt;num&gt;</dt>
+<dd>
+<p>Specifies that the utility should stop loading data after reading a certain
+amount of rows from the dataset. This option is useful when you have a large
+dataset and only want to partially load it.</p>
+</dd>
+<dt class="hdlist1">--skip-rows &lt;num&gt;</dt>
+<dd>
+<p>Specifies that the utility should skip some rows before we start importing
+data. If this flag is used together with the --limit-rows flag then we will
+import the number of rows specified by --limit-rows after we ave skipped the
+rows specified by --skip-rows.</p>
+</dd>
+<dt class="hdlist1">--no-ssl-verify</dt>
+<dd>
+<p>Skips the SSL verification phase. Specifying this flag will allow a
+connection using SSL encryption, but will not verify the identity of the
+server you connect to. You are vulnerable to a man-in-the-middle attack if
+you use this flag. Either this flag or the --cacert flag must be specified
+when using an SSL encrypted connection.</p>
+</dd>
+<dt class="hdlist1">--infer-types</dt>
+<dd>
+<p>By default all values in a CSV files are interpreted as strings. If infer
+types is set then cbimport will look at each value and decide whether it is
+a string, integer, or boolean value and put the inferred type into the
+document.</p>
+</dd>
+<dt class="hdlist1">--omit-empty</dt>
+<dd>
+<p>Some values in a CSV row will not contain any data. By default these values
+are put into the generated JSON document as an empty string. To omit fields
+that contain empty values specify this flag.</p>
+</dd>
+<dt class="hdlist1">--cacert &lt;cert_path&gt;</dt>
+<dd>
+<p>Specifies a CA certificate that will be used to verify the identity of the
+server being connecting to. Either this flag or the --no-ssl-verify flag
+must be specified when using an SSL encrypted connection.</p>
+</dd>
+<dt class="hdlist1">-t,--threads &lt;num&gt;</dt>
+<dd>
+<p>Specifies the number of concurrent clients to use when importing data. Fewer
+clients means imports will take longer, but there will be less cluster
+resources used to complete the import. More clients means faster imports,
+but at the cost of more cluster resource usage. This parameter defaults to 1
+if it is not specified and it is recommended that this parameter is not set
+to be higher than the number of CPUs on the machine where the import is
+taking place.</p>
+</dd>
+<dt class="hdlist1">-e,--errors-log &lt;path&gt;</dt>
+<dd>
+<p>Specifies a log file where JSON documents that could not be loaded are
+written to. A document might not be loaded if a key could not be generated
+for the document or if the document is not valid JSON. The errors file is
+written in the "json lines" format (one document per line).</p>
+</dd>
+<dt class="hdlist1">-l,--log-file &lt;path&gt;</dt>
+<dd>
+<p>Specifies a log file for writing debugging information about cbimport
+execution.</p>
+</dd>
+<dt class="hdlist1">-v,--verbose</dt>
+<dd>
+<p>Specifies that logging should be sent to stdout. If this flag is specified
+along with the -l/--log-file option then the verbose option is ignored.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="host-formats"><a class="anchor" href="#host-formats"></a>HOST FORMATS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When specifying a host for the couchbase-cli command the following formats are expected:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>couchbase://&lt;addr&gt;</code></p>
+</li>
+<li>
+<p><code>&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+<li>
+<p><code>http://&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It is recommended to use the couchbase://&lt;addr&gt; format for standard
+installations. The other two formats allow an option to take a port number which
+is needed for non-default installations where the admin port has been set up on
+a port other that 8091.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="key-generators"><a class="anchor" href="#key-generators"></a>KEY GENERATORS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Key generators are used in order to generate a key for each document loaded.
+Keys can be generated by using a combination of characters, the values of a
+given row in a document, and custom generators. Row substitutions are done by
+wrapping the column name in "%" and custom generators are wrapped in "#". Below
+is an example of a key generation expression.</p>
+</div>
+<div class="paragraph">
+<p>Given the CSV dataset:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>fname,age
+alice,40
+barry,36</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Key Generator Expression:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>--generate-key key::%fname%::#MONO_INCR#</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following keys would be generated:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>key::alice::1
+key::barry::2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above we generate a key using the value in each row of the
+"fname" column and a custom generator. To specify that we want to substitute the
+value in the "fname" column we put the name of the column "fname" bewteen two
+percent signs. This is an example of field substitution and it allows the
+ability to build keys out of data that is already in the dataset.</p>
+</div>
+<div class="paragraph">
+<p>This example also contains a generator function MONO_INCR which will increment
+by 1 each time the key generator is called. Since this is the first time this
+key generator was executed it returns 1. If we executed the key generator again
+it would return 2 and so on. The starting value of the MONO_INCR generator is 1
+by default, but it can be changed by specifying a number in brackets after the
+MONO_INCR generator name. To start generating monotonically incrementing values
+starting at 100 for example, the generator MONO_INCR[100] would be specified.
+The cbimport command current contains a monotonic increment generator
+(MONO_INCR) and a UUID generator (UUID).</p>
+</div>
+<div class="paragraph">
+<p>Any text that isn&#8217;t wrapped in "%" or "#" is static text and will be in the
+result of all generated keys. If a key needs to contain a "%" or "#" in static
+text then they need to be escaped by providing a double "%" or "#"
+(ex. "%%" or "##").</p>
+</div>
+<div class="paragraph">
+<p>If a key cannot be generated because the field specified in the key generator is
+not present in the document then the key will be skipped. To see a list of
+document that were not imported due to failed key generation users can specify
+the --errors-log &lt;path&gt; parameter to dump a list of all documents that could not
+be imported to a file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the examples below we will show examples for importing data from the files
+below.</p>
+</div>
+<div class="literalblock">
+<div class="title">/data/people.csv</div>
+<div class="content">
+<pre>fname,age
+alice,40
+barry,36</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">/data/people.tsv</div>
+<div class="content">
+<pre>fname  age
+alice  40
+barry  36</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To import data from /data/people.csv using a key containing the "fname" column
+and utilizing 4 threads the following command can be run.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbimport csv -c couchbase://127.0.0.1 -u Administrator -p password \
+ -b default -d file:///data/people.csv -g key::%fname% -t 4</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To import data from /data/people.tsv using a key containing the "fname" column
+and the UUID generator the following command would be run.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbimport csv -c couchbase://127.0.0.1 -u Administrator -p password \
+ -b default -d file:///data/people.tsv --field-separator $_\t_ \
+ -g key::%fname%::#UUID# -t 4</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the dataset in not available on the local machine where the command is run,
+but is available via an HTTP URL we can still import the data using cbimport. If
+we assume that the data is located at <a href="http://data.org/people.csv" class="bare">http://data.org/people.csv</a> then we can
+import the data with the command below.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbimport csv -c couchbase://127.0.0.1 -u Administrator -p password \
+ -b default -d http://data.org/people.csv -g key::%fname%::#UUID# -t 4</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="discussion"><a class="anchor" href="#discussion"></a>DISCUSSION</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The cbimport-csv command is used to quickly import data from various files
+containing CSV, TSV or other separated format data. While importing CSV the
+cbimport command only utilizes a single reader. As a result importing large
+dataset may benefit from being paritioned into multiple files and running a
+separate cbimport process on each file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="environment-and-configuration-variables"><a class="anchor" href="#environment-and-configuration-variables"></a>ENVIRONMENT AND CONFIGURATION VARIABLES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>(None)</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>SEE ALSO</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="cbimport-json.html" class="page">cbimport-json</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cbimport"><a class="anchor" href="#cbimport"></a>CBIMPORT</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Part of the <a href="cbimport.html" class="page">cbimport</a> suite</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
