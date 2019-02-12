@@ -3347,13 +3347,13 @@ WHERE r.sourceairport = "SFO"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The right-hand side of an ANSI join may be a FROM keyspace expression, a subquery, or a generic expression.</p>
+<p>In Couchbase Server 6.5 and later, the right-hand side of an ANSI join may be a FROM keyspace expression, a subquery, or a generic expression.</p>
 </div>
 <div class="sect4">
 <h5 id="ansi-from-keyspace"><a class="anchor" href="#ansi-from-keyspace"></a>FROM Keyspace</h5>
 <div class="listingblock">
 <div class="content">
-<pre>ansi-from-keyspace ::= [ <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">namespace</a> ':' ] <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">keyspace</a></pre>
+<pre>ansi-from-keyspace ::= [ namespace ':' ] keyspace</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3381,7 +3381,7 @@ WHERE r.sourceairport = "SFO"</code></pre>
 <h5 id="ansi-select-expr"><a class="anchor" href="#ansi-select-expr"></a>Subquery Expression</h5>
 <div class="listingblock">
 <div class="content">
-<pre>select-expr ::= '(' <a href="selectclause.html" class="page">select</a> ')'</pre>
+<pre>ansi-select-expr ::= '(' select ')'</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3400,7 +3400,7 @@ WHERE r.sourceairport = "SFO"</code></pre>
 <h5 id="ansi-generic-expr"><a class="anchor" href="#ansi-generic-expr"></a>Generic Expression</h5>
 <div class="listingblock">
 <div class="content">
-<pre>generic-expr ::= <a href="index.html" class="page">expr</a></pre>
+<pre>ansi-generic-expr ::= expression</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3445,7 +3445,7 @@ If you assign an alias to the right-hand side expression, the <code>AS</code> ke
 <dl>
 <dt class="hdlist1"><code>expr</code></dt>
 <dd>
-<p>Boolean expression representing the join condition between the left-hand side <a href="#section_nkd_3nx_1db">FROM Term</a> and the right-hand side <a href="#ansi-rhs-expr">Right-Hand Side Expression</a>.
+<p>Boolean expression representing the join condition between the left-hand side <a href="#section_nkd_3nx_1db">FROM Term</a> and the <a href="#ansi-rhs-expr">Right-Hand Side Expression</a>.
 This expression may contain fields, constant expressions, or any complex N1QL expression.</p>
 </dd>
 </dl>
@@ -3499,8 +3499,82 @@ ORDER BY route.sourceairport;</code></pre>
 </div>
 </div>
 </div>
+<div id="ANSI-Join-Example-1b" class="exampleblock">
+<div class="title">Example 2. Inner Join with Subquery on Right-Hand Side</div>
+<div class="content">
+<div class="paragraph">
+<p>Find the destination airport of all routes in the <code>travel-sample</code> keyspace that fly out of San Francisco.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT DISTINCT route.destinationairport
+FROM `travel-sample` airport JOIN (
+  SELECT destinationairport, sourceairport
+  FROM `travel-sample`
+  WHERE type="route"
+) AS route
+ON airport.faa = route.sourceairport
+WHERE airport.type = "airport"
+AND airport.city = "San Francisco";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+  {
+    "destinationairport": "HKG"
+  },
+  {
+    "destinationairport": "ICN"
+  },
+  {
+    "destinationairport": "ATL"
+  },
+  {
+    "destinationairport": "BJX"
+  },
+  {
+    "destinationairport": "GDL"
+  },
+...
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="ANSI-Join-Example-1c" class="exampleblock">
+<div class="title">Example 3. Inner Join with Generic Expression on Right-Hand Side</div>
+<div class="content">
+<div class="paragraph">
+<p>Find the destination airport of all routes in the given array that fly out of San Francisco.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT DISTINCT route.destinationairport
+FROM `travel-sample` airport JOIN [
+  {"destinationairport": "KEF", "sourceairport": "SFO", "type": "route"},
+  {"destinationairport": "KEF", "sourceairport": "LHR", "type": "route"}
+] AS route
+ON airport.faa = route.sourceairport AND route.type = "route"
+WHERE airport.type = "airport"
+AND airport.city = "San Francisco";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+  {
+    "destinationairport": "KEF"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
 <div id="ANSI-Join-Example-2" class="exampleblock">
-<div class="title">Example 2. Left Outer Join of U.S. airports in the same city as a landmark</div>
+<div class="title">Example 4. Left Outer Join of U.S. airports in the same city as a landmark</div>
 <div class="content">
 <div class="paragraph">
 <p>List the airports and landmarks in the same city, ordered by the airports.</p>
@@ -3551,7 +3625,7 @@ ORDER BY lmark.name;</code></pre>
 </div>
 </div>
 <div id="ANSI-Join-Example-3" class="exampleblock">
-<div class="title">Example 3. RIGHT OUTER JOIN of <a href="#ANSI-Join-Example-2">Example 2</a></div>
+<div class="title">Example 5. RIGHT OUTER JOIN of <a href="#ANSI-Join-Example-2">Example 4</a></div>
 <div class="content">
 <div class="paragraph">
 <p>List the airports and landmarks in the same city, ordered by the landmarks.</p>
@@ -3614,7 +3688,7 @@ ORDER BY lmark.name;</code></pre>
 </div>
 </div>
 <div id="ANSI-Join-Example-4" class="exampleblock">
-<div class="title">Example 4. Inner Join with Covering Index</div>
+<div class="title">Example 6. Inner Join with Covering Index</div>
 <div class="content">
 <div class="paragraph">
 <p>In the <code>`beer-sample`</code> bucket, use an ANSI JOIN to list the beer names and breweries that are in the state Wisconsin (<code>WI</code>).
@@ -3691,10 +3765,6 @@ WHERE type = "beer"</code></pre>
 </li>
 <li>
 <p>No mixing of new ANSI Join syntax with Lookup/Index Join syntax in the same FROM clause.</p>
-</li>
-<li>
-<p>The right-hand side of any join must be a keyspace.
-Expressions, subqueries, or other join combinations cannot be on the right-hand side of a join.</p>
 </li>
 <li>
 <p>A join can only be executed when appropriate index exists on the inner side of the join.</p>
@@ -3799,7 +3869,7 @@ So if you specify <code>BUILD</code> on the right side, then you are implicitly 
 <div class="sect3">
 <h4 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h4>
 <div id="USE-HASH-Example-1" class="exampleblock">
-<div class="title">Example 5. PROBE</div>
+<div class="title">Example 7. PROBE</div>
 <div class="content">
 <div class="paragraph">
 <p>The keyspace <code>aline</code> is to be joined (with <code>rte</code>) using hash join, and <code>aline</code> is used as the probe side of the hash join.</p>
@@ -3827,7 +3897,7 @@ WHERE rte.type = "route";</code></pre>
 </div>
 </div>
 <div id="USE-HASH-Example-2" class="exampleblock">
-<div class="title">Example 6. BUILD</div>
+<div class="title">Example 8. BUILD</div>
 <div class="content">
 <div class="paragraph">
 <p>This is effectively the same query as the previous example, except the two keyspaces are switched, and here the <code>USE HASH(BUILD)</code> hint is used, indicating the hash join should use <code>rte</code> as the build side.</p>
@@ -3889,7 +3959,7 @@ Since nested-loop join is the default path, the <code>USE NL</code> hint is not 
 <div class="sect3">
 <h4 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h4>
 <div class="exampleblock">
-<div class="title">Example 7. USE NL Example</div>
+<div class="title">Example 9. USE NL Example</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -3968,7 +4038,7 @@ The order of the two hints doesn&#8217;t matter.</p>
 <div class="sect3">
 <h4 id="examples-4"><a class="anchor" href="#examples-4"></a>Examples</h4>
 <div id="Multiple-hint-Example-1" class="exampleblock">
-<div class="title">Example 8. USE INDEX with USE HASH</div>
+<div class="title">Example 10. USE INDEX with USE HASH</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -3983,7 +4053,7 @@ WHERE rte.type = "route";</code></pre>
 </div>
 </div>
 <div id="Multiple-hint-Example-2" class="exampleblock">
-<div class="title">Example 9. USE HASH with USE KEYS</div>
+<div class="title">Example 11. USE HASH with USE KEYS</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -4379,6 +4449,19 @@ If omitted, the default is <code>INNER</code>.</p>
 <p>Keyspace reference for the right-hand side of the lookup join.
 For details, see <a href="from.html#sec_from-keyspace" class="page">FROM Keyspace</a>.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The right-hand side of a lookup join must be a keyspace.
+Expressions, subqueries, or other join combinations cannot be on the right-hand side of a lookup join.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="lookup-as-alias"><a class="anchor" href="#lookup-as-alias"></a>AS Alias</h4>
@@ -4437,7 +4520,7 @@ If you assign an alias to the FROM keyspace, the <code>AS</code> keyword may be 
 <div class="sect2">
 <h3 id="examples-5"><a class="anchor" href="#examples-5"></a>Examples</h3>
 <div id="Lookup-JOIN-Example-1" class="exampleblock">
-<div class="title">Example 10. Route JOIN airline ON KEYS route.airlineid</div>
+<div class="title">Example 12. Route JOIN airline ON KEYS route.airlineid</div>
 <div class="content">
 <div class="paragraph">
 <p>List all airlines and non-stop routes from SFO in the <code>travel-sample</code> keyspace.</p>
@@ -4493,7 +4576,7 @@ LIMIT 4;</code></pre>
 </div>
 </div>
 <div id="Lookup-JOIN-Example-2" class="exampleblock">
-<div class="title">Example 11. Route JOIN airline ON KEYS route.airlineid</div>
+<div class="title">Example 13. Route JOIN airline ON KEYS route.airlineid</div>
 <div class="content">
 <div class="paragraph">
 <p>List the schedule of flights from Boston to San Francisco on JETBLUE in the <code>travel-sample</code> keyspace.</p>
@@ -4663,7 +4746,7 @@ AND airline.callsign = "JETBLUE";</code></pre>
 <h3 id="purpose-4"><a class="anchor" href="#purpose-4"></a>Purpose</h3>
 <div class="paragraph">
 <p>Index JOINs allow you to flip the direction of your join clause.
-When Lookup JOINs cannot efficiently join left-hand side documents with right-to-left joins, and your situation cannot be flipped because your predicate needs to be on the left-hand side (such as <a href="#Lookup-JOIN-Example-1">Example 10</a> above where airline documents have no reference to route documents), then Index JOINs can be used efficiently without making a Cartesian product of all route documents.</p>
+When Lookup JOINs cannot efficiently join left-hand side documents with right-to-left joins, and your situation cannot be flipped because your predicate needs to be on the left-hand side (such as <a href="#Lookup-JOIN-Example-1">Example 12</a> above where airline documents have no reference to route documents), then Index JOINs can be used efficiently without making a Cartesian product of all route documents.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4732,6 +4815,19 @@ If omitted, the default is <code>INNER</code>.</p>
 <p>Keyspace reference for right-hand side of an index join.
 For details, see <a href="from.html#sec_from-keyspace" class="page">FROM Keyspace</a>.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The right-hand side of an index join must be a keyspace.
+Expressions, subqueries, or other join combinations cannot be on the right-hand side of an index join.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="index-as-alias"><a class="anchor" href="#index-as-alias"></a>AS Alias</h4>
@@ -4785,10 +4881,10 @@ If you assign an alias to the FROM keyspace, the <code>AS</code> keyword may be 
 <div class="sect2">
 <h3 id="examples-6"><a class="anchor" href="#examples-6"></a>Examples</h3>
 <div id="Index-JOIN-Example-0" class="exampleblock">
-<div class="title">Example 12. Use INDEX join to flip the direction of <a href="#Lookup-JOIN-Example-1">Example 10</a> above</div>
+<div class="title">Example 14. Use INDEX join to flip the direction of <a href="#Lookup-JOIN-Example-1">Example 12</a> above</div>
 <div class="content">
 <div class="paragraph">
-<p>Consider the query below, similar to <a href="#Lookup-JOIN-Example-1">Example 10</a> above with route and airline documents, where <code>route.airlineid</code> is the document key of route documents and airline documents have no reference to route documents:</p>
+<p>Consider the query below, similar to <a href="#Lookup-JOIN-Example-1">Example 12</a> above with route and airline documents, where <code>route.airlineid</code> is the document key of route documents and airline documents have no reference to route documents:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4874,7 +4970,7 @@ JOIN <em>rhs-expression</em>
 </ul>
 </div>
 <div id="Index-JOIN-Example-1" class="exampleblock">
-<div class="title">Example 13. <code>ON KEY ... FOR</code></div>
+<div class="title">Example 15. <code>ON KEY ... FOR</code></div>
 <div class="content">
 <div class="paragraph">
 <p>The following example counts the number of distinct "AA" airline routes for each airport after creating the following index, if not already created.</p>
