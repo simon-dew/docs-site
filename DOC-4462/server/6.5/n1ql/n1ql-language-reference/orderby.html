@@ -9,7 +9,7 @@
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
     <meta name="dcterms.identifier" content="6.5">
-    <meta name="generator" content="Antora 1.1.1">
+    <meta name="generator" content="Antora 2.0.0">
     <link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
   </head>
   <body class="article">
@@ -1343,6 +1343,16 @@
     <a class="nav-link" href="typefun.html">Type Functions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="windowfun.html">Window Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="window.html">OVER clause</a>
+    </span>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
@@ -2203,7 +2213,7 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
-    <a class="nav-link" href="../../cli/cbrestore-tween-opsys.html">rehash=1</a>
+    <a class="nav-link" href="../../cli/cbrestore-tween-opsys.html">cli:cbrestore-tween-opsys.adoc</a>
     </span>
   </li>
 </ul>
@@ -3042,7 +3052,7 @@
 <main class="article" data-ceiling="topbar">
   <div class="article-banner">
     <p>You are viewing the documentation for a prerelease version.</p>
-    <a class="btn" href="../../../6.0/index.html">View Latest</a>
+    <a class="btn" href="#">View Latest</a>
   </div>
   <div class="article-header">
 <button class="nav-control"></button>
@@ -3094,35 +3104,72 @@ For more details about user roles, see
 <div class="sect1">
 <h2 id="section_Syntax"><a class="anchor" href="#section_Syntax"></a>Syntax</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>In the below <code>SELECT</code> statement, the <code>ORDER BY</code> clause is boldfaced:</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT select_clause
-[FROM from_clause] [JOIN join_clause]
-[USE INDEX useindex_clause]
-[LET let_clause]
-[WHERE where_clause ( [AND where_clause2] )* ]
-[GROUP BY groupby_clause] [LETTING|HAVING letting_clause]
-[UNION|INTERSECT|EXCEPT union_clause]
-[ORDER BY orderby_clause]
-[LIMIT limit_int]
-[OFFSET offset_clause]
-;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Syntax of the orderby_clause</strong></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>ORDER BYexpr [ASC|DESC] [, expr2 [ASC|DESC] ]*</pre>
+<pre>order-by-clause ::= ORDER BY <a href="#ordering-term">ordering-term</a> [ ',' <a href="#ordering-term">ordering-term</a> ]*</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/order-by-clause.png" alt="order by clause" width="50%">
+<img src="../_images/n1ql-language-reference/order-by-clause.png" alt="order by clause">
+</div>
+</div>
+<div class="sect2">
+<h3 id="ordering-term"><a class="anchor" href="#ordering-term"></a>Ordering Term</h3>
+<div class="listingblock">
+<div class="content">
+<pre>ordering-term ::= <a href="#arguments">expr</a> [ ASC | DESC ] [ NULLS ( FIRST | LAST ) ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ordering-term.png" alt="ordering term">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="collation"><a class="anchor" href="#collation"></a>Collation</h3>
+<div class="paragraph">
+<p>The collation clause determines the order of the search.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>ASC</code></dt>
+<dd>
+<p>The results are ordered in ascending order.</p>
+</dd>
+<dt class="hdlist1"><code>DESC</code></dt>
+<dd>
+<p>The results are ordered in descending order.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the collation clause is missing, the default is <code>ASC</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="nulls-ordering"><a class="anchor" href="#nulls-ordering"></a>Nulls Ordering</h3>
+<div class="paragraph">
+<p><em>(Introduced in Couchbase Server 6.5)</em></p>
+</div>
+<div class="paragraph">
+<p>The nulls ordering clause determines how NULL or MISSING values are treated when ordering the results:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>NULLS FIRST</code></dt>
+<dd>
+<p>If any results evaluate to NULL or MISSING, those results ordered first.</p>
+</dd>
+<dt class="hdlist1"><code>NULLS LAST</code></dt>
+<dd>
+<p>If any results evaluate to NULL or MISSING, those results are ordered last.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the nulls ordering clause is omitted, the default is <code>NULLS FIRST</code> for an ascending search with <code>ASC</code>, or <code>NULLS LAST</code> for a descending search with <code>DESC</code>.</p>
 </div>
 </div>
 </div>
@@ -3134,17 +3181,8 @@ For more details about user roles, see
 <dl>
 <dt class="hdlist1">expr</dt>
 <dd>
-<p>[Required] This identifier or expression can be document fields, new expressions, or an alias in the SELECT clause.</p>
-</dd>
-<dt class="hdlist1"><code>ASC</code> | <code>DESC</code></dt>
-<dd>
-<p>[Optional; default is <code>ASC</code>]</p>
-<div class="paragraph">
-<p><code>ASC</code> orders in ascending order.</p>
-</div>
-<div class="paragraph">
-<p><code>DESC</code> orders in descending order.</p>
-</div>
+<p>[Required] The identifier or expression by which to order the query results.
+This may be a document field, a new expression, or an alias in the SELECT clause.</p>
 </dd>
 </dl>
 </div>
@@ -3162,36 +3200,80 @@ Any items with the same sort value will be sorted with the next expression in th
 This process repeats until all items are sorted and all expressions in the list are evaluated.</p>
 </div>
 <div class="paragraph">
-<p>When a field has a mix of data types, the different JSON types are sorted in the following order (from lowest to highest):</p>
+<p>When a field has a mix of data types, the different JSON types are sorted in the following order, from first to last:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>MISSING</code></p>
-</li>
-<li>
-<p><code>NULL</code> (including JSON NULL)</p>
-</li>
-<li>
-<p><code>FALSE</code></p>
-</li>
-<li>
-<p><code>TRUE</code></p>
-</li>
-<li>
-<p>number</p>
-</li>
-<li>
-<p>string (string comparison is done using a raw byte collation of UTF8 encoded strings)</p>
-</li>
-<li>
-<p>array (element by element comparison is performed until the end of the shorter array; if all the elements so far are equal, then longer arrays sort after)</p>
-</li>
-<li>
-<p>object (larger objects sort after; for objects of equal length, key/value by key/value comparison is performed; keys are examined in sorted order using the normal ordering for strings)</p>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ASC NULLS FIRST</th>
+<th class="tableblock halign-left valign-top">ASC NULLS LAST</th>
+<th class="tableblock halign-left valign-top">DESC NULLS FIRST</th>
+<th class="tableblock halign-left valign-top">DESC NULLS LAST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MISSING</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FALSE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BINARY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TRUE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MISSING</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OBJECT</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FALSE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMBER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BINARY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ARRAY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TRUE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">STRING</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OBJECT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">STRING</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMBER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ARRAY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ARRAY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMBER</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">STRING</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OBJECT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">STRING</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TRUE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ARRAY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BINARY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMBER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FALSE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OBJECT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MISSING</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TRUE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NULL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BINARY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FALSE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MISSING</p></td>
+</tr>
+</tbody>
+</table>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -3199,7 +3281,29 @@ This process repeats until all items are sorted and all expressions in the list 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Among string values, the ascending order is lowercase, then uppercase, then accented letters.
+<div class="ulist">
+<ul>
+<li>
+<p>NULL values include JSON NULL.</p>
+</li>
+<li>
+<p>String comparison is done using a raw byte collation of UTF8 encoded strings.
+The ascending order is lowercase, then uppercase, then accented letters.</p>
+</li>
+<li>
+<p>Arrays are sorted in order of the first element in each array, then the second element in each array, and so on.
+In an ascending sort, longer arrays are sorted after shorter arrays, where all the elements are equal as far as the end of the shorter array.</p>
+</li>
+<li>
+<p>Objects are first sorted in order of size.
+In an ascending sort, larger objects are sorted after shorter objects.
+Where objects are the same size, objects are sorted in order of the first key in each object, then the first value in each object, then the second key in each object, then the second value in each object, and so on.</p>
+</li>
+<li>
+<p>N1QL always sorts the key-value pairs <em>within each object</em> by key in ascending string order before comparison or ordering.</p>
+</li>
+</ul>
+</div>
 </td>
 </tr>
 </table>
@@ -3209,33 +3313,31 @@ Among string values, the ascending order is lowercase, then uppercase, then acce
 <div class="sect1">
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p><a href="#Ex1">Ex 1: List cities in descending order and then landmarks in ascending order.</a></p>
+<p><a href="#Ex1">List cities in descending order and then landmarks in ascending order</a></p>
 </li>
 <li>
-<p><a href="#Ex2">Ex 2: List names resulting from a UNION clause.</a></p>
+<p><a href="#Ex2">List the names of hotels and landmarks resulting from a UNION query</a></p>
 </li>
-</ul>
+</ol>
 </div>
-<div class="paragraph">
-<p><strong>Example 1:</strong> List cities in descending order and then landmarks in ascending order.</p>
-</div>
+<div id="Ex1" class="exampleblock">
+<div class="title">Example 1. List cities in descending order and then landmarks in ascending order</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>SELECT city, name
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT city, name
 FROM `travel-sample`
 WHERE type = "landmark"
-ORDER BY city DESC, name ASC;</pre>
+ORDER BY city DESC, name ASC;</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Results:</p>
 </div>
 <div class="listingblock">
+<div class="title">Results:</div>
 <div class="content">
-<pre>[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "city": "Évreux",
     "name": "Cafe des Arts"
@@ -3256,29 +3358,29 @@ ORDER BY city DESC, name ASC;</pre>
     "city": "Yosemite Valley",
     "name": "Mirror Lake/Meadow"
   },
-...</pre>
+...</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><strong>Example 2:</strong> List the names of hotels and landmarks resulting from a UNION query.</p>
 </div>
+</div>
+<div id="Ex2" class="exampleblock">
+<div class="title">Example 2. List the names of hotels and landmarks resulting from a UNION query</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>SELECT name
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT name
   FROM `travel-sample`
   WHERE type = "landmark"
 UNION SELECT name
   FROM `travel-sample`
   WHERE type = "hotel"
-ORDER BY name ASC;</pre>
+ORDER BY name ASC;</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Results:</p>
 </div>
 <div class="listingblock">
+<div class="title">Results</div>
 <div class="content">
-<pre>{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
     "name": "'La Mirande Hotel"
   },
   {
@@ -3293,7 +3395,9 @@ ORDER BY name ASC;</pre>
   {
     "name": "101 Coffee Shop"
   },
-...</pre>
+...</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

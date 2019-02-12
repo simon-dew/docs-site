@@ -9,7 +9,7 @@
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
     <meta name="dcterms.identifier" content="6.5">
-    <meta name="generator" content="Antora 1.1.1">
+    <meta name="generator" content="Antora 2.0.0">
     <link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
   </head>
   <body class="article">
@@ -1343,6 +1343,16 @@
     <a class="nav-link" href="typefun.html">Type Functions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="windowfun.html">Window Functions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="window.html">OVER clause</a>
+    </span>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
@@ -2203,7 +2213,7 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
-    <a class="nav-link" href="../../cli/cbrestore-tween-opsys.html">rehash=1</a>
+    <a class="nav-link" href="../../cli/cbrestore-tween-opsys.html">cli:cbrestore-tween-opsys.adoc</a>
     </span>
   </li>
 </ul>
@@ -3042,7 +3052,7 @@
 <main class="article" data-ceiling="topbar">
   <div class="article-banner">
     <p>You are viewing the documentation for a prerelease version.</p>
-    <a class="btn" href="../../../6.0/index.html">View Latest</a>
+    <a class="btn" href="#">View Latest</a>
   </div>
   <div class="article-header">
 <button class="nav-control"></button>
@@ -3074,26 +3084,111 @@ The function names are case insensitive.</p>
 When using an aggregate function in a query, the query operates as an aggregate query.</p>
 </div>
 <div class="paragraph">
+<p>In Couchbase Server 6.5 and later, aggregate functions can also be used as window functions, when they are used with a window clause, which is introduced by the <code>OVER</code> keyword.</p>
+</div>
+<div class="paragraph">
+<p>This page describes the syntax of aggregate functions.
+See the <a href="window.html" class="page">OVER clause and Window Functions</a> page for the generic syntax of window functions, window options, and the window clause.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="aggregate-functions"><a class="anchor" href="#aggregate-functions"></a>Aggregate Functions</h3>
+<div class="listingblock">
+<div class="content">
+<pre>aggregate-function ::= function-name '(' [ <a href="#aggregate-quantifier">aggregate-quantifier</a> ] <a href="index.html" class="page">expr</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/aggregate-function.png" alt="aggregate function">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="aggregate-functions-as-window-functions"><a class="anchor" href="#aggregate-functions-as-window-functions"></a>Aggregate Functions as Window Functions</h3>
+<div class="paragraph">
+<p><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a> | <em>Introduced in Couchbase Server 6.5</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>aggregate-function-window ::= function-name '(' [ <a href="#aggregate-quantifier">aggregate-quantifier</a> ] <a href="index.html" class="page">expr</a> ')' OVER '(' <a href="window.html#window-clause" class="page">window-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/aggregate-function-window.png" alt="aggregate function window">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h3>
+<div class="paragraph">
 <p>Aggregate functions take one argument, which is used to compute the aggregate function.
 The <code>COUNT</code> function can also take a wildcard (*) or a path with a wildcard (path.*) as its argument.</p>
 </div>
+<div class="sect3">
+<h4 id="aggregate-quantifier"><a class="anchor" href="#aggregate-quantifier"></a>Aggregate Quantifier</h4>
+<div class="listingblock">
+<div class="content">
+<pre>aggregate-quantifier ::= ALL | DISTINCT</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/aggregate-quantifier.png" alt="aggregate quantifier">
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong>aggregate quantifier</strong> determines whether the function aggregates all values in the group, or distinct values only.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>ALL</code></dt>
+<dd>
+<p>All objects are included in the computation.</p>
+</dd>
+<dt class="hdlist1"><code>DISTINCT</code></dt>
+<dd>
+<p>Only distinct objects are included in the computation.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>This quantifier can only be used with aggregate functions.</p>
+</div>
+<div class="paragraph">
+<p>This quantifier is optional.
+If omitted, the default value is <code>ALL</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="defaults"><a class="anchor" href="#defaults"></a>Default Values</h3>
 <div class="paragraph">
 <p>If there is no input row for the group, <code>COUNT</code> functions return <code>0</code>.
 All other aggregate functions return NULL.</p>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="array_agg"><a class="anchor" href="#array_agg"></a>ARRAY_AGG(<code class="var">expression</code>)</h2>
+<h2 id="array_agg"><a class="anchor" href="#array_agg"></a><a id="array_agg_distinct"></a>ARRAY_AGG( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="return-value"><a class="anchor" href="#return-value"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns an array of the non-MISSING values in the group, including NULL values.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns an array of the non-MISSING values in the group, including NULL values.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns an array of the distinct non-MISSING values in the group, including NULL values.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example"><a class="anchor" href="#example"></a>Example</h3>
+<h3 id="examples"><a class="anchor" href="#examples"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3123,20 +3218,6 @@ All other aggregate functions return NULL.</p>
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="array_agg_distinct"><a class="anchor" href="#array_agg_distinct"></a>ARRAY_AGG(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-2"><a class="anchor" href="#return-value-2"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns array of the distinct non-MISSING values in the group, including NULL values.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-2"><a class="anchor" href="#example-2"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3170,22 +3251,25 @@ All other aggregate functions return NULL.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="avg"><a class="anchor" href="#avg"></a>AVG(<code class="var">expression</code>)</h2>
+<h2 id="avg"><a class="anchor" href="#avg"></a><a id="avg_distinct"></a>AVG( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This function has an alias <a href="#mean">MEAN()</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="return-value-3"><a class="anchor" href="#return-value-3"></a>Return Value</h3>
+<h3 id="return-value-2"><a class="anchor" href="#return-value-2"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns arithmetic mean (average) of all the number values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the arithmetic mean (average) of all the number values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the arithmetic mean (average) of all the distinct number values in the group.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
+<h3 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3208,26 +3292,6 @@ All other aggregate functions return NULL.</p>
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="avg_distinct"><a class="anchor" href="#avg_distinct"></a>AVG(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This function has an alias <a href="#mean_distinct">MEAN(DISTINCT)</a>.</p>
-</div>
-<div class="sect2">
-<h3 id="return-value-4"><a class="anchor" href="#return-value-4"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns arithmetic mean (average) of all the distinct number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-4"><a class="anchor" href="#example-4"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3261,13 +3325,13 @@ SELECT AVG(DISTINCT stops) FROM `travel-sample`; <i class="conum" data-value="2"
 <h2 id="count_all"><a class="anchor" href="#count_all"></a>COUNT(*)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-5"><a class="anchor" href="#return-value-5"></a>Return Value</h3>
+<h3 id="return-value-3"><a class="anchor" href="#return-value-3"></a>Return Value</h3>
 <div class="paragraph">
 <p>Returns count of all the input rows for the group, regardless of value.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-5"><a class="anchor" href="#example-5"></a>Example</h3>
+<h3 id="example"><a class="anchor" href="#example"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3294,16 +3358,19 @@ SELECT AVG(DISTINCT stops) FROM `travel-sample`; <i class="conum" data-value="2"
 </div>
 </div>
 <div class="sect1">
-<h2 id="count"><a class="anchor" href="#count"></a>COUNT(<code class="var">expression</code>)</h2>
+<h2 id="count"><a class="anchor" href="#count"></a><a id="count_distinct"></a>COUNT( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-6"><a class="anchor" href="#return-value-6"></a>Return Value</h3>
+<h3 id="return-value-4"><a class="anchor" href="#return-value-4"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns count of all the non-NULL and non-MISSING values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns count of all the non-NULL and non-MISSING values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns count of all the distinct non-NULL and non-MISSING values in the group.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-6"><a class="anchor" href="#example-6"></a>Example</h3>
+<h3 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3326,20 +3393,6 @@ SELECT AVG(DISTINCT stops) FROM `travel-sample`; <i class="conum" data-value="2"
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="count_distinct"><a class="anchor" href="#count_distinct"></a>COUNT(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-7"><a class="anchor" href="#return-value-7"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns count of all the distinct non-NULL and non-MISSING values in the group.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-7"><a class="anchor" href="#example-7"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3374,16 +3427,19 @@ SELECT AVG(DISTINCT stops) FROM `travel-sample`; <i class="conum" data-value="2"
 </div>
 </div>
 <div class="sect1">
-<h2 id="max"><a class="anchor" href="#max"></a>MAX(<code class="var">expression</code>)</h2>
+<h2 id="max"><a class="anchor" href="#max"></a>MAX( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-8"><a class="anchor" href="#return-value-8"></a>Return Value</h3>
+<h3 id="return-value-5"><a class="anchor" href="#return-value-5"></a>Return Value</h3>
 <div class="paragraph">
 <p>Returns the maximum non-NULL, non-MISSING value in the group in N1QL collation order.</p>
 </div>
+<div class="paragraph">
+<p>This function returns the same result with the <code>ALL</code> quantifier, the <code>DISTINCT</code> quantifier, or no quantifier.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="examples"><a class="anchor" href="#examples"></a>Examples</h3>
+<h3 id="examples-4"><a class="anchor" href="#examples-4"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3467,7 +3523,7 @@ To avoid this uppercase/lowercase confusion, you should first make all values up
 </div>
 </div>
 <div class="sect1">
-<h2 id="mean"><a class="anchor" href="#mean"></a>MEAN(<code class="var">expression</code>)</h2>
+<h2 id="mean"><a class="anchor" href="#mean"></a><a id="mean_distinct"></a>MEAN( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Alias for <a href="#avg">AVG()</a>.</p>
@@ -3475,28 +3531,24 @@ To avoid this uppercase/lowercase confusion, you should first make all values up
 </div>
 </div>
 <div class="sect1">
-<h2 id="mean_distinct"><a class="anchor" href="#mean_distinct"></a>MEAN(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Alias for <a href="#avg_distinct">AVG(DISTINCT)</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="median"><a class="anchor" href="#median"></a>MEDIAN(<code class="var">expression</code>)</h2>
+<h2 id="median"><a class="anchor" href="#median"></a><a id="median_distinct"></a>MEDIAN( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-9"><a class="anchor" href="#return-value-9"></a>Return Value</h3>
+<h3 id="return-value-6"><a class="anchor" href="#return-value-6"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns the median of all the number values in the group.
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the median of all the number values in the group.
 If there is an even number of number values, returns the mean of the median two values.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the median of all the distinct number values in the group.
+If there is an even number of distinct number values, returns the mean of the median two values.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-8"><a class="anchor" href="#example-8"></a>Example</h3>
+<h3 id="examples-5"><a class="anchor" href="#examples-5"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3519,24 +3571,6 @@ If there is an even number of number values, returns the mean of the median two 
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="median_distinct"><a class="anchor" href="#median_distinct"></a>MEDIAN(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-10"><a class="anchor" href="#return-value-10"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns the median of all the distinct number values in the group.
-If there is an even number of distinct number values, returns the mean of the median two values.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-9"><a class="anchor" href="#example-9"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3563,16 +3597,19 @@ If there is an even number of distinct number values, returns the mean of the me
 </div>
 </div>
 <div class="sect1">
-<h2 id="min"><a class="anchor" href="#min"></a>MIN(<code class="var">expression</code>)</h2>
+<h2 id="min"><a class="anchor" href="#min"></a>MIN( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-11"><a class="anchor" href="#return-value-11"></a>Return Value</h3>
+<h3 id="return-value-7"><a class="anchor" href="#return-value-7"></a>Return Value</h3>
 <div class="paragraph">
 <p>Returns the minimum non-NULL, non-MISSING value in the group in N1QL collation order.</p>
 </div>
+<div class="paragraph">
+<p>This function returns the same result with the <code>ALL</code> quantifier, the <code>DISTINCT</code> quantifier, or no quantifier.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h3>
+<h3 id="examples-6"><a class="anchor" href="#examples-6"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3656,23 +3693,22 @@ To avoid this symbol confusion, you can specify letters only, as in the followin
 </div>
 </div>
 <div class="sect1">
-<h2 id="stddev"><a class="anchor" href="#stddev"></a>STDDEV(<code class="var">expression</code>)</h2>
+<h2 id="stddev"><a class="anchor" href="#stddev"></a><a id="stddev_distinct"></a>STDDEV( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-12"><a class="anchor" href="#return-value-12"></a>Return Value</h3>
+<h3 id="return-value-8"><a class="anchor" href="#return-value-8"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a> of all the number values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a> of all the number values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a> of all the distinct number values in the group.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
-<div class="paragraph">
-<p>This function has a near-synonym <a href="#stddev_samp">STDDEV_SAMP()</a>.
-The only difference is that <code>STDDEV()</code> returns NULL if there is only one matching element.</p>
-</div>
 </div>
 <div class="sect2">
-<h3 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h3>
+<h3 id="examples-7"><a class="anchor" href="#examples-7"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3725,27 +3761,6 @@ The only difference is that <code>STDDEV()</code> returns NULL if there is only 
 </tr>
 </table>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="stddev_distinct"><a class="anchor" href="#stddev_distinct"></a>STDDEV(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-13"><a class="anchor" href="#return-value-13"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a> of all the distinct number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>This function has a near-synonym <a href="#stddev_samp_distinct">STDDEV_SAMP(DISTINCT)</a>.
-The only difference is that <code>STDDEV(DISTINCT)</code> returns NULL if there is only one matching element.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-10"><a class="anchor" href="#example-10"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3772,19 +3787,22 @@ The only difference is that <code>STDDEV(DISTINCT)</code> returns NULL if there 
 </div>
 </div>
 <div class="sect1">
-<h2 id="stddev_pop"><a class="anchor" href="#stddev_pop"></a>STDDEV_POP(<code class="var">expression</code>)</h2>
+<h2 id="stddev_pop"><a class="anchor" href="#stddev_pop"></a><a id="stddev_pop_distinct"></a>STDDEV_POP( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-14"><a class="anchor" href="#return-value-14"></a>Return Value</h3>
+<h3 id="return-value-9"><a class="anchor" href="#return-value-9"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns the <a href="#eqn_pop_std_dev">population standard deviation</a> of all the number values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the <a href="#eqn_pop_std_dev">population standard deviation</a> of all the number values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the <a href="#eqn_pop_std_dev">population standard deviation</a> of all the distinct number values in the group.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-11"><a class="anchor" href="#example-11"></a>Example</h3>
+<h3 id="examples-8"><a class="anchor" href="#examples-8"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3807,23 +3825,6 @@ The only difference is that <code>STDDEV(DISTINCT)</code> returns NULL if there 
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="stddev_pop_distinct"><a class="anchor" href="#stddev_pop_distinct"></a>STDDEV_POP(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-15"><a class="anchor" href="#return-value-15"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns the <a href="#eqn_pop_std_dev">population standard deviation</a> of all the distinct number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-12"><a class="anchor" href="#example-12"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3850,14 +3851,14 @@ The only difference is that <code>STDDEV(DISTINCT)</code> returns NULL if there 
 </div>
 </div>
 <div class="sect1">
-<h2 id="stddev_samp"><a class="anchor" href="#stddev_samp"></a>STDDEV_SAMP(<code class="var">expression</code>)</h2>
+<h2 id="stddev_samp"><a class="anchor" href="#stddev_samp"></a><a id="stddev_samp_distinct"></a>STDDEV_SAMP( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>A near-synonym for <a href="#stddev">STDDEV()</a>.
 The only difference is that <code>STDDEV_SAMP()</code> returns NULL if there is only one matching element.</p>
 </div>
 <div class="sect2">
-<h3 id="example-13"><a class="anchor" href="#example-13"></a>Example</h3>
+<h3 id="example-2"><a class="anchor" href="#example-2"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3892,28 +3893,22 @@ The only difference is that <code>STDDEV_SAMP()</code> returns NULL if there is 
 </div>
 </div>
 <div class="sect1">
-<h2 id="stddev_samp_distinct"><a class="anchor" href="#stddev_samp_distinct"></a>STDDEV_SAMP(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A near-synonym for <a href="#stddev_distinct">STDDEV(DISTINCT)</a>.
-The only difference is that <code>STDDEV_SAMP(DISTINCT)</code> returns NULL if there is only one matching element.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="sum"><a class="anchor" href="#sum"></a>SUM(<code class="var">expression</code>)</h2>
+<h2 id="sum"><a class="anchor" href="#sum"></a><a id="sum_distinct"></a>SUM( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-16"><a class="anchor" href="#return-value-16"></a>Return Value</h3>
+<h3 id="return-value-10"><a class="anchor" href="#return-value-10"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns the sum of all the number values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the sum of all the number values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the arithmetic sum of all the distinct number values in the group.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-14"><a class="anchor" href="#example-14"></a>Example</h3>
+<h3 id="examples-9"><a class="anchor" href="#examples-9"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -3956,23 +3951,6 @@ In the travel-sample bucket, nearly all flights are non-stop (0 stops) and only 
 </tr>
 </table>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="sum_distinct"><a class="anchor" href="#sum_distinct"></a>SUM(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-17"><a class="anchor" href="#return-value-17"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns the arithmetic sum of all the distinct number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-15"><a class="anchor" href="#example-15"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -4007,23 +3985,26 @@ In the travel-sample bucket, nearly all flights are non-stop (0 stops) and only 
 </div>
 </div>
 <div class="sect1">
-<h2 id="variance"><a class="anchor" href="#variance"></a>VARIANCE(<code class="var">expression</code>)</h2>
+<h2 id="variance"><a class="anchor" href="#variance"></a><a id="variance_distinct"></a>VARIANCE( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="return-value-18"><a class="anchor" href="#return-value-18"></a>Return Value</h3>
+<h3 id="return-value-11"><a class="anchor" href="#return-value-11"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns the unbiased sample variance (the square of the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a>) of all the number values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the unbiased sample variance (the square of the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a>) of all the number values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the unbiased sample variance (the square of the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a>) of all the distinct number values in the group.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
 <div class="paragraph">
-<p>This function has a near-synonym <a href="#var_samp">VAR_SAMP()</a>.
+<p>This function has a near-synonym <a href="#variance_samp">VARIANCE_SAMP()</a>.
 The only difference is that <code>VARIANCE()</code> returns NULL if there is only one matching element.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="examples-4"><a class="anchor" href="#examples-4"></a>Examples</h3>
+<h3 id="examples-10"><a class="anchor" href="#examples-10"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -4076,27 +4057,6 @@ The only difference is that <code>VARIANCE()</code> returns NULL if there is onl
 </tr>
 </table>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="variance_distinct"><a class="anchor" href="#variance_distinct"></a>VARIANCE(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="return-value-19"><a class="anchor" href="#return-value-19"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns the unbiased sample variance (the square of the <a href="#eqn_samp_std_dev">corrected sample standard deviation</a>) of all the distinct number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>This function has a near-synonym <a href="#variance_samp_distinct">VARIANCE_SAMP(DISTINCT)</a>.
-The only difference is that <code>VARIANCE(DISTINCT)</code> returns NULL if there is only one matching element.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-16"><a class="anchor" href="#example-16"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -4123,22 +4083,25 @@ The only difference is that <code>VARIANCE(DISTINCT)</code> returns NULL if ther
 </div>
 </div>
 <div class="sect1">
-<h2 id="variance_pop"><a class="anchor" href="#variance_pop"></a>VARIANCE_POP(<code class="var">expression</code>)</h2>
+<h2 id="variance_pop"><a class="anchor" href="#variance_pop"></a><a id="variance_pop_distinct"></a>VARIANCE_POP( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This function has an alias <a href="#var_pop">VAR_POP()</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="return-value-20"><a class="anchor" href="#return-value-20"></a>Return Value</h3>
+<h3 id="return-value-12"><a class="anchor" href="#return-value-12"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns the population variance (the square of the <a href="#eqn_pop_std_dev">population standard deviation</a>) of all the number values in the group.</p>
+<p>With the <code>ALL</code> quantifier, or no quantifier, returns the population variance (the square of the <a href="#eqn_pop_std_dev">population standard deviation</a>) of all the number values in the group.</p>
+</div>
+<div class="paragraph">
+<p>With the <code>DISTINCT</code> quantifier, returns the population variance (the square of the <a href="#eqn_pop_std_dev">population standard deviation</a>) of all the distinct number values in the group.</p>
 </div>
 <div class="paragraph">
 <p>Returns NULL if there are no number values in the group.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-17"><a class="anchor" href="#example-17"></a>Example</h3>
+<h3 id="examples-11"><a class="anchor" href="#examples-11"></a>Examples</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -4161,26 +4124,6 @@ The only difference is that <code>VARIANCE(DISTINCT)</code> returns NULL if ther
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="variance_pop_distinct"><a class="anchor" href="#variance_pop_distinct"></a>VARIANCE_POP(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This function has an alias <a href="#var_pop_distinct">VAR_POP(DISTINCT)</a>.</p>
-</div>
-<div class="sect2">
-<h3 id="return-value-21"><a class="anchor" href="#return-value-21"></a>Return Value</h3>
-<div class="paragraph">
-<p>Returns the population variance (the square of the <a href="#eqn_pop_std_dev">population standard deviation</a>) of all the distinct number values in the group.</p>
-</div>
-<div class="paragraph">
-<p>Returns NULL if there are no number values in the group.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-18"><a class="anchor" href="#example-18"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -4207,7 +4150,7 @@ The only difference is that <code>VARIANCE(DISTINCT)</code> returns NULL if ther
 </div>
 </div>
 <div class="sect1">
-<h2 id="variance_samp"><a class="anchor" href="#variance_samp"></a>VARIANCE_SAMP(<code class="var">expression</code>)</h2>
+<h2 id="variance_samp"><a class="anchor" href="#variance_samp"></a><a id="variance_samp_distinct"></a>VARIANCE_SAMP( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>A near-synonym for <a href="#variance">VARIANCE()</a>.
@@ -4217,7 +4160,7 @@ The only difference is that <code>VARIANCE_SAMP()</code> returns NULL if there i
 <p>This function has an alias <a href="#var_samp">VAR_SAMP()</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="example-19"><a class="anchor" href="#example-19"></a>Example</h3>
+<h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
@@ -4252,19 +4195,7 @@ The only difference is that <code>VARIANCE_SAMP()</code> returns NULL if there i
 </div>
 </div>
 <div class="sect1">
-<h2 id="variance_samp_distinct"><a class="anchor" href="#variance_samp_distinct"></a>VARIANCE_SAMP(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A near-synonym for <a href="#variance_distinct">VARIANCE(DISTINCT)</a>.
-The only difference is that <code>VARIANCE_SAMP(DISTINCT)</code> returns NULL if there is only one matching element.</p>
-</div>
-<div class="paragraph">
-<p>This function has an alias <a href="#var_samp_distinct">VAR_SAMP(DISTINCT)</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="var_pop"><a class="anchor" href="#var_pop"></a>VAR_POP(<code class="var">expression</code>)</h2>
+<h2 id="var_pop"><a class="anchor" href="#var_pop"></a><a id="var_pop_distinct"></a>VAR_POP( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Alias for <a href="#variance_pop">VARIANCE_POP()</a>.</p>
@@ -4272,26 +4203,10 @@ The only difference is that <code>VARIANCE_SAMP(DISTINCT)</code> returns NULL if
 </div>
 </div>
 <div class="sect1">
-<h2 id="var_pop_distinct"><a class="anchor" href="#var_pop_distinct"></a>VAR_POP(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Alias for <a href="#variance_pop_distinct">VARIANCE_POP(DISTINCT)</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="var_samp"><a class="anchor" href="#var_samp"></a>VAR_SAMP(<code class="var">expression</code>)</h2>
+<h2 id="var_samp"><a class="anchor" href="#var_samp"></a><a id="var_samp_distinct"></a>VAR_SAMP( [ ALL | DISTINCT ] <code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Alias for <a href="#variance_samp">VARIANCE_SAMP()</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="var_samp_distinct"><a class="anchor" href="#var_samp_distinct"></a>VAR_SAMP(DISTINCT <code class="var">expression</code>)</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Alias for <a href="#variance_samp_distinct">VARIANCE_SAMP(DISTINCT)</a>.</p>
 </div>
 </div>
 </div>
