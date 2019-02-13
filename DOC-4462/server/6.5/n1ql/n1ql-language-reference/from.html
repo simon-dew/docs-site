@@ -3173,6 +3173,22 @@ This enables you to chain JOIN clauses, NEST clauses, and UNNEST clauses togethe
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="limitations"><a class="anchor" href="#limitations"></a>Limitations</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>When the FROM term is an expression, <code>USE KEYS</code> or <code>USE INDEX</code> clauses are not allowed.</p>
+</li>
+<li>
+<p>When using a lookup <code>JOIN</code> clause, an index <code>JOIN</code> clause, a <code>NEST</code> clause, or an <code>UNNEST</code> clause, the left-hand side of the join may be a keyspace identifier, an expression, or a subquery; but the right-hand side may only be a keyspace identifier.</p>
+</li>
+<li>
+<p>In Couchbase Server 6.5 and later, when using an ANSI <code>JOIN</code> clause, the right-hand side of the join may also be a keyspace identifier, an expression, or a subquery, similar to the left-hand side.</p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3185,7 +3201,7 @@ This enables you to chain JOIN clauses, NEST clauses, and UNNEST clauses togethe
 <h3 id="syntax-2"><a class="anchor" href="#syntax-2"></a>Syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>from-keyspace ::= [ <a href="#from-keyspace-args">namespace</a> ':' ] <a href="#from-keyspace-args">keyspace</a> [ [ AS ] <a href="#from-keyspace-alias">alias</a> ] [ <a href="#from-keyspace-hints">use-clause</a> ]</pre>
+<pre>from-keyspace ::= <a href="#from-keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#from-keyspace-alias">alias</a> ] [ <a href="#from-keyspace-hints">use-clause</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3194,7 +3210,17 @@ This enables you to chain JOIN clauses, NEST clauses, and UNNEST clauses togethe
 </div>
 </div>
 <div class="sect3">
-<h4 id="from-keyspace-args"><a class="anchor" href="#from-keyspace-args"></a>Arguments</h4>
+<h4 id="from-keyspace-ref"><a class="anchor" href="#from-keyspace-ref"></a>Keyspace reference</h4>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-ref ::= [ <a href="identifiers.html" class="page">namespace</a> ':' ] <a href="identifiers.html" class="page">keyspace</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/from-keyspace-ref.png" alt="from keyspace ref">
+</div>
+</div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">namespace</dt>
@@ -3274,16 +3300,16 @@ LIMIT 4;</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="select-expr"><a class="anchor" href="#select-expr"></a>Subquery Expression</h2>
+<h2 id="select-expr"><a class="anchor" href="#select-expr"></a>SELECT Expression</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Use parentheses to specify a subquery.</p>
+<p>Specifies a N1QL <code>SELECT</code> expression of input objects.</p>
 </div>
 <div class="sect2">
 <h3 id="syntax-3"><a class="anchor" href="#syntax-3"></a>Syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>select-expr ::= '(' <a href="#select-expr-clause">select</a> ')' [ AS ] <a href="#select-expr-alias">alias</a></pre>
+<pre>select-expr ::= <a href="#select-expr-clause">subquery-expr</a> [ AS ] <a href="#select-expr-alias">alias</a></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3292,9 +3318,19 @@ LIMIT 4;</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="select-expr-clause"><a class="anchor" href="#select-expr-clause"></a>SELECT clause</h4>
+<h4 id="select-expr-clause"><a class="anchor" href="#select-expr-clause"></a>Subquery expression</h4>
+<div class="listingblock">
+<div class="content">
+<pre>subquery-expr ::= '('  <a href="selectclause.html" class="page">select</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/subquery-expr.png" alt="subquery expr">
+</div>
+</div>
 <div class="paragraph">
-<p>Specifies a N1QL <code>SELECT</code> expression of input objects.</p>
+<p>Use parentheses to specify a subquery.</p>
 </div>
 <div class="paragraph">
 <p>For more details and examples, see <a href="selectclause.html" class="page">SELECT Clause</a> and <a href="subqueries.html" class="page">Subqueries</a>.</p>
@@ -3444,7 +3480,7 @@ GROUP BY country;</code></pre>
 <h3 id="syntax-4"><a class="anchor" href="#syntax-4"></a>Syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>generic-expr ::= <a href="#generic-expr-args">expr</a> [ AS <a href="#generic-expr-alias">alias</a> ]</pre>
+<pre>generic-expr ::= <a href="index.html" class="page">expr</a> [ AS <a href="#generic-expr-alias">alias</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3452,8 +3488,6 @@ GROUP BY country;</code></pre>
 <img src="../_images/n1ql-language-reference/generic-expr.png" alt="generic expr">
 </div>
 </div>
-<div class="sect3">
-<h4 id="generic-expr-args"><a class="anchor" href="#generic-expr-args"></a>Arguments</h4>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">expr</dt>
@@ -3461,7 +3495,6 @@ GROUP BY country;</code></pre>
 <p>A N1QL expression generating JSON documents or objects.</p>
 </dd>
 </dl>
-</div>
 </div>
 <div class="sect3">
 <h4 id="generic-expr-alias"><a class="anchor" href="#generic-expr-alias"></a>AS alias</h4>
@@ -3473,19 +3506,6 @@ For details, see <a href="#section_ax5_2nx_1db">AS Clause</a>.</p>
 <p>Assigning an alias is optional for generic expressions in the FROM term.
 However, when you assign an alias to the expression, the <code>AS</code> keyword is required.</p>
 </div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="limitations"><a class="anchor" href="#limitations"></a>Limitations</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>When the FROM term is an expression, <code>USE KEYS</code> or <code>USE INDEX</code> clauses are not allowed.</p>
-</li>
-<li>
-<p>When using a <code>JOIN</code> clause, <code>NEST</code> clause, or <code>UNNEST</code> clause, the left-side keyspace can be an expression or subquery, but the right-side keyspace must be a keyspace identifier.</p>
-</li>
-</ul>
 </div>
 </div>
 <div class="sect2">
