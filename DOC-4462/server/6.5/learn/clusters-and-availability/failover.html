@@ -502,6 +502,16 @@
     <a class="nav-link" href="nodes.html">Nodes</a>
     </span>
 <ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="rebalance.html">Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="removal.html">Removal</a>
+    </span>
+  </li>
   <li class="nav-item is-current-page is-active" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
@@ -524,11 +534,6 @@
     </span>
   </li>
 </ul>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <span class="nav-line">
-    <a class="nav-link" href="rebalance.html">Rebalance</a>
-    </span>
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
@@ -3077,8 +3082,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-<em>Failover</em> is the process whereby a node can be removed from a Couchbase
-cluster.
+<em>Failover</em> is a process whereby a node can be taken out of a Couchbase cluster.
 </blockquote>
 </div>
 </div>
@@ -3093,19 +3097,20 @@ cluster.
 <ul>
 <li>
 <p><em>Graceful</em>: The ability to remove a Data Service node from the cluster proactively, in an orderly and controlled fashion.
-This is an online operation, requiring zero downtime.
-When the node to be removed contains the Data Service, the process promotes replica vBuckets on the remaining cluster-nodes to <em>active</em> status, and the active vBuckets on the affected node to <em>dead</em>.
+This involves no downtime, and allows continued application-access to data.
+The process promotes replica vBuckets on the remaining cluster-nodes to <em>active</em> status, and the active vBuckets on the affected node to <em>dead</em>.
 Throughout the process, the cluster maintains all 1024 active vBuckets for each bucket.</p>
 <div class="paragraph">
-<p>Graceful failover can only be used on nodes that run the Data Service.
-If controlled removal of a non-Data Service node is required, <em>removal</em> should be used.</p>
+<p>Graceful failover can <em>only</em> be used on nodes that run the Data Service.
+If controlled removal of a non-Data Service node is required, <a href="removal.html" class="page">Removal</a> should be used.</p>
 </div>
 </li>
 <li>
-<p><em>Hard</em>: The ability to drop a node from the cluster reactively, because the node has become unavailable or unstable.
-When the lost node was running the Data Service, since active vBuckets have been lost, the process promotes replica vBuckets on the remaining cluster-nodes to <em>active</em> status, until 1024 active vBuckets again exist for each bucket.</p>
+<p><em>Hard</em>: The ability to drop a node from the cluster reactively, because the node has become unavailable.
+If the lost node was running the Data Service, active vBuckets have been lost: therefore the hard failover process promotes replica vBuckets on the remaining cluster-nodes to <em>active</em> status, until 1024 active vBuckets again exist for each bucket.</p>
 <div class="paragraph">
-<p>Note that if hard failover is applied to an available node running the Data Service, ongoing writes and replications may be interrupted: therefore, in such circumstances, it may be better to <a href="../../manage/manage-nodes/remove-node-and-rebalance.html" class="page">Remove a Node and Rebalance</a>.</p>
+<p>Hard failover should <em>not</em> be used on a responsive node, since this may disrupt ongoing operations (such as the writes and replications that occur on a Data Service node).
+Instead, available nodes should be taken out of the cluster by means of either graceful failover (if they are Data Service nodes) or <a href="removal.html" class="page">removal</a> (if they are nodes of any kind).</p>
 </div>
 </li>
 </ul>
@@ -3116,8 +3121,12 @@ Hard failover can also be initiated automatically by Couchbase Server: this is k
 The Cluster Manager detects the unavailability of a node, and duly initiates a <em>hard</em> failover, without administrator intervention.</p>
 </div>
 <div class="paragraph">
-<p>Note that when a node is flagged for <em>failover</em> (as opposed to <em>removal</em>), replica vBuckets are lost when rebalance occurs, following node-removal.
-By contrast, <em>removal</em> creates new copies of replica vBuckets that would otherwise be lost (thereby creating greater competition for the memory resources of the remaining nodes).</p>
+<p>Note that when a node is failed over (as opposed to <em>removed</em>), replica vBuckets are lost; since some are promoted to <em>active</em> status, and are not replaced with new replica-copies.
+By contrast, <a href="removal.html" class="page">removal</a> creates new copies of those replica vBuckets that would otherwise be lost. This maintains the cluster&#8217;s previous level of data-availability; but results in greater competition for memory resources, across the surviving nodes.</p>
+</div>
+<div class="paragraph">
+<p>Ideally, after any failover, <a href="rebalance.html" class="page">rebalance</a> should be performed.
+This is especially important when a Data Service node has been failed over, since the rebalance will ensure an optimal ratio of active to replica vBuckets across all the remaining Data Service nodes.</p>
 </div>
 </div>
 </div>
@@ -3140,11 +3149,169 @@ Such a system might be designed to take into account system or network component
 </div>
 </div>
 <div class="sect1">
+<h2 id="failover-and-replica-promotion"><a class="anchor" href="#failover-and-replica-promotion"></a>Failover and Replica Promotion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When failover has occurred, and active vBuckets have thereby been replaced through the promotion of replicas, the resulting imbalance in the ratio of active to replica vBuckets should be corrected, by means of rebalance.</p>
+</div>
+<div class="paragraph">
+<p>The variations in vBucket numbers and ratios that occur due to outage, failover, and rebalance are demonstrated by the following tables.</p>
+</div>
+<div class="paragraph">
+<p>Table 1 shows the disposition of data across a cluster of four nodes. One bucket, of 31,591 items, has been configured with three replicas. The ratio of active to replica items is therefore <em>1:3</em>.
+(Note that some numbers in the table are approximated, and are therefore shown in italics.)</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Four Data Service Nodes, One Bucket with 31,591 Items, Three Replicas</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Host</th>
+<th class="tableblock halign-left valign-top">Active Items</th>
+<th class="tableblock halign-left valign-top">Replica Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7,932</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>23,600</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7,895</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>23,600</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7,876</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>23,700</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7,888</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>23,700</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">31,591</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>63,000</em></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Table 2 shows the result of failing over node 4.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Three Surviving Data Service Nodes, One Bucket with 31,591 Items, Three Replicas</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Host</th>
+<th class="tableblock halign-left valign-top">Active Items</th>
+<th class="tableblock halign-left valign-top">Replica Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>11,000</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>20,500</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>10,200</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>21,100</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>10,200</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>21,300</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7,888*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>23,700</em>*</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>39,288</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>86,600</em></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Active and replica vBuckets for the failed over node, 4, are still counted, but are not available (and so are marked here with asterisks).
+To compensate, replicas on nodes 1 to 3 have been promoted to active status; this being evident from their modified numbers and ratios.
+For example, on node 1, the number of active items is now raised (from its former total of 7,932) to 11,000; while the number of replica items is now lowered (from its former total of 23,600) to 20,500.</p>
+</div>
+<div class="paragraph">
+<p>Subsequent rebalance corrects the ratios, as shown by Table 3, below.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Three Surviving Data Service Nodes, One Bucket with 31,591 Items, Two Replicas (following Rebalance)</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Host</th>
+<th class="tableblock halign-left valign-top">Active Items</th>
+<th class="tableblock halign-left valign-top">Replica Items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>10,500</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>21,000</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>10,500</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>21,000</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>10,500</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>21,000</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node 4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>31,500</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>63,000</em></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Ratios on nodes 1 to 3 are now exactly <em>1:2</em>, indicating that rebalance has reduced the number of replicas for the bucket from 3 to 2, in correspondence with the reduced node-count.</p>
+</div>
+<div class="paragraph">
+<p>For further examples of rebalance in the context of <em>node removal</em>, see <a href="removal.html" class="page">Removal</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="node-removal"><a class="anchor" href="#node-removal"></a>Node Removal</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><em>Node removal</em> uses the <em>rebalance</em> process to remove a node from a cluster in a controlled fashion.
-It creates on the remaining nodes new copies of replica vBuckets that would otherwise be lost when the selected node is taken offline. See <a href="../../manage/manage-nodes/remove-node-and-rebalance.html" class="page">Remove a Node and Rebalance</a>.</p>
+It creates on the remaining nodes new copies of replica vBuckets that would otherwise be lost when the selected node is taken offline. See <a href="removal.html" class="page">Removal</a> for a conceptual description of node-removal. For practical steps, see <a href="../../manage/manage-nodes/remove-node-and-rebalance.html" class="page">Remove a Node and Rebalance</a>.</p>
 </div>
 </div>
 </div>

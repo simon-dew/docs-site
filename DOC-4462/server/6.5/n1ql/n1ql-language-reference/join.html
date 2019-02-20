@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>JOIN clause | Couchbase Docs (Staging)</title>
+    <title>JOIN Clause | Couchbase Docs (Staging)</title>
     <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4462/server/6.0/index.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
@@ -504,6 +504,16 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
+    <a class="nav-link" href="../../learn/clusters-and-availability/rebalance.html">Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../learn/clusters-and-availability/removal.html">Removal</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../learn/clusters-and-availability/failover.html">Failover</a>
     </span>
@@ -524,11 +534,6 @@
     </span>
   </li>
 </ul>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <span class="nav-line">
-    <a class="nav-link" href="../../learn/clusters-and-availability/rebalance.html">Rebalance</a>
-    </span>
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
@@ -3073,7 +3078,7 @@
 </div>
   </div>
 <article class="doc">
-<h1 class="page">JOIN clause</h1>
+<h1 class="page">JOIN Clause</h1>
 <div class="labels">
   <ul>
     <li class="status"><span>Couchbase Server 4.0</span></li>
@@ -3227,12 +3232,12 @@ Since these are standard compliant and more flexible, we recommend you to use AN
 <h3 id="syntax-2"><a class="anchor" href="#syntax-2"></a>Syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>ansi-join-clause ::= [ <a href="#ansi-join-type">ansi-join-type</a> ] JOIN <a href="#ansi-rhs-expr">ansi-rhs-expr</a> [ [ AS ] <a href="#ansi-as-alias">alias</a> ] [ <a href="#ansi-join-hints">ansi-join-hints</a> ] <a href="#ansi-join-predicate">ansi-join-predicate</a></pre>
+<pre>ansi-join-clause ::= [ <a href="#ansi-join-type">ansi-join-type</a> ] JOIN <a href="#ansi-join-rhs">ansi-join-rhs</a> [ <a href="#ansi-join-hints">ansi-join-hints</a> ] <a href="#ansi-join-predicate">ansi-join-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/ansi-join-clause.png" alt="ansi join clause">
+<img src="../_images/n1ql-language-reference/ansi-join-clause.png" alt="ansi-join-type? 'JOIN' ansi-join-rhs ansi-join-hints? ansi-join-predicate">
 </div>
 </div>
 <div class="sect3">
@@ -3335,79 +3340,6 @@ WHERE r.sourceairport = "SFO"</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="ansi-rhs-expr"><a class="anchor" href="#ansi-rhs-expr"></a>Right-Hand Side Expression</h4>
-<div class="listingblock">
-<div class="content">
-<pre>ansi-rhs-expr ::= <a href="#ansi-keyspace-ref">keyspace-ref</a> | <a href="#ansi-subquery-expr">subquery-expr</a> | <a href="#ansi-generic-expr">generic-expr</a></pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/n1ql-language-reference/ansi-rhs-expr.png" alt="ansi rhs expr">
-</div>
-</div>
-<div class="paragraph">
-<p>In Couchbase Server 6.5 and later, the right-hand side of an ANSI join may be a keyspace reference, a subquery, or a generic expression term.</p>
-</div>
-<div class="sect4">
-<h5 id="ansi-keyspace-ref"><a class="anchor" href="#ansi-keyspace-ref"></a>Keyspace Reference</h5>
-<div class="paragraph">
-<p>Keyspace reference for the right-hand side of the ANSI join.
-For details, see <a href="from.html#from-keyspace-ref" class="page">Keyspace Reference</a>.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="ansi-subquery-expr"><a class="anchor" href="#ansi-subquery-expr"></a>Subquery Expression</h5>
-<div class="paragraph">
-<p>Use parentheses to specify a subquery for the right-hand side of the ANSI join.
-For details, see <a href="from.html#select-expr-clause" class="page">Subquery Expression</a>.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-A subquery on the right-hand side of the ANSI join cannot be correlated, i.e. it cannot refer to a keyspace in the outer query block.
-This will lead to an error.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="ansi-generic-expr"><a class="anchor" href="#ansi-generic-expr"></a>Expression Term</h5>
-<div class="paragraph">
-<p>A N1QL <a href="index.html" class="page">expression</a> generating JSON documents or objects for the right-hand side of the ANSI join.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-An expression on the right-hand side of the ANSI join may be correlated, i.e. it may refer to a keyspace on the left-hand side of the join.
-In this case, only a <a href="#ansi-join-hints">nested-loop join</a> may be used.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ansi-as-alias"><a class="anchor" href="#ansi-as-alias"></a>AS Alias</h4>
-<div class="paragraph">
-<p>Assigns another name to the right-hand side of the ANSI join.
-For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
-</div>
-<div class="paragraph">
-<p>Assigning an alias to the right-hand side expression is optional.
-If you assign an alias to the right-hand side expression, the <code>AS</code> keyword may be omitted.</p>
-</div>
-</div>
-<div class="sect3">
 <h4 id="ansi-join-predicate"><a class="anchor" href="#ansi-join-predicate"></a>Join Predicate</h4>
 <div class="listingblock">
 <div class="content">
@@ -3423,7 +3355,7 @@ If you assign an alias to the right-hand side expression, the <code>AS</code> ke
 <dl>
 <dt class="hdlist1"><code>expr</code></dt>
 <dd>
-<p>Boolean expression representing the join condition between the left-hand side <a href="#section_nkd_3nx_1db">FROM Term</a> and the <a href="#ansi-rhs-expr">Right-Hand Side Expression</a>.
+<p>Boolean expression representing the join condition between the left-hand side <a href="#section_nkd_3nx_1db">FROM Term</a> and the <a href="#ansi-join-rhs">ANSI JOIN Right-Hand Side</a>.
 This expression may contain fields, constant expressions, or any complex N1QL expression.</p>
 </dd>
 </dl>
@@ -3499,82 +3431,8 @@ ORDER BY route.sourceairport;</code></pre>
 </div>
 </div>
 </div>
-<div id="ANSI-Join-Example-1-sub" class="exampleblock">
-<div class="title">Example 2. Inner Join with Subquery on Right-Hand Side</div>
-<div class="content">
-<div class="paragraph">
-<p>Find the destination airport of all routes in the <code>travel-sample</code> keyspace whose source airport is in San Francisco.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT DISTINCT route.destinationairport
-FROM `travel-sample` airport JOIN (
-  SELECT destinationairport, sourceairport
-  FROM `travel-sample`
-  WHERE type="route"
-) AS route
-ON airport.faa = route.sourceairport
-WHERE airport.type = "airport"
-AND airport.city = "San Francisco";</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Results</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
-  {
-    "destinationairport": "HKG"
-  },
-  {
-    "destinationairport": "ICN"
-  },
-  {
-    "destinationairport": "ATL"
-  },
-  {
-    "destinationairport": "BJX"
-  },
-  {
-    "destinationairport": "GDL"
-  },
-...
-]</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div id="ANSI-Join-Example-1-expr" class="exampleblock">
-<div class="title">Example 3. Inner Join with Generic Expression on Right-Hand Side</div>
-<div class="content">
-<div class="paragraph">
-<p>Find the destination airport of all routes in the given array whose source airport is in San Francisco.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT DISTINCT route.destinationairport
-FROM `travel-sample` airport JOIN [
-  {"destinationairport": "KEF", "sourceairport": "SFO", "type": "route"},
-  {"destinationairport": "KEF", "sourceairport": "LHR", "type": "route"}
-] AS route
-ON airport.faa = route.sourceairport AND route.type = "route"
-WHERE airport.type = "airport"
-AND airport.city = "San Francisco";</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Results</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
-  {
-    "destinationairport": "KEF"
-  }
-]</code></pre>
-</div>
-</div>
-</div>
-</div>
 <div id="ANSI-Join-Example-2" class="exampleblock">
-<div class="title">Example 4. Left Outer Join of U.S. airports in the same city as a landmark</div>
+<div class="title">Example 2. Left Outer Join of U.S. airports in the same city as a landmark</div>
 <div class="content">
 <div class="paragraph">
 <p>List the airports and landmarks in the same city, ordered by the airports.</p>
@@ -3625,7 +3483,7 @@ ORDER BY lmark.name;</code></pre>
 </div>
 </div>
 <div id="ANSI-Join-Example-3" class="exampleblock">
-<div class="title">Example 5. RIGHT OUTER JOIN of <a href="#ANSI-Join-Example-2">Example 4</a></div>
+<div class="title">Example 3. RIGHT OUTER JOIN of <a href="#ANSI-Join-Example-2">Example 2</a></div>
 <div class="content">
 <div class="paragraph">
 <p>List the airports and landmarks in the same city, ordered by the landmarks.</p>
@@ -3688,7 +3546,7 @@ ORDER BY lmark.name;</code></pre>
 </div>
 </div>
 <div id="ANSI-Join-Example-4" class="exampleblock">
-<div class="title">Example 6. Inner Join with Covering Index</div>
+<div class="title">Example 4. Inner Join with Covering Index</div>
 <div class="content">
 <div class="paragraph">
 <p>In the <code>`beer-sample`</code> bucket, use an ANSI JOIN to list the beer names and breweries that are in the state Wisconsin (<code>WI</code>).
@@ -3756,6 +3614,219 @@ WHERE type = "beer"</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="ansi-join-rhs"><a class="anchor" href="#ansi-join-rhs"></a>ANSI JOIN Right-Hand Side</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>ansi-join-rhs ::= <a href="#ansi-rhs-keyspace">rhs-keyspace</a> | <a href="#ansi-rhs-subquery">rhs-subquery</a> | <a href="#ansi-rhs-generic">rhs-generic</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ansi-join-rhs.png" alt="rhs-keyspace | rhs-subquery | rhs-generic">
+</div>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5 and later, the right-hand side of an ANSI join may be a keyspace reference, a subquery, or a generic expression term.</p>
+</div>
+<div class="sect2">
+<h3 id="ansi-rhs-keyspace"><a class="anchor" href="#ansi-rhs-keyspace"></a>Right-Hand Side Keyspace</h3>
+<div class="listingblock">
+<div class="content">
+<pre>rhs-keyspace ::= <a href="#ansi-keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#ansi-keyspace-alias">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-keyspace-ref"><a class="anchor" href="#ansi-keyspace-ref"></a>Keyspace Reference</h4>
+<div class="paragraph">
+<p>Keyspace reference for the right-hand side of the ANSI join.
+For details, see <a href="from.html#from-keyspace-ref" class="page">Keyspace Reference</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-keyspace-alias"><a class="anchor" href="#ansi-keyspace-alias"></a>AS Alias</h4>
+<div class="paragraph">
+<p>Assigns another name to the keyspace reference.
+For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>Assigning an alias to the keyspace reference is optional.
+If you assign an alias to the keyspace reference, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansi-rhs-subquery"><a class="anchor" href="#ansi-rhs-subquery"></a>Right-Hand Side Subquery</h3>
+<div class="listingblock">
+<div class="content">
+<pre>rhs-subquery ::= <a href="#ansi-subquery-expr">subquery-expr</a> [ AS ] <a href="#ansi-subquery-alias">alias</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-subquery.png" alt="subquery-expr 'AS'? alias">
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-subquery-expr"><a class="anchor" href="#ansi-subquery-expr"></a>Subquery Expression</h4>
+<div class="paragraph">
+<p>Use parentheses to specify a subquery for the right-hand side of the ANSI join.
+For details, see <a href="from.html#select-expr-clause" class="page">Subquery Expression</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A subquery on the right-hand side of the ANSI join cannot be <strong>correlated</strong>, i.e. it cannot refer to a keyspace in the outer query block.
+This will lead to an error.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-subquery-alias"><a class="anchor" href="#ansi-subquery-alias"></a>AS Alias</h4>
+<div class="paragraph">
+<p>Assigns another name to the subquery.
+For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>You must assign an alias to a subquery on the right-hand side of the join.
+However, when you assign an alias to the subquery, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansi-rhs-generic"><a class="anchor" href="#ansi-rhs-generic"></a>Right-Hand Side Generic Expression</h3>
+<div class="listingblock">
+<div class="content">
+<pre>rhs-generic ::= <a href="#ansi-generic-expr">expr</a> [ AS ] <a href="#ansi-generic-alias">alias</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-generic.png" alt="expr 'AS'? alias">
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-generic-expr"><a class="anchor" href="#ansi-generic-expr"></a>Expression Term</h4>
+<div class="paragraph">
+<p>A N1QL <a href="index.html" class="page">expression</a> generating JSON documents or objects for the right-hand side of the ANSI join.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+An expression on the right-hand side of the ANSI join may be <strong>correlated</strong>, i.e. it may refer to a keyspace on the left-hand side of the join.
+In this case, only a <a href="#ansi-join-hints">nested-loop join</a> may be used.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-generic-alias"><a class="anchor" href="#ansi-generic-alias"></a>AS Alias</h4>
+<div class="paragraph">
+<p>Assigns another name to the generic expression.
+For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>You must assign an alias to a generic expression on the right-hand side of the join.
+However, when you assign an alias to the generic expression, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h3>
+<div id="ANSI-Join-Example-sub" class="exampleblock">
+<div class="title">Example 5. Inner Join with Subquery on Right-Hand Side</div>
+<div class="content">
+<div class="paragraph">
+<p>Find the destination airport of all routes in the <code>travel-sample</code> keyspace whose source airport is in San Francisco.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT DISTINCT route.destinationairport
+FROM `travel-sample` airport JOIN (
+  SELECT destinationairport, sourceairport
+  FROM `travel-sample`
+  WHERE type="route"
+) AS route
+ON airport.faa = route.sourceairport
+WHERE airport.type = "airport"
+AND airport.city = "San Francisco";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+  {
+    "destinationairport": "HKG"
+  },
+  {
+    "destinationairport": "ICN"
+  },
+  {
+    "destinationairport": "ATL"
+  },
+  {
+    "destinationairport": "BJX"
+  },
+  {
+    "destinationairport": "GDL"
+  },
+...
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="ANSI-Join-Example-expr" class="exampleblock">
+<div class="title">Example 6. Inner Join with Generic Expression on Right-Hand Side</div>
+<div class="content">
+<div class="paragraph">
+<p>Find the destination airport of all routes in the given array whose source airport is in San Francisco.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT DISTINCT route.destinationairport
+FROM `travel-sample` airport JOIN [
+  {"destinationairport": "KEF", "sourceairport": "SFO", "type": "route"},
+  {"destinationairport": "KEF", "sourceairport": "LHR", "type": "route"}
+] AS route
+ON airport.faa = route.sourceairport AND route.type = "route"
+WHERE airport.type = "airport"
+AND airport.city = "San Francisco";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+  {
+    "destinationairport": "KEF"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="ansi-join-hints"><a class="anchor" href="#ansi-join-hints"></a>ANSI JOIN Hints</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -3776,7 +3847,25 @@ WHERE type = "beer"</code></pre>
 Two corresponding join hints are introduced: <code>USE HASH</code> and <code>USE NL</code>.</p>
 </div>
 <div class="paragraph">
-<p>In Enterprise Edition, for an ANSI join with a subquery or an expression as the right-hand side, the default method is hash.
+<p>The ANSI join hints are similar to the <a href="hints.html#use-index-clause" class="page">USE INDEX</a> or <a href="hints.html#use-keys-clause" class="page">USE KEYS</a> hints.
+The ANSI join hints can be specified after the right-hand side of an ANSI join specification.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The join hint for the first join should be specified on the first join&#8217;s right-hand side, and the join hint for the second join should be specified on the second join&#8217;s right-hand side, etc.
+If a join hint is specified on the first FROM term, i.e. the first join&#8217;s left-hand side, an error is returned.
+</td>
+</tr>
+</table>
+</div>
+<h5 id="default-join-method" class="discrete">Default Join Method</h5>
+<div class="paragraph">
+<p>In Enterprise Edition, for an ANSI join with a subquery or a generic expression as the right-hand side, the default method is hash.
 In this case:</p>
 </div>
 <div class="ulist">
@@ -3825,7 +3914,7 @@ For Community Edition (CE), only nested-loop join is considered by the planner, 
 </table>
 </div>
 <div class="sect2">
-<h3 id="use-hash-hint"><a class="anchor" href="#use-hash-hint"></a>USE HASH hint</h3>
+<h3 id="use-hash-hint"><a class="anchor" href="#use-hash-hint"></a>USE HASH Hint</h3>
 <div class="listingblock">
 <div class="content">
 <pre>use-hash-hint ::= USE <a href="#use-hash-term">use-hash-term</a></pre>
@@ -3851,24 +3940,23 @@ For Community Edition (CE), only nested-loop join is considered by the planner, 
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>USE HASH</code> hint is similar to the existing <code>USE INDEX</code> or <code>USE KEYS</code> hint, in that the <code>USE HASH</code> hint can be specified after a keyspace reference in an ANSI Join specification.
-There are two versions of the <code>USE HASH</code> hint:</p>
+<p>There are two versions of the <code>USE HASH</code> hint:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>USE HASH(BUILD)</code>&#8201;&#8212;&#8201;The keyspace is to be used as the build side of the hash join</p>
+<p><code>USE HASH(BUILD)</code>&#8201;&#8212;&#8201;The right-hand side of the join is to be used as the build side.</p>
 </li>
 <li>
-<p><code>USE HASH(PROBE)</code>&#8201;&#8212;&#8201;The keyspace is to be used as the probe side of the hash join</p>
+<p><code>USE HASH(PROBE)</code>&#8201;&#8212;&#8201;The right-hand side of the join is to be used as the probe side.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>A hash join has two sides: a <code>BUILD</code> and a <code>PROBE</code>.
-The <code>BUILD</code> side of the join will be used to create an in-memory hash table.
-The <code>PROBE</code> side will use that table to find matches and perform the join.
-Typically, this means you want the <code>BUILD</code> side to be used on the smaller of the two sets.
+<p>A hash join has two sides: a <strong>build</strong> side and a <strong>probe</strong> side.
+The build side of the join will be used to create an in-memory hash table.
+The probe side will use that table to find matches and perform the join.
+Typically, this means you want the build side to be used on the smaller of the two sets.
 However, you can only supply one hash hint, and only to the right side of the join.
 So if you specify <code>BUILD</code> on the right side, then you are implicitly using <code>PROBE</code> on the left side (and vice versa).</p>
 </div>
@@ -3930,7 +4018,7 @@ WHERE rte.type = "route";</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="use-nl-hint"><a class="anchor" href="#use-nl-hint"></a>USE NL hint</h3>
+<h3 id="use-nl-hint"><a class="anchor" href="#use-nl-hint"></a>USE NL Hint</h3>
 <div class="listingblock">
 <div class="content">
 <pre>use-nl-hint ::= USE <a href="#use-nl-term">use-nl-term</a></pre>
@@ -3956,8 +4044,7 @@ WHERE rte.type = "route";</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This join hint instructs the planner to use nested-loop join (NL join) for the join being considered.
-Since nested-loop join is the default path, the <code>USE NL</code> hint is not required.</p>
+<p>This join hint instructs the planner to use nested-loop join (NL join) for the join being considered.</p>
 </div>
 <div class="exampleblock">
 <div class="title">Example 9. USE NL</div>
@@ -3974,22 +4061,9 @@ WHERE rte.type = "route";</code></pre>
 </div>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The join hint for the first join should be specified on the 2nd keyspace reference, and the join hint for the second join should be specified on the 3rd keyspace reference, etc.
-If a join hint is specified on the first keyspace, an error is returned.
-</td>
-</tr>
-</table>
-</div>
 </div>
 <div class="sect2">
-<h3 id="multiple-hints"><a class="anchor" href="#multiple-hints"></a>Multiple hints</h3>
+<h3 id="multiple-hints"><a class="anchor" href="#multiple-hints"></a>Multiple Hints</h3>
 <div class="listingblock">
 <div class="content">
 <pre>multiple-hints ::= USE ( <a href="#ansi-hint-terms">ansi-hint-terms</a> <a href="#other-hint-terms">other-hint-terms</a> ) | ( <a href="#other-hint-terms">other-hint-terms</a> <a href="#ansi-hint-terms">ansi-hint-terms</a> )</pre>
@@ -4134,7 +4208,7 @@ CREATE INDEX b2_idx2 ON b2 (a22);</code></pre>
 </table>
 </div>
 <div class="sect2">
-<h3 id="ansi-join-with-no-arrays"><a class="anchor" href="#ansi-join-with-no-arrays"></a>ANSI JOIN with no arrays</h3>
+<h3 id="ansi-join-with-no-arrays"><a class="anchor" href="#ansi-join-with-no-arrays"></a>ANSI JOIN with No Arrays</h3>
 <div class="paragraph">
 <p>In this scenario, there is no involvement of arrays in the join.
 These are just straight-forward joins:</p>
@@ -4203,7 +4277,7 @@ WHERE b1.c11 = 10
 </div>
 </div>
 <div class="sect2">
-<h3 id="ansi-join-with-entire-array-as-index-key"><a class="anchor" href="#ansi-join-with-entire-array-as-index-key"></a>ANSI JOIN with entire array as index key</h3>
+<h3 id="ansi-join-with-entire-array-as-index-key"><a class="anchor" href="#ansi-join-with-entire-array-as-index-key"></a>ANSI JOIN with Entire Array as Index Key</h3>
 <div class="paragraph">
 <p>As a special case, it is possible to perform ANSI JOIN on an entire array as a join key:</p>
 </div>
@@ -4225,7 +4299,7 @@ The join here can also be considered as 1-to-1.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ansi-join-involving-right-hand-side-arrays"><a class="anchor" href="#ansi-join-involving-right-hand-side-arrays"></a>ANSI JOIN involving right-hand side arrays</h3>
+<h3 id="ansi-join-involving-right-hand-side-arrays"><a class="anchor" href="#ansi-join-involving-right-hand-side-arrays"></a>ANSI JOIN Involving Right-Hand Side Arrays</h3>
 <div class="paragraph">
 <p>In this scenario, the join involves an array on the right-hand side keyspace:</p>
 </div>
@@ -4248,7 +4322,7 @@ Array indexes can be used for join in this scenario.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ansi-join-involving-left-hand-side-arrays"><a class="anchor" href="#ansi-join-involving-left-hand-side-arrays"></a>ANSI JOIN involving left-hand side arrays</h3>
+<h3 id="ansi-join-involving-left-hand-side-arrays"><a class="anchor" href="#ansi-join-involving-left-hand-side-arrays"></a>ANSI JOIN Involving Left-Hand Side Arrays</h3>
 <div class="paragraph">
 <p>This is a slightly more complex scenario, where the array reference is on the left-hand side of the join, and it’s a many-to-1 join.
 There are two alternative ways to handle the scenario where the array appears on the left-hand side of the join.</p>
@@ -4294,7 +4368,7 @@ Conceptually, we are using each element of the left-hand side array to probe the
 </div>
 </div>
 <div class="sect3">
-<h4 id="differences-between-the-two-alternatives"><a class="anchor" href="#differences-between-the-two-alternatives"></a>Differences between the two alternatives</h4>
+<h4 id="differences-between-the-two-alternatives"><a class="anchor" href="#differences-between-the-two-alternatives"></a>Differences Between the Two Alternatives</h4>
 <div class="paragraph">
 <p>There is a semantical difference between the two alternatives.
 With UNNEST, we are first turning one left-hand side document into multiple documents and then performing the join.
@@ -4344,7 +4418,7 @@ Thus:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ansi-join-with-arrays-on-both-sides"><a class="anchor" href="#ansi-join-with-arrays-on-both-sides"></a>ANSI JOIN with arrays on both sides</h3>
+<h3 id="ansi-join-with-arrays-on-both-sides"><a class="anchor" href="#ansi-join-with-arrays-on-both-sides"></a>ANSI JOIN with Arrays on Both Sides</h3>
 <div class="paragraph">
 <p>If the join involves arrays on both sides, then we can combine the approaches above, i.e., using ANY clause to handle the right-hand side array and either UNNEST or IN clause to handle the left-hand side array.
 For example:</p>
@@ -4397,12 +4471,12 @@ Couchbase Server version 4.1 and earlier supported only lookup joins.</p>
 <h3 id="syntax-3"><a class="anchor" href="#syntax-3"></a>Syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>lookup-join-clause ::= [ <a href="#lookup-join-type">lookup-join-type</a> ] JOIN <a href="#lookup-keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#lookup-as-alias">alias</a> ] <a href="#lookup-join-predicate">lookup-join-predicate</a></pre>
+<pre>lookup-join-clause ::= [ <a href="#lookup-join-type">lookup-join-type</a> ] JOIN <a href="#lookup-join-rhs">lookup-join-rhs</a> <a href="#lookup-join-predicate">lookup-join-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/lookup-join-clause.png" alt="lookup join clause">
+<img src="../_images/n1ql-language-reference/lookup-join-clause.png" alt="lookup-join-type? 'JOIN' lookup-join-rhs lookup-join-predicate">
 </div>
 </div>
 <div class="sect3">
@@ -4441,7 +4515,19 @@ If omitted, the default is <code>INNER</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="lookup-keyspace-ref"><a class="anchor" href="#lookup-keyspace-ref"></a>Keyspace Reference</h4>
+<h4 id="lookup-join-rhs"><a class="anchor" href="#lookup-join-rhs"></a>Join Right-Hand Side</h4>
+<div class="listingblock">
+<div class="content">
+<pre>lookup-join-rhs ::= <a href="#lookup-keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#lookup-as-alias">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
+</div>
+</div>
+<div class="sect4">
+<h5 id="lookup-keyspace-ref"><a class="anchor" href="#lookup-keyspace-ref"></a>Keyspace Reference</h5>
 <div class="paragraph">
 <p>Keyspace reference for the right-hand side of the lookup join.
 For details, see <a href="from.html#from-keyspace-ref" class="page">Keyspace Reference</a>.</p>
@@ -4460,8 +4546,8 @@ Expressions, subqueries, or other join combinations cannot be on the right-hand 
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="lookup-as-alias"><a class="anchor" href="#lookup-as-alias"></a>AS Alias</h4>
+<div class="sect4">
+<h5 id="lookup-as-alias"><a class="anchor" href="#lookup-as-alias"></a>AS Alias</h5>
 <div class="paragraph">
 <p>Assigns another name to the right-hand side of the lookup join.
 For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
@@ -4469,6 +4555,7 @@ For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause<
 <div class="paragraph">
 <p>Assigning an alias to the keyspace reference is optional.
 If you assign an alias to the keyspace reference, the <code>AS</code> keyword may be omitted.</p>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -4515,7 +4602,7 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 </div>
 </div>
 <div class="sect2">
-<h3 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h3>
+<h3 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h3>
 <div id="Lookup-JOIN-Example-1" class="exampleblock">
 <div class="title">Example 12. Route JOIN airline ON KEYS route.airlineid</div>
 <div class="content">
@@ -4763,12 +4850,12 @@ This is because an Index JOIN&#8217;s <code>ON KEY</code> expression must produc
 <h3 id="syntax-4"><a class="anchor" href="#syntax-4"></a>Syntax</h3>
 <div class="listingblock">
 <div class="content">
-<pre>index-join-clause ::= [ <a href="#index-join-type">index-join-type</a> ] JOIN <a href="#index-keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#index-as-alias">alias</a> ] <a href="#index-join-predicate">index-join-predicate</a></pre>
+<pre>index-join-clause ::= [ <a href="#index-join-type">index-join-type</a> ] JOIN <a href="#index-join-rhs">index-join-rhs</a> <a href="#index-join-predicate">index-join-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/index-join-clause.png" alt="index join clause">
+<img src="../_images/n1ql-language-reference/index-join-clause.png" alt="index-join-type? 'JOIN' index-join-rhs index-join-predicate">
 </div>
 </div>
 <div class="sect3">
@@ -4807,7 +4894,19 @@ If omitted, the default is <code>INNER</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="index-keyspace-ref"><a class="anchor" href="#index-keyspace-ref"></a>Keyspace Reference</h4>
+<h4 id="index-join-rhs"><a class="anchor" href="#index-join-rhs"></a>Join Right-Hand Side</h4>
+<div class="listingblock">
+<div class="content">
+<pre>index-join-rhs ::= <a href="#index-keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#index-as-alias">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
+</div>
+</div>
+<div class="sect4">
+<h5 id="index-keyspace-ref"><a class="anchor" href="#index-keyspace-ref"></a>Keyspace Reference</h5>
 <div class="paragraph">
 <p>Keyspace reference for right-hand side of an index join.
 For details, see <a href="from.html#from-keyspace-ref" class="page">Keyspace Reference</a>.</p>
@@ -4826,8 +4925,8 @@ Expressions, subqueries, or other join combinations cannot be on the right-hand 
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="index-as-alias"><a class="anchor" href="#index-as-alias"></a>AS Alias</h4>
+<div class="sect4">
+<h5 id="index-as-alias"><a class="anchor" href="#index-as-alias"></a>AS Alias</h5>
 <div class="paragraph">
 <p>Assigns another name to the right-hand side of the index join.
 For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
@@ -4835,6 +4934,7 @@ For details, see <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause<
 <div class="paragraph">
 <p>Assigning an alias to the keyspace reference is optional.
 If you assign an alias to the keyspace reference, the <code>AS</code> keyword may be omitted.</p>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -4876,7 +4976,7 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 </div>
 </div>
 <div class="sect2">
-<h3 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h3>
+<h3 id="examples-4"><a class="anchor" href="#examples-4"></a>Examples</h3>
 <div id="Index-JOIN-Example-0" class="exampleblock">
 <div class="title">Example 14. Use INDEX join to flip the direction of <a href="#Lookup-JOIN-Example-1">Example 12</a> above</div>
 <div class="content">

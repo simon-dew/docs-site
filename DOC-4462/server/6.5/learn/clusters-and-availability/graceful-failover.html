@@ -502,6 +502,16 @@
     <a class="nav-link" href="nodes.html">Nodes</a>
     </span>
 <ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="rebalance.html">Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="removal.html">Removal</a>
+    </span>
+  </li>
   <li class="nav-item is-current-path is-active" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
@@ -524,11 +534,6 @@
     </span>
   </li>
 </ul>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <span class="nav-line">
-    <a class="nav-link" href="rebalance.html">Rebalance</a>
-    </span>
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
@@ -3078,7 +3083,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Graceful failover can be used to remove a Data Service node from a healthy cluster, in an orderly and controlled fashion.
+Graceful failover takes a Data Service node out of a healthy cluster, in an orderly and controlled fashion.
 </blockquote>
 </div>
 </div>
@@ -3087,27 +3092,18 @@ Graceful failover can be used to remove a Data Service node from a healthy clust
 <h2 id="understanding-graceful-failover"><a class="anchor" href="#understanding-graceful-failover"></a>Understanding Graceful Failover</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Graceful failover allows Data Service node node to be safely removed from a cluster: if the node is running the Data Service, the Cluster Manager initiates data synchronization between nodes of the cluster before removal.
-This failover-type is commonly used for planned cluster-maintenance.
-Note that Graceful failover is only used for nodes running the Data Service: for nodes <em>not</em> running the Data Service, <em>hard</em> failover is used.</p>
+<p>Graceful failover allows a Data Service node to be safely taken out of a cluster.
+Note that graceful failover is <em>only</em> used for Data Service nodes.</p>
 </div>
 <div class="paragraph">
-<p>Graceful failover removes active vBuckets, one at a time, from the node to be removed.
-During this process, for each active vBucket, first, ongoing operations are completed; next, the state of a corresponding replica vBucket elsewhere on the cluster is synchronized to match that of the active vBucket undergoing removal; finally, the replica is promoted to active status, and begins serving data; while the old active vBucket is demoted, to <em>dead</em> status.
-All data continues to be available, without application performance-loss.</p>
+<p>For each active vBucket on the node to be failed over, graceful failover ensures that ongoing operations have been completed.
+Next, it synchronizes the active vBucket with a corresponding replica vBucket, located on a different Data Service node, so that the data of the replica becomes identical to that of the active vBucket.
+Finally, the replica is promoted to active status, and begins serving data; while the old active vBucket is demoted to <em>dead</em> status.
+Throughout the entire procedure, all data continues to be available, and no application performance-loss is incurred.</p>
 </div>
 <div class="paragraph">
-<p>Graceful failover may take longer than hard failover, especially if performed while the cluster is under a high write-load.
-Graceful failover should be used only when all nodes in the cluster are health, and when each bucket in the cluster has all 1024 active vBuckets available, and also has at least one full set of 1024 replica vBuckets.
-vBucket status can be ascertained through observation of the <code>vBucket Resources</code> section of the <code>Statistics</code> provided for the bucket in Couchbase Web Console: the active and replica vBucket graphs indicate the number of vBuckets available for the bucket.</p>
-</div>
-<div class="imageblock text-left">
-<div class="content">
-<img src="../_images/clusters-and-availability/graceful-failover.png" alt="graceful failover" width="550">
-</div>
-</div>
-<div class="paragraph">
-<p>In consequence of these requirements, in a 7-node cluster, if a bucket is configured for:</p>
+<p>Graceful failover should be used only when all nodes in the cluster are responsive; and when each bucket in the cluster has all 1024 active vBuckets available, and also at least one full set of 1024 replica vBuckets.
+In consequence of these requirements, in a cluster where seven Data Service nodes host a single bucket, if that bucket is configured for:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -3123,9 +3119,20 @@ vBucket status can be ascertained through observation of the <code>vBucket Resou
 </ul>
 </div>
 <div class="paragraph">
-<p>A graceful failover can be halted, mid-process.
+<p>Graceful failover can be halted, mid-process.
 If it is subsequently restarted, it continues exactly from where it left off.
-If it is not subsequently restarted, the cluster must be rebalanced, in order restore the cluster to its former state.</p>
+If it is not subsequently restarted, the cluster should be rebalanced, in order to be restored to its former state.</p>
+</div>
+<div class="paragraph">
+<p>vBucket status can be ascertained through observation of the <code>vBucket Resources</code> section of the <code>Statistics</code> provided for the bucket in Couchbase Web Console: the active and replica vBucket graphs indicate the number of vBuckets available for the bucket.</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/clusters-and-availability/graceful-failover.png" alt="graceful failover" width="550">
+</div>
+</div>
+<div class="paragraph">
+<p>For examples of managing graceful failover with the UI, the CLI, and the REST API, see <a href="../../manage/manage-nodes/failover-graceful.html" class="page">Perform Graceful Failover</a>.</p>
 </div>
 </div>
 </div>
@@ -3133,33 +3140,15 @@ If it is not subsequently restarted, the cluster must be rebalanced, in order re
 <h2 id="advantages-and-disadvantages"><a class="anchor" href="#advantages-and-disadvantages"></a>Advantages and Disadvantages</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Graceful failover offers the following advantages:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Maintenance can be completed faster than with a remove and rebalance; especially when Delta Node Recovery is used to add the node back subsequently.</p>
-</li>
-<li>
-<p>Graceful failover is less resource-intensive than hard failover; since vBuckets simply have their status changed from <em>replica</em> to <em>active</em>, and do not need to be copied.</p>
-</li>
-</ul>
+<p>If a Data Service node is to be removed from a cluster all of whose nodes are responsive, either graceful failover or <a href="removal.html" class="page">removal</a> can be used. Graceful failover may be faster, since active vBuckets are assigned to alternative nodes merely by changing the status of existing replicas to <em>active</em>, with no network-intensive data-copying required.</p>
 </div>
 <div class="paragraph">
-<p>Graceful failover, however, might entail the following disadvantages:</p>
+<p>Graceful failover, however, entails subsequent loss of resiliency: promotion of replica vBuckets to <em>active</em> status on the surviving nodes results in the cluster no longer having its intended, full complement of replica vBuckets. Following graceful failover, the imbalance should be addressed as soon as possible, by means of a <em>rebalance</em>.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Temporary loss of resiliency.
-By promoting the replica vBuckets to active on the remaining nodes, the cluster does not have the full accompaniment of replica vBuckets necessary to handle any additional node failures.</p>
-</li>
-<li>
-<p>Temporary loss of performance.
-Depending on cluster size and workload, replica-data may not be in managed cache (when under memory pressure, Couchbase Server ejects) replica data before active data).
-Therefore, replica-data will need to be accessed from disk, incurring latency.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Note also that the performance of graceful failover is partially dependent on the location of the replica vBuckets that are to be promoted to <em>active</em> status.
+These may not be in memory, since Couchbase Server ejects replica rather than active data, when memory-resources are constrained.
+In such cases, the replica vBuckets must be accessed from disk; and this may incur greater latency.</p>
 </div>
 </div>
 </div>
@@ -3191,11 +3180,11 @@ Therefore, replica-data will need to be accessed from disk, incurring latency.</
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>The Cluster Manager take steps to ensure that active vBucket #762 is exactly in sync with replica vBucket #62, which resides on node 2.</p>
+<p>The Cluster Manager take steps to ensure that active vBucket 762 is exactly in sync with replica vBucket 62, which resides on node 2.</p>
 </li>
 <li>
 <p>The Cluster Manager coordinates a takeover by node 2 of vBucket 762, promoting vBucket 762 to <em>active</em>, on node 2; and demoting the old active vBucket on node 4, to <em>dead</em>.
-Note that this leaves the cluster with no replica for vBucket 762 until the next rebalance or Delta Node Recovery.</p>
+Note that this leaves the cluster with no replica for vBucket 762, until the next rebalance or Delta Recovery.</p>
 </li>
 <li>
 <p>The cluster map is updated, so that subsequent reads and writes go to the correct location for vBucket 762, now on node 2.</p>

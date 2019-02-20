@@ -502,6 +502,16 @@
     <a class="nav-link" href="nodes.html">Nodes</a>
     </span>
 <ul class="nav-list">
+  <li class="nav-item is-current-page is-active" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="rebalance.html">Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="removal.html">Removal</a>
+    </span>
+  </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
@@ -524,11 +534,6 @@
     </span>
   </li>
 </ul>
-  </li>
-  <li class="nav-item is-current-page is-active" data-depth="3">
-    <span class="nav-line">
-    <a class="nav-link" href="rebalance.html">Rebalance</a>
-    </span>
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
@@ -3086,10 +3091,13 @@
 <h2 id="understanding-rebalance"><a class="anchor" href="#understanding-rebalance"></a>Understanding Rebalance</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When one or more nodes have been added to or removed from a cluster, <em>rebalance</em> redistributes data and indexes among available nodes.
+<p>When one or more nodes have been <em>brought into</em> a cluster (either by <a href="nodes.html#node-addition" class="page">adding</a> or <a href="nodes.html#node-joining" class="page">joining</a>), or have been <em>taken out</em> of a cluster (either through <a href="removal.html" class="page">Removal</a> or <a href="failover.html" class="page">Failover</a>), <em>rebalance</em> redistributes data and indexes among available nodes.
 The <em>cluster map</em> is correspondingly updated and distributed to clients.
-(See <a href="cluster-manager.html" class="page">Cluster Manager</a>, for information on the cluster map.)
-The process occurs while the cluster continues to service requests.</p>
+The process occurs while the cluster continues to service requests for data.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="cluster-manager.html" class="page">Cluster Manager</a>, for information on the cluster map.
+See <a href="../../manage/manage-nodes/node-management-overview.html" class="page">Manage Nodes and Clusters</a>, for practical examples of using rebalance.</p>
 </div>
 </div>
 </div>
@@ -3103,23 +3111,24 @@ The process occurs while the cluster continues to service requests.</p>
 <h3 id="rebalancing-the-data-service"><a class="anchor" href="#rebalancing-the-data-service"></a>Data Service</h3>
 <div class="paragraph">
 <p>On rebalance, vBuckets are redistributed evenly among currently available Data Service nodes.
-(Note the special case provided by <a href="../../install/upgrade-online.html#swap-rebalance-example" class="page">Swap Rebalance</a>, where the number of nodes coming into the cluster is equal to the number of nodes leaving the cluster, ensuring that data is only moved between these nodes.)
-If nodes have been removed such that the desired number of replicas can no longer be supported, rebalance provides as many replicas as possible.
 After rebalance, operations are directed to active vBuckets in their updated locations.
-Rebalance does not interrupt applications' data-access.</p>
+Rebalance does not interrupt applications' data-access.
+vBucket data-transfer occurs sequentially: therefore, if rebalance stops for any reason, it can be restarted from the point at which it was stopped.</p>
 </div>
 <div class="paragraph">
-<p>vBucket data-transfer occurs sequentially: therefore, if rebalance stops for any reason, it can be restarted from the point at which it was stopped.</p>
+<p>Note the special case provided by <a href="../../install/upgrade-online.html#swap-rebalance-example" class="page">Swap Rebalance</a>, where the number of nodes coming into the cluster is equal to the number of nodes leaving the cluster, ensuring that data is only moved between these nodes.</p>
 </div>
 <div class="paragraph">
-<p>See <a href="clusters-and-availability.html" class="page">Clusters and Availability</a>, for information on how data is logically partitioned across Data Service cluster-nodes.</p>
+<p>If nodes have been removed such that the desired number of replicas can no longer be supported, rebalance provides as many replicas as possible.
+For example, if four Data Service nodes previously supported one bucket with three replicas, and the Data Service node-count is reduced to three, rebalance provides two replicas only.
+If and when the missing Data Service node is restored or replaced, rebalance will provide three replicas again.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="intra-cluster-replication.html" class="page">Intra-Cluster Replication</a>, for information on how data is distributed across nodes.</p>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="rebalancing-the-index-service"><a class="anchor" href="#rebalancing-the-index-service"></a>Index Service</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="rebalancing-the-index-service"><a class="anchor" href="#rebalancing-the-index-service"></a>Index Service</h3>
 <div class="paragraph">
 <p>The Index Service maintains a cluster-wide set of index definitions and metadata, which allows the redistribution of indexes and index replicas from removed nodes to nodes that continue as part of the cluster.
 Indexes that reside on non-removed nodes are unaffected by rebalance.</p>
@@ -3134,35 +3143,27 @@ If more index replicas exist than can be handled by the number of existing nodes
 This ensures uninterrupted access to indexes.</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="rebalancing-the-search-service"><a class="anchor" href="#rebalancing-the-search-service"></a>Search Service</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="rebalancing-the-search-service"><a class="anchor" href="#rebalancing-the-search-service"></a>Search Service</h3>
 <div class="paragraph">
 <p>The Search Service automatically partitions its indexes across all Search nodes in the cluster, ensuring that during rebalance, the distribution across all nodes is balanced.</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="rebalancing-the-query-service"><a class="anchor" href="#rebalancing-the-query-service"></a>Query Service</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="rebalancing-the-query-service"><a class="anchor" href="#rebalancing-the-query-service"></a>Query Service</h3>
 <div class="paragraph">
 <p>The addition or removal of Query Service nodes during rebalance is immediately effective: an added node is immediately available to serve queries; while a removed node is immediately unavailable, such that ongoing queries are interrupted, requiring the handling of errors or timeouts at application-level.</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="rebalancing-the-eventing-service"><a class="anchor" href="#rebalancing-the-eventing-service"></a>Eventing Service</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="rebalancing-the-eventing-service"><a class="anchor" href="#rebalancing-the-eventing-service"></a>Eventing Service</h3>
 <div class="paragraph">
 <p>When an Eventing Service node has been added or removed, rebalance causes <em>vBucket processing ownership</em> to be redistributed among available Eventing Service nodes.
 After rebalance, the service continues to process mutations: checkpoint information ensures that no mutations are lost.</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="rebalancing-the-analytics-service"><a class="anchor" href="#rebalancing-the-analytics-service"></a>Analytics Service</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="rebalancing-the-analytics-service"><a class="anchor" href="#rebalancing-the-analytics-service"></a>Analytics Service</h3>
 <div class="paragraph">
 <p>The Analytics Service uses <em>shadow data</em>, which is a single copy of a subset of the data maintained by the Data Service.
 The shadow data is not replicated; however, its single copy is partitioned across all cluster nodes that run the Analytics Service.
@@ -3171,6 +3172,7 @@ If an Analytics node is permanently removed or replaced, all shadow data must be
 <div class="paragraph">
 <p>If no Analytics Service node has been removed or replaced, shadow data is not affected by rebalance.
 In consequence of rebalance, the Analytics Service receives an updated <em>cluster map</em>, and continues to work with the modified vBucket-topology.</p>
+</div>
 </div>
 </div>
 </div>

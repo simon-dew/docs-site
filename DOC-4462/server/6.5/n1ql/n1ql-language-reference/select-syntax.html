@@ -504,6 +504,16 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
+    <a class="nav-link" href="../../learn/clusters-and-availability/rebalance.html">Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../learn/clusters-and-availability/removal.html">Removal</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../learn/clusters-and-availability/failover.html">Failover</a>
     </span>
@@ -524,11 +534,6 @@
     </span>
   </li>
 </ul>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <span class="nav-line">
-    <a class="nav-link" href="../../learn/clusters-and-availability/rebalance.html">Rebalance</a>
-    </span>
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
@@ -3228,12 +3233,12 @@ This page enables you to drill down through the syntax of a SELECT query.
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>from-term ::= <a href="#from-keyspace">from-keyspace</a> | <a href="#select-expr">select-expr</a> | <a href="#generic-expr">generic-expr</a> | <a href="#join-clause">join-clause</a> | <a href="#nest-clause">nest-clause</a> | <a href="#unnest-clause">unnest-clause</a></pre>
+<pre>from-term ::= <a href="#from-keyspace">from-keyspace</a> | <a href="#from-subquery">from-subquery</a> | <a href="#from-generic">from-generic</a> | <a href="#join-clause">join-clause</a> | <a href="#nest-clause">nest-clause</a> | <a href="#unnest-clause">unnest-clause</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/from-term.png" alt="from term">
+<img src="../_images/n1ql-language-reference/from-term.png" alt="from-keyspace | from-subquery | from-generic | join-clause | nest-clause | unnest-clause">
 </div>
 </div>
 </div>
@@ -3294,11 +3299,11 @@ This page enables you to drill down through the syntax of a SELECT query.
 </div>
 </div>
 </div>
-<div id="select-expr" class="openblock">
+<div id="from-subquery" class="openblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>select-expr ::= <a href="#subquery-expr">subquery-expr</a> [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a></pre>
+<pre>from-subquery ::= <a href="#subquery-expr">subquery-expr</a> [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3322,11 +3327,11 @@ This page enables you to drill down through the syntax of a SELECT query.
 </div>
 </div>
 </div>
-<div id="generic-expr" class="openblock">
+<div id="from-generic" class="openblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>generic-expr ::= <a href="index.html" class="page">expr</a> [ AS <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+<pre>from-generic ::= <a href="index.html" class="page">expr</a> [ AS <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3343,7 +3348,7 @@ This page enables you to drill down through the syntax of a SELECT query.
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre><a href="#from-term">from-term</a> ( <a href="#ansi-join-clause">ansi-join-clause</a> | <a href="#lookup-join-clause">lookup-join-clause</a> | <a href="#index-join-clause">index-join-clause</a> )</pre>
+<pre>join-clause ::= <a href="#from-term">from-term</a> ( <a href="#ansi-join-clause">ansi-join-clause</a> | <a href="#lookup-join-clause">lookup-join-clause</a> | <a href="#index-join-clause">index-join-clause</a> )</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -3355,12 +3360,12 @@ This page enables you to drill down through the syntax of a SELECT query.
 <h3 id="ansi-join-clause"><a class="anchor" href="#ansi-join-clause"></a>ANSI JOIN</h3>
 <div class="listingblock">
 <div class="content">
-<pre>ansi-join-clause ::= [ <a href="#ansi-join-type">ansi-join-type</a> ] JOIN <a href="#ansi-rhs-expr">ansi-rhs-expr</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a>] [ <a href="#ansi-join-hints">ansi-join-hints</a> ] <a href="#ansi-join-predicate">ansi-join-predicate</a></pre>
+<pre>ansi-join-clause ::= [ <a href="#ansi-join-type">ansi-join-type</a> ] JOIN <a href="#ansi-join-rhs">ansi-join-rhs</a> [ <a href="#ansi-join-hints">ansi-join-hints</a> ] <a href="#ansi-join-predicate">ansi-join-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/ansi-join-clause.png" alt="ansi join clause">
+<img src="../_images/n1ql-language-reference/ansi-join-clause.png" alt="ansi-join-type? 'JOIN' ansi-join-rhs ansi-join-hints? ansi-join-predicate">
 </div>
 </div>
 <div id="ansi-join-type" class="openblock">
@@ -3377,16 +3382,58 @@ This page enables you to drill down through the syntax of a SELECT query.
 </div>
 </div>
 </div>
-<div id="ansi-rhs-expr" class="openblock">
+<div id="ansi-join-rhs" class="openblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>ansi-rhs-expr ::= <a href="#keyspace-ref">keyspace-ref</a> | <a href="#subquery-expr">subquery-expr</a> | <a href="index.html" class="page">generic-expr</a></pre>
+<pre>ansi-join-rhs ::= <a href="#rhs-keyspace">rhs-keyspace</a> | <a href="#rhs-subquery">rhs-subquery</a> | <a href="#rhs-generic">rhs-generic</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/ansi-rhs-expr.png" alt="ansi rhs expr">
+<img src="../_images/n1ql-language-reference/ansi-join-rhs.png" alt="rhs-keyspace | rhs-subquery | rhs-generic">
+</div>
+</div>
+</div>
+</div>
+<div id="rhs-keyspace" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>rhs-keyspace ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
+</div>
+</div>
+</div>
+</div>
+<div id="rhs-subquery" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>rhs-subquery ::= <a href="#subquery-expr">subquery-expr</a> [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-subquery.png" alt="subquery-expr 'AS'? alias">
+</div>
+</div>
+</div>
+</div>
+<div id="rhs-generic" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>rhs-generic ::= <a href="index.html" class="page">expr</a> [ AS <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-generic.png" alt="expr 'AS'? alias">
 </div>
 </div>
 </div>
@@ -3522,12 +3569,12 @@ This page enables you to drill down through the syntax of a SELECT query.
 <h3 id="lookup-join-clause"><a class="anchor" href="#lookup-join-clause"></a>Lookup JOIN</h3>
 <div class="listingblock">
 <div class="content">
-<pre>lookup-join-clause ::= [ <a href="#lookup-join-type">lookup-join-type</a> ] JOIN <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ] <a href="#lookup-join-predicate">lookup-join-predicate</a></pre>
+<pre>lookup-join-clause ::= [ <a href="#lookup-join-type">lookup-join-type</a> ] JOIN <a href="#lookup-join-rhs">lookup-join-rhs</a> <a href="#lookup-join-predicate">lookup-join-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/lookup-join-clause.png" alt="lookup join clause">
+<img src="../_images/n1ql-language-reference/lookup-join-clause.png" alt="lookup-join-type? 'JOIN' lookup-join-rhs lookup-join-predicate">
 </div>
 </div>
 <div id="lookup-join-type" class="openblock">
@@ -3540,6 +3587,20 @@ This page enables you to drill down through the syntax of a SELECT query.
 <div class="imageblock">
 <div class="content">
 <img src="../_images/n1ql-language-reference/lookup-join-type.png" alt="lookup join type">
+</div>
+</div>
+</div>
+</div>
+<div id="lookup-join-rhs" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>lookup-join-rhs ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
 </div>
 </div>
 </div>
@@ -3563,24 +3624,38 @@ This page enables you to drill down through the syntax of a SELECT query.
 <h3 id="index-join-clause"><a class="anchor" href="#index-join-clause"></a>Index JOIN</h3>
 <div class="listingblock">
 <div class="content">
-<pre>index-join-clause ::= [ <a href="#index-join-type">index-join-type</a> ] JOIN <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ] <a href="#index-join-predicate">index-join-predicate</a></pre>
+<pre>index-join-clause ::= [ <a href="#index-join-type">index-join-type</a> ] JOIN <a href="#index-join-rhs">index-join-rhs</a> <a href="#index-join-predicate">index-join-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/index-join-clause.png" alt="index join clause">
+<img src="../_images/n1ql-language-reference/index-join-clause.png" alt="index-join-type? 'JOIN' index-join-rhs index-join-predicate">
 </div>
 </div>
 <div id="index-join-type" class="openblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>iindex-join-type ::= INNER | ( LEFT [ OUTER ] )</pre>
+<pre>index-join-type ::= INNER | ( LEFT [ OUTER ] )</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="../_images/n1ql-language-reference/index-join-type.png" alt="index join type">
+</div>
+</div>
+</div>
+</div>
+<div id="index-join-rhs" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>index-join-rhs ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
 </div>
 </div>
 </div>
@@ -3619,12 +3694,12 @@ This page enables you to drill down through the syntax of a SELECT query.
 <h3 id="ansi-nest-clause"><a class="anchor" href="#ansi-nest-clause"></a>ANSI NEST</h3>
 <div class="listingblock">
 <div class="content">
-<pre>ansi-nest-clause ::= [ <a href="#ansi-nest-type">ansi-nest-type</a> ] NEST <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ] <a href="#ansi-nest-predicate">ansi-nest-predicate</a></pre>
+<pre>ansi-nest-clause ::= [ <a href="#ansi-nest-type">ansi-nest-type</a> ] NEST <a href="#ansi-nest-rhs">ansi-nest-rhs</a> <a href="#ansi-nest-predicate">ansi-nest-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/ansi-nest-clause.png" alt="ansi nest clause">
+<img src="../_images/n1ql-language-reference/ansi-nest-clause.png" alt="ansi-nest-type? 'NEST' ansi-nest-rhs ansi-nest-predicate">
 </div>
 </div>
 <div id="ansi-nest-type" class="openblock">
@@ -3637,6 +3712,20 @@ This page enables you to drill down through the syntax of a SELECT query.
 <div class="imageblock">
 <div class="content">
 <img src="../_images/n1ql-language-reference/ansi-nest-type.png" alt="ansi nest type">
+</div>
+</div>
+</div>
+</div>
+<div id="ansi-nest-rhs" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>ansi-nest-rhs ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
 </div>
 </div>
 </div>
@@ -3660,12 +3749,12 @@ This page enables you to drill down through the syntax of a SELECT query.
 <h3 id="lookup-nest-clause"><a class="anchor" href="#lookup-nest-clause"></a>Lookup NEST</h3>
 <div class="listingblock">
 <div class="content">
-<pre>lookup-nest-clause ::= [ <a href="#lookup-nest-type">lookup-nest-type</a> ] NEST <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ] <a href="#lookup-nest-predicate">lookup-nest-predicate</a></pre>
+<pre>lookup-nest-clause ::= [ <a href="#lookup-nest-type">lookup-nest-type</a> ] NEST <a href="#lookup-nest-rhs">lookup-nest-rhs</a> <a href="#lookup-nest-predicate">lookup-nest-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/lookup-nest-clause.png" alt="lookup nest clause">
+<img src="../_images/n1ql-language-reference/lookup-nest-clause.png" alt="lookup-nest-type? 'NEST' lookup-nest-rhs lookup-nest-predicate">
 </div>
 </div>
 <div id="lookup-nest-type" class="openblock">
@@ -3678,6 +3767,20 @@ This page enables you to drill down through the syntax of a SELECT query.
 <div class="imageblock">
 <div class="content">
 <img src="../_images/n1ql-language-reference/lookup-nest-type.png" alt="lookup nest type">
+</div>
+</div>
+</div>
+</div>
+<div id="lookup-nest-rhs" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>lookup-nest-rhs ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
 </div>
 </div>
 </div>
@@ -3701,12 +3804,12 @@ This page enables you to drill down through the syntax of a SELECT query.
 <h3 id="index-nest-clause"><a class="anchor" href="#index-nest-clause"></a>Index NEST</h3>
 <div class="listingblock">
 <div class="content">
-<pre>index-nest-clause ::= [ <a href="#index-nest-type">index-nest-type</a> ] JOIN <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ] <a href="#index-nest-predicate">index-nest-predicate</a></pre>
+<pre>index-nest-clause ::= [ <a href="#index-nest-type">index-nest-type</a> ] NEST <a href="#index-nest-rhs">index-nest-rhs</a> <a href="#index-nest-predicate">index-nest-predicate</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/index-nest-clause.png" alt="index nest clause">
+<img src="../_images/n1ql-language-reference/index-nest-clause.png" alt="index-nest-type? 'NEST' index-nest-rhs index-nest-predicate">
 </div>
 </div>
 <div id="index-nest-type" class="openblock">
@@ -3719,6 +3822,20 @@ This page enables you to drill down through the syntax of a SELECT query.
 <div class="imageblock">
 <div class="content">
 <img src="../_images/n1ql-language-reference/index-nest-type.png" alt="index nest type">
+</div>
+</div>
+</div>
+</div>
+<div id="index-nest-rhs" class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre>index-nest-rhs ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="identifiers.html#identifier-alias" class="page">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/rhs-keyspace.png" alt="keyspace-ref ( 'AS'? alias )?">
 </div>
 </div>
 </div>

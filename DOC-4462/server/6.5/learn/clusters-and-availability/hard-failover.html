@@ -502,6 +502,16 @@
     <a class="nav-link" href="nodes.html">Nodes</a>
     </span>
 <ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="rebalance.html">Rebalance</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="removal.html">Removal</a>
+    </span>
+  </li>
   <li class="nav-item is-current-path is-active" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
@@ -524,11 +534,6 @@
     </span>
   </li>
 </ul>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <span class="nav-line">
-    <a class="nav-link" href="rebalance.html">Rebalance</a>
-    </span>
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
@@ -3078,7 +3083,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Hard failover takes an unavailable or unstable node out of the cluster.
+Hard failover takes an unresponsive node out of the cluster.
 </blockquote>
 </div>
 </div>
@@ -3087,13 +3092,13 @@ Hard failover takes an unavailable or unstable node out of the cluster.
 <h2 id="understanding-hard-"><a class="anchor" href="#understanding-hard-"></a>Understanding Hard Failover</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Hard failover takes an unavailable or unstable node out of the cluster.
+<p>Hard failover takes an unresponsive node out of the cluster.
 Hard failover can be performed on any node in the cluster: slightly different actions are taken for each affected service, as described below.</p>
 </div>
 <div class="paragraph">
-<p>Hard failover should <em>only</em> be used when a node has become unavailable or unstable: it should not be used as part of regular, planned maintenance activities that can be conducted with all cluster-nodes available.
+<p>Hard failover should <em>only</em> be used when a node has become unresponsive: it should not be used as part of regular, planned maintenance activities that can be conducted with all cluster-nodes available.
 For information on taking nodes out of the cluster in such circumstances, see
-<a href="../../manage/manage-nodes/remove-node-and-rebalance.html" class="page">Remove a Node and Rebalance</a> and <a href="graceful-failover.html" class="page">Graceful Failover</a>.</p>
+<a href="removal.html" class="page">Removal</a> and <a href="graceful-failover.html" class="page">Graceful Failover</a>.</p>
 </div>
 <div class="paragraph">
 <p>Hard failover can be initiated by means of:</p>
@@ -3125,20 +3130,21 @@ For information on taking nodes out of the cluster in such circumstances, see
 <div class="sect2">
 <h3 id="data-service"><a class="anchor" href="#data-service"></a>Data Service</h3>
 <div class="paragraph">
-<p>If the node to be failed over has been running the Data Service, and active vBuckets have therefore become unavailable, the Cluster Manager promotes replica vBuckets to active status on the remaining cluster-nodes.
+<p>Since active vBuckets have become unavailable, the Cluster Manager promotes replica vBuckets to active status on the remaining cluster-nodes.
 A revised cluster-map is then communicated to all clients.</p>
 </div>
 <div class="paragraph">
-<p>When the process is complete, no vBuckets remain on the failed-over node, but the node has not yet been fully taken out of the cluster.
-The cluster is at this point considered to be in a degraded state, in terms of availability; as it now contains a reduced number of replica vBuckets, and so lacks resources to handle a further node-outage.</p>
+<p>When the process is complete, no further attempts will be made to access vBuckets on the failed-over node, but the node has not yet been fully taken out of the cluster.
+The cluster is at this point considered to be in a <em>degraded state</em>, in terms of availability; as it now contains a reduced number of replica vBuckets, and may lack resources for handling a further node-outage.
+Rebalance should be performed.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="index-service"><a class="anchor" href="#index-service"></a>Index Service</h3>
 <div class="paragraph">
-<p>When Global Secondary Indexes (GSI) are defined, each is by default created on only one node, which is running the Index Service.
+<p>When Global Secondary Indexes (GSIs) are defined, each is by default created on only one node, which is running the Index Service.
 If that node fails, the indexes therefore become unavailable.
-If the node is subsequently repaired and added back into the cluster by means of Delta Recovery, the indexes are updated, and become available again.
+If the node is subsequently repaired and added back into the cluster by means of <a href="recovery.html#delta-recovery" class="page">Delta Recovery</a>, the indexes are updated, and become available again.
 If the node is replaced, the indexes need to be recreated: in this case, before rebalance of the new node into the cluster, the failed node must be taken out of the cluster by means of hard failover.</p>
 </div>
 </div>
@@ -3212,7 +3218,7 @@ Alternatively, an entirely new node can be added instead.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Delta Recovery can be performed when the Cluster Manager recognizes the node as a previous member of the cluster.
+<p><a href="recovery.html#delta-recovery" class="page">Delta Recovery</a> can be performed when the Cluster Manager recognizes the node as a previous member of the cluster.
 If Delta Recovery fails, Full Recovery must be performed.</p>
 <div class="paragraph">
 <p>When a node is added back to the cluster using Delta Recovery, the replica vBuckets on the failed-over node are considered to be <em>trusted</em>, but <em>behind on data</em>.
@@ -3221,7 +3227,7 @@ When this operation is complete, vBuckets are promoted to active status as appro
 </div>
 </li>
 <li>
-<p>If the node is added back using Full Recovery, the node is treated as an entirely new node: it is reloaded with data, and requires rebalance.</p>
+<p>If the node is added back using <a href="recovery.html#full-recovery" class="page">Full Recovery</a>, the node is treated as an entirely new node: it is reloaded with data, and requires rebalance.</p>
 </li>
 <li>
 <p>If the node cannot be added back, a new node can be added, and the cluster rebalanced.</p>
@@ -3269,7 +3275,7 @@ Note that a rebalance performed prior to the re-adding of a failed over node pre
 The cluster now has no replica for vBucket 762.</p>
 </li>
 <li>
-<p>The Cluster Cap is updated, so that clients' subsequent reads and writes will go to the correct location for vBucket 762, now node #2.</p>
+<p>The Cluster Map is updated, so that clients' subsequent reads and writes will go to the correct location for vBucket 762, now node #2.</p>
 </li>
 </ol>
 </div>
