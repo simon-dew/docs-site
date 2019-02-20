@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>CREATE PRIMARY INDEX | Couchbase Docs (Staging)</title>
+    <title>Window Functions | Couchbase Docs (Staging)</title>
     <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4471/server/6.0/index.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
@@ -1056,7 +1056,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-path is-active" data-depth="0">
+  <li class="nav-item is-active" data-depth="0">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Develop</span>
@@ -1115,7 +1115,7 @@
     <a class="nav-link" href="../../getting-started/starter-kits.html">Starter Kits</a>
     </span>
   </li>
-  <li class="nav-item is-current-path is-active" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Query</span>
@@ -1378,7 +1378,7 @@
     <a class="nav-link" href="booleanlogic.html">Boolean Logic</a>
     </span>
   </li>
-  <li class="nav-item is-current-path is-active" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Statements</span>
@@ -1427,7 +1427,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page is-active" data-depth="3">
+  <li class="nav-item" data-depth="3">
     <span class="nav-line">
     <a class="nav-link" href="createprimaryindex.html">CREATE PRIMARY INDEX</a>
     </span>
@@ -3039,265 +3039,1777 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../../introduction/intro.html">Couchbase Server</a></li>
-    <li class="crumb">Develop</li>
-    <li class="crumb">Query</li>
-    <li class="crumb">Statements</li>
-    <li class="crumb"><a href="createprimaryindex.html">CREATE PRIMARY INDEX</a></li>
+    <li class="crumb"><a href="test.html">Window Functions</a></li>
   </ul>
 </nav>
 <div class="tools" role="navigation">
   <ul>
-    <li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/pages/n1ql-language-reference/createprimaryindex.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+    <li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/pages/n1ql-language-reference/test.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
   </ul>
 </div>
   </div>
 <article class="doc">
-<h1 class="page">CREATE PRIMARY INDEX</h1>
+<h1 class="page">Window Functions</h1>
+<div class="labels">
+  <ul>
+    <li class="edition"><a href="https://www.couchbase.com/products/editions">enterprise edition</a></li>
+    <li class="status"><span>Couchbase Server 6.5</span></li>
+  </ul>
+</div>
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph">
-<p>The <code>CREATE PRIMARY INDEX</code> statement allows you to create a primary index.
-Primary indexes contain a full set of keys in a given keyspace.
-Primary indexes are optional and are only required for running ad hoc queries on a keyspace that is not supported by a secondary index.</p>
+<div class="quoteblock abstract">
+<blockquote>
+Window functions are used to compute cumulative, moving, and reporting aggregations.
+</blockquote>
 </div>
 <div class="paragraph">
-<p><code>CREATE PRIMARY INDEX</code> is by default a synchronous operation.
-The <code>CREATE PRIMARY INDEX</code> statement blocks until the operation finishes.
-Index building starts by creating a task that is queued for index build.
-After this phase, if you lose connectivity, the index build operation continues in the background.
-You can also run index creation asynchronously by using the <code>defer_build</code> clause.
-In the asynchronous mode, <code>CREATE PRIMARY INDEX</code> starts a task to create the primary index and returns as soon as the task is queued for execution.
-The full index creation operation happens in the background.</p>
+<p>Window functions are used to compute an aggregate or cumulative value, based on a group of objects.
+For each input object, a movable window of objects is defined.
+The window determines the objects to be used by the window function.</p>
 </div>
 <div class="paragraph">
-<p>Both GSI and view indexers provide a status field and mark index status pending.
-With the GSI indexer, index status continues to report <code>pending</code>.
-This status field and other index metadata can be queried by using <code>system:indexes</code>.</p>
+<p>All window functions must have a window clause to define the window partitions, the order of objects within the window, and the size of the window frame.
+The <code>OVER</code> keyword introduces the window clause.
+Some window functions take additional window options, which are specified by further clauses before the window clause.</p>
 </div>
 <div class="paragraph">
-<p><strong>RBAC Privileges</strong></p>
+<p>N1QL has a dedicated set of window functions.
+In Couchbase Server 6.5 and later, aggregate functions can also be used as window functions, when they are used with a window clause.</p>
 </div>
 <div class="paragraph">
-<p>Users executing the <code>CREATE PRIMARY INDEX</code> statement must have the <em>Query Manage Index</em> privilege granted on the keyspace.
-For more details about user roles, see
-<a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Indexes cannot be built concurrently on a given keyspace unless the <code>defer_build</code> option in the <code>CREATE PRIMARY INDEX</code> statement is used in combination with the <code>BUILD INDEX</code> statement.
-The following error is reported if a second index creation operation is kicked off before the completion of the ongoing index creation.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>"errors": {"code": 12014,
-   "msg": "error: Build Already In Progress. Bucket BUCKET_NAME. Index INDEX_NAME. Index state: pending"}</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can create multiple primary indexes on a bucket for better index availability and place them on separate nodes by using the <code>nodes</code> clause.</p>
-</div>
-</td>
-</tr>
-</table>
+<p>This page gives details of the syntax of individual window functions.
+See the <a href="window.html" class="page">OVER clause and Window Functions</a> page for the generic syntax of window functions, window options, and the window clause.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<h2 id="usage"><a class="anchor" href="#usage"></a>Usage</h2>
 <div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>CREATE PRIMARY INDEX [index_name]
-    ON named_keyspace_ref
-    [ USING GSI | USING VIEW ]
-    [ WITH {"nodes": ["node_name"], "defer_build":true|false}, "num_replica": num_replica_num } ];</pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Arguments</dt>
-<dd>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">index_name</dt>
-<dd>
-<p>[Optional]  The unique name that identifies the index.
-If a name is not specified, the default name of <code>#primary</code> is applied.</p>
 <div class="paragraph">
-<p>Valid GSI index names can contain any of the following characters: A-Z a-z 0-9 # _, and must start with a letter [A-Z a-z].</p>
+<p>Window functions can only appear in the <a href="selectclause.html" class="page">SELECT</a> projection clause or query <a href="orderby.html" class="page">ORDER BY</a> clause.</p>
 </div>
-<div class="paragraph">
-<p>The minimum length of an index name is 1 character and there is no maximum length set for an index name.</p>
-</div>
-<div class="paragraph">
-<p>When querying, if the index name contains a '&#35;' or '_' character, you must enclose the index name within backticks.</p>
-</div>
-<div class="admonitionblock important">
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-important" title="Important"></i>
+<i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Unnamed primary indexes are dropped by using the <code>DROP PRIMARY INDEX</code> statement, and named primary indexes are dropped by using the <code>DROP INDEX</code> statement.
+Any expression within a window function may be a subquery.
+However, this will lead to repeated evaluation when the query is processed.
+If required, use a <a href="let.html" class="page">LET clause</a>, a <a href="#">n1ql-language-reference/with.adoc</a>, or an intervening <a href="subqueries.html" class="page">subquery</a> to avoid repeated evaluation.
 </td>
 </tr>
 </table>
 </div>
-</dd>
-<dt class="hdlist1">named_keyspace_ref</dt>
-<dd>
-<p>Identifier that refers to the keyspace name.
-Specifies the keyspace as source for which the index needs to be created.
-You can add an optional namespace name to the keyspace name in this way:</p>
-<div class="listingblock">
-<div class="content">
-<pre>namespace-name : keyspace-name</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For example, <code>main:customer</code> indicates the <code>customer</code> keyspace in the main namespace.
-If the namespace name is omitted, the default namespace in the current session is used.</p>
-</div>
-</dd>
-<dt class="hdlist1">USING GSI | USING VIEW</dt>
-<dd>
-<p>The USING clause specifies the index type to use.
-Primary indexes can be created as global secondary indexes (<code>GSI</code>) or views (<code>VIEW</code>).
-If the USING clause is not specified, by default <code>GSI</code> is used as the indexer.</p>
-</dd>
-<dt class="hdlist1">WITH options</dt>
-<dd>
-<p>The <code>WITH</code> clause specifies additional options for the <code>GSI</code> type primary indexes.</p>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">"nodes":["node name"]</dt>
-<dd>
-<p>A single primary index of type <code>GSI</code> can only be placed on a single node that runs the indexing service.
-The <code>nodes</code> option allows you to specify the node that the index is placed on.
-If <code>nodes</code> is not specified, one of the nodes running the index service is randomly selected to host the index.</p>
-<div class="paragraph">
-<p>Multiple nodes can be specified to distribute replicas of an index amongst multiple nodes.</p>
-</div>
-<div class="paragraph">
-<p>If specifying both <code class="var">nodes</code> and <code class="var">num_replica</code>, the number of nodes in the array must be one greater than the specified number of replicas otherwise the index creation will fail.</p>
-</div>
-<div class="admonitionblock important">
+<div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-important" title="Important"></i>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The node names passed to the <code>nodes</code> parameter must include the cluster administration port (by default 8091).
-For example <code>WITH {"nodes": ["192.0.2.0:8091"]}</code> instead of <code>WITH {"nodes": ["192.0.2.0"]}</code>.
+An expression within the window function may not contain another, nested window function.
+If necessary, you can specify one window function in a <a href="subqueries.html" class="page">subquery</a>, and another window function in the parent query.
 </td>
 </tr>
 </table>
 </div>
-</dd>
-<dt class="hdlist1">"defer_build":true|false</dt>
-<dd>
-<p>When <code>defer_build</code> is set to true, the <code>CREATE PRIMARY INDEX</code> operation queues the task for building the index but immediately pauses the building of the index of type <code>GSI</code>.
-Index building requires an expensive scan operation.
-Deferring building of the index with multiple indexes can optimize the expensive scan operation.
-You can defer building multiple indexes and, using <code>BUILD INDEX</code> statement, multiple indexes to be built efficiently with one efficient scan of keyspace data.</p>
 <div class="paragraph">
-<p>When <code>defer_build</code> is set to <code>false</code>, the <code>CREATE PRIMARY INDEX</code> operation queues the task for building the index and immediately kicks off the building of the index of type <code>GSI</code>.</p>
+<p>Window functions are processed after <a href="#">n1ql-language-reference/join.adoc</a> clauses, the <a href="let.html" class="page">LET</a> clause, the <a href="where.html" class="page">WHERE</a> clause, and the <a href="groupby.html" class="page">GROUP BY</a>, <a href="groupby.html" class="page">LETTING</a>, and <a href="groupby.html" class="page">HAVING</a> clauses.
+Window functions therefore operate on the query result set.</p>
 </div>
-</dd>
-<dt class="hdlist1">"num_replica": num_replica_num</dt>
-<dd>
-<p><code class="var">num_replica</code> specifies the number of replicas of the index to create.</p>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-cume-dist"><a class="anchor" href="#fn-window-cume-dist"></a>CUME_DIST()</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description"><a class="anchor" href="#description"></a>Description</h3>
 <div class="paragraph">
-<p>The indexer will automatically distribute these indexes amongst index nodes in the cluster for load-balancing and high availability purposes.
-When creating an index with replicas in this manner, the indexer will attempt to distribute the replicas based on the server groups in use in the cluster where possible.</p>
+<p>Returns the percentile rank of the current object as part of the cumulative distribution – that is, the number of objects ranked lower than or equal to the current object, including the current object, divided by the total number of objects in the window partition.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>cume-dist-function ::= CUME_DIST '()' OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-cume-dist.png" alt="fn window cume dist">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h3>
 <div class="paragraph">
-<p>If <code class="var">num_replica_num</code> is not less than the number of index nodes in the cluster, then the index creation will fail.</p>
+<p>None.</p>
 </div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Attention"></i>
-</td>
-<td class="content">
-We recommend that you do not create (or drop) secondary indexes when any node with a secondary index role is down as this may result in duplicate index names.
-</td>
-</tr>
-</table>
 </div>
-</dd>
-</dl>
-</div>
-</dd>
-</dl>
-</div>
-</dd>
-</dl>
-</div>
+<div class="sect2">
+<h3 id="return-value"><a class="anchor" href="#return-value"></a>Return Value</h3>
 <div class="paragraph">
-<p><strong>Example 1</strong>: Create a primary index on the travel-sample keyspace.</p>
+<p>A number greater than 0 and less than or equal to 1.
+The higher the value, the higher the ranking.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example"><a class="anchor" href="#example"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each destination airport, find the cumulative distribution of all routes in order of distance.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>CREATE PRIMARY INDEX `travel-sample-primary-index` ON `travel-sample` USING GSI;</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT d.id, d.destinationairport, CUME_DIST() OVER (
+  PARTITION BY d.destinationairport
+  ORDER BY d.distance NULLS LAST
+) AS `rank`
+FROM `travel-sample` AS d
+WHERE d.type="route"
+LIMIT 7;</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>After the index creation statement comes back, <code>system:indexes</code> is queried for the status of the index.</p>
 </div>
 <div class="listingblock">
+<div class="title">Results</div>
 <div class="content">
-<pre>SELECT * FROM system:indexes WHERE name="travel-sample-primary-index";</pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "AAE",
+      "id": 10201,
+      "rank": 0.25
+  },
+  {
+      "destinationairport": "AAE",
+      "id": 10190,
+      "rank": 0.5
+  },
+  {
+      "destinationairport": "AAE",
+      "id": 10240,
+      "rank": 0.75
+  },
+  {
+      "destinationairport": "AAE",
+      "id": 10136,
+      "rank": 1
+  },
+  {
+      "destinationairport": "AAL",
+      "id": 14392,
+      "rank": 0.3333333333333333
+  },
+  {
+      "destinationairport": "AAL",
+      "id": 14867,
+      "rank": 0.6666666666666666
+  },
+  {
+      "destinationairport": "AAL",
+      "id": 22505,
+      "rank": 1
+  },
+]</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><strong>Example 2</strong>: Create the same primary index using the <code>defer_build</code> option coupled with the <code>BUILD INDEX</code> statement.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>CREATE PRIMARY INDEX `travel-sample-primary-index` ON `travel-sample` USING GSI
-    WITH {"defer_build":true};
-
-SELECT * FROM system:indexes WHERE name="travel-sample-primary-index";</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the <code>defer_build</code> option enabled, the output from <code>system:indexes</code> shows the <code>travel-sample-primary-index</code> in the pending state (<code>"state": "pending"</code>).
-<code>BUILD INDEX</code> can be used to kick off the deferred build on the primary index:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>BUILD INDEX ON `travel-sample`(`travel-sample-primary-index`) USING GSI;
-
-SELECT * FROM system:indexes WHERE name="travel-sample-primary-index";</pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="primary-scan-timeout"><a class="anchor" href="#primary-scan-timeout"></a>Primary scan timeout</h2>
+<h2 id="fn-window-dense-rank"><a class="anchor" href="#fn-window-dense-rank"></a>DENSE_RANK()</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="description-2"><a class="anchor" href="#description-2"></a>Description</h3>
 <div class="paragraph">
-<p>For a primary index scan on any keyspace size, the query engine guarantees that the client is not exposed to scan timeout if the indexer throws a scan timeout after it has returned a greater than zero sized subset of primary keys.
-To complete the scan, the query engine performs successive scans of the primary index until all the primary keys have been returned.
-It is possible that the indexer throws scan timeout without returning any primary keys, and in this event the query engine returns scan timeout to the client.</p>
+<p>Returns the dense rank of the current object – that is, the number of distinct objects preceding this object in the current window partition, plus one.</p>
 </div>
 <div class="paragraph">
-<p>For example, if the indexer cannot find a snapshot that satisfies the consistency guarantee of the query within the timeout limit, it will timeout without returning any primary keys.</p>
+<p>The objects are ordered by the <a href="window.html#window-order-clause" class="page">window order clause</a>.
+If any objects are tied, they will have the same rank.</p>
 </div>
 <div class="paragraph">
-<p>For secondary index scans, the query engine does not handle scan timeout, and returns index scan timeout error to the client.
-You can handle scan timeout on a secondary index by increasing the indexer timeout setting (See
-<a href="#">manage:manage-settings/query-settings.adoc</a>) or preferably by defining and using a more selective index.</p>
+<p>For this function, when any objects have the same rank, the rank of the next object will be consecutive, so there will not be a gap in the sequence of returned values.
+For example, if there are three objects ranked 2, the next dense rank is 3.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-2"><a class="anchor" href="#syntax-2"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>dense-rank-function ::= DENSE_RANK '()' OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-dense-rank.png" alt="fn window dense rank">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments-2"><a class="anchor" href="#arguments-2"></a>Arguments</h3>
+<div class="paragraph">
+<p>None.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values"><a class="anchor" href="#return-values"></a>Return Values</h3>
+<div class="paragraph">
+<p>An integer, greater than or equal to 1.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-2"><a class="anchor" href="#example-2"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each country, find the dense rank of all airports in order of altitude.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT a.airportname, a.geo.alt, DENSE_RANK() OVER (
+  PARTITION BY a.country
+  ORDER BY a.geo.alt NULLS LAST
+) AS `rank`
+FROM `travel-sample` AS a
+WHERE a.type="airport"
+LIMIT 10;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "airportname": "Croisette Heliport",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "Andernos-Les-Bains",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "La Defense Heliport",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "Marigot Bus Stop",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "Lille",
+    "alt": 1,
+    "rank": 2
+  },
+  {
+    "airportname": "Le Palyvestre",
+    "alt": 7,
+    "rank": 3
+  },
+  {
+    "airportname": "Frejus Saint Raphael",
+    "alt": 7,
+    "rank": 3
+  },
+  {
+    "airportname": "Calais Dunkerque",
+    "alt": 12,
+    "rank": 4
+  },
+  {
+    "airportname": "Cote D\\'Azur",
+    "alt": 12,
+    "rank": 4
+  },
+  {
+    "airportname": "Propriano",
+    "alt": 13,
+    "rank": 5
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-first-value"><a class="anchor" href="#fn-window-first-value"></a>FIRST_VALUE(<code>expr</code>)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-3"><a class="anchor" href="#description-3"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the requested value from the first object in the current window frame, where the window frame is specified by  the <a href="window.html#window-clause" class="page">window clause</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-3"><a class="anchor" href="#syntax-3"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>first-value-function ::= FIRST_VALUE '(' <a href="#fn-window-first-value-args">expr</a> ')' [ <a href="#fn-window-first-value-nulls">nulls-treatment</a> ] OVER '(' <a href="window.html#window-clause" class="page">window-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-first-value.png" alt="fn window first value">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-first-value-args"><a class="anchor" href="#fn-window-first-value-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>[Required] The value that you want to return from the first object in the window frame. <sup>[<a href="#disclaimer">1</a>]</sup></p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="fn-window-first-value-nulls"><a class="anchor" href="#fn-window-first-value-nulls"></a>Nulls Treatment</h4>
+<div class="paragraph">
+<p>The <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause determines how NULL or MISSING values are treated when finding the first object in the window frame:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>IGNORE NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are not included when finding the first object.
+In this case, the function returns the first non-NULL, non-MISSING value.</p>
+</dd>
+<dt class="hdlist1"><code>RESPECT NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are included when finding the first object.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause is omitted, the default is <code>RESPECT NULLS</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-2"><a class="anchor" href="#return-values-2"></a>Return Values</h3>
+<div class="paragraph">
+<p>The specified value from the first object.</p>
+</div>
+<div class="paragraph">
+<p>If all values are NULL or MISSING it returns NULL.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In the following cases, this function may return unpredictable results.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <a href="window.html#window-order-clause" class="page">window order clause</a> is omitted.</p>
+</li>
+<li>
+<p>If the window frame is defined by <code>ROWS</code>, and there are tied objects in the window frame.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To make the function return deterministic results, add a <a href="window.html#window-order-clause" class="page">window order clause</a>, or add further ordering terms to the <a href="window.html#window-order-clause" class="page">window order clause</a> so that no objects are tied.</p>
+</div>
+<div class="paragraph">
+<p>If the window frame is defined by <code>RANGE</code> or <code>GROUPS</code>, and there are tied objects in the window frame, the function returns the lowest value of the input expression.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each airport, show each route starting at that airport, including the distance of the route and the distance of the shortest route from that airport.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.sourceairport, r.destinationairport, r.distance,
+FIRST_VALUE(r.distance) OVER (
+  PARTITION BY r.sourceairport
+  ORDER BY r.distance
+) AS `shortest_distance`
+FROM `travel-sample` AS r
+WHERE r.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "MRS",
+      "distance": 767.6526005881392,
+      "shortest_distance": 767.6526005881392,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "LYS",
+      "distance": 1015.6529968903878,
+      "shortest_distance": 767.6526005881392,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "ORY",
+      "distance": 1395.3690007167947,
+      "shortest_distance": 767.6526005881392,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "CDG",
+      "distance": 1420.6731433915318,
+      "shortest_distance": 767.6526005881392,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "AAR",
+      "distance": 99.89861063028253,
+      "shortest_distance": 99.89861063028253,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "OSL",
+      "distance": 352.33081791745275,
+      "shortest_distance": 99.89861063028253,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "LGW",
+      "distance": 928.284226131001,
+      "shortest_distance": 99.89861063028253,
+      "sourceairport": "AAL"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-lag"><a class="anchor" href="#fn-window-lag"></a>LAG(<code>expr</code> [, <code>offset</code> [, <code>default</code> ] ] )</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-4"><a class="anchor" href="#description-4"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the value of an object at a given offset prior to the current object position.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-4"><a class="anchor" href="#syntax-4"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>lag-function ::= LAG '(' <a href="#fn-window-lag-args">expr</a> [ ',' <a href="#fn-window-lag-args">offset</a> [ ',' <a href="#fn-window-lag-args">default</a> ] ] ')' [ <a href="#fn-window-lag-nulls">nulls-treatment</a> ] OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-lag.png" alt="fn window lag">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-lag-args"><a class="anchor" href="#fn-window-lag-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>[Required] The value that you want to return from the offset object. <sup>[<a href="#disclaimer">1</a>]</sup></p>
+</dd>
+<dt class="hdlist1">offset</dt>
+<dd>
+<p>[Optional] A positive integer greater than 0.
+If omitted, the default is 1.</p>
+</dd>
+<dt class="hdlist1">default</dt>
+<dd>
+<p>[Optional] The value to return when the offset goes out of window scope.
+If omitted, the default is NULL.</p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="fn-window-lag-nulls"><a class="anchor" href="#fn-window-lag-nulls"></a>Nulls Treatment</h4>
+<div class="paragraph">
+<p>The <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause determines how NULL or MISSING values are treated when counting the offset:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>IGNORE NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are not included when counting the offset.</p>
+</dd>
+<dt class="hdlist1"><code>RESPECT NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are included when counting the offset.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause is omitted, the default is <code>RESPECT NULLS</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-3"><a class="anchor" href="#return-values-3"></a>Return Values</h3>
+<div class="paragraph">
+<p>The specified value from the offset object.</p>
+</div>
+<div class="paragraph">
+<p>If the offset object is out of scope, it returns the default value, or NULL if no default is specified.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-4"><a class="anchor" href="#example-4"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each airline, show each route operated by that airline, including the length of the route and the length of the next-shortest route.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.airline, r.id, r.distance,
+LAG(r.distance, 1, "No previous distance") OVER (
+  PARTITION BY r.airline
+  ORDER BY r.distance NULLS LAST
+) AS `previous-distance`
+FROM `travel-sample` AS r
+WHERE r.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "airline": "2L",
+      "distance": 770.9691328580009,
+      "id": 125,
+      "previous-distance": "No previous distance"
+  },
+  {
+      "airline": "2L",
+      "distance": 770.969132858001,
+      "id": 117,
+      "previous-distance": 770.9691328580009
+  },
+  {
+      "airline": "2L",
+      "distance": 922.7579695456559,
+      "id": 118,
+      "previous-distance": 770.969132858001
+  },
+  {
+      "airline": "2L",
+      "distance": 922.7579695456559,
+      "id": 126,
+      "previous-distance": 922.7579695456559
+  },
+  {
+      "airline": "3F",
+      "distance": 23.957943869396804,
+      "id": 274,
+      "previous-distance": "No previous distance"
+  },
+  {
+      "airline": "3F",
+      "distance": 23.957943869396804,
+      "id": 276,
+      "previous-distance": 23.957943869396804
+  },
+  {
+      "airline": "3F",
+      "distance": 26.397914084363418,
+      "id": 282,
+      "previous-distance": 23.957943869396804
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-last-value"><a class="anchor" href="#fn-window-last-value"></a>LAST_VALUE(<code>expr</code>)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-5"><a class="anchor" href="#description-5"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the requested value from the last object in the current window frame, where the window frame is specified by  the <a href="window.html#window-clause" class="page">window clause</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-5"><a class="anchor" href="#syntax-5"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>last-value-function ::= LAST_VALUE '(' <a href="#fn-window-last-value-args">expr</a> ')' [ <a href="#fn-window-last-value-nulls">nulls-treatment</a> ] OVER '(' <a href="window.html#window-clause" class="page">window-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-last-value.png" alt="fn window last value">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-last-value-args"><a class="anchor" href="#fn-window-last-value-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>[Required] The value that you want to return from the last object in the window frame. <sup>[<a href="#disclaimer">1</a>]</sup></p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="fn-window-last-value-nulls"><a class="anchor" href="#fn-window-last-value-nulls"></a>Nulls Treatment</h4>
+<div class="paragraph">
+<p>The <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause determines how NULL or MISSING values are treated when finding the last object in the window frame:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>IGNORE NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are not included when finding the last object.
+In this case, the function returns the last non-NULL, non-MISSING value.</p>
+</dd>
+<dt class="hdlist1"><code>RESPECT NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are included when finding the last object.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause is omitted, the default is <code>RESPECT NULLS</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-4"><a class="anchor" href="#return-values-4"></a>Return Values</h3>
+<div class="paragraph">
+<p>The specified value from the last object.</p>
+</div>
+<div class="paragraph">
+<p>If all values are NULL or MISSING it returns NULL.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In the following cases, this function may return unpredictable results.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <a href="window.html#window-order-clause" class="page">window order clause</a> is omitted.</p>
+</li>
+<li>
+<p>If the <a href="window.html#window-frame-clause" class="page">window frame clause</a> is omitted.</p>
+</li>
+<li>
+<p>If the window frame is defined by <code>ROWS</code>, and there are tied objects in the window frame.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To make the function return deterministic results, add a <a href="window.html#window-order-clause" class="page">window order clause</a>, or add further ordering terms to the <a href="window.html#window-order-clause" class="page">window order clause</a> so that no objects are tied.</p>
+</div>
+<div class="paragraph">
+<p>If the window frame is defined by <code>RANGE</code> or <code>GROUPS</code>, and there are tied objects in the window frame, the function returns the highest value of the input expression.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-5"><a class="anchor" href="#example-5"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each airport, show each route starting at that airport, including the distance of the route and the distance of the longest route from that airport.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.sourceairport, r.destinationairport, r.distance,
+LAST_VALUE(r.distance) OVER (
+  PARTITION BY r.sourceairport
+  ORDER BY r.distance
+  ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING <i class="conum" data-value="1"></i><b>(1)</b>
+) AS `longest_distance`
+FROM `travel-sample` AS r
+WHERE r.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "MRS",
+      "distance": 767.6526005881392,
+      "longest_distance": 1420.6731433915318,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "LYS",
+      "distance": 1015.6529968903878,
+      "longest_distance": 1420.6731433915318,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "ORY",
+      "distance": 1395.3690007167947,
+      "longest_distance": 1420.6731433915318,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "CDG",
+      "distance": 1420.6731433915318,
+      "longest_distance": 1420.6731433915318,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "AAR",
+      "distance": 99.89861063028253,
+      "longest_distance": 928.284226131001,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "OSL",
+      "distance": 352.33081791745275,
+      "longest_distance": 928.284226131001,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "LGW",
+      "distance": 928.284226131001,
+      "longest_distance": 928.284226131001,
+      "sourceairport": "AAL"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This clause specifies that the window frame should extend to the end of the window partition.
+Without this clause, the end point of the window frame would always be the current object.
+This would mean that the longest distance would always be the same as the current distance.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-lead"><a class="anchor" href="#fn-window-lead"></a>LEAD(<code>expr</code> [, <code>offset</code> [, <code>default</code> ] ] )</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-6"><a class="anchor" href="#description-6"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the value of an object at a given offset ahead of the current object position.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-6"><a class="anchor" href="#syntax-6"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>lead-function ::= LEAD '(' <a href="#fn-window-lead-args">expr</a> [ ',' <a href="#fn-window-lead-args">offset</a> [ ',' <a href="#fn-window-lead-args">default</a> ] ] ')' [ <a href="#fn-window-lead-nulls">nulls-treatment</a> ] OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-lead.png" alt="fn window lead">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-lead-args"><a class="anchor" href="#fn-window-lead-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>[Required] The value that you want to return from the offset object. <sup>[<a href="#disclaimer">1</a>]</sup></p>
+</dd>
+<dt class="hdlist1">offset</dt>
+<dd>
+<p>[Optional] A positive integer greater than 0.
+If omitted, the default is 1.</p>
+</dd>
+<dt class="hdlist1">default</dt>
+<dd>
+<p>[Optional] The value to return when the offset goes out of window scope.
+If omitted, the default is NULL.</p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="fn-window-lead-nulls"><a class="anchor" href="#fn-window-lead-nulls"></a>Nulls Treatment</h4>
+<div class="paragraph">
+<p>The <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause determines how NULL or MISSING values are treated when counting the offset:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>IGNORE NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are not included when counting the offset.</p>
+</dd>
+<dt class="hdlist1"><code>RESPECT NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are included when counting the offset.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause is omitted, the default is <code>RESPECT NULLS</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-5"><a class="anchor" href="#return-values-5"></a>Return Values</h3>
+<div class="paragraph">
+<p>The specified value from the offset object.</p>
+</div>
+<div class="paragraph">
+<p>If the offset object is out of scope, it returns the default value, or NULL if no default is specified.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-6"><a class="anchor" href="#example-6"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each airline, show each route operated by that airline, including the length of the route and the length of the next-longest route.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.airline, r.id, r.distance,
+LEAD(r.distance, 1, "No next distance") OVER (
+  PARTITION BY r.airline
+  ORDER BY r.distance NULLS LAST
+) AS `next-distance`
+FROM `travel-sample` AS r
+WHERE r.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">  [
+  {
+      "airline": "2L",
+      "distance": 770.9691328580009,
+      "id": 125,
+      "next-distance": 770.969132858001
+  },
+  {
+      "airline": "2L",
+      "distance": 770.969132858001,
+      "id": 117,
+      "next-distance": 922.7579695456559
+  },
+  {
+      "airline": "2L",
+      "distance": 922.7579695456559,
+      "id": 118,
+      "next-distance": 922.7579695456559
+  },
+  {
+      "airline": "2L",
+      "distance": 922.7579695456559,
+      "id": 126,
+      "next-distance": "No next distance"
+  },
+  {
+      "airline": "3F",
+      "distance": 23.957943869396804,
+      "id": 274,
+      "next-distance": 23.957943869396804
+  },
+  {
+      "airline": "3F",
+      "distance": 23.957943869396804,
+      "id": 276,
+      "next-distance": 26.397914084363418
+  },
+  {
+      "airline": "3F",
+      "distance": 26.397914084363418,
+      "id": 282,
+      "next-distance": 26.397914084363418
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-nth-value"><a class="anchor" href="#fn-window-nth-value"></a>NTH_VALUE(<code>expr</code>, <code>offset</code>)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-7"><a class="anchor" href="#description-7"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the requested value from an object in the current window frame, where the window frame is specified by  the <a href="window.html#window-clause" class="page">window clause</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-7"><a class="anchor" href="#syntax-7"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>nth-value-function ::= NTH_VALUE '(' <a href="#fn-window-nth-value-args">expr</a> ',' <a href="#fn-window-nth-value-args">offset</a> ')' [ <a href="#fn-window-nth-value-from">nthval-from</a> ] [ <a href="#fn-window-nth-value-nulls">nulls-treatment</a> ] OVER '(' <a href="window.html#window-clause" class="page">window-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-nth-value.png" alt="fn window nth value">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-nth-value-args"><a class="anchor" href="#fn-window-nth-value-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>[Required] The value that you want to return from the offset object in the window frame. <sup>[<a href="#disclaimer">1</a>]</sup></p>
+</dd>
+<dt class="hdlist1">offset</dt>
+<dd>
+<p>[Required] The number of the offset object within the window frame, counting from 1.</p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="fn-window-nth-value-from"><a class="anchor" href="#fn-window-nth-value-from"></a>Nth Val From</h4>
+<div class="paragraph">
+<p>The <a href="window.html#nthval-from" class="page">nth val from</a> clause determines where the function starts counting the offset.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>FROM FIRST</code></dt>
+<dd>
+<p>Offset counting starts at the first object in the window frame.
+In this case, an offset of 1 is the first object in the window frame, 2 is the second object, and so on.</p>
+</dd>
+<dt class="hdlist1"><code>FROM LAST</code></dt>
+<dd>
+<p>Offset counting starts at the last object in the window frame.
+In this case, an offset of 1 is the last object in the window frame, 2 is the second-to-last object, and so on.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="fn-window-nth-value-nulls"><a class="anchor" href="#fn-window-nth-value-nulls"></a>Nulls Treatment</h4>
+<div class="paragraph">
+<p>The <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause determines how NULL or MISSING values are treated when counting the offset:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>IGNORE NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are not included when counting the offset.</p>
+</dd>
+<dt class="hdlist1"><code>RESPECT NULLS</code></dt>
+<dd>
+<p>If the values for any objects evaluate to NULL or MISSING, those objects are included when counting the offset.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the <a href="window.html#nulls-treatment" class="page">nulls treatment</a> clause is omitted, the default is <code>RESPECT NULLS</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-6"><a class="anchor" href="#return-values-6"></a>Return Values</h3>
+<div class="paragraph">
+<p>The specified value from the offset object.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In the following cases, this function may return unpredictable results.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <a href="window.html#window-order-clause" class="page">window order clause</a> is omitted.</p>
+</li>
+<li>
+<p>If the <a href="window.html#window-frame-clause" class="page">window frame clause</a> is omitted.</p>
+</li>
+<li>
+<p>If the window frame is defined by <code>ROWS</code>, and there are tied objects in the window frame.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To make the function return deterministic results, add a <a href="window.html#window-order-clause" class="page">window order clause</a>, or add further ordering terms to the <a href="window.html#window-order-clause" class="page">window order clause</a> so that no objects are tied.</p>
+</div>
+<div class="paragraph">
+<p>If the window frame is defined by <code>RANGE</code> or <code>GROUPS</code>, and there are tied objects in the window frame, the function returns the lowest value of the input expression when counting <code>FROM FIRST</code>, or the highest value of the input expression when counting <code>FROM LAST</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="examples"><a class="anchor" href="#examples"></a>Examples</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each airport, show each route starting at that airport, including the distance of the route and the distance of the second shortest route from that airport.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.sourceairport, r.destinationairport, r.distance,
+NTH_VALUE(r.distance, 2) FROM FIRST OVER (
+  PARTITION BY r.sourceairport
+  ORDER BY r.distance
+  ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING <i class="conum" data-value="1"></i><b>(1)</b>
+) AS `shortest_distance_but_1`
+FROM `travel-sample` AS r
+WHERE r.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "MRS",
+      "distance": 767.6526005881392,
+      "shortest_distance_but_1": 1015.6529968903878,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "LYS", <i class="conum" data-value="2"></i><b>(2)</b>
+      "distance": 1015.6529968903878,
+      "shortest_distance_but_1": 1015.6529968903878,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "ORY",
+      "distance": 1395.3690007167947,
+      "shortest_distance_but_1": 1015.6529968903878,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "CDG",
+      "distance": 1420.6731433915318,
+      "shortest_distance_but_1": 1015.6529968903878,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "AAR",
+      "distance": 99.89861063028253,
+      "shortest_distance_but_1": 352.33081791745275,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "OSL", <i class="conum" data-value="2"></i><b>(2)</b>
+      "distance": 352.33081791745275,
+      "shortest_distance_but_1": 352.33081791745275,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "LGW",
+      "distance": 928.284226131001,
+      "shortest_distance_but_1": 352.33081791745275,
+      "sourceairport": "AAL"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This clause specifies that the window frame should extend to the end of the window partition.
+Without this clause, the end point of the window frame would always be the current object.
+This would mean that for the route with the shortest distance, the function would be unable to find the route with the second shortest distance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The route with the second shortest distance from this airport.</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each airport, show each route starting at that airport, including the distance of the route and the distance of the second longest route from that airport.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.sourceairport, r.destinationairport, r.distance,
+NTH_VALUE(r.distance, 2) FROM LAST OVER (
+  PARTITION BY r.sourceairport
+  ORDER BY r.distance
+  ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING <i class="conum" data-value="1"></i><b>(1)</b>
+) AS `longest_distance_but_1`
+FROM `travel-sample` AS r
+WHERE r.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "MRS",
+      "distance": 767.6526005881392,
+      "longest_distance_but_1": 1395.3690007167947,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "LYS",
+      "distance": 1015.6529968903878,
+      "longest_distance_but_1": 1395.3690007167947,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "ORY",
+      "distance": 1395.3690007167947,
+      "longest_distance_but_1": 1395.3690007167947, <i class="conum" data-value="2"></i><b>(2)</b>
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "CDG",
+      "distance": 1420.6731433915318,
+      "longest_distance_but_1": 1395.3690007167947,
+      "sourceairport": "AAE"
+  },
+  {
+      "destinationairport": "AAR",
+      "distance": 99.89861063028253,
+      "longest_distance_but_1": 352.33081791745275,
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "OSL",
+      "distance": 352.33081791745275,
+      "longest_distance_but_1": 352.33081791745275, <i class="conum" data-value="2"></i><b>(2)</b>
+      "sourceairport": "AAL"
+  },
+  {
+      "destinationairport": "LGW",
+      "distance": 928.284226131001,
+      "longest_distance_but_1": 352.33081791745275,
+      "sourceairport": "AAL"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This clause specifies that the window frame should extend to the end of the window partition.
+Without this clause, the end point of the window frame would always be the current object.
+This would mean the function would be unable to find the route with the second longest distance for routes with shorter distances.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The route with the second longest distance from this airport.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-ntile"><a class="anchor" href="#fn-window-ntile"></a>NTILE(<code>num_tiles</code>)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-8"><a class="anchor" href="#description-8"></a>Description</h3>
+<div class="paragraph">
+<p>Divides the window partition into the specified number of tiles, and allocates each object in the window partition to a tile, so that as far as possible each tile has an equal number of objects.
+When the set of objects is not equally divisible by the number of tiles, the function puts more objects into the lower-numbered tiles.
+For each object, the function returns the number of the tile into which that object was placed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-8"><a class="anchor" href="#syntax-8"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>ntile-function ::= NTILE '(' <a href="#fn-window-ntile-args">num_tiles</a> ')' OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-ntile.png" alt="fn window ntile">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-ntile-args"><a class="anchor" href="#fn-window-ntile-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">num_tiles</dt>
+<dd>
+<p>[Required] The number of tiles into which you want to divide the window partition.
+This argument can be an expression and must evaluate to a number.
+If the number is not an integer, it will be truncated.
+If the expression depends on an object, it evaluates from the first object in the window partition.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-7"><a class="anchor" href="#return-values-7"></a>Return Values</h3>
+<div class="paragraph">
+<p>An value greater than or equal to 1 and less than or equal to the number of tiles.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-7"><a class="anchor" href="#example-7"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each country, allocate each airport to one of ten tiles.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT a.airportname, a.country, NTILE(10) OVER (
+  PARTITION BY a.country
+  ORDER BY a.faa
+) AS `ntile`
+FROM `travel-sample` AS a
+WHERE a.type="airport";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "airportname": "Deaux",
+    "country": "France",
+    "ntile": 1
+  },
+  {
+    "airportname": "Peronne St Quentin",
+    "country": "France",
+    "ntile": 1
+  },
+  {
+    "airportname": "Les Loges",
+    "country": "France",
+    "ntile": 1
+  },
+...
+  {
+    "airportname": "Lyon Part-Dieu Railway",
+    "country": "France",
+    "ntile": 10
+  },
+  {
+    "airportname": "North Sea",
+    "country": "United Kingdom",
+    "ntile": 1
+  },
+...
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-percent-rank"><a class="anchor" href="#fn-window-percent-rank"></a>PERCENT_RANK()</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-9"><a class="anchor" href="#description-9"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the percentile rank of the current object – that is, the rank of the objects minus one, divided by the total number of objects in the window partition minus one.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-9"><a class="anchor" href="#syntax-9"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>percent-rank-function ::= PERCENT_RANK '()' OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-percent-rank.png" alt="fn window percent rank">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments-3"><a class="anchor" href="#arguments-3"></a>Arguments</h3>
+<div class="paragraph">
+<p>None.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-8"><a class="anchor" href="#return-values-8"></a>Return Values</h3>
+<div class="paragraph">
+<p>A number between 0 and 1.
+The higher the value, the higher the ranking.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-8"><a class="anchor" href="#example-8"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each destination airport, find the percentile rank of all routes in order of distance.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT d.id, d.destinationairport, PERCENT_RANK() OVER (
+  PARTITION BY d.destinationairport
+  ORDER BY d.distance NULLS LAST
+) AS `rank`
+FROM `travel-sample` AS d
+WHERE d.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "AAE",
+      "id": 10201,
+      "rank": 0
+  },
+  {
+      "destinationairport": "AAE",
+      "id": 10190,
+      "rank": 0.3333333333333333
+  },
+  {
+      "destinationairport": "AAE",
+      "id": 10240,
+      "rank": 0.6666666666666666
+  },
+  {
+      "destinationairport": "AAE",
+      "id": 10136,
+      "rank": 1
+  },
+  {
+      "destinationairport": "AAL",
+      "id": 14392,
+      "rank": 0
+  },
+  {
+      "destinationairport": "AAL",
+      "id": 14867,
+      "rank": 0.5
+  },
+  {
+      "destinationairport": "AAL",
+      "id": 22505,
+      "rank": 1
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-rank"><a class="anchor" href="#fn-window-rank"></a>RANK()</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-10"><a class="anchor" href="#description-10"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the rank of the current object – that is, the number of distinct objects preceding this object in the current window partition, plus one.</p>
+</div>
+<div class="paragraph">
+<p>The objects are ordered by the <a href="window.html#window-order-clause" class="page">window order clause</a>.
+If any objects are tied, they will have the same rank.</p>
+</div>
+<div class="paragraph">
+<p>When any objects have the same rank, the rank of the next object will include all preceding objects, so there may be a gap in the sequence of returned values.
+For example, if there are three objects ranked 2, the next rank is 5.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-10"><a class="anchor" href="#syntax-10"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>rank-function ::= RANK '()' OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] <a href="window.html#window-order-clause" class="page">window-order-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-rank.png" alt="fn window rank">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments-4"><a class="anchor" href="#arguments-4"></a>Arguments</h3>
+<div class="paragraph">
+<p>None.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-9"><a class="anchor" href="#return-values-9"></a>Return Values</h3>
+<div class="paragraph">
+<p>An integer, greater than or equal to 1.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-9"><a class="anchor" href="#example-9"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each country, find the rank of all airports in order of altitude.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT a.airportname, a.geo.alt, RANK() OVER (
+  PARTITION BY a.country
+  ORDER BY a.geo.alt NULLS LAST
+) AS `rank`
+FROM `travel-sample` AS a
+WHERE a.type="airport"
+LIMIT 10;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "airportname": "Croisette Heliport",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "Andernos-Les-Bains",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "La Defense Heliport",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "Marigot Bus Stop",
+    "alt": 0,
+    "rank": 1
+  },
+  {
+    "airportname": "Lille",
+    "alt": 1,
+    "rank": 5
+  },
+  {
+    "airportname": "Le Palyvestre",
+    "alt": 7,
+    "rank": 6
+  },
+  {
+    "airportname": "Frejus Saint Raphael",
+    "alt": 7,
+    "rank": 6
+  },
+  {
+    "airportname": "Calais Dunkerque",
+    "alt": 12,
+    "rank": 8
+  },
+  {
+    "airportname": "Cote D\\'Azur",
+    "alt": 12,
+    "rank": 8
+  },
+  {
+    "airportname": "Propriano",
+    "alt": 13,
+    "rank": 10
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-ratio-to-report"><a class="anchor" href="#fn-window-ratio-to-report"></a>RATIO_TO_REPORT(<code>expr</code>)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-11"><a class="anchor" href="#description-11"></a>Description</h3>
+<div class="paragraph">
+<p>Returns the fractional ratio of the specified value for each object to the sum of values for all objects in the window frame.
+If the <a href="window.html#window-frame-clause" class="page">window frame clause</a> is not specified, the fractional ratio is calculated for the whole window partition.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-11"><a class="anchor" href="#syntax-11"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>ratio-to-report-function ::= RATIO_TO_REPORT '(' <a href="#fn-window-ratio-to-report-args">expr</a> ')' OVER '(' <a href="window.html#window-clause" class="page">window-clause</a> ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-ratio-to-report.png" alt="fn window ratio to report">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fn-window-ratio-to-report-args"><a class="anchor" href="#fn-window-ratio-to-report-args"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>[Required] The value for which you want to calculate the fractional ratio. <sup>[<a href="#disclaimer">1</a>]</sup></p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-10"><a class="anchor" href="#return-values-10"></a>Return Values</h3>
+<div class="paragraph">
+<p>A number between 0 and 1, representing the fractional ratio of the value for the current object to the sum of values for all objects in the current window frame.
+The sum of values for all objects in the current window frame is 1.</p>
+</div>
+<div class="paragraph">
+<p>If the input expression does not evaluate to a number, or the sum of values for all objects is zero, it returns NULL.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-10"><a class="anchor" href="#example-10"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each destination airport, calculate the distance of each route as a fraction of the total distance of all routes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT d.id, d.destinationairport, RATIO_TO_REPORT(d.distance) OVER (
+  PARTITION BY d.destinationairport
+) AS `distance-ratio`
+FROM `travel-sample` AS d
+WHERE d.type="route" LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+      "destinationairport": "AAE",
+      "distance-ratio": 0.3088857862487639,
+      "id": 10136
+  },
+  {
+      "destinationairport": "AAE",
+      "distance-ratio": 0.22082544177013463,
+      "id": 10190
+  },
+  {
+      "destinationairport": "AAE",
+      "distance-ratio": 0.3033841055547952,
+      "id": 10240
+  },
+  {
+      "destinationairport": "AAE",
+      "distance-ratio": 0.16690466642630636,
+      "id": 10201
+  },
+  {
+      "destinationairport": "AAL",
+      "distance-ratio": 0.25521719160354467,
+      "id": 14867
+  },
+  {
+      "destinationairport": "AAL",
+      "distance-ratio": 0.6724194454614251,
+      "id": 22505
+  },
+  {
+      "destinationairport": "AAL",
+      "distance-ratio": 0.07236336293503035,
+      "id": 14392
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fn-window-row-number"><a class="anchor" href="#fn-window-row-number"></a>ROW_NUMBER()</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description-12"><a class="anchor" href="#description-12"></a>Description</h3>
+<div class="paragraph">
+<p>Returns a unique row number for every object in every window partition.
+In each window partition, the row numbering starts at 1.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="window.html#window-order-clause" class="page">window order clause</a> determines the sort order of the objects.
+If the <a href="window.html#window-order-clause" class="page">window order clause</a> is omitted, the return values may be unpredictable.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="syntax-12"><a class="anchor" href="#syntax-12"></a>Syntax</h3>
+<div class="listingblock">
+<div class="content">
+<pre>row-number-function ::= ROW_NUMBER '()'  OVER '(' [ <a href="window.html#window-partition-clause" class="page">window-partition-clause</a> ] [ <a href="window.html#window-order-clause" class="page">window-order-clause</a> ] ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/fn-window-row-number.png" alt="fn window row number">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments-5"><a class="anchor" href="#arguments-5"></a>Arguments</h3>
+<div class="paragraph">
+<p>None.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-values-11"><a class="anchor" href="#return-values-11"></a>Return Values</h3>
+<div class="paragraph">
+<p>An integer, greater than or equal to 1.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-11"><a class="anchor" href="#example-11"></a>Example</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For each destination airport, number all routes in order of distance.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT d.id, d.destinationairport, ROW_NUMBER() OVER (
+  PARTITION BY d.destinationairport
+  ORDER BY d.distance NULLS LAST
+) AS `row`
+FROM `travel-sample` AS d
+WHERE d.type="route"
+LIMIT 7;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "destinationairport": "AAE",
+    "id": 10201,
+    "row": 1
+  },
+  {
+    "destinationairport": "AAE",
+    "id": 10190,
+    "row": 2
+  },
+  {
+    "destinationairport": "AAE",
+    "id": 10240,
+    "row": 3
+  },
+  {
+    "destinationairport": "AAE",
+    "id": 10136,
+    "row": 4
+  },
+  {
+    "destinationairport": "AAL",
+    "id": 14392,
+    "row": 1
+  },
+  {
+    "destinationairport": "AAL",
+    "id": 14867,
+    "row": 2
+  },
+  {
+    "destinationairport": "AAL",
+    "id": 22505,
+    "row": 3
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<hr>
+<div class="openblock footnotes">
+<div class="content">
+<div class="paragraph footnote">
+<p><a id="disclaimer"></a>1. If the query contains the <a href="groupby.html" class="page">GROUP BY</a> clause or <a href="aggregatefun.html" class="page">aggregate functions</a>, any expressions that occur in window functions in the query must only depend on GROUP BY expressions or aggregate functions.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
