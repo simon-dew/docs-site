@@ -2891,7 +2891,7 @@
   </li>
   <li class="nav-item is-current-page is-active" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="admin.html">Query Admin API</a>
+    <a class="nav-link" href="admin.html">Admin API</a>
     </span>
   </li>
 </ul>
@@ -3187,7 +3187,7 @@
     <li class="crumb"><a href="../../rest-api/rest-intro.html">REST API reference</a></li>
     <li class="crumb"><a href="../../rest-api/rest-endpoints-all.html">REST API endpoint list</a></li>
     <li class="crumb"><a href="index.html">N1QL REST API</a></li>
-    <li class="crumb"><a href="admin.html">Query Admin API</a></li>
+    <li class="crumb"><a href="admin.html">Admin API</a></li>
   </ul>
 </nav>
 <div class="tools" role="navigation">
@@ -3202,14 +3202,33 @@
 <h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Administration REST API enables you to administer the Query service.
-The REST API enables you to retrieve statistics about the clusters and nodes running the Query service, and about queries that have been made.</p>
+<p>The Administration REST API is a secondary API provided by the Query service.
+This API enables you to retrieve statistics about the clusters and nodes running the Query service; view or specify service-level settings; and view or delete requests.</p>
+</div>
+<div class="paragraph">
+<p>The API schemes and host URLs are as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>http://node:8093/</code></p>
+</li>
+<li>
+<p><code>https://node:18093/</code> (for secure access)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>where <code class="var">node</code> is the host name or IP address of a computer running the N1QL query engine.</p>
 </div>
 <div class="sect2">
-<h3 id="uri-scheme"><a class="anchor" href="#uri-scheme"></a>URI scheme</h3>
-<div class="paragraph">
-<p><em>Host</em> : localhost:8093<br>
-<em>Schemes</em> : HTTPS, HTTP</p>
+<h3 id="consumes"><a class="anchor" href="#consumes"></a>Consumes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>application/json</code></p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
@@ -3218,9 +3237,6 @@ The REST API enables you to retrieve statistics about the clusters and nodes run
 <ul>
 <li>
 <p><code>application/json</code></p>
-</li>
-<li>
-<p><code>text/html</code></p>
 </li>
 </ul>
 </div>
@@ -3231,7 +3247,7 @@ The REST API enables you to retrieve statistics about the clusters and nodes run
 <h2 id="_paths"><a class="anchor" href="#_paths"></a>Paths</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_admin_stats_get"><a class="anchor" href="#_admin_stats_get"></a>GET /admin/stats</h3>
+<h3 id="_get_stats"><a class="anchor" href="#_get_stats"></a>GET /admin/stats</h3>
 <div class="sect3">
 <h4 id="description"><a class="anchor" href="#description"></a>Description</h4>
 <div class="paragraph">
@@ -3260,8 +3276,8 @@ The REST API enables you to retrieve statistics about the clusters and nodes run
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>An object containing all statistics.
-Each statistic has a different set of metrics.
-Statistic names and metric names are joined together by dots.</p>
+Each statistic consist of a top-level statistic name and a metric name.
+Each statistic has a different set of metrics.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><a href="#_statistics">Statistics</a></p>
@@ -3269,76 +3285,6 @@ Statistic names and metric names are joined together by dots.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="example-http-request"><a class="anchor" href="#example-http-request"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path"><a class="anchor" href="#request-path"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/stats</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response"><a class="anchor" href="#example-http-response"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200"><a class="anchor" href="#response-200"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "active_requests.count" : 0.0,
-  "at_plus.count" : 0.0,
-  "cancelled.count" : 0.0,
-  "deletes.count" : 0.0,
-  "errors.count" : 0.0,
-  "inserts.count" : 0.0,
-  "invalid_requests.count" : 0.0,
-  "mutations.count" : 0.0,
-  "prepared.15m.rate" : 0.0,
-  "prepared.1m.rate" : 0.0,
-  "prepared.5m.rate" : 0.0,
-  "prepared.count" : 0.0,
-  "prepared.mean.rate" : 0.0,
-  "queued_requests.count" : 0.0,
-  "request_rate.15m.rate" : 0.0,
-  "request_rate.1m.rate" : 0.0,
-  "request_rate.5m.rate" : 0.0,
-  "request_rate.count" : 0.0,
-  "request_rate.mean.rate" : 0.0,
-  "request_time.count" : 0.0,
-  "request_timer.15m.rate" : 0.0,
-  "request_timer.1m.rate" : 0.0,
-  "request_timer.5m.rate" : 0.0,
-  "request_timer.75%" : 0.0,
-  "request_timer.95%" : 0.0,
-  "request_timer.99%" : 0.0,
-  "request_timer.99.9%" : 0.0,
-  "request_timer.count" : 0.0,
-  "request_timer.max" : 0.0,
-  "request_timer.mean" : 0.0,
-  "request_timer.mean.rate" : 0.0,
-  "request_timer.median" : 0.0,
-  "request_timer.min" : 0.0,
-  "request_timer.stddev" : 0.0,
-  "requests.count" : 0.0,
-  "requests_1000ms.count" : 0.0,
-  "requests_250ms.count" : 0.0,
-  "requests_5000ms.count" : 0.0,
-  "requests_500ms.count" : 0.0,
-  "result_count.count" : 0.0,
-  "result_size.count" : 0.0,
-  "scan_plus.count" : 0.0,
-  "selects.count" : 0.0,
-  "service_time.count" : 0.0,
-  "unbounded.count" : 0.0,
-  "updates.count" : 0.0,
-  "warnings.count" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -3378,10 +3324,10 @@ Statistic names and metric names are joined together by dots.</p>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>The name of a statistic.
 Only top-level statistic names can be used.
-You cannot use a dotted statistic name.</p>
+You cannot specify a metric.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>string</p>
+<p>enum (active_requests, at_plus, cancelled, deletes, errors, inserts, invalid_requests, mutations, prepared, queued_requests, request_rate, request_time, request_timer, requests, requests_1000ms, requests_250ms, requests_5000ms, requests_500ms, result_count, result_size, scan_plus, selects, service_time, unbounded, updates, warnings)</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -3418,43 +3364,6 @@ Each statistic has a different set of metrics.</p>
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-2"><a class="anchor" href="#example-http-request-2"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-2"><a class="anchor" href="#request-path-2"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/stats/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-2"><a class="anchor" href="#example-http-response-2"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-2"><a class="anchor" href="#response-200-2"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "count" : 0.0,
-  "15m.rate" : 0.0,
-  "1m.rate" : 0.0,
-  "5m.rate" : 0.0,
-  "mean.rate" : 0.0,
-  "max" : 0.0,
-  "mean" : 0.0,
-  "median" : 0.0,
-  "min" : 0.0,
-  "stddev" : 0.0,
-  "75%" : 0.0,
-  "95%" : 0.0,
-  "99%" : 0.0,
-  "99.9%" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_vitals_get"><a class="anchor" href="#_admin_vitals_get"></a>GET /admin/vitals</h3>
@@ -3471,7 +3380,9 @@ This information can be very useful to assess the current workload and performan
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#vitals" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#vitals" class="page">Get System Vitals</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -3507,53 +3418,6 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#vitals" class=
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-3"><a class="anchor" href="#example-http-request-3"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-3"><a class="anchor" href="#request-path-3"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/vitals</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-3"><a class="anchor" href="#example-http-response-3"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-3"><a class="anchor" href="#response-200-3"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "uptime" : "string",
-  "local.time" : "string",
-  "version" : "string",
-  "total.threads" : 0.0,
-  "cores" : 0.0,
-  "gc.num" : 0.0,
-  "gc.pause.time" : "string",
-  "gc.pause.percent" : 0.0,
-  "memory.usage" : 0.0,
-  "memory.total" : 0.0,
-  "memory.system" : 0.0,
-  "cpu.user.percent" : 0.0,
-  "cpu.sys.percent" : 0.0,
-  "request.completed.count" : 0.0,
-  "request.active.count" : 0.0,
-  "request.per.sec.1min" : 0.0,
-  "request.per.sec.5min" : 0.0,
-  "request.per.sec.15min" : 0.0,
-  "request_time.mean" : "string",
-  "request_time.median" : "string",
-  "request_time.80percentile" : "string",
-  "request_time.95percentile" : "string",
-  "request_time.99percentile" : "string",
-  "request.prepared.percent" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_prepareds_get"><a class="anchor" href="#_admin_prepareds_get"></a>GET /admin/prepareds</h3>
@@ -3569,7 +3433,9 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#vitals" class=
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" class="page">Get Prepared Statements</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -3605,38 +3471,9 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" 
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-4"><a class="anchor" href="#example-http-request-4"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-4"><a class="anchor" href="#request-path-4"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/prepareds</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-4"><a class="anchor" href="#example-http-response-4"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-4"><a class="anchor" href="#response-200-4"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[ {
-  "encoded_plan" : "string",
-  "featureControls" : 0.0,
-  "indexApiVersion" : 0.0,
-  "name" : "string",
-  "statement" : "string",
-  "uses" : 0.0
-} ]</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_admin_prepareds_name_get"><a class="anchor" href="#_admin_prepareds_name_get"></a>GET /admin/prepareds/{name}</h3>
+<h3 id="_get_prepared"><a class="anchor" href="#_get_prepared"></a>GET /admin/prepareds/{name}</h3>
 <div class="sect3">
 <h4 id="description-5"><a class="anchor" href="#description-5"></a>Description</h4>
 <div class="paragraph">
@@ -3649,7 +3486,9 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" class="page">Get Prepared Statements</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -3722,38 +3561,9 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-5"><a class="anchor" href="#example-http-request-5"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-5"><a class="anchor" href="#request-path-5"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/prepareds/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-5"><a class="anchor" href="#example-http-response-5"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-5"><a class="anchor" href="#response-200-5"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "encoded_plan" : "string",
-  "featureControls" : 0.0,
-  "indexApiVersion" : 0.0,
-  "name" : "string",
-  "statement" : "string",
-  "uses" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_admin_prepareds_name_delete"><a class="anchor" href="#_admin_prepareds_name_delete"></a>DELETE /admin/prepareds/{name}</h3>
+<h3 id="_delete_prepared"><a class="anchor" href="#_delete_prepared"></a>DELETE /admin/prepareds/{name}</h3>
 <div class="sect3">
 <h4 id="description-6"><a class="anchor" href="#description-6"></a>Description</h4>
 <div class="paragraph">
@@ -3766,7 +3576,9 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-prepared" class="page">Delete Prepared Statement</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -3850,36 +3662,6 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-6"><a class="anchor" href="#example-http-request-6"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-6"><a class="anchor" href="#request-path-6"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/prepareds/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-6"><a class="anchor" href="#example-http-response-6"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-6"><a class="anchor" href="#response-200-6"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">true</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="response-500"><a class="anchor" href="#response-500"></a>Response 500</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"object"</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_active_requests_get"><a class="anchor" href="#_admin_active_requests_get"></a>GET /admin/active_requests</h3>
@@ -3895,7 +3677,9 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req" class="page">Get Active Requests</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -3931,48 +3715,9 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-7"><a class="anchor" href="#example-http-request-7"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-7"><a class="anchor" href="#request-path-7"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/active_requests</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-7"><a class="anchor" href="#example-http-response-7"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-7"><a class="anchor" href="#response-200-7"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[ {
-  "clientContextID" : "string",
-  "elapsedTime" : "string",
-  "errorCount" : 0.0,
-  "phaseCounts" : "object",
-  "phaseOperators" : "object",
-  "remoteAddr" : "string",
-  "requestId" : "string",
-  "requestTime" : "string",
-  "resultCount" : 0.0,
-  "resultSize" : 0.0,
-  "scanConsistency" : "string",
-  "serviceTime" : "string",
-  "state" : "string",
-  "statement" : "string",
-  "userAgent" : "string",
-  "users" : "string"
-} ]</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_admin_active_requests_request_get"><a class="anchor" href="#_admin_active_requests_request_get"></a>GET /admin/active_requests/{request}</h3>
+<h3 id="_get_active_request"><a class="anchor" href="#_get_active_request"></a>GET /admin/active_requests/{request}</h3>
 <div class="sect3">
 <h4 id="description-8"><a class="anchor" href="#description-8"></a>Description</h4>
 <div class="paragraph">
@@ -3985,7 +3730,9 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req" class="page">Get Active Requests</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -4058,48 +3805,9 @@ This is the requestID that was assigned automatically when the statement was cre
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-8"><a class="anchor" href="#example-http-request-8"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-8"><a class="anchor" href="#request-path-8"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/active_requests/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-8"><a class="anchor" href="#example-http-response-8"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-8"><a class="anchor" href="#response-200-8"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "clientContextID" : "string",
-  "elapsedTime" : "string",
-  "errorCount" : 0.0,
-  "phaseCounts" : "object",
-  "phaseOperators" : "object",
-  "remoteAddr" : "string",
-  "requestId" : "string",
-  "requestTime" : "string",
-  "resultCount" : 0.0,
-  "resultSize" : 0.0,
-  "scanConsistency" : "string",
-  "serviceTime" : "string",
-  "state" : "string",
-  "statement" : "string",
-  "userAgent" : "string",
-  "users" : "string"
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_admin_active_requests_request_delete"><a class="anchor" href="#_admin_active_requests_request_delete"></a>DELETE /admin/active_requests/{request}</h3>
+<h3 id="_delete_active_request"><a class="anchor" href="#_delete_active_request"></a>DELETE /admin/active_requests/{request}</h3>
 <div class="sect3">
 <h4 id="description-9"><a class="anchor" href="#description-9"></a>Description</h4>
 <div class="paragraph">
@@ -4112,7 +3820,9 @@ This is the requestID that was assigned automatically when the statement was cre
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-active-req" class="page">Terminate an Active Request</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -4176,25 +3886,25 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>200</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>PLACEHOLDER</p>
+<p>True if the active request was successfully terminated.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>No Content</p>
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>500</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Returns an error message if the active request could not be found.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>object</p>
 </div></div></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="example-http-request-9"><a class="anchor" href="#example-http-request-9"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-9"><a class="anchor" href="#request-path-9"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/active_requests/string</pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -4202,7 +3912,28 @@ This is the requestID that was assigned automatically when the statement was cre
 <div class="sect3">
 <h4 id="description-10"><a class="anchor" href="#description-10"></a>Description</h4>
 <div class="paragraph">
-<p>Internal</p>
+<p>Returns all prepared index statements.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Use <a href="#_get_prepared">GET /admin/prepareds/{name}</a> to get information about a prepared index statement.</p>
+</li>
+<li>
+<p>Use <a href="#_delete_prepared">DELETE /admin/prepareds/{name}</a> to delete a prepared index statement.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -4226,25 +3957,14 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>200</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>PLACEHOLDER</p>
+<p>An array of strings, each of which is the name of a prepared index statement.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>No Content</p>
+<p>&lt; string &gt; array</p>
 </div></div></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="example-http-request-10"><a class="anchor" href="#example-http-request-10"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-10"><a class="anchor" href="#request-path-10"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/indexes/prepareds</pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -4252,7 +3972,28 @@ This is the requestID that was assigned automatically when the statement was cre
 <div class="sect3">
 <h4 id="description-11"><a class="anchor" href="#description-11"></a>Description</h4>
 <div class="paragraph">
-<p>Internal</p>
+<p>Returns all active index requests.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Use <a href="#_get_active_request">GET /admin/active_requests/{request}</a> to get information about an active index request.</p>
+</li>
+<li>
+<p>Use <a href="#_delete_active_request">DELETE /admin/active_requests/{request}</a> to terminate an active index request.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -4276,25 +4017,14 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>200</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>PLACEHOLDER</p>
+<p>An array of strings, each of which is the requestID of an active index request.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>No Content</p>
+<p>&lt; string (uuid) &gt; array</p>
 </div></div></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="example-http-request-11"><a class="anchor" href="#example-http-request-11"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-11"><a class="anchor" href="#request-path-11"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/indexes/active_requests</pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -4302,7 +4032,28 @@ This is the requestID that was assigned automatically when the statement was cre
 <div class="sect3">
 <h4 id="description-12"><a class="anchor" href="#description-12"></a>Description</h4>
 <div class="paragraph">
-<p>Internal</p>
+<p>Returns all completed index requests.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Use <a href="#_get_completed_request">GET /admin/completed_requests/{request}</a> to get information about a completed index request.</p>
+</li>
+<li>
+<p>Use <a href="#_delete_completed_request">DELETE /admin/completed_requests/{request}</a> to purge a completed index request.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -4326,25 +4077,14 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>200</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>PLACEHOLDER</p>
+<p>An array of strings, each of which is the requestID of a completed index request.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>No Content</p>
+<p>&lt; string (uuid) &gt; array</p>
 </div></div></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="example-http-request-12"><a class="anchor" href="#example-http-request-12"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-12"><a class="anchor" href="#request-path-12"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/indexes/completed_requests</pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -4376,7 +4116,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>302</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Redirects to the <a href="#_admin_stats_get">GET /admin/stats</a> endpoint.</p>
+<p>Redirects to the <a href="#_get_stats">GET /admin/stats</a> endpoint.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>text/html</p>
@@ -4386,12 +4126,12 @@ This is the requestID that was assigned automatically when the statement was cre
 </table>
 </div>
 <div class="sect3">
-<h4 id="example-http-request-13"><a class="anchor" href="#example-http-request-13"></a>Example HTTP request</h4>
+<h4 id="example-http-response"><a class="anchor" href="#example-http-response"></a>Example HTTP response</h4>
 <div class="sect4">
-<h5 id="request-path-13"><a class="anchor" href="#request-path-13"></a>Request path</h5>
+<h5 id="response-302"><a class="anchor" href="#response-302"></a>Response 302</h5>
 <div class="listingblock">
 <div class="content">
-<pre>/debug/vars</pre>
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;a href="/admin/stats"&gt;Found&lt;/a&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -4436,23 +4176,14 @@ This is the requestID that was assigned automatically when the statement was cre
 </table>
 </div>
 <div class="sect3">
-<h4 id="example-http-request-14"><a class="anchor" href="#example-http-request-14"></a>Example HTTP request</h4>
+<h4 id="example-http-response-2"><a class="anchor" href="#example-http-response-2"></a>Example HTTP response</h4>
 <div class="sect4">
-<h5 id="request-path-14"><a class="anchor" href="#request-path-14"></a>Request path</h5>
+<h5 id="response-200"><a class="anchor" href="#response-200"></a>Response 200</h5>
 <div class="listingblock">
 <div class="content">
-<pre>/admin/ping</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-9"><a class="anchor" href="#example-http-response-9"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-9"><a class="anchor" href="#response-200-9"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"object"</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "application:json" : { }
+}</code></pre>
 </div>
 </div>
 </div>
@@ -4496,36 +4227,6 @@ This is the requestID that was assigned automatically when the statement was cre
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-15"><a class="anchor" href="#example-http-request-15"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-15"><a class="anchor" href="#request-path-15"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/config</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-10"><a class="anchor" href="#example-http-response-10"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-10"><a class="anchor" href="#response-200-10"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "cluster" : "string",
-  "name" : "string",
-  "queryEndpoint" : "string",
-  "adminEndpoint" : "string",
-  "querySecure" : "string",
-  "adminSecure" : "string",
-  "options" : "string"
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_settings_get"><a class="anchor" href="#_admin_settings_get"></a>GET /admin/settings</h3>
@@ -4541,7 +4242,9 @@ This is the requestID that was assigned automatically when the statement was cre
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../settings/query-settings.html" class="page">Query Settings</a> for more information and examples.
+<div class="paragraph">
+<p>Refer to <a href="../../settings/query-settings.html" class="page">Query Settings</a> for more information and examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -4577,49 +4280,6 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-16"><a class="anchor" href="#example-http-request-16"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-16"><a class="anchor" href="#request-path-16"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/settings</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-11"><a class="anchor" href="#example-http-response-11"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-11"><a class="anchor" href="#response-200-11"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "completed-limit" : 0.0,
-  "completed-threshold" : 0.0,
-  "controls" : true,
-  "cpuprofile" : "string",
-  "debug" : true,
-  "keep-alive-length" : 0.0,
-  "loglevel" : "string",
-  "max-index-api" : 0.0,
-  "max-parallelism" : 0.0,
-  "memprofile" : "string",
-  "n1ql-feat-ctrl" : 0.0,
-  "pipeline-batch" : 0.0,
-  "pipeline-cap" : 0.0,
-  "prepared-limit" : 0.0,
-  "pretty" : true,
-  "profile" : "string",
-  "request-size-cap" : 0.0,
-  "scan-cap" : 0.0,
-  "servicers" : 0.0,
-  "timeout" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_settings_post"><a class="anchor" href="#_admin_settings_post"></a>POST /admin/settings</h3>
@@ -4635,22 +4295,49 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../settings/query-settings.html" class="page">Query Settings</a> for more information and examples.
+<div class="paragraph">
+<p>Refer to <a href="../../settings/query-settings.html" class="page">Query Settings</a> for more information and examples.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="body-parameter"><a class="anchor" href="#body-parameter"></a>Body parameter</h4>
-<div class="paragraph">
+<h4 id="parameters-6"><a class="anchor" href="#parameters-6"></a>Parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 16.6666%;">
+<col style="width: 50%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>Body</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>Settings</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>An object specifying service-level query settings.</p>
-</div>
-<div class="paragraph">
-<p><em>Name</em> : Settings<br>
-<em>Flags</em> : optional<br>
-<em>Type</em> : <a href="#_settings">Settings</a></p>
-</div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><a href="#_settings">Settings</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="responses-17"><a class="anchor" href="#responses-17"></a>Responses</h4>
@@ -4681,88 +4368,6 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="consumes"><a class="anchor" href="#consumes"></a>Consumes</h4>
-<div class="ulist">
-<ul>
-<li>
-<p><code>application/json</code></p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-request-17"><a class="anchor" href="#example-http-request-17"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-17"><a class="anchor" href="#request-path-17"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/settings</pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="request-body"><a class="anchor" href="#request-body"></a>Request body</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "completed-limit" : 0.0,
-  "completed-threshold" : 0.0,
-  "controls" : true,
-  "cpuprofile" : "string",
-  "debug" : true,
-  "keep-alive-length" : 0.0,
-  "loglevel" : "string",
-  "max-index-api" : 0.0,
-  "max-parallelism" : 0.0,
-  "memprofile" : "string",
-  "n1ql-feat-ctrl" : 0.0,
-  "pipeline-batch" : 0.0,
-  "pipeline-cap" : 0.0,
-  "prepared-limit" : 0.0,
-  "pretty" : true,
-  "profile" : "string",
-  "request-size-cap" : 0.0,
-  "scan-cap" : 0.0,
-  "servicers" : 0.0,
-  "timeout" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-12"><a class="anchor" href="#example-http-response-12"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-12"><a class="anchor" href="#response-200-12"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "completed-limit" : 0.0,
-  "completed-threshold" : 0.0,
-  "controls" : true,
-  "cpuprofile" : "string",
-  "debug" : true,
-  "keep-alive-length" : 0.0,
-  "loglevel" : "string",
-  "max-index-api" : 0.0,
-  "max-parallelism" : 0.0,
-  "memprofile" : "string",
-  "n1ql-feat-ctrl" : 0.0,
-  "pipeline-batch" : 0.0,
-  "pipeline-cap" : 0.0,
-  "prepared-limit" : 0.0,
-  "pretty" : true,
-  "profile" : "string",
-  "request-size-cap" : 0.0,
-  "scan-cap" : 0.0,
-  "servicers" : 0.0,
-  "timeout" : 0.0
-}</code></pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -4803,34 +4408,6 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-18"><a class="anchor" href="#example-http-request-18"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-18"><a class="anchor" href="#request-path-18"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/clusters</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-13"><a class="anchor" href="#example-http-response-13"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-13"><a class="anchor" href="#response-200-13"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[ {
-  "name" : "string",
-  "datastore" : "string",
-  "configstore" : "string",
-  "accountstore" : "string",
-  "version" : "string"
-} ]</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_clusters_cluster_get"><a class="anchor" href="#_admin_clusters_cluster_get"></a>GET /admin/clusters/{cluster}</h3>
@@ -4841,7 +4418,7 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </div>
 </div>
 <div class="sect3">
-<h4 id="parameters-6"><a class="anchor" href="#parameters-6"></a>Parameters</h4>
+<h4 id="parameters-7"><a class="anchor" href="#parameters-7"></a>Parameters</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -4906,34 +4483,6 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-19"><a class="anchor" href="#example-http-request-19"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-19"><a class="anchor" href="#request-path-19"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/clusters/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-14"><a class="anchor" href="#example-http-response-14"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-14"><a class="anchor" href="#response-200-14"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "name" : "string",
-  "datastore" : "string",
-  "configstore" : "string",
-  "accountstore" : "string",
-  "version" : "string"
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_clusters_cluster_nodes_get"><a class="anchor" href="#_admin_clusters_cluster_nodes_get"></a>GET /admin/clusters/{cluster}/nodes</h3>
@@ -4944,7 +4493,7 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </div>
 </div>
 <div class="sect3">
-<h4 id="parameters-7"><a class="anchor" href="#parameters-7"></a>Parameters</h4>
+<h4 id="parameters-8"><a class="anchor" href="#parameters-8"></a>Parameters</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -5009,36 +4558,6 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-20"><a class="anchor" href="#example-http-request-20"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-20"><a class="anchor" href="#request-path-20"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/clusters/string/nodes</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-15"><a class="anchor" href="#example-http-response-15"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-15"><a class="anchor" href="#response-200-15"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[ {
-  "cluster" : "string",
-  "name" : "string",
-  "queryEndpoint" : "string",
-  "adminEndpoint" : "string",
-  "querySecure" : "string",
-  "adminSecure" : "string",
-  "options" : "string"
-} ]</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_clusters_cluster_nodes_node_get"><a class="anchor" href="#_admin_clusters_cluster_nodes_node_get"></a>GET /admin/clusters/{cluster}/nodes/{node}</h3>
@@ -5049,7 +4568,7 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </div>
 </div>
 <div class="sect3">
-<h4 id="parameters-8"><a class="anchor" href="#parameters-8"></a>Parameters</h4>
+<h4 id="parameters-9"><a class="anchor" href="#parameters-9"></a>Parameters</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -5129,36 +4648,6 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-21"><a class="anchor" href="#example-http-request-21"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-21"><a class="anchor" href="#request-path-21"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/clusters/string/nodes/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-16"><a class="anchor" href="#example-http-response-16"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-16"><a class="anchor" href="#response-200-16"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "cluster" : "string",
-  "name" : "string",
-  "queryEndpoint" : "string",
-  "adminEndpoint" : "string",
-  "querySecure" : "string",
-  "adminSecure" : "string",
-  "options" : "string"
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_admin_completed_requests_get"><a class="anchor" href="#_admin_completed_requests_get"></a>GET /admin/completed_requests</h3>
@@ -5174,7 +4663,9 @@ Refer to <a href="../../settings/query-settings.html" class="page">Query Setting
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Get Completed Requests</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -5210,48 +4701,9 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-22"><a class="anchor" href="#example-http-request-22"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-22"><a class="anchor" href="#request-path-22"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/completed_requests</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-17"><a class="anchor" href="#example-http-response-17"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-17"><a class="anchor" href="#response-200-17"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[ {
-  "clientContextID" : "string",
-  "elapsedTime" : "string",
-  "errorCount" : 0.0,
-  "phaseCounts" : "object",
-  "phaseOperators" : "object",
-  "remoteAddr" : "string",
-  "requestId" : "string",
-  "requestTime" : "string",
-  "resultCount" : 0.0,
-  "resultSize" : 0.0,
-  "scanConsistency" : "string",
-  "serviceTime" : "string",
-  "state" : "string",
-  "statement" : "string",
-  "userAgent" : "string",
-  "users" : "string"
-} ]</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_admin_completed_requests_request_get"><a class="anchor" href="#_admin_completed_requests_request_get"></a>GET /admin/completed_requests/{request}</h3>
+<h3 id="_get_completed_request"><a class="anchor" href="#_get_completed_request"></a>GET /admin/completed_requests/{request}</h3>
 <div class="sect3">
 <h4 id="description-23"><a class="anchor" href="#description-23"></a>Description</h4>
 <div class="paragraph">
@@ -5264,14 +4716,16 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Get Completed Requests</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="parameters-9"><a class="anchor" href="#parameters-9"></a>Parameters</h4>
+<h4 id="parameters-10"><a class="anchor" href="#parameters-10"></a>Parameters</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -5337,48 +4791,9 @@ This is the requestID that was assigned automatically when the statement was cre
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-23"><a class="anchor" href="#example-http-request-23"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-23"><a class="anchor" href="#request-path-23"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/completed_requests/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-18"><a class="anchor" href="#example-http-response-18"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-18"><a class="anchor" href="#response-200-18"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "clientContextID" : "string",
-  "elapsedTime" : "string",
-  "errorCount" : 0.0,
-  "phaseCounts" : "object",
-  "phaseOperators" : "object",
-  "remoteAddr" : "string",
-  "requestId" : "string",
-  "requestTime" : "string",
-  "resultCount" : 0.0,
-  "resultSize" : 0.0,
-  "scanConsistency" : "string",
-  "serviceTime" : "string",
-  "state" : "string",
-  "statement" : "string",
-  "userAgent" : "string",
-  "users" : "string"
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_admin_completed_requests_request_delete"><a class="anchor" href="#_admin_completed_requests_request_delete"></a>DELETE /admin/completed_requests/{request}</h3>
+<h3 id="_delete_completed_request"><a class="anchor" href="#_delete_completed_request"></a>DELETE /admin/completed_requests/{request}</h3>
 <div class="sect3">
 <h4 id="description-24"><a class="anchor" href="#description-24"></a>Description</h4>
 <div class="paragraph">
@@ -5391,14 +4806,16 @@ This is the requestID that was assigned automatically when the statement was cre
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Monitor Queries</a> for examples.
+<div class="paragraph">
+<p>Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Purging the Completed Requests</a> for examples.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="parameters-10"><a class="anchor" href="#parameters-10"></a>Parameters</h4>
+<h4 id="parameters-11"><a class="anchor" href="#parameters-11"></a>Parameters</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -5475,36 +4892,6 @@ This is the requestID that was assigned automatically when the statement was cre
 </tbody>
 </table>
 </div>
-<div class="sect3">
-<h4 id="example-http-request-24"><a class="anchor" href="#example-http-request-24"></a>Example HTTP request</h4>
-<div class="sect4">
-<h5 id="request-path-24"><a class="anchor" href="#request-path-24"></a>Request path</h5>
-<div class="listingblock">
-<div class="content">
-<pre>/admin/completed_requests/string</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="example-http-response-19"><a class="anchor" href="#example-http-response-19"></a>Example HTTP response</h4>
-<div class="sect4">
-<h5 id="response-200-19"><a class="anchor" href="#response-200-19"></a>Response 200</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">true</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="response-500-2"><a class="anchor" href="#response-500-2"></a>Response 500</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"object"</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -5533,8 +4920,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The URL of the accountstore.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The URL of the accountstore.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5546,8 +4932,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The URL of the configstore.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The URL of the configstore.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5559,8 +4944,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The URL of the datastore.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The URL of the datastore.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5572,8 +4956,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The name of the cluster.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The name of the cluster.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5584,212 +4967,9 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>version</strong><br>
 <em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
-</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_metrics"><a class="anchor" href="#_metrics"></a>Metrics</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 61.1111%;">
-<col style="width: 22.2223%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-middle">Name</th>
-<th class="tableblock halign-left valign-middle">Description</th>
-<th class="tableblock halign-left valign-middle">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>15m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>15-minute exponentially weighted moving average.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>1m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>1-minute exponentially weighted moving average.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>5m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>5-minute exponentially weighted moving average.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>75%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The 75th percentile.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>95%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The 95th percentile.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>99%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The 99th percentile.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>99.9%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The 99.9th percentile.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>A single value that represents the current state.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>max</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The maximum value.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>mean</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The mean value.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>mean.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Mean rate since the query service started.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>median</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The median value.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>min</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The minimum value.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>stddev</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The standard deviation.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -5817,8 +4997,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The HTTP URL of the admin endpoint.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The HTTP URL of the admin endpoint.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5830,8 +5009,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The HTTPS URL of the admin endpoint.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The HTTPS URL of the admin endpoint.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5843,8 +5021,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The name of the cluster.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The name of the cluster.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5856,8 +5033,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The URL of the node, including port number.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The URL of the node, including port number.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5868,9 +5044,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <p><strong>options</strong><br>
 <em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
-</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
 </div></div></td>
@@ -5881,8 +5055,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The HTTP URL of the query endpoint.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The HTTP URL of the query endpoint.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5894,8 +5067,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The HTTPS URL of the query endpoint.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The HTTPS URL of the query endpoint.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5926,8 +5098,7 @@ This is the requestID that was assigned automatically when the statement was cre
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The opaque ID or context provided by the client.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The opaque ID or context provided by the client.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string (uuid)</p>
@@ -5940,8 +5111,7 @@ This is the requestID that was assigned automatically when the statement was cre
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>The time taken from when the request was acknowledged by the service to when the request was completed.
-It includes the time taken by the service to schedule the request.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+It includes the time taken by the service to schedule the request.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -5953,8 +5123,7 @@ It includes the time taken by the service to schedule the request.<br>
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Total number of errors encountered while executing the query.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Total number of errors encountered while executing the query.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -5967,8 +5136,7 @@ It includes the time taken by the service to schedule the request.<br>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>Count of documents processed at selective phases involved in the query execution.
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class="page">Attribute Profile in Query Response</a> for more details and examples.<br>
-<strong>Example</strong> : <code>"object"</code></p>
+Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class="page">Attribute Profile in Query Response</a> for more details and examples.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>object</p>
@@ -5981,8 +5149,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>Indicates the number of each kind of query operators involved in different phases of the query processing.
-Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class="page">Attribute Profile in Query Response</a> for more details and examples.<br>
-<strong>Example</strong> : <code>"object"</code></p>
+Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class="page">Attribute Profile in Query Response</a> for more details and examples.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>object</p>
@@ -5994,8 +5161,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>IP address and port number of the client application, from where the query is received.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>IP address and port number of the client application, from where the query is received.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6007,8 +5173,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Unique request ID internally generated for the query.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>Unique request ID internally generated for the query.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string (uuid)</p>
@@ -6020,8 +5185,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Timestamp when the query is received.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>Timestamp when the query is received.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string (date-time)</p>
@@ -6033,8 +5197,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Total number of documents returned in the query result.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Total number of documents returned in the query result.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -6046,8 +5209,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Total number of bytes returned in the query result.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Total number of bytes returned in the query result.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -6059,8 +5221,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The value of the query setting Scan Consistency used for the query.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The value of the query setting Scan Consistency used for the query.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6072,8 +5233,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Total amount of calendar time taken to complete the query.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>Total amount of calendar time taken to complete the query.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string (duration)</p>
@@ -6085,8 +5245,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The state of the query execution, such as completed, in progress, cancelled.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The state of the query execution, such as completed, running, cancelled.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6098,8 +5257,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The N1QL query statement being executed.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The N1QL query statement being executed.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6111,8 +5269,7 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Name of the client application or program that issued the query.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>Name of the client application or program that issued the query.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6124,293 +5281,10 @@ Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#profile" class
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Username with whose privileges the query is run.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>Username with whose privileges the query is run.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_settings"><a class="anchor" href="#_settings"></a>Settings</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 61.1111%;">
-<col style="width: 22.2223%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-middle">Name</th>
-<th class="tableblock halign-left valign-middle">Description</th>
-<th class="tableblock halign-left valign-middle">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>completed-limit</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum number of completed requests.
-As new completed requests are added, old ones are removed.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>completed-threshold</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Cache completed query lasting longer than this many milliseconds.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>controls</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Specifies if there should be a controls section returned with the request results.<br>
-<strong>Example</strong> : <code>true</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>boolean</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>cpuprofile</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The absolute path and filename to write the CPU profile to a local file.<br>
-<strong>Example</strong> : <code>"string"</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>string</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>debug</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Use debug mode.<br>
-<strong>Example</strong> : <code>true</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>boolean</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>keep-alive-length</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum size of buffered result.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>loglevel</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Log level used in the logger.<br>
-<strong>Example</strong> : <code>"string"</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>string</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>max-index-api</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The total number of N1QL errors returned so far.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>max-parallelism</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum number of index partitions, for computing aggregation in parallel.
-For more information, refer to <a href="../n1ql-language-reference/index-partitioning.html#max_parallelism" class="page">Max Parallelism</a>.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>memprofile</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Filename to write the diagnostic memory usage log.<br>
-<strong>Example</strong> : <code>"string"</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>string</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>n1ql-feat-ctrl</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>N1QL feature control.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>pipeline-batch</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Controls the number of items execution operators can batch for Fetch from the KV.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>pipeline-cap</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum number of items each execution operator can buffer between various operators.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>prepared-limit</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum number of prepared statements in the cache.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>pretty</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Specifies whether query results are returned in pretty format.<br>
-<strong>Example</strong> : <code>true</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>boolean</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>profile</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Specifies if there should be a profile section returned with the request results.<br>
-<strong>Example</strong> : <code>"string"</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>string</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request-size-cap</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum size of a request.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>scan-cap</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum buffered channel size between the indexer client and the query service for index scans.
-This parameter controls when to use scan backfill.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>servicers</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The number of service threads for the query.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>timeout</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Maximum time to spend on the request before timing out.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -6438,7 +5312,7 @@ This parameter controls when to use scan backfill.<br>
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>The full prepared statement in encoded format.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6449,9 +5323,7 @@ This parameter controls when to use scan backfill.<br>
 <p><strong>featureControls</strong><br>
 <em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
 </div></div></td>
@@ -6461,9 +5333,7 @@ This parameter controls when to use scan backfill.<br>
 <p><strong>indexApiVersion</strong><br>
 <em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
 </div></div></td>
@@ -6475,8 +5345,7 @@ This parameter controls when to use scan backfill.<br>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>The name of the prepared statement.
-This may be a UUID that was assigned automatically, or a name that was user-specified when the statement was created.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+This may be a UUID that was assigned automatically, or a name that was user-specified when the statement was created.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6488,8 +5357,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The text of the N1QL query.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>The text of the N1QL query.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -6500,603 +5368,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <p><strong>uses</strong><br>
 <em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_statistics"><a class="anchor" href="#_statistics"></a>Statistics</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 61.1111%;">
-<col style="width: 22.2223%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-middle">Name</th>
-<th class="tableblock halign-left valign-middle">Description</th>
-<th class="tableblock halign-left valign-middle">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>active_requests.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>at_plus.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>cancelled.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>deletes.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>errors.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The total number of N1QL errors returned so far.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>inserts.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>invalid_requests.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Number of requests for unsupported endpoints per second.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>mutations.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>prepared.15m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>prepared.1m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>prepared.5m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>prepared.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>prepared.mean.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>queued_requests.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_rate.15m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_rate.1m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_rate.5m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_rate.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_rate.mean.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_time.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The average end-to-end time to process a query in seconds.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.15m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.1m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.5m.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.75%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.95%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.99%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.99.9%</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.max</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.mean</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.mean.rate</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.median</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.min</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>request_timer.stddev</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>requests.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Total number of N1QL requests processed per second.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>requests_1000ms.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Number of queries that take longer than 1000ms.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>requests_250ms.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Number of queries that take longer than 250ms.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>requests_5000ms.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Number of queries that take longer than 5000ms.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>requests_500ms.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Number of queries that take longer than 500ms.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>result_count.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The average number of results (documents) returned by a query.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>result_size.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>scan_plus.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>selects.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Total number of SELECT requests processed per second.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>service_time.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>unbounded.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>updates.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>number</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>warnings.count</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>The total number of N1QL warnings returned so far.<br>
-<strong>Example</strong> : <code>0.0</code></p>
-</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
 </div></div></td>
@@ -7126,7 +5398,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Number of logical cores.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7138,8 +5410,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>CPU usage.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>CPU usage.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7151,8 +5422,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>CPU usage.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>CPU usage.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7164,8 +5434,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Garbage collection.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Garbage collection.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7177,8 +5446,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Garbage collection.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Garbage collection.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7190,8 +5458,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Garbage collection.<br>
-<strong>Example</strong> : <code>"string"</code></p>
+<p>Garbage collection.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7203,7 +5470,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>The local time of the query engine.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7215,8 +5482,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Memory usage.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Memory usage.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7228,8 +5494,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Memory usage.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Memory usage.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7241,8 +5506,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Memory usage.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Memory usage.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7254,7 +5518,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Total number of active requests.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7266,7 +5530,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Total number of completed requests.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7278,7 +5542,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Number of N1QL requests processed per second.
+15-minute exponentially weighted moving average.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7290,7 +5555,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Number of N1QL requests processed per second.
+1-minute exponentially weighted moving average.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7302,7 +5568,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Number of N1QL requests processed per second.
+5-minute exponentially weighted moving average.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7314,7 +5581,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>0.0</code></p>
+<p>Percentage of requests that are prepared statements.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7326,7 +5593,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>End-to-end time to process a query.
+The 80th percentile.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7338,7 +5606,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>End-to-end time to process a query.
+The 95th percentile.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7350,7 +5619,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>End-to-end time to process a query.
+The 99th percentile.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7362,7 +5632,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>End-to-end time to process a query.
+The mean value.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7374,7 +5645,8 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>End-to-end time to process a query.
+The median value.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7386,8 +5658,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Active threads.<br>
-<strong>Example</strong> : <code>0.0</code></p>
+<p>Active threads.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>number</p>
@@ -7399,7 +5670,7 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>The uptime of the query engine.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
@@ -7411,10 +5682,1074 @@ This may be a UUID that was assigned automatically, or a name that was user-spec
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>Example</strong> : <code>"string"</code></p>
+<p>The version of the query engine.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>string</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_statistics"><a class="anchor" href="#_statistics"></a>Statistics</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>active_requests.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of active requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>at_plus.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of N1QL requests with <code>at_plus</code> index consistency.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>cancelled.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of cancelled requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>deletes.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of DELETE operations.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>errors.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The total number of N1QL errors returned so far.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>inserts.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of INSERT operations.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>invalid_requests.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of requests for unsupported endpoints.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>mutations.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of document mutations.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared.15m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Prepared statements executed per second.
+15-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared.1m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Prepared statements executed per second.
+1-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared.5m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Prepared statements executed per second.
+5-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of prepared statements executed.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared.mean.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Prepared statements executed per second.
+Mean rate since the query service started.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queued_requests.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of queued requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_rate.15m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+15-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_rate.1m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+1-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_rate.5m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+5-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_rate.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of N1QL requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_rate.mean.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+Mean rate since the query service started.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_time.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total end-to-end time to process all queries.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.15m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+15-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.1m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+1-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.5m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+5-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.75%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The 75th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.95%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The 95th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.99%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The 99th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.99.9%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The 99.9th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of N1QL requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.max</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The maximum value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.mean</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The mean value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.mean.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of N1QL requests processed per second.
+Mean rate since the query service started.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.median</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The median value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.min</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The minimum value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request_timer.stddev</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>End-to-end time to process a query.
+The standard deviation.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>requests.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of N1QL requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>requests_1000ms.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of queries that take longer than 1000ms.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>requests_250ms.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of queries that take longer than 250ms.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>requests_5000ms.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of queries that take longer than 5000ms.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>requests_500ms.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Number of queries that take longer than 500ms.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>result_count.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of results (documents) returned by the query engine.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>result_size.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total size of data returned by the query engine.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (bytes)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan_plus.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of N1QL requests with <code>request_plus</code> index consistency.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>selects.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of SELECT requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>service_time.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Time to execute all queries.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number (ns)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>unbounded.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of N1QL requests with <code>not_bounded</code> index consistency.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>updates.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Total number of UPDATE requests.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>warnings.count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The total number of N1QL warnings returned so far.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_metrics"><a class="anchor" href="#_metrics"></a>Metrics</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>15m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>15-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>1m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>1-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>5m.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>5-minute exponentially weighted moving average.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>75%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The 75th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>95%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The 95th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>99%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The 99th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>99.9%</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The 99.9th percentile.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>count</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A single value that represents the current state.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The maximum value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>mean</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The mean value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>mean.rate</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Mean rate since the query service started.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>median</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The median value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>min</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The minimum value.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>stddev</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The standard deviation.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_settings"><a class="anchor" href="#_settings"></a>Settings</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum number of completed requests.
+As new completed requests are added, old ones are removed.
+Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed-threshold</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Cache completed query lasting longer than this many milliseconds.
+Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>controls</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Specifies if there should be a controls section returned with the request results.<br>
+<strong>Default</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>cpuprofile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The absolute path and filename to write the CPU profile to a local file.<br>
+<strong>Default</strong> : <code>""</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>debug</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Use debug mode.<br>
+<strong>Default</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>keep-alive-length</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum size of buffered result.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>loglevel</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Log level used in the logger.<br>
+<strong>Default</strong> : <code>"INFO"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (DEBUG, TRACE, INFO, WARN, ERROR, SEVERE, NONE)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max-index-api</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Max index API.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max-parallelism</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum number of index partitions, for computing aggregation in parallel.
+Refer to <a href="../n1ql-language-reference/index-partitioning.html#max_parallelism" class="page">Max Parallelism</a> for more information.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>memprofile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Filename to write the diagnostic memory usage log.<br>
+<strong>Default</strong> : <code>""</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>n1ql-feat-ctrl</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>N1QL feature control.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>number</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline-batch</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Controls the number of items execution operators can batch for Fetch from the KV.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum number of items each execution operator can buffer between various operators.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum number of prepared statements in the cache.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pretty</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Specifies whether query results are returned in pretty format.<br>
+<strong>Default</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>profile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Specifies if there should be a profile section returned with the request results.
+Refer to <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.<br>
+<strong>Default</strong> : <code>"off"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (off, phases, timings)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request-size-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum size of a request.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum buffered channel size between the indexer client and the query service for index scans.
+This parameter controls when to use scan backfill.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>servicers</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The number of service threads for the query.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>timeout</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Maximum time to spend on the request before timing out.<br>
+<strong>Default</strong> : <code>"0s"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string (duration)</p>
 </div></div></td>
 </tr>
 </tbody>
