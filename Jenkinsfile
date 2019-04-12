@@ -4,8 +4,8 @@ def awsCredentialsId = 'couchbase-prod-aws'
 def githubApiCredentialsId = 'docs-robot-github-token'
 def sshPrivKeyCredentialsId = 'terraform-ssh-key'
 def siteProfile = 'production'
-def siteS3Bucket = 'docs.couchbase.com'
-def infraProfile = 'prod'
+def siteS3Bucket = 'preview-docs.couchbase.com'
+def infraProfile = 'preview'
 def infraS3Bucket = 'docs.couchbase.com-terraform-backend'
 def githubAccount = 'couchbase'
 def githubRepo = 'docs-site'
@@ -96,7 +96,6 @@ pipeline {
           sh "aws s3 cp public/_/font/ s3://$siteS3Bucket/_/font/ --recursive --exclude '*' --include '*.woff' --acl public-read --cache-control 'public,max-age=604800' --content-type 'application/font-woff' --metadata-directive REPLACE --only-show-errors"
           sh "aws s3 cp public/_/font/ s3://$siteS3Bucket/_/font/ --recursive --exclude '*' --include '*.woff2' --acl public-read --cache-control 'public,max-age=604800' --content-type 'font/woff2' --metadata-directive REPLACE --only-show-errors"
           sh "aws s3 cp public/.etc/nginx/combined-rewrites.conf s3://$siteS3Bucket/.rewrites.conf --metadata-directive REPLACE --only-show-errors"
-          sh "aws s3api put-bucket-website --bucket $siteS3Bucket --website-configuration file://etc/s3/bucket-website.json"
           sshagent([sshPrivKeyCredentialsId]) {
             sh "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ubuntu@$env.WEB_PUBLIC_IP sudo update-nginx-rewrites"
           }
