@@ -3338,6 +3338,29 @@
 <h1 class="page">Query Settings</h1>
 <div id="preamble">
 <div class="sectionbody">
+<style type="text/css">
+  /* No maximum width for table cells */
+  .doc table.spread > tbody > tr > *,
+  .doc table.stretch > tbody > tr > * {
+    max-width: none !important;
+  }
+
+  /* Ignore fixed column widths */
+  col{
+    width: auto !important;
+  }
+
+  /* Do not hyphenate words in the table */
+  td.tableblock p,
+  p.tableblock{
+    hyphens: manual !important;
+  }
+
+  /* Vertical alignment */
+  td.tableblock{
+    vertical-align: top !important;
+  }
+</style>
 <div class="quoteblock abstract">
 <blockquote>
 Description of Service-level query settings and methods to set and use them.
@@ -3370,14 +3393,14 @@ Description of Service-level query settings and methods to set and use them.
 <td class="tableblock halign-left valign-top"><p class="tableblock">Service Node</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The administrator at the system level</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Server side</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">curl statements</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">cURL statements</p></td>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Request-level Parameters</p></th>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Request (statement)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Each user</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Client side</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../tools/cbq-shell.html" class="page">cbq</a> command-line parameters, curl or client programming</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cbq</code> command-line parameters, cURL statements, or client programming</p></td>
 </tr>
 </tbody>
 </table>
@@ -3407,14 +3430,11 @@ For example, if the Service-level <code>timeout</code> is set to 500, then the R
 </table>
 </div>
 <div class="paragraph">
-<p>To set a Service-level query setting, while the Query Service is running, use the <a href="../n1ql/n1ql-rest-api/admin.html" class="page">Admin REST API</a> (<code>/admin/settings</code> endpoint) with a cURL statement.</p>
-</div>
-<div class="paragraph">
-<p>To see a list of the current Query Settings, enter:</p>
+<p>To see a list of the current Query Settings, while the Query Service is running, enter:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -u user:pword</code></pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://hostname:8093/admin/settings -u user:pword</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3422,7 +3442,7 @@ For example, if the Service-level <code>timeout</code> is set to 500, then the R
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"completed-limit":4000,"completed-threshold":1000,"controls":false,"cpuprofile":"","debug":false,"keep-alive-length":16384,"loglevel":"INFO","max-index-api":3,"max-parallelism":1,"memprofile":"","n1ql-feat-ctrl":0,"pipeline-batch":16,"pipeline-cap":512,"prepared-limit":16384,"pretty":false,"profile":"off","request-size-cap":67108864,"scan-cap":512,"servicers":16,"timeout":0}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"auto-prepare":false,"completed":{"aborted":null,"threshold":1000},"completed-limit":4000,"completed-threshold":1000,"controls":false,"cpuprofile":"","debug":false,"functions-limit":16384,"keep-alive-length":16384,"loglevel":"INFO","max-index-api":4,"max-parallelism":1,"memprofile":"","mutexprofile":false,"n1ql-feat-ctrl":12,"pipeline-batch":16,"pipeline-cap":512,"prepared-limit":16384,"pretty":false,"profile":"off","request-size-cap":67108864,"scan-cap":512,"servicers":4,"timeout":0}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3430,11 +3450,11 @@ For example, if the Service-level <code>timeout</code> is set to 500, then the R
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -u user:pword -o settings.txt</code></pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://hostname:8093/admin/settings -u user:pword -o settings.txt</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To instantly change one setting, see details of each setting in the below <a href="#table_kgw_2lr_hz">Service-Level Query Settings</a> table.</p>
+<p>To instantly change one setting, see details of each setting in the <a href="#service-level-query-settings">Service-Level Query Settings</a> table below.</p>
 </div>
 </div>
 </div>
@@ -3459,6 +3479,12 @@ For example, if the Service-level <code>timeout</code> is set to 500, then the R
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="#auto-prepare">auto-prepare</a></p>
+</div>
+<div class="paragraph">
+<p><a href="#completed">completed</a></p>
+</div>
+<div class="paragraph">
 <p><a href="#completed-limit">completed-limit</a></p>
 </div>
 <div class="paragraph">
@@ -3471,6 +3497,9 @@ For example, if the Service-level <code>timeout</code> is set to 500, then the R
 <p><a href="#debug">debug</a></p>
 </div>
 <div class="paragraph">
+<p><a href="#distribute">distribute</a></p>
+</div>
+<div class="paragraph">
 <p><a href="#keep-alive-length">keep-alive-length</a></p>
 </div>
 <div class="paragraph">
@@ -3480,22 +3509,13 @@ For example, if the Service-level <code>timeout</code> is set to 500, then the R
 <p><a href="#memprofile">memprofile</a></p>
 </div>
 <div class="paragraph">
+<p><a href="#prepared-limit">prepared-limit</a></p>
+</div>
+<div class="paragraph">
 <p><a href="#request-size-cap">request-size-cap</a></p>
 </div>
 <div class="paragraph">
 <p><a href="#servicers">servicers</a></p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-These settings can not be set by cbq.
-</td>
-</tr>
-</table>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p><a href="#args">args</a></p>
@@ -3625,79 +3645,127 @@ These settings can not be set by cbq.
 <h2 id="service-level-query-settings"><a class="anchor" href="#service-level-query-settings"></a>Service-Level Query Settings</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Below is a description of each query setting along with examples.
-While <code>cbq</code>  is a sandbox to test code on your local machine, your production query settings are set with the  <code>curl</code>  commands on your server.
-These are the only two ways to set these settings, and not all settings can be set by <code>cbq</code>.</p>
+<p>To set a service-level query setting, use the <a href="../n1ql/n1ql-rest-api/admin.html" class="page">Admin REST API</a> (<code>/admin/settings</code> endpoint) with a cURL statement.</p>
 </div>
-<table id="table_kgw_2lr_hz" class="tableblock frame-all grid-all stretch">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+These settings can not be set by <code>cbq</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The table below contains details of all service-level query settings.</p>
+</div>
+<table id="_settings" class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 3. Service-Level Query Settings</caption>
 <colgroup>
-<col style="width: 11.6572%;">
-<col style="width: 6.3011%;">
-<col style="width: 8.1915%;">
-<col style="width: 16.3831%;">
-<col style="width: 21.487%;">
-<col style="width: 35.9801%;">
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Setting</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Default</th>
-<th class="tableblock halign-left valign-top" colspan="3">Description</th>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="completed-limit" class="paragraph">
-<p><code>completed-limit</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>auto-prepare</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>4000</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>Maximum number of completed requests.
-As new completed requests are added, old ones are removed.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="auto-prepare" class="paragraph">
+<p>Specifies whether the query engine should create a prepared statement every time a N1QL request is submitted, whether the PREPARE statement is included or not.</p>
 </div>
 <div class="paragraph">
-<p>Increase this when the completed request keyspace is not big enough to track the slow requests, such as when customers want a larger sample of slow requests.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"completed-limit":7000}' -u user:pword</code></pre>
-</div>
+<p>Refer to <a href="../n1ql/n1ql-language-reference/prepare.html#auto-prepare" class="page">Auto-Prepare</a> for more information.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="completed-threshold" class="paragraph">
-<p><code>completed-threshold</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1000</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>Cache completed query lasting longer than this many milliseconds.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="completed" class="paragraph">
+<p>A nested object that sets the parameters for the completed requests catalog.
+All completed requests that match these parameters are tracked in the completed requests catalog.</p>
 </div>
 <div class="paragraph">
-<p>Specify 0 to track all requests independent of duration.</p>
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.<br>
+<strong>Example</strong> : <code>{
+  "user" : "marco",
+  "error" : 12003
+}</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><a href="#_logging_parameters">Logging parameters</a></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="completed-limit" class="paragraph">
+<p>Sets the number of requests to be logged in the completed requests catalog.
+As new completed requests are added, old ones are removed.</p>
+</div>
+<div class="paragraph">
+<p>Increase this when the completed request keyspace is not big enough to track the slow requests, such as when you want a larger sample of slow requests.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.<br>
+<strong>Default</strong> : <code>4000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed-threshold</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="completed-threshold" class="paragraph">
+<p>A duration in milliseconds.
+All completed queries lasting longer than this threshold are logged in the completed requests catalog.</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> to track all requests, independent of duration.</p>
 </div>
 <div class="paragraph">
 <p>Specify any negative number to track none.</p>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"completed-threshold":7000}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.<br>
+<strong>Default</strong> : <code>1000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="controls-srv" class="paragraph">
-<p><code>controls</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>controls</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies if there should be a controls section returned with the request results.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="controls-srv" class="paragraph">
+<p>Specifies if there should be a controls section returned with the request results.</p>
 </div>
 <div class="paragraph">
 <p>When set to <code>true</code>, the query response document includes a controls section with runtime information provided along with the request, such as positional and named parameters or settings.</p>
@@ -3714,20 +3782,20 @@ If the request qualifies for caching, these values will also be cached in the <c
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"controls":true}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p><strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="cpuprofile" class="paragraph">
-<p><code>cpuprofile</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>cpuprofile</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>""</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="cpuprofile" class="paragraph">
 <p>The absolute path and filename to write the CPU profile to a local file.</p>
 </div>
 <div class="paragraph">
@@ -3748,114 +3816,127 @@ If <code>cpuprofile</code> is left running too long, it can slow the system down
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"cpuprofile":"/tmp/info.txt"}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p><strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"/tmp/info.txt"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="debug" class="paragraph">
-<p><code>debug</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>debug</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="debug" class="paragraph">
 <p>Use debug mode.</p>
 </div>
 <div class="paragraph">
-<p>When set to <code>true</code>, extra logging is provided.</p>
+<p>When set to <code>true</code>, extra logging is provided.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>distribute</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="distribute" class="paragraph">
+<p>This field is only available with the POST method.
+When specified alongside other settings, this field instructs the node that is processing the request to cascade those settings to all other query nodes.
+The actual value of this field is ignored.<br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>keep-alive-length</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="keep-alive-length" class="paragraph">
+<p>Maximum size of buffered result.<br>
+<strong>Default</strong> : <code>16384</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>loglevel</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="loglevel" class="paragraph">
+<p>Log level used in the logger.</p>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"debug":true}' -u user:pword</code></pre>
+<div class="paragraph">
+<p>All values, in descending order of data:</p>
 </div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="keep-alive-length" class="paragraph">
-<p><code>keep-alive-length</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>16384</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>Maximum size of buffered result.</p>
+<div class="paragraph">
+<p><code>DEBUG</code>&#8201;&#8212;&#8201;For developers.
+Writes everything.</p>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"keep-alive-length":7000}' -u user:pword</code></pre>
+<div class="paragraph">
+<p><code>TRACE</code>&#8201;&#8212;&#8201;For developers.
+Less info than <code>DEBUG</code>.</p>
 </div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" rowspan="9"><div class="content"><div id="loglevel" class="paragraph">
-<p><code>loglevel</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top" rowspan="9"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top" rowspan="9"><p class="tableblock"><code>"INFO"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Log level used in the logger.
-All values in descending order of data:</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DEBUG</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For developers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Writes everything.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TRACE</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For developers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Less info than debug.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>INFO</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For admin &amp; customers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Lists warnings &amp; errors.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>WARN</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For admin</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Only abnormal items.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ERROR</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For admin</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Only errors to be fixed.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SEVERE</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For admin</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Major items, like crashes.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NONE</code></p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Doesn&#8217;t write anything.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"loglevel":"DEBUG"}' -u user:pword</code></pre>
+<div class="paragraph">
+<p><code>INFO</code>&#8201;&#8212;&#8201;For admin &amp; customers.
+Lists warnings &amp; errors.</p>
 </div>
+<div class="paragraph">
+<p><code>WARN</code>&#8201;&#8212;&#8201;For admin.
+Only abnormal items.</p>
+</div>
+<div class="paragraph">
+<p><code>ERROR</code>&#8201;&#8212;&#8201;For admin.
+Only errors to be fixed.</p>
+</div>
+<div class="paragraph">
+<p><code>SEVERE</code>&#8201;&#8212;&#8201;For admin.
+Major items, like crashes.</p>
+</div>
+<div class="paragraph">
+<p><code>NONE</code>&#8201;&#8212;&#8201;Doesn’t write anything.<br>
+<strong>Default</strong> : <code>"INFO"</code><br>
+<strong>Example</strong> : <code>"DEBUG"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (DEBUG, TRACE, INFO, WARN, ERROR, SEVERE, NONE)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="max-parallelism-srv" class="paragraph">
-<p><code>max-parallelism</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max-index-api</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies the maximum parallelism for the query.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="max-index-api" class="paragraph">
+<p>Max index API.
+This setting is provided for technical support only.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max-parallelism</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="max-parallelism-srv" class="paragraph">
+<p>Maximum number of index partitions, for computing aggregation in parallel.</p>
 </div>
 <div class="paragraph">
 <p>A zero or negative value means the number of logical CPUs will be used as the parallelism for the query.</p>
-</div>
-<div class="paragraph">
-<p>The <code>max-parallelism</code> parameter defaults to "1" and will be used when a request does not include this parameter.</p>
 </div>
 <div class="paragraph">
 <p>There is also a <a href="#max_parallelism_req">request-level</a> <code>max_parallelism</code> parameter.
@@ -3873,20 +3954,21 @@ To enable queries to run in parallel, you must specify the Server-level <code>ma
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"max-parallelism":0}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p>Refer to <a href="../n1ql/n1ql-language-reference/index-partitioning.html#max_parallelism" class="page">Max Parallelism</a> for more information.<br>
+<strong>Default</strong> : <code>1</code><br>
+<strong>Example</strong> : <code>0</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="memprofile" class="paragraph">
-<p><code>memprofile</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>memprofile</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>""</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="memprofile" class="paragraph">
 <p>Filename to write the diagnostic memory usage log.</p>
 </div>
 <div class="paragraph">
@@ -3904,111 +3986,123 @@ If <code>memprofile</code> is left running too long, it can slow the system down
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"memprofile":"/tmp/memory-usage.log"}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p><strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"/tmp/memory-usage.log"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="pipeline-batch-srv" class="paragraph">
-<p><code>pipeline-batch</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>mutexprofile</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>16</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Controls the number of items execution operators can batch for Fetch from the KV.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"pipeline-batch":64' -u user:pword</code></pre>
-</div>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="mutexprofile" class="paragraph">
+<p>Mutex profile.
+This setting is provided for technical support only.<br>
+<strong>Default</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="pipeline-cap-srv" class="paragraph">
-<p><code>pipeline-cap</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>n1ql-feat-ctrl</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>512</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum number of items each execution operator can buffer between various operators.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"pipeline-cap":1024}' -u user:pword</code></pre>
-</div>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="n1ql-feat-ctrl" class="paragraph">
+<p>N1QL feature control.
+This setting is provided for technical support only.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="prepared-limit" class="paragraph">
-<p><code>prepared-limit</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline-batch</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>16384</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum number of Prepared statements in the cache.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pipeline-batch-srv" class="paragraph">
+<p>Controls the number of items execution operators can batch for Fetch from the KV.<br>
+<strong>Default</strong> : <code>16</code><br>
+<strong>Example</strong> : <code>64</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pipeline-cap-srv" class="paragraph">
+<p>Maximum number of items each execution operator can buffer between various operators.<br>
+<strong>Default</strong> : <code>512</code><br>
+<strong>Example</strong> : <code>1024</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="prepared-limit" class="paragraph">
+<p>Maximum number of prepared statements in the cache.</p>
 </div>
 <div class="paragraph">
-<p>When this cache reaches the limit, the least recently used prepared statements will be discarded as new prepared statements are created.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"prepared-limit":65536}' -u user:pword</code></pre>
-</div>
+<p>When this cache reaches the limit, the least recently used prepared statements will be discarded as new prepared statements are created.<br>
+<strong>Default</strong> : <code>16384</code><br>
+<strong>Example</strong> : <code>65536</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="pretty-srv" class="paragraph">
-<p><code>pretty</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pretty</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies the query results returned in pretty format.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pretty-srv" class="paragraph">
+<p>Specifies whether query results are returned in pretty format.</p>
 </div>
 <div class="paragraph">
 <p>There is also a <a href="#pretty_req">request-level</a> <code>pretty</code> parameter.
-If a request does not include this parameter, the server-level <code>pretty</code> setting will be used, which defaults to <code>false</code>.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"pretty":false}' -u user:pword</code></pre>
-</div>
+If a request does not include this parameter, the server-level <code>pretty</code> setting will be used, which defaults to <code>false</code>.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="profile-srv" class="paragraph">
-<p><code>profile</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>profile</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>off</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies if there should be a profile section returned with the request results.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="profile-srv" class="paragraph">
+<p>Specifies if there should be a profile section returned with the request results.
 The valid values are:</p>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><code>off</code></dt>
-<dd>
-<p>No profiling information is added to the query response.</p>
-</dd>
-<dt class="hdlist1"><code>phases</code></dt>
-<dd>
-<p>The query response includes a profile section with stats and details about various phases of the query plan and execution.
+<div class="paragraph">
+<p><code>off</code>&#8201;&#8212;&#8201;No profiling information is added to the query response.</p>
+</div>
+<div class="paragraph">
+<p><code>phases</code>&#8201;&#8212;&#8201;The query response includes a profile section with stats and details about various phases of the query plan and execution.
 Three phase times will be included in the <code>system:active_requests</code> and <code>system:completed_requests</code> monitoring keyspaces.</p>
-</dd>
-<dt class="hdlist1"><code>timings</code></dt>
-<dd>
-<p>Besides the phase times, the profile section of the query response document will include a full query plan with timing and information about the number of processed documents at each phase.
+</div>
+<div class="paragraph">
+<p><code>timings</code>&#8201;&#8212;&#8201;Besides the phase times, the profile section of the query response document will include a full query plan with timing and information about the number of processed documents at each phase.
 This information will be included in the <code>system:active_requests</code> and <code>system:completed_requests</code> keyspaces.</p>
-</dd>
-</dl>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4022,37 +4116,35 @@ If <code>profile</code> is not set as one of the above values, then the profile 
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"profile":"phases"}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-req" class="page">Configuring the Completed Requests</a> for more information and examples.<br>
+<strong>Default</strong> : <code>"off"</code><br>
+<strong>Example</strong> : <code>"phases"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (off, phases, timings)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="request-size-cap" class="paragraph">
-<p><code>request-size-cap</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request-size-cap</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>67108864</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>Maximum size of a request.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"request-size-cap":70000}' -u user:pword</code></pre>
-</div>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="request-size-cap" class="paragraph">
+<p>Maximum size of a request.<br>
+<strong>Example</strong> : <code>70000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="scan-cap-srv" class="paragraph">
-<p><code>scan-cap</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan-cap</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>512</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum buffered channel size between the indexer client and the query service for index scans.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan-cap-srv" class="paragraph">
+<p>Maximum buffered channel size between the indexer client and the query service for index scans.
 This parameter controls when to use scan backfill.</p>
 </div>
 <div class="paragraph">
@@ -4062,39 +4154,35 @@ This parameter controls when to use scan backfill.</p>
 <p>Smaller values reduce GC while larger values reduce indexer backfill.</p>
 </div>
 <div class="paragraph">
-<p>The index channel capacity is configurable per request.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"scan-cap":1024}' -u user:pword</code></pre>
-</div>
+<p>The index channel capacity is configurable per request.<br>
+<strong>Default</strong> : <code>512</code><br>
+<strong>Example</strong> : <code>1024</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="servicers" class="paragraph">
-<p><code>servicers</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>servicers</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>32</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>The number of service threads for the query.</p>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"servicers":8}' -u user:pword</code></pre>
-</div>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="servicers" class="paragraph">
+<p>The number of service threads for the query.<br>
+<strong>Default</strong> : <code>32</code><br>
+<strong>Example</strong> : <code>8</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="timeout-srv" class="paragraph">
-<p><code>timeout</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>timeout</strong><br>
+<em>optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string (duration format)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"0s"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum time to spend on the request before timing out.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="timeout-srv" class="paragraph">
+<p>Maximum time to spend on the request before timing out.</p>
 </div>
 <div class="paragraph">
 <p>The default value means no timeout is applied and the request runs for however long it takes.</p>
@@ -4104,42 +4192,148 @@ This parameter controls when to use scan backfill.</p>
 The minimum of that and the service-level <code>timeout</code> setting is applied.</p>
 </div>
 <div class="paragraph">
-<p>Its format includes an amount and a mandatory unit.
+<p>Its format includes an amount and a mandatory unit, e.g. <code>10ms</code> (10 milliseconds) or <code>0.5s</code> (half a second)..
 Valid units are:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>ns</code> (nanoseconds)</p>
-</li>
-<li>
-<p><code>us</code> (microseconds)</p>
-</li>
-<li>
-<p><code>ms</code> (milliseconds)</p>
-</li>
-<li>
-<p><code>s</code> (seconds)</p>
-</li>
-<li>
-<p><code>m</code> (minutes)</p>
-</li>
-<li>
-<p><code>h</code> (hours)</p>
-</li>
-</ul>
+<div class="paragraph">
+<p><code>ns</code> (nanoseconds)<br>
+<code>us</code> (microseconds)<br>
+<code>ms</code> (milliseconds)<br>
+<code>s</code> (seconds)<br>
+<code>m</code> (minutes)<br>
+<code>h</code> (hours)<br></p>
 </div>
 <div class="paragraph">
-<p>Ex: "10ms" (10 milliseconds) and "0.5s" (half a second).</p>
+<p>Specify <code>0</code> or a negative integer to disable.<br>
+<strong>Default</strong> : <code>"0s"</code><br>
+<strong>Example</strong> : <code>"30m"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string (duration)</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div id="_logging_parameters" class="paragraph">
+<p><strong>Logging parameters</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>aborted</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>If true, all requests that generate a panic are logged.<br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>client</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The IP address of the client.
+If specified, all completed requests from this IP address are logged.<br>
+<strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"172.1.2.3"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>context</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The opaque ID or context provided by the client.
+If specified, all completed requests with this client context ID are logged.</p>
 </div>
 <div class="paragraph">
-<p>Specify <code>0</code> or a negative integer to disable.</p>
+<p>Refer to <a href="#client_context_id">client_context_id</a> for more information.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>error</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>An error number.
+If specified, all completed queries returning this error number are logged.<br>
+<strong>Example</strong> : <code>12003</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>tag</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A unique string which tags a set of qualifiers.<br>
+<strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"both_user_and_error"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>threshold</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A duration in milliseconds.
+If specified, all completed queries lasting longer than this threshold are logged.</p>
 </div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://hostname:8093/admin/settings -d '{"timeout":"30m"}' -u user:pword</code></pre>
-</div>
+<div class="paragraph">
+<p>This is another way of specifying the <code>completed-threshold</code> setting, as described in <a href="#_settings">Table 3</a>.<br>
+<strong>Default</strong> : <code>1000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>user</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A user name, as given in the request credentials.
+If specified, all completed queries with this user name are logged.<br>
+<strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"marco"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -4150,34 +4344,36 @@ Valid units are:</p>
 <h2 id="section_nnj_sjk_k1b"><a class="anchor" href="#section_nnj_sjk_k1b"></a>Request-Level Parameters</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This table contains details of all the parameters that can be passed in a request to the <code>/query/service</code> endpoint:</p>
+<p>To set a request-level parameter, use the <a href="../n1ql/n1ql-rest-api/index.html" class="page">N1QL REST API</a> (<code>/query/service</code> endpoint) with a cURL statement, or the <a href="../tools/cbq-shell.html" class="page">cbq</a> command, or a client program.</p>
+</div>
+<div class="paragraph">
+<p>While <code>cbq</code> is a sandbox to test code on your local machine, your production query settings are set with the cURL commands on your server.</p>
+</div>
+<div class="paragraph">
+<p>The table below contains details of all request-level parameters, along with examples.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 4. Request-Level Parameters</caption>
 <colgroup>
-<col style="width: 13.2237%;">
-<col style="width: 7.1479%;">
-<col style="width: 12.8663%;">
-<col style="width: 7.8627%;">
-<col style="width: 58.8994%;">
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Parameter Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Default</th>
-<th class="tableblock halign-left valign-top" colspan="2">Description</th>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="args" class="paragraph">
-<p><code>args</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>args</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">list</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] If the statement has 1 or more positional parameters, this parameter needs to be in the request; this is a list of JSON values, one for each positional parameter in the statement.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="args" class="paragraph">
+<p>If the statement has 1 or more positional parameters, this parameter needs to be in the request; this is an array of JSON values, one for each positional parameter in the statement.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4191,28 +4387,26 @@ Positional parameters apply to <code>prepared</code> also.
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>See section <a href="#section_srh_tlm_n1b">Named Parameters VS. Positional Parameters</a> for details.</p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq &gt; \set -args ["LAX", 6];</code></pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -args ["LAX", 6];</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>See section <a href="#section_srh_tlm_n1b">Named Parameters VS.
-Positional Parameters</a> for details.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>array</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="batch_args" class="paragraph">
-<p><code>batch_args</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>batch_args</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">list of list</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Applies to POST requests containing UPDATE/INSERT/DELETE statements.</p>
-</div>
-<div class="paragraph">
-<p>DML statements containing <em>positional</em> parameters.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="batch_args" class="paragraph">
+<p>Applies to POST requests only, containing UPDATE, INSERT, DELETE statements (DML statements) with <em>positional</em> parameters.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -4221,7 +4415,7 @@ Positional Parameters</a> for details.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>These require the values to be given in <code>batch_args</code>, which contains a list of lists.</p>
+<p>These require the values to be given in <code>batch_args</code>, which contains an array of arrays.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4230,23 +4424,22 @@ Positional Parameters</a> for details.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The inner lists need to match the positional parameters in the <code>statement</code>.
+The inner arrays need to match the positional parameters in the <code>statement</code>.
 </td>
 </tr>
 </table>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>array of arrays</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="batch_named_args" class="paragraph">
-<p><code>batch_named_args</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>batch_named_args</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">list of object</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Applies to POST requests only, containing a UPDATE/INSERT/DELETE statement.</p>
-</div>
-<div class="paragraph">
-<p>DML statements containing <em>named</em> parameters.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="batch_named_args" class="paragraph">
+<p>Applies to POST requests only, containing UPDATE, INSERT, DELETE statements (DML statements) with <em>named</em> parameters.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -4255,7 +4448,7 @@ The inner lists need to match the positional parameters in the <code>statement</
 </div>
 </div>
 <div class="paragraph">
-<p>These require the values to be given in <code>batch_named_args</code>, which contains a list of objects.</p>
+<p>These require the values to be given in <code>batch_named_args</code>, which contains an array of objects.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4269,15 +4462,17 @@ The keys in each object need to match the named parameters in the <code>statemen
 </tr>
 </table>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>array of objects</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="client_context_id" class="paragraph">
-<p><code>client_context_id</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>client_context_id</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] A piece of data supplied by the client that is echoed in the response, if present.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="client_context_id" class="paragraph">
+<p>A piece of data supplied by the client that is echoed in the response, if present.
 N1QL is agnostic about the content of this parameter; it is just echoed in the response.</p>
 </div>
 <div class="admonitionblock note">
@@ -4287,35 +4482,38 @@ N1QL is agnostic about the content of this parameter; it is just echoed in the r
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-<div class="olist arabic">
-<ol class="arabic">
+<div class="ulist">
+<ul>
 <li>
 <p>Maximum allowed size is 64 characters; all others will be cut.</p>
 </li>
 <li>
 <p>If it contains an escape character (‘/’) or quote ("), it will be rejected as Error code 1110.</p>
 </li>
-</ol>
+</ul>
 </div>
 </td>
 </tr>
 </table>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="compression" class="paragraph">
-<p><code>compression</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>compression</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"NONE"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Compression format to use for response data on the wire.</p>
-</div>
-<div class="paragraph">
-<p>Possible values are <code>ZIP</code>, <code>RLE</code>, <code>LZMA</code>, <code>LZO</code>, or <code>NONE</code>.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="compression" class="paragraph">
+<p>Compression format to use for response data on the wire.</p>
 </div>
 <div class="paragraph">
 <p>Values are case-insensitive.</p>
+</div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>"NONE"</code></p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -4323,15 +4521,17 @@ N1QL is agnostic about the content of this parameter; it is just echoed in the r
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -compression "zip";</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (ZIP, RLE, LZMA, LZO, NONE)</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="controls_req" class="paragraph">
-<p><code>controls</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>controls</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies if there should be a controls section returned with the request results.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="controls_req" class="paragraph">
+<p>Specifies if there should be a controls section returned with the request results.</p>
 </div>
 <div class="paragraph">
 <p>When set to <code>true</code>, the query response document includes a controls section with runtime information provided along with the request, such as positional and named parameters or settings.</p>
@@ -4348,23 +4548,29 @@ If the request qualifies for caching, these values will also be cached in the <c
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>false</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -controls true;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;controls=true'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;controls=true'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="creds" class="paragraph">
-<p><code>creds</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>creds</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">list</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specify the login credentials in the form of <code>user:password</code>.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="creds" class="paragraph">
+<p>Specify the login credentials in the form of <code>user:password</code>.</p>
 </div>
 <div class="paragraph">
 <p>You can specify credentials for different buckets by separating them with a comma.</p>
@@ -4378,41 +4584,56 @@ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * fr
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -creds travel-sample user:pword, beer-sample user:pword;</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>array</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="encoded_plan" class="paragraph">
-<p><code>encoded_plan</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>encoded_plan</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="encoded_plan" class="paragraph">
 <p>In Couchbase Server 6.5 and later, this parameter is ignored and has no effect.
 It is included for compatibility with previous versions of Couchbase Server.</p>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="encoding" class="paragraph">
-<p><code>encoding</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>encoding</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"UTF-8"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">[Optional] Desired character encoding for the query results.</p>
-<p class="tableblock">Only possible value is <code>UTF-8</code> and is case-insensitive.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="format" class="paragraph">
-<p><code>format</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"JSON"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Desired format for the query results.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="encoding" class="paragraph">
+<p>Desired character encoding for the query results.</p>
 </div>
 <div class="paragraph">
-<p>Possible values are <code>JSON</code>, <code>XML</code>, <code>CSV</code>, and <code>TSV</code>.</p>
+<p>Only possible value is <code>UTF-8</code> and is case-insensitive.</p>
+</div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>"UTF-8"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>format</strong><br>
+<em>Optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="format" class="paragraph">
+<p>Desired format for the query results.</p>
 </div>
 <div class="paragraph">
 <p>Values are case-insensitive.</p>
+</div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>"JSON"</code></p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -4420,15 +4641,17 @@ It is included for compatibility with previous versions of Couchbase Server.</p>
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -format "XML";</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (JSON, XML, CSV, TSV)</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="max_parallelism_req" class="paragraph">
-<p><code>max_parallelism</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max_parallelism</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies the maximum parallelism for the query.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="max_parallelism_req" class="paragraph">
+<p>Specifies the maximum parallelism for the query.</p>
 </div>
 <div class="paragraph">
 <p>A zero or negative value means the number of logical CPUs will be used as the parallelism for the query.</p>
@@ -4457,36 +4680,44 @@ To enable queries to run in parallel, you must specify the Server-level <code>ma
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -max_parallelism 3;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;max_parallelism=3'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;max_parallelism=3'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="metrics" class="paragraph">
-<p><code>metrics</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>metrics</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies that metrics should be returned with query results.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="metrics" class="paragraph">
+<p>Specifies that metrics should be returned with query results.</p>
+</div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>true</code></p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -metrics false;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;metrics=false'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;metrics=false'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="namespace" class="paragraph">
-<p><code>namespace</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>namespace</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies the namespace to use.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="namespace" class="paragraph">
+<p>Specifies the namespace to use.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -4494,53 +4725,56 @@ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * fr
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -namespace travel-sample;</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="pipeline_batch_req" class="paragraph">
-<p><code>pipeline_batch</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline_batch</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Controls the number of items execution operators can batch for Fetch from the KV.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pipeline_batch_req" class="paragraph">
+<p>Controls the number of items execution operators can batch for Fetch from the KV.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -pipeline_batch 64;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;pipeline_batch=64'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;pipeline_batch=64'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="pipeline_cap_req" class="paragraph">
-<p><code>pipeline_cap</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline_cap</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum number of items each execution operator can buffer between various operators.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pipeline_cap_req" class="paragraph">
+<p>Maximum number of items each execution operator can buffer between various operators.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -pipeline_cap 1024;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;pipeline_cap=1024'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;pipeline_cap=1024'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="prepared" class="paragraph">
-<p><code>prepared</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared</strong><br>
+<em>Required if</em> <code>statement</code> <em>not provided</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Required if <code>statement</code> not provided]</p>
-</div>
-<div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="prepared" class="paragraph">
 <p>The prepared form of the N1QL statement to be executed.</p>
 </div>
 <div class="admonitionblock note">
@@ -4556,7 +4790,8 @@ If both <code>prepared</code> and <code>statement</code> are present and non-emp
 </table>
 </div>
 <div class="paragraph">
-<p><strong>Example</strong>: Prepare the query result of the most expensive hotel.</p>
+<div class="title">Example</div>
+<p>Prepare the query result of the most expensive hotel:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4580,44 +4815,52 @@ If both <code>prepared</code> and <code>statement</code> are present and non-emp
 </div>
 </div>
 <div class="paragraph">
-<p>Execute the prepared statement.</p>
+<p>Execute the prepared statement:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -v http://localhost:8093/query/service -H "Content-Type: application/json" -d '{ "prepared":"[127.0.0.1:8091]pricy_hotel" }'</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="pretty_req" class="paragraph">
-<p><code>pretty</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pretty</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies the query results returned in pretty format.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pretty_req" class="paragraph">
+<p>Specifies the query results returned in pretty format.</p>
 </div>
 <div class="paragraph">
 <p>There is also a <a href="#pretty-srv">server-level</a> <code>pretty</code> setting which defaults to <code>true</code>.
 If a request does not include pretty, the server-level <code>pretty</code> will be used.</p>
+</div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>true</code></p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -pretty false;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;pretty=false'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;pretty=false'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="profile_req" class="paragraph">
-<p><code>profile</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>profile</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"off"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specifies if there should be a profile section returned with the request results.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="profile_req" class="paragraph">
+<p>Specifies if there should be a profile section returned with the request results.
 The valid values are:</p>
 </div>
 <div class="dlist">
@@ -4650,23 +4893,29 @@ If <code>profile</code> is not set as one of the above values, then the profile 
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>"off"</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -profile "phases";
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;profile=phases'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;profile=phases'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (off, phases, timings)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="readonly" class="paragraph">
-<p><code>readonly</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>readonly</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Controls whether a query can change a resulting recordset.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="readonly" class="paragraph">
+<p>Controls whether a query can change a resulting recordset.</p>
 </div>
 <div class="paragraph">
 <p>If <code>readonly</code> is <code>true</code>, then the following statements are not allowed:</p>
@@ -4705,21 +4954,27 @@ When using GET requests, it&#8217;s best to set <code>readonly</code> to <code>t
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>false</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -readonly true;</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="scan_cap_req" class="paragraph">
-<p><code>scan_cap</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan_cap</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>512</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum buffered channel size between the indexer client and the query service for index scans.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan_cap_req" class="paragraph">
+<p>Maximum buffered channel size between the indexer client and the query service for index scans.
 This parameter controls when to use scan backfill.</p>
 </div>
 <div class="paragraph">
@@ -4731,23 +4986,29 @@ This parameter controls when to use scan backfill.</p>
 <div class="paragraph">
 <p>The index channel capacity is configurable per request.</p>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>512</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -scan_cap 1024;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;scan_cap=1024'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;scan_cap=1024'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="scan_consistency" class="paragraph">
-<p><code>scan_consistency</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan_consistency</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"not_bounded"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Specify the consistency guarantee/constraint for index scanning.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan_consistency" class="paragraph">
+<p>Specify the consistency guarantee/constraint for index scanning.
 The valid values are:</p>
 </div>
 <div class="dlist">
@@ -4792,43 +5053,40 @@ The default behavior is RYOW within the request, however, if you want to disable
 <div class="paragraph">
 <p>Values are case-insensitive.</p>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>"not_bounded"</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -scan_consistency "at_plus";</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (not_bounded, at_plus, request_plus, statement_plus)</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="scan_vector" class="paragraph">
-<p><code>scan_vector</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan_vector</strong><br>
+<em>Required if</em> <code>scan_consistency</code> <em>is</em> <code>at_plus</code> <em>and</em> <code>scan_vectors</code> <em>not provided</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">list or object</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[<code>scan_vector</code> or <code>scan_vectors</code> is required if <code>scan_consistency=at_plus</code>]</p>
-</div>
-<div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan_vector" class="paragraph">
 <p>Specify the lower bound vector timestamp for one bucket when using <code>at_plus</code> scan consistency.</p>
 </div>
 <div class="paragraph">
-<p>Scan vectors are built of [<code class="var">value</code>, <code class="var">guard</code>] entries, two-element arrays:</p>
+<p>Scan vectors are built of two-element [<code class="var">value</code>, <code class="var">guard</code>] entries:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code class="var">value</code>: a vbucket&#8217;s sequence number (a JSON number)</p>
+<p><code class="var">value</code>: a vBucket&#8217;s sequence number (a JSON number)</p>
 </li>
 <li>
-<p><code class="var">guard</code>: a vbucket&#8217;s UUID (a string)</p>
+<p><code class="var">guard</code>: a vBucket&#8217;s UUID (a string)</p>
 </li>
 </ul>
-</div>
-<div class="listingblock">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">scan_vector={ "5 ": [5409393,"VB5ID"], "19": [47574574, "VB19ID"] }</code></pre>
-</div>
 </div>
 <div class="paragraph">
 <p>Scan vectors have two forms:</p>
@@ -4836,10 +5094,10 @@ The default behavior is RYOW within the request, however, if you want to disable
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Full scan vector</strong>: an array of [<code class="var">value</code>, <code class="var">guard</code>] entries, giving an entry for every vbucket in the system.</p>
+<p><strong>Full scan vector</strong>: an array of [<code class="var">value</code>, <code class="var">guard</code>] entries, giving an entry for every vBucket in the system.</p>
 </li>
 <li>
-<p><strong>Sparse scan vectors</strong>: provide entries for specific vbuckets, mapping a vbucket number (a string) to a [<code class="var">value</code>, <code class="var">guard</code>] entry.</p>
+<p><strong>Sparse scan vectors</strong>: an object providing entries for specific vBuckets, mapping a vBucket number (a string) to each [<code class="var">value</code>, <code class="var">guard</code>] entry.</p>
 </li>
 </ol>
 </div>
@@ -4857,27 +5115,40 @@ The default behavior is RYOW within the request, however, if you want to disable
 </div>
 <div class="paragraph">
 <p>For queries referencing multiple buckets, use <code>scan_vectors</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">scan_vector={ "5 ": [5409393,"VB5ID"], "19": [47574574, "VB19ID"] }</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>array, object</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="scan_vectors" class="paragraph">
-<p><code>scan_vectors</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan_vectors</strong><br>
+<em>Required if</em> <code>scan_consistency</code> <em>is</em> <code>at_plus</code> <em>and</em> <code>scan_vector</code> <em>not provided</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">[<code>scan_vector</code> or <code>scan_vectors</code> is required if <code>scan_consistency=at_plus</code>]</p>
-<p class="tableblock">A map from bucket names to scan vectors.
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan_vectors" class="paragraph">
+<p>A map from bucket names to scan vectors.
 See <code>scan_vector</code>.</p>
-<p class="tableblock">The scan vectors can be Full or Sparse.</p></td>
+</div>
+<div class="paragraph">
+<p>The scan vectors can be Full or Sparse.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>object</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="scan_wait" class="paragraph">
-<p><code>scan_wait</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan_wait</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string (duration format)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>""</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Can be supplied with <code>scan_consistency</code> values of <code>request_plus</code>, <code>statement_plus</code> and <code>at_plus</code>.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan_wait" class="paragraph">
+<p>Can be supplied with <code>scan_consistency</code> values of <code>request_plus</code>, <code>statement_plus</code> and <code>at_plus</code>.</p>
 </div>
 <div class="paragraph">
 <p>Specifies the maximum time the client is willing to wait for an index to catch up to the vector timestamp in the request.</p>
@@ -4895,7 +5166,7 @@ If an index has to catch up, and the <code>scan_wait</code> time is exceeded whi
 </table>
 </div>
 <div class="paragraph">
-<p>Its format includes an amount and a mandatory unit.
+<p>Its format includes an amount and a mandatory unit, e.g. <code>10ms</code> (10 milliseconds) or <code>0.5s</code> (half a second).
 Valid units are:</p>
 </div>
 <div class="ulist">
@@ -4920,9 +5191,6 @@ Valid units are:</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>Ex: <code>10ms</code> (10 milliseconds) and <code>0.5s</code> (half a second).</p>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -4935,41 +5203,50 @@ Specify <code>0</code> or a negative integer to disable.
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>""</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -scan_wait "30m";</code></pre>
 </div>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string (duration)</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="signature" class="paragraph">
-<p><code>signature</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>signature</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Include a header for the results schema in the response.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="signature" class="paragraph">
+<p>Include a header for the results schema in the response.</p>
+</div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>true</code></p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -signature false;
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;signature=false'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;signature=false'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="statement" class="paragraph">
-<p><code>statement</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>statement</strong><br>
+<em>Required if</em> <code>prepared</code> <em>not provided</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Required if <code>prepared</code> not provided]</p>
-</div>
-<div class="paragraph">
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="statement" class="paragraph">
 <p>Any valid N1QL statement for a POST request, or a read-only N1QL statement (SELECT, EXPLAIN) for a GET request.</p>
 </div>
 <div class="admonitionblock note">
@@ -4984,15 +5261,17 @@ If both <code>prepared</code> and <code>statement</code> are present and non-emp
 </tr>
 </table>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="timeout_req" class="paragraph">
-<p><code>timeout</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>timeout</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string (duration format)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"0s"</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] Maximum time to spend on the request before timing out.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="timeout_req" class="paragraph">
+<p>Maximum time to spend on the request before timing out.</p>
 </div>
 <div class="paragraph">
 <p>The default value means no timeout is applied and the request runs for however long it takes.</p>
@@ -5002,7 +5281,7 @@ If both <code>prepared</code> and <code>statement</code> are present and non-emp
 The minimum of that and the request-level <code>timeout</code> parameter is applied.</p>
 </div>
 <div class="paragraph">
-<p>Its format includes an amount and a mandatory unit.
+<p>Its format includes an amount and a mandatory unit, e.g. <code>10ms</code> (10 milliseconds) or <code>0.5s</code> (half a second).
 Valid units are:</p>
 </div>
 <div class="ulist">
@@ -5027,9 +5306,6 @@ Valid units are:</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>Ex: <code>10ms</code> (10 milliseconds) and <code>0.5s</code> (half a second).</p>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -5042,23 +5318,29 @@ Specify <code>0</code> or a negative integer to disable.
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<div class="title">Default</div>
+<p><code>"0s"</code></p>
+</div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -timeout "30m";
 
-curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;timeout=30m'</code></pre>
+$ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * from default&amp;timeout=30m'</code></pre>
 </div>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string (duration)</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div class="content"><div id="identifier" class="paragraph">
-<p><code>$&lt;identifier&gt;</code></p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>$&lt;identifier&gt;</strong><br>
+<em>Optional</em></p>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">json_value</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>[Optional] If the <code>statement</code> has 1 or more named parameters, there should be 1 or more named parameters in the request.</p>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="identifier" class="paragraph">
+<p>If the <code>statement</code> has 1 or more named parameters, there should be 1 or more named parameters in the request.</p>
 </div>
 <div class="paragraph">
 <p>A named parameter consists of two parts:</p>
@@ -5079,6 +5361,9 @@ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * fr
 <div class="paragraph">
 <p>See section <a href="#section_srh_tlm_n1b">Named Parameters VS.
 Positional Parameters</a> for examples.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>JSON value</p>
 </div></div></td>
 </tr>
 </tbody>
