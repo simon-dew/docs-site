@@ -3574,7 +3574,7 @@ $ cat  ./query_settings.json</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"completed-limit":4000,"completed-threshold":1000,"controls":false,"cpuprofile":"","debug":false,"keep-alive-length":16384,"loglevel":"INFO","max-index-api":2,"max-parallelism":1,"memprofile":"","pipeline-batch":16,"pipeline-cap":512,"pretty":true,"profile":"off","request-size-cap":67108864,"scan-cap":512,"servicers":16,"timeout":0}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"auto-prepare":false,"completed":{"aborted":null,"threshold":1000},"completed-limit":4000,"completed-threshold":1000,"controls":false,"cpuprofile":"","debug":false,"functions-limit":16384,"keep-alive-length":16384,"loglevel":"INFO","max-index-api":4,"max-parallelism":1,"memprofile":"","mutexprofile":false,"n1ql-feat-ctrl":12,"pipeline-batch":16,"pipeline-cap":512,"prepared-limit":16384,"pretty":false,"profile":"off","request-size-cap":67108864,"scan-cap":512,"servicers":4,"timeout":0}</code></pre>
 </div>
 </div>
 </li>
@@ -3607,7 +3607,7 @@ $ cat  ./query_settings.json</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"completed-limit":4000,"completed-threshold":1000,"controls":false,"cpuprofile":"","debug":false,"keep-alive-length":16384,"loglevel":"INFO","max-index-api":2,"max-parallelism":1,"memprofile":"","pipeline-batch":16,"pipeline-cap":512,"pretty":true,"profile":"phases","request-size-cap":67108864,"scan-cap":512,"servicers":16,"timeout":0}</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"auto-prepare":false,"completed":{"aborted":null,"threshold":1000},"completed-limit":4000,"completed-threshold":1000,"controls":false,"cpuprofile":"","debug":false,"functions-limit":16384,"keep-alive-length":16384,"loglevel":"INFO","max-index-api":4,"max-parallelism":1,"memprofile":"","mutexprofile":false,"n1ql-feat-ctrl":12,"pipeline-batch":16,"pipeline-cap":512,"prepared-limit":16384,"pretty":false,"profile":"phases","request-size-cap":67108864,"scan-cap":512,"servicers":4,"timeout":0}</code></pre>
 </div>
 </div>
 </li>
@@ -3860,48 +3860,51 @@ cbq&gt; SELECT * FROM `travel-sample` WHERE type = "airline" LIMIT 1;</code></pr
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "requestID": "51da6b92-f978-4083-b3e4-3cccbe91b5ac",
+  "requestID": "4852f401-a6fb-449a-b122-c744879bada1",
   "signature": {
     "*": "*"
   },
   "results": [
     {
       "travel-sample": {
-        "callsign": "BEMIDJI",
+        "callsign": "MILE-AIR",
         "country": "United States",
-        "iata": "CH",
-        "icao": "BMJ",
-        "id": 1442,
-        "name": "Bemidji Airlines",
+        "iata": "Q5",
+        "icao": "MLA",
+        "id": 10,
+        "name": "40-Mile Air",
         "type": "airline"
       }
     }
   ],
   "status": "success",
   "metrics": {
-    "elapsedTime": "13.967097ms",
-    "executionTime": "13.951263ms",
+    "elapsedTime": "20.793908ms",
+    "executionTime": "20.697901ms",
     "resultCount": 1,
-    "resultSize": 306
+    "resultSize": 260
   },
   "profile": {
     "phaseTimes": {
-      "authorize": "744.299µs",
-      "fetch": "524.3µs",
-      "indexScan": "9.087106ms",
-      "instantiate": "52.443µs",
-      "parse": "271.049µs",
-      "plan": "7.450287ms",
-      "run": "6.130069ms"
+      "authorize": "34.347µs",
+      "fetch": "161.71µs",
+      "filter": "51.029µs",
+      "indexScan": "522.144µs",
+      "instantiate": "25.277µs",
+      "parse": "388.47µs",
+      "plan": "19.387894ms",
+      "run": "880.47µs"
     },
     "phaseCounts": {
-      "fetch": 16,
-      "indexScan": 187
+      "fetch": 12,
+      "filter": 1,
+      "indexScan": 1
     },
     "phaseOperators": {
       "authorize": 1,
       "fetch": 1,
-      "indexScan": 2
+      "filter": 1,
+      "indexScan": 1
     }
   }
 }</code></pre>
@@ -3914,1142 +3917,6 @@ cbq&gt; SELECT * FROM `travel-sample` WHERE type = "airline" LIMIT 1;</code></pr
 <div class="content">
 <div class="paragraph">
 <p>Show the statistics collected when <code>profile</code> is set to <code>timings</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -profile "timings";
-cbq&gt; SELECT * FROM `travel-sample` WHERE type = "airline" LIMIT 1;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  …
-  "profile": {
-    "phaseTimes": {
-      "authorize": "823.631µs",
-      "fetch": "656.873µs",
-      ...
-    },
-    "phaseCounts": {
-      "fetch": 16,
-      "indexScan": 187
-    },
-    "phaseOperators": {
-      "authorize": 1,
-      "fetch": 1,
-      "indexScan": 2
-    },
-    "executionTimings": {
-      "#operator": "Sequence",
-      "#stats": {
-        "#phaseSwitches": 2,
-        "execTime": "1.079µs",
-        "kernTime": "16.889187ms"
-      },
-      "~children": [
-        {
-          "#operator": "Authorize",
-          "#stats": {
-            "#phaseSwitches": 4,
-            "execTime": "5.423µs",
-            "kernTime": "16.043784ms",
-            "servTime": "818.208µs"
-          },
-          ...
-                  {
-                    "#operator": "Fetch",
-                    "#stats": {
-                      "#itemsIn": 187,
-                      "#itemsOut": 16,
-                      "#phaseSwitches": 413,
-                      "execTime": "128.434µs",
-                      "kernTime": "15.027879ms",
-                      "servTime": "1.590934ms",
-                      "state": "services"
-                    },
-                    "keyspace": "travel-sample",
-                    "namespace": "default"
-                  },
-                  ...</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>For the complete output, see <a href="#example-1">Example 4</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="plan"><a class="anchor" href="#plan"></a>Attribute Meta in System Keyspaces</h3>
-<div class="paragraph">
-<p><em>(Introduced in Couchbase Server 5.0)</em></p>
-</div>
-<div class="paragraph">
-<p>The <code>meta().plan</code> virtual attribute captures the whole query plan, and monitoring stats of various phases and involved query operators.
-The <code>meta().plan</code> must be explicitly called in the SELECT query projection list.</p>
-</div>
-<div class="paragraph">
-<p>The <code>meta().plan</code> attribute is enabled only for individual requests that are running (<code>active_requests</code>) or completed (<code>completed_requests</code>) when the profile is set to timings (<code>profile ="timings"</code>) for each individual request.
-If at the engine level, the profile is set to off and individual requests have been run with <code>profile ="timings"</code>, then the system keyspaces will return the plan only for those requests.</p>
-</div>
-<div class="paragraph">
-<p>Since there may be a combination of profile settings for all of the requests reported by the system keyspaces, not all requests returned will have a <code>meta().plan</code> attachment.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-For the <code>system:prepareds</code> requests, the <code>meta().plan</code> is available at all times since the <code>PREPARE</code> statement is not dependant on the profile setting.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>This attribute is enabled for the following system keyspaces:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#sys-active-req">system:active_requests</a></p>
-</li>
-<li>
-<p><a href="#sys-prepared">system:prepareds</a></p>
-</li>
-<li>
-<p><a href="#sys-completed-req">system:completed_requests</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For a detailed example, see <a href="#example-2">Example 5</a>.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="n1ql-cluster-monitoring"><a class="anchor" href="#n1ql-cluster-monitoring"></a>N1QL Cluster Monitoring</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="description"><a class="anchor" href="#description"></a>Description</h3>
-<div class="paragraph">
-<p>Couchbase Server allows you to monitor many aspects of an active cluster: cluster-aware operations, diagnostics, and more system keyspaces features that cover multiple nodes.
-Functionalities include:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Ability to access active / completed / prepared requests across all N1QL nodes from N1QL.</p>
-</li>
-<li>
-<p>Ability to list nodes by type and with status from N1QL.</p>
-</li>
-<li>
-<p>Ability to list system keyspaces from <code>system:keyspaces</code>.</p>
-</li>
-<li>
-<p>Extra fields in <code>system:active_requests</code> and <code>system:completed_requests</code>.</p>
-</li>
-<li>
-<p>Counters to keep track of specific requests, such as cancelled requests.</p>
-</li>
-<li>
-<p>Killing request for CREATE INDEX.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="system-keyspaces"><a class="anchor" href="#system-keyspaces"></a>System Keyspaces</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>The <code>system:keyspaces</code> keyspace can be augmented to list system keyspaces with a static map.
-The small disadvantage of this is that it has to be maintained as new system keyspaces are added.</p>
-</li>
-<li>
-<p>The <code>system:active_requests</code> and <code>system:completed_requests</code> keyspaces can report scan consistency.</p>
-</li>
-<li>
-<p>The <code>system:prepareds</code> keyspace can list min and max execution and service times, as well as average times.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="cbq-engine-cbauth"><a class="anchor" href="#cbq-engine-cbauth"></a>cbq-engine-cbauth</h3>
-<div class="paragraph">
-<p><em>(Introduced in Couchbase Server 5.0)</em></p>
-</div>
-<div class="paragraph">
-<p>Cbq-engine-cbauth is a new internal user that the query service uses to allow Query Workbench clients to query across multiple query nodes.</p>
-</div>
-<div class="paragraph">
-<p>Since Query Workbench can connect to the same node only when cbq-engine is running, Query Workbench cannot do any query-clustered operations.</p>
-</div>
-<div class="paragraph">
-<p>To get around this block, once the Query Workbench clients connect to a query node, this internal user (cbq-engine-cbauth) will be used to do any further inter-node user verification.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="vitals"><a class="anchor" href="#vitals"></a>Vitals</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The <code class="cmd">Vitals</code> API provides data about the running state and health of the query engine, such as number of logical cores, active threads, queued threads, CPU utilization, memory usage, network utilization, garbage collection percentage, and so on.
-This information can be very useful to assess the current workload and performance characteristics of a query engine, and hence load-balance the requests being sent to various query engines.</p>
-</div>
-<div class="sect2">
-<h3 id="get-system-vitals"><a class="anchor" href="#get-system-vitals"></a>Get System Vitals</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/vitals</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "uptime":"30h0m10.801209195s",
-  "local.time":"2016-02-18 17:39:41.612724694 -0800 PST",
-  "version":"1.0.0",
-  "total.threads":225,
-  "cores":8,
-  "gc.num":11607200,
-  "gc.pause.time":"1.849506783s",
-  "gc.pause.percent":0,
-  "memory.usage":10019216,
-  "memory.total":5628336088,
-  "memory.system":29055224,
-  "cpu.user.percent":0,
-  "cpu.sys.percent":0,
-  "request.completed.count":111,
-  "request.active.count":0,
-  "request.per.sec.1min":0.0007,
-  "request.per.sec.5min":0.0107,
-  "request.per.sec.15min":0.0091,
-  "request_time.mean":"170.870877ms",
-  "request_time.median":"733.364µs",
-  "request_time.80percentile":"21.85926ms",
-  "request_time.95percentile":"1.274152266s",
-  "request_time.99percentile":"1.588775188s",
-  "request.prepared.percent":0
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="sys-active-req"><a class="anchor" href="#sys-active-req"></a>system:active_requests</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This catalog lists all currently executing active requests or queries.</p>
-</div>
-<div class="paragraph">
-<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_requests" class="page">Requests</a>.
-The profile related attributes are described in the section <a href="#profile">Attribute profile in Query Response.</a></p>
-</div>
-<div class="sect2">
-<h3 id="get-active-requests"><a class="anchor" href="#get-active-requests"></a>Get Active Requests</h3>
-<div class="paragraph">
-<p>To view active requests with Admin REST API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/active_requests</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To view active requests with N1QL, including the query plan:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:active_requests;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
-  {
-    "active_requests": {
-      "clientContextID": "e6e81ad9-09b6-4c98-987a-a80947cbf4cd",
-      "elapsedTime": "22.361384ms",
-      "executionTime": "22.336681ms",
-      "node": "127.0.0.1:8091",
-      "phaseCounts": {
-        "primaryScan": 1
-      },
-      "phaseOperators": {
-        "authorize": 1,
-        "fetch": 1,
-        "primaryScan": 1
-      },
-      "phaseTimes": {
-        "authorize": "582.108µs",
-        "fetch": "20.525µs",
-        "instantiate": "27.358µs",
-        "parse": "346.188µs",
-        "plan": "31.911µs",
-        "primaryScan": "18.043218ms"
-      },
-      "remoteAddr": "127.0.0.1:65430",
-      "requestId": "6b0bff60-7d2c-459b-aafa-942c96c12770",
-      "requestTime": "2017-08-08 09:44:07.401941318 -0700 PDT",
-      "scanConsistency": "unbounded",
-      "state": "running",
-      "statement": "SELECT *, meta().plan FROM system:active_requests;",
-      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/ 537.36 (Couchbase Query Workbench (5.0.1-4603-enterprise))",
-      "users": "Administrator"
-    },
-    "plan": { <i class="conum" data-value="1"></i><b>(1)</b>
-      "#operator": "Sequence",
-      "#stats": {
-      "#phaseSwitches": 1,
-      "execTime": "1.102µs",
-      "kernTime": "22.539451ms",
-      "state": "kernel"
-    },
-    "~children": [
-      {
-        "#operator": "Authorize",
-        "#stats": {
-        "#phaseSwitches": 3,
-        "execTime": "3.372µs",
-        "kernTime": "21.961146ms",
-        "servTime": "578.736µs",
-        "state": "kernel"
-      },
-...
-    "plan": {
-      "#operator": "Sequence",
-      "#stats": {
-        "#phaseSwitches": 1,
-        "execTime": "13.638µs",
-        "kernTime": "37.408896ms",
-        "state": "kernel"
-      },
-      "~children": [
-        {
-          "#operator": "Authorize",
-          "#stats": {
-            "#phaseSwitches": 3,
-            "execTime": "5.219µs",
-            "kernTime": "35.954967ms",
-            "servTime": "1.460405ms",
-            "state": "kernel"
-          },
-          "privileges": {
-            "List": [
-              {
-                "Priv": 4,
-                "Target": "#system:active_requests"
-              }
-            ]
-          },
-          "~child": {
-            "#operator": "Sequence",
-            "#stats": {
-              "#phaseSwitches": 1,
-              "execTime": "2.273µs",
-              "kernTime": "36.083024ms",
-              "state": "kernel"
-            },
-            "~children": [
-              {
-                "#operator": "PrimaryScan",
-                "#stats": {
-                  "#itemsOut": 1,
-                  "#phaseSwitches": 7,
-                  "execTime": "18.137103ms",
-                  "kernTime": "4.827µs",
-                  "servTime": "16.576598ms"
-                },
-                "index": "#primary",
-                "keyspace": "active_requests",
-                "namespace": "#system",
-                "using": "system"
-              },
-              {
-                "#operator": "Fetch",
-                "#stats": {
-                  "#itemsIn": 1,
-                  "#phaseSwitches": 7,
-                  "execTime": "14.894µs",
-                  "kernTime": "34.727264ms",
-                  "servTime": "1.407022ms",
-                  "state": "services"
-                },
-                "keyspace": "active_requests",
-                "namespace": "#system"
-              },
-              {
-                "#operator": "Sequence",
-                "#stats": {
-                  "#phaseSwitches": 1,
-                  "execTime": "1.913µs",
-                  "kernTime": "36.296279ms",
-                  "state": "kernel"
-                },
-                "~children": [
-                  {
-                    "#operator": "InitialProject",
-                    "#stats": {
-                      "#phaseSwitches": 1,
-                      "execTime": "12.445µs",
-                      "kernTime": "36.282886ms",
-                      "state": "kernel"
-                    },
-                    "result_terms": [
-                      {
-                        "expr": "self",
-                        "star": true
-                      },
-                      {
-                        "expr": "(meta(`active_requests`).`plan`)"
-                      }
-                    ]
-                  },
-                  {
-                    "#operator": "FinalProject",
-                    "#stats": {
-                      "#phaseSwitches": 1,
-                      "execTime": "17.767µs",
-                      "kernTime": "36.332512ms",
-                      "state": "kernel"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "#operator": "Stream",
-          "#stats": {
-            "#phaseSwitches": 1,
-            "execTime": "725ns",
-            "kernTime": "37.932713ms",
-            "state": "kernel"
-          }
-        }
-      ]
-    }
-  }
-]</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <strong>plan</strong> section contains a tree of operators that combine to execute the N1QL query.
-The root operator is a Sequence, which itself has a collection of child operators like Authorize, PrimaryScan, Fetch, and possibly even more Sequences.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="terminate-an-active-request"><a class="anchor" href="#terminate-an-active-request"></a>Terminate an Active Request</h3>
-<div class="paragraph">
-<p>The DELETE command can be used to terminate an active request, for instance, a non-responding or a long-running query.</p>
-</div>
-<div class="paragraph">
-<p>To terminate an active request <code class="var">uuid</code> with the Admin REST API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/active_requests/uuid</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To terminate an active request <code class="var">uuid</code> with N1QL:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:active_requests WHERE requestId = "uuid";</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="sys-prepared"><a class="anchor" href="#sys-prepared"></a>system:prepareds</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This catalog provides data about the known prepared statements and their state in a query engine’s prepared statement cache.
-For each prepared statement, this catalog provides information such as name, statement, query plan, last use time, number of uses, and so on.</p>
-</div>
-<div class="paragraph">
-<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_statements" class="page">Statements</a>.</p>
-</div>
-<div class="sect2">
-<h3 id="get-prepared-statements"><a class="anchor" href="#get-prepared-statements"></a>Get Prepared Statements</h3>
-<div class="paragraph">
-<p>To get a list of all known prepared statements, you can use the Admin REST API or a N1QL query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/prepareds</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:prepareds;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To get information about a specific prepared statement <code class="var">example1</code>, you can use the Admin REST API or a N1QL query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/prepareds/example1</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:prepareds WHERE name = "example1";</code></pre>
-</div>
-</div>
-<div class="exampleblock">
-<div class="title">Example 3. Get Prepared</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">PREPARE p1 AS SELECT * FROM default WHERE foo = 42;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "requestID": "87520590-8932-4be8-8d08-6bf4a0aad0d5",
-  "signature": "json",
-  "results": [
-    {
-      "encoded_plan": "H4sIAAAAAAAA/6RSXWsUMRT9K+H0pV2CUBGEiA++FAQfFtY3Kd0wc2Y2mknizZ26tYy/XbKuLN0+aSEQcjmcj5z7CKYu9+zvSvQJDrBIfiIcyjUscqF4zQL3iIvTAxt+n5k6wuJXtwuxFya4L09BH2bdZQk/G6pIuA+RI2uj+hSqHuCfvYxUOPQc/BzVHW9YrCXcw71dbpe/Gv9lYi1h8vKw6XyCRUg993C4KH/GsPjGh1p8x5OJ4x88n841pBEOYw1Y7FOdG2q3+xe6c4K1Fx8jI14U9yZEpcCiy6kPGnIr9fJye1TdvtoOOW+vzHvz5vXVMw8fU9Dg41ryV3bNuLDOUe+UMtWDFvelASvjAIuqXuBUZraazp2kE9Nyu7RzBtmo0E84VFzDmLzOwhZ7BYcVFgvlvm1HERYvNOXa+GoqIzs1KzNInswxmfmxo9AMOR+yvcPyOwAA//+dg3Nd3AIAAA==",
-      "name": "p1",
-      "operator": {
-      "#operator": "Sequence",
-      "~children": [
-        {
-          "#operator": "Authorize",
-            "privileges": {
-              "List": [
-                {
-                  "Priv": 7,
-                  "Target": "default:default"
-                }
-              ]
-            },
-            "~child": {
-              "#operator": "Sequence",
-              "~children": [
-                {
-                  "#operator": "PrimaryScan",
-                  "index": "#primary",
-                  "keyspace": "default",
-                  "namespace": "default",
-                  "using": "gsi"
-                },
-                {
-                  "#operator": "Fetch",
-                  "keyspace": "default",
-                  "namespace": "default"
-                },
-                {
-                  "#operator": "Parallel",
-                  "~child": {
-                    "#operator": "Sequence",
-                    "~children": [
-                      {
-                        "#operator": "Filter",
-                        "condition": "((`default`.`foo`) = 42)"
-                      },
-                      {
-                        "#operator": "InitialProject",
-                        "result_terms": [
-                          {
-                            "expr": "self",
-                            "star": true
-                          }
-                        ]
-                      },
-                      {
-                        "#operator": "FinalProject"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "#operator": "Stream"
-          }
-        ]
-      },
-      "signature": {
-        "*": "*"
-      },
-      "text": "prepare p1 as select * from default where foo = 42;"
-    }
-  ],
-  "status": "success",
-  "metrics": {
-    "elapsedTime": "34.712303ms",
-    "executionTime": "34.68522ms",
-    "resultCount": 1,
-    "resultSize": 3443
-  }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:prepareds;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "requestID": "e37ab60b-b616-478f-8cf3-cdc16e39283d",
-  "signature": {
-    "*": "*",
-    "plan": "json"
-  },
-  "results": [
-    {
-      "plan": {
-        "#operator": "Sequence",
-        "~children": [
-          {
-            "#operator": "Authorize",
-            "privileges": {
-              "List": [
-                {
-                  "Priv": 7,
-                  "Target": "default:default"
-                }
-              ]
-            },
-            "~child": {
-              "#operator": "Sequence",
-              "~children": [
-                {
-                  "#operator": "PrimaryScan",
-                  "index": "#primary",
-                  "keyspace": "default",
-                  "namespace": "default",
-                  "using": "gsi"
-                },
-                {
-                  "#operator": "Fetch",
-                  "keyspace": "default",
-                  "namespace": "default"
-                },
-                {
-                  "#operator": "Parallel",
-                  "~child": {
-                    "#operator": "Sequence",
-                    "~children": [
-                      {
-                        "#operator": "Filter",
-                        "condition": "((`default`.`foo`) = 42)"
-                      },
-                      {
-                        "#operator": "InitialProject",
-                        "result_terms": [
-                          {
-                            "expr": "self",
-                            "star": true
-                          }
-                        ]
-                      },
-                      {
-                        "#operator": "FinalProject"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "#operator": "Stream"
-          }
-        ]
-      },
-      "prepareds": {
-        "encoded_plan": "H4sIAAAAAAAA/6RSXWsUMRT9K+H0pV2CUBGEiA++FAQfFtY3Kd0wc2Y2mknizZ26tYy/XbKuLN0+aSEQcjmcj5z7CKYu9+zvSvQJDrBIfiIcyjUscqF4zQL3iIvTAxt+n5k6wuJXtwuxFya4L09BH2bdZQk/G6pIuA+RI2uj+hSqHuCfvYxUOPQc/BzVHW9YrCXcw71dbpe/Gv9lYi1h8vKw6XyCRUg993C4KH/GsPjGh1p8x5OJ4x88n841pBEOYw1Y7FOdG2q3+xe6c4K1Fx8jI14U9yZEpcCiy6kPGnIr9fJye1TdvtoOOW+vzHvz5vXVMw8fU9Dg41ryV3bNuLDOUe+UMtWDFvelASvjAIuqXuBUZraazp2kE9Nyu7RzBtmo0E84VFzDmLzOwhZ7BYcVFgvlvm1HERYvNOXa+GoqIzs1KzNInswxmfmxo9AMOR+yvcPyOwAA//+dg3Nd3AIAAA==",
-        "name": "p1",
-        "node": "127.0.0.1:8091",
-        "statement": "prepare p1 as select * from default where foo = 42;",
-        "uses": 0
-      }
-    }
-  ],
-  "status": "success",
-  "metrics": {
-    "elapsedTime": "122.056934ms",
-    "executionTime": "122.03689ms",
-    "resultCount": 1,
-    "resultSize": 3499
-  }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="delete-prepared-statement"><a class="anchor" href="#delete-prepared-statement"></a>Delete Prepared Statement</h3>
-<div class="paragraph">
-<p>To delete a specific prepared statement <code class="var">p1</code>, you can use the Admin REST API or a N1QL query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/prepareds/p1</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds WHERE name = "p1";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To delete all the known prepared statements, you must use a N1QL query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds;</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="sys-completed-req"><a class="anchor" href="#sys-completed-req"></a>system:completed_requests</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>By default, this catalog maintains a list of the most recent completed requests that that have run longer than a predefined threshold of time.
-(You can also log completed requests that meet other conditions that you define.)</p>
-</div>
-<div class="paragraph">
-<p>For each completed request, this catalog maintains information such as requestId, statement text, prepared name (if prepared statement), request time, service time, and so on.
-This information provides a general insight into the health and performance of the query engine and the cluster.</p>
-</div>
-<div class="paragraph">
-<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_requests" class="page">Requests</a>.
-Note that most field names and meanings match exactly those of <code>system:active_requests</code>.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Request profiling affects the <code>system:completed_requests</code> keyspace in the following ways:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>When the feature is turned on, completed requests are stored with their execution plan.</p>
-</li>
-<li>
-<p>Profiling information is likely to use 100KB+ per entry.</p>
-</li>
-<li>
-<p>Due to the added overhead of running both profiling and logging, we recommend turning on both of them only when needed.
-Running only one of them continuously has no noticeable affect on performance.</p>
-</li>
-<li>
-<p>Profiling does not carry any extra cost beyond memory for completed requests, so it&#8217;s fine to run it continuously.</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="sect2">
-<h3 id="get-completed-requests"><a class="anchor" href="#get-completed-requests"></a>Get Completed Requests</h3>
-<div class="paragraph">
-<p>To get a list of all logged completed requests using the Admin REST API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/completed_requests</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To get a list of all logged completed requests using N1QL, including the query plan:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:completed_requests;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
-  {
-    "completed_requests": {
-      "clientContextID": "9b79305d-b67c-4b04-8312-978c9c77f3b8",
-      "elapsedTime": "3.18228764s",
-      "errorCount": 0,
-      "node": "192.168.1.7",
-      "phaseCounts": {
-        "fetch": 23568,
-        "primaryScan": 24139
-      },
-      "phaseOperators": {
-        "fetch": 1,
-        "primaryScan": 1
-      },
-      "phaseTimes": {
-        "authorize": "1.26817ms",
-        "fetch": "758.740363ms",
-        "instantiate": "55.679µs",
-        "parse": "713.903µs",
-        "plan": "489.134µs",
-        "primaryScan": "245.557631ms"
-      },
-      "requestId": "91a651d6-a782-4e43-a249-2f54c55b2553",
-      "resultCount": 19477,
-      "resultSize": 60651657,
-      "scanConsistency": "unbounded",
-      "serviceTime": "3.182261202s",
-      "state": "closed",
-      "statement": "select * from `travel-sample`",
-      "time": "2017-02-27 11:02:59.008480274 -0800 PST"
-    },
-    "plan": {
-      "#operator": "Sequence",
-      "#stats": {
-        "#phaseSwitches": 2,
-        "execTime": "4.613µs",
-        "kernTime": "3.181146983s"
-      },
-      "~children": [
-        {
-          "#operator": "Authorize",
-          "#stats": {
-            "#phaseSwitches": 4,
-            "execTime": "3.717µs",
-            "kernTime": "3.17986639s",
-            "servTime": "1.264453ms"
-          },
-          "privileges": {
-            "List": [
-              {
-                "Priv": 1,
-                "Target": "default:travel-sample"
-              },
-              {
-                "Priv": 7,
-                "Target": "default:travel-sample"
-              }
-            ]
-          },
-          "~child": {
-            "#operator": "Sequence",
-            "#stats": {
-              "#phaseSwitches": 3,
-              "execTime": "2.741µs",
-              "kernTime": "3.179859494s"
-            },
-            "~children": [
-              {
-                "#operator": "PrimaryScan",
-                "#stats": {
-                  "#itemsOut": 24593,
-                  "#phaseSwitches": 98377,
-                  "execTime": "24h49m9.233250854s",
-                  "kernTime": "2.960383961s",
-                  "servTime": "136.104883ms",
-                  "state": "running"
-                },
-                "index": "def_primary",
-                "keyspace": "travel-sample",
-                "namespace": "default",
-                "using": "gsi"
-              },
-              {
-                "#operator": "Fetch",
-                "#stats": {
-                  "#itemsIn": 23569,
-                  "#itemsOut": 22544,
-                  "#phaseSwitches": 92279,
-                  "execTime": "89.328839ms",
-                  "kernTime": "2.417774851s",
-                  "servTime": "700.949543ms"
-                },
-                "keyspace": "travel-sample",
-                "namespace": "default"
-              },
-              {
-                "#operator": "Sequence",
-                "#stats": {
-                  "#phaseSwitches": 5,
-                  "execTime": "8.647µs",
-                  "kernTime": "3.179847023s"
-                },
-                "~children": [
-                  {
-                    "#operator": "InitialProject",
-                    "#stats": {
-                      "#itemsIn": 21521,
-                      "#itemsOut": 21520,
-                      "#phaseSwitches": 86087,
-                      "execTime": "20.284388ms",
-                      "kernTime": "3.159569346s"
-                    },
-                    "result_terms": [
-                      {
-                        "expr": "self",
-                        "star": true
-                      }
-                    ]
-                  },
-                  {
-                    "#operator": "FinalProject",
-                    "#stats": {
-                      "#itemsIn": 20496,
-                      "#itemsOut": 20496,
-                      "#phaseSwitches": 81991,
-                      "execTime": "11.143936ms",
-                      "kernTime": "3.168705526s"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "#operator": "Stream",
-          "#stats": {
-            "#itemsIn": 19478,
-            "#itemsOut": 19477,
-            "#phaseSwitches": 38961,
-            "execTime": "6.789206ms",
-            "kernTime": "3.174331007s"
-          }
-        }
-      ]
-    }
-  }
-]</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="purge-the-completed-requests"><a class="anchor" href="#purge-the-completed-requests"></a>Purge the Completed Requests</h3>
-<div class="paragraph">
-<p>To purge a completed request <code class="var">uuid</code> with the Admin REST API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/completed_requests/uuid</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To purge a completed request <code class="var">uuid</code> with N1QL:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:completed_requests WHERE requestId = "uuid";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To purge the completed requests for a given time period, use:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:completed_requests WHERE requestTime LIKE "2015-09-09%";</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="configure-the-completed-requests"><a class="anchor" href="#configure-the-completed-requests"></a>Configure the Completed Requests</h3>
-<div class="paragraph">
-<p>You can configure the <code>system:completed_requests</code> keyspace by specifying parameters through the Admin API settings endpoint.</p>
-</div>
-<div class="paragraph">
-<p>In Couchbase Server 6.5 and later, you can specify the conditions for completed request logging using the <code>completed</code> field.</p>
-</div>
-<div class="paragraph">
-<p>This field takes a JSON object containing the names and values of logging qualifiers.
-Completed requests that meet the defined qualifiers are logged.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"user": "marco", "error": 12003}}'</code></pre>
-</div>
-</div>
-<div class="sect3">
-<h4 id="logging-qualifiers"><a class="anchor" href="#logging-qualifiers"></a>Logging Qualifiers</h4>
-<div class="paragraph">
-<p>You can specify the following logging qualifiers.
-A completed request is logged if <em>any</em> of the qualifiers are met (logical OR).</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">threshold</dt>
-<dd>
-<p>The execution time threshold in milliseconds.</p>
-</dd>
-<dt class="hdlist1">aborted</dt>
-<dd>
-<p>Whether to log requests that generate a panic.</p>
-</dd>
-<dt class="hdlist1">error</dt>
-<dd>
-<p>Log requests returning this error number.</p>
-</dd>
-<dt class="hdlist1">client</dt>
-<dd>
-<p>Log requests from this IP address.</p>
-</dd>
-<dt class="hdlist1">user</dt>
-<dd>
-<p>Log requests with this user name.</p>
-</dd>
-<dt class="hdlist1">context</dt>
-<dd>
-<p>Log requests with this client context ID.</p>
-</dd>
-</dl>
-</div>
-<div class="paragraph">
-<p>For full details, refer to <a href="../../settings/query-settings.html#_logging_parameters" class="page">Logging parameters</a>.</p>
-</div>
-<div class="paragraph">
-<p>The basic syntax adds a qualifier to the logging parameters, i.e. any existing qualifiers are not removed.
-You can change the value of a logging qualifier by specifying the same qualifier again with a new value.</p>
-</div>
-<div class="paragraph">
-<p>To add a new instance of an existing qualifier, use a plus sign (<code>+</code>) before the qualifier name, e.g. <code>+user</code>.
-To remove a qualifier, use a minus sign (<code>-</code>) before the qualifier name, e.g. <code>-user</code>.</p>
-</div>
-<div class="paragraph">
-<p>For example, the following request will add user <code>simon</code> to those tracked, and remove error <code>12003</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"+user": "simon", "-error": 12003}}'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Similarly, you could remove all logging by execution time with the following request, as long as the value matches the existing threshold.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"-threshold": 1000}}'</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="tagged-sets"><a class="anchor" href="#tagged-sets"></a>Tagged Sets</h4>
-<div class="paragraph">
-<p>You can also specify qualifiers that have to be met as a group for the completed request to be logged (logical AND).</p>
-</div>
-<div class="paragraph">
-<p>To do this, specify the <code>tag</code> field along with a set of qualifiers, like so:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"user": "marco", "error": 12003, "tag": "both_user_and_error"}}'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case, the request will be logged when both user and error match.</p>
-</div>
-<div class="paragraph">
-<p>The tag name can be any string that is meaningful and unique.
-Requests that match a tagged set of conditions are logged with a field <code>~tag</code>, which is set to the name of the tag.</p>
-</div>
-<div class="paragraph">
-<p>To add a qualifier to a tagged set, specify the tag name again along with the new qualifier:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"client": "172.1.2.3",  "tag": "both_user_and_error"}}'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You cannot add a new instance of an existing qualifier to a tagged set using a plus sign (<code>+</code>) before the qualifier name.
-For example, you cannot add a <code>user</code> qualifier to a tagged set that already contains a <code>user</code> qualifier.
-If you need to track two users with the same error, create two tagged sets, one per user.</p>
-</div>
-<div class="paragraph">
-<p>You can remove a qualifier from a tagged set using a minus sign (<code>-</code>) before the qualifier name, e.g. <code>-user</code>.
-When you remove the last qualifier from a tagged set, the tagged set is removed.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>You can specify multiple tagged sets.
-In this case, completed requests are logged if they match all of the qualifiers in any of the tagged sets.</p>
-</div>
-<div class="paragraph">
-<p>You can also specify a mixture of tagged sets and individual qualifiers.
-In this case, completed requests are logged if they match any of the individual qualifiers, or all of the qualifiers in any of the tagged sets.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="completed-threshold"><a class="anchor" href="#completed-threshold"></a>Completed Threshold</h4>
-<div class="paragraph">
-<p>The <code class="param">completed-threshold</code> field provides another way of specifying the <code>threshold</code> qualifier within the <code>completed</code> field.</p>
-</div>
-<div class="paragraph">
-<p>This field sets the minimum request duration after which requests are added to the <code>system:completed_requests</code> catalog.
-The default value is 1000ms.
-Specify <code class="in">0</code> to log all requests and <code class="in">-1</code> to not log any requests to the keyspace.</p>
-</div>
-<div class="paragraph">
-<p>To specify a different value, use:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:port/admin/settings -H 'Content-Type: application/json' -d '{"completed-threshold":0}' -u user:pword</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="completed-limit"><a class="anchor" href="#completed-limit"></a>Completed Limit</h4>
-<div class="paragraph">
-<p>The <code class="param">completed-limit</code> field sets the number of most recent requests to be tracked in the <code>system:completed_requests</code> catalog.
-The default value is 4000.
-Specify <code class="in">0</code> to not track any requests and <code class="in">-1</code> to set no limit.</p>
-</div>
-<div class="paragraph">
-<p>To specify a different value, use:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:port/admin/settings -H 'Content-Type: application/json' -d '{"completed-limit":1000}' -u user:pword</code></pre>
-</div>
-</div>
-<div id="example-1" class="exampleblock">
-<div class="title">Example 4. Completed Request</div>
-<div class="content">
-<div class="paragraph">
-<p>Set the profile to timings:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5379,6 +4246,933 @@ cbq&gt; SELECT * FROM `travel-sample` WHERE type = "airline" LIMIT 1;</code></pr
 </div>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="plan"><a class="anchor" href="#plan"></a>Attribute Meta in System Keyspaces</h3>
+<div class="paragraph">
+<p><em>(Introduced in Couchbase Server 5.0)</em></p>
+</div>
+<div class="paragraph">
+<p>The <code>meta().plan</code> virtual attribute captures the whole query plan, and monitoring stats of various phases and involved query operators.
+The <code>meta().plan</code> must be explicitly called in the SELECT query projection list.</p>
+</div>
+<div class="paragraph">
+<p>The <code>meta().plan</code> attribute is enabled only for individual requests that are running (<code>active_requests</code>) or completed (<code>completed_requests</code>) when the profile is set to timings (<code>profile ="timings"</code>) for each individual request.
+If at the engine level, the profile is set to off and individual requests have been run with <code>profile ="timings"</code>, then the system keyspaces will return the plan only for those requests.</p>
+</div>
+<div class="paragraph">
+<p>Since there may be a combination of profile settings for all of the requests reported by the system keyspaces, not all requests returned will have a <code>meta().plan</code> attachment.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For the <code>system:prepareds</code> requests, the <code>meta().plan</code> is available at all times since the <code>PREPARE</code> statement is not dependant on the profile setting.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This attribute is enabled for the following system keyspaces:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#sys-active-req">system:active_requests</a></p>
+</li>
+<li>
+<p><a href="#sys-prepared">system:prepareds</a></p>
+</li>
+<li>
+<p><a href="#sys-completed-req">system:completed_requests</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For a detailed example, see <a href="#example-2">Example 5</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="n1ql-cluster-monitoring"><a class="anchor" href="#n1ql-cluster-monitoring"></a>N1QL Cluster Monitoring</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="description"><a class="anchor" href="#description"></a>Description</h3>
+<div class="paragraph">
+<p>Couchbase Server allows you to monitor many aspects of an active cluster: cluster-aware operations, diagnostics, and more system keyspaces features that cover multiple nodes.
+Functionalities include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Ability to access active / completed / prepared requests across all N1QL nodes from N1QL.</p>
+</li>
+<li>
+<p>Ability to list nodes by type and with status from N1QL.</p>
+</li>
+<li>
+<p>Ability to list system keyspaces from <code>system:keyspaces</code>.</p>
+</li>
+<li>
+<p>Extra fields in <code>system:active_requests</code> and <code>system:completed_requests</code>.</p>
+</li>
+<li>
+<p>Counters to keep track of specific requests, such as cancelled requests.</p>
+</li>
+<li>
+<p>Killing request for CREATE INDEX.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="system-keyspaces"><a class="anchor" href="#system-keyspaces"></a>System Keyspaces</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>system:keyspaces</code> keyspace can be augmented to list system keyspaces with a static map.
+The small disadvantage of this is that it has to be maintained as new system keyspaces are added.</p>
+</li>
+<li>
+<p>The <code>system:active_requests</code> and <code>system:completed_requests</code> keyspaces can report scan consistency.</p>
+</li>
+<li>
+<p>The <code>system:prepareds</code> keyspace can list min and max execution and service times, as well as average times.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cbq-engine-cbauth"><a class="anchor" href="#cbq-engine-cbauth"></a>cbq-engine-cbauth</h3>
+<div class="paragraph">
+<p><em>(Introduced in Couchbase Server 5.0)</em></p>
+</div>
+<div class="paragraph">
+<p>Cbq-engine-cbauth is a new internal user that the query service uses to allow Query Workbench clients to query across multiple query nodes.</p>
+</div>
+<div class="paragraph">
+<p>Since Query Workbench can connect to the same node only when cbq-engine is running, Query Workbench cannot do any query-clustered operations.</p>
+</div>
+<div class="paragraph">
+<p>To get around this block, once the Query Workbench clients connect to a query node, this internal user (cbq-engine-cbauth) will be used to do any further inter-node user verification.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="vitals"><a class="anchor" href="#vitals"></a>Vitals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code class="cmd">Vitals</code> API provides data about the running state and health of the query engine, such as number of logical cores, active threads, queued threads, CPU utilization, memory usage, network utilization, garbage collection percentage, and so on.
+This information can be very useful to assess the current workload and performance characteristics of a query engine, and hence load-balance the requests being sent to various query engines.</p>
+</div>
+<div class="paragraph">
+<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_vitals" class="page">Vitals</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="get-system-vitals"><a class="anchor" href="#get-system-vitals"></a>Get System Vitals</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/vitals</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "uptime":"32m8.864057439s",
+  "local.time":"2019-05-06 07:44:38.23887048 -0700 PDT m=+1932.108850381",
+  "version":"2.0.0-N1QL",
+  "total.threads":114,
+  "cores":1,
+  "gc.num":37949760,
+  "gc.pause.time":"10.23207ms",
+  "gc.pause.percent":0,
+  "memory.usage":17112800,
+  "memory.total":2941446944,
+  "memory.system":73201912,
+  "cpu.user.percent":0,
+  "cpu.sys.percent":0,
+  "request.completed.count":435,
+  "request.active.count":0,
+  "request.per.sec.1min":0.0023,
+  "request.per.sec.5min":0.141,
+  "request.per.sec.15min":0.2009,
+  "request_time.mean":"58.058383ms",
+  "request_time.median":"10.141175ms",
+  "request_time.80percentile":"14.391648ms",
+  "request_time.95percentile":"38.252744ms",
+  "request_time.99percentile":"1.372802439s",
+  "request.prepared.percent":0
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sys-active-req"><a class="anchor" href="#sys-active-req"></a>system:active_requests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This catalog lists all currently executing active requests or queries.</p>
+</div>
+<div class="paragraph">
+<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_requests" class="page">Requests</a>.
+The profile related attributes are described in the section <a href="#profile">Attribute profile in Query Response.</a></p>
+</div>
+<div class="sect2">
+<h3 id="get-active-requests"><a class="anchor" href="#get-active-requests"></a>Get Active Requests</h3>
+<div class="paragraph">
+<p>To view active requests with Admin REST API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/active_requests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To view active requests with N1QL, including the query plan:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:active_requests;</code></pre>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Get Active</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:active_requests;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "active_requests": {
+      "clientContextID": "81984707-a9cd-4b78-9110-d130eb580d7f",
+      "elapsedTime": "65.543946ms",
+      "executionTime": "65.507111ms",
+      "node": "127.0.0.1:8091",
+      "phaseCounts": {
+        "primaryScan": 1
+      },
+      "phaseOperators": {
+        "authorize": 1,
+        "fetch": 1,
+        "primaryScan": 1
+      },
+      "phaseTimes": {
+        "authorize": "2.361862ms",
+        "fetch": "7.222µs",
+        "instantiate": "13.233µs",
+        "parse": "660.048µs",
+        "plan": "52.877µs",
+        "primaryScan": "41.125271ms"
+      },
+      "remoteAddr": "127.0.0.1:57065",
+      "requestId": "27e73286-c6cc-4c26-8977-ef8d68e91c8f",
+      "requestTime": "2019-05-06 09:08:42.431161361 -0700 PDT m=+6976.301141271",
+      "scanConsistency": "unbounded",
+      "state": "running",
+      "statement": "SELECT *, meta().plan FROM system:active_requests;",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:66.0) Gecko/20100101 Firefox/66.0 (Couchbase Query Workbench (6.5.0-2859-enterprise))",
+      "users": "Administrator"
+    },
+    "plan": { <i class="conum" data-value="1"></i><b>(1)</b>
+      "#operator": "Sequence",
+      "#stats": {
+        "#phaseSwitches": 1,
+        "execTime": "1.661µs"
+      },
+      "~children": [
+        {
+          "#operator": "Authorize",
+          "#stats": {
+            "#phaseSwitches": 3,
+            "execTime": "4.844µs",
+            "servTime": "2.357018ms"
+          },
+...
+    "plan": {
+      "#operator": "Sequence",
+      "#stats": {
+        "#phaseSwitches": 1,
+        "execTime": "1.661µs"
+      },
+      "~children": [
+        {
+          "#operator": "Authorize",
+          "#stats": {
+            "#phaseSwitches": 3,
+            "execTime": "4.844µs",
+            "servTime": "2.357018ms"
+          },
+          "privileges": {
+            "List": [
+              {
+                "Priv": 4,
+                "Target": "#system:active_requests"
+              }
+            ]
+          },
+          "~child": {
+            "#operator": "Sequence",
+            "#stats": {
+              "#phaseSwitches": 1,
+              "execTime": "2.71µs"
+            },
+            "~children": [
+              {
+                "#operator": "PrimaryScan",
+                "#stats": {
+                  "#itemsOut": 1,
+                  "#phaseSwitches": 7,
+                  "execTime": "22.314µs",
+                  "kernTime": "2.13µs",
+                  "servTime": "41.102957ms"
+                },
+                "index": "#primary",
+                "keyspace": "active_requests",
+                "namespace": "#system",
+                "using": "system"
+              },
+              {
+                "#operator": "Fetch",
+                "#stats": {
+                  "#itemsIn": 1,
+                  "#phaseSwitches": 5,
+                  "execTime": "7.222µs",
+                  "kernTime": "41.130913ms",
+                  "servTime": "22.888285ms",
+                  "state": "services"
+                },
+                "keyspace": "active_requests",
+                "namespace": "#system"
+              },
+              {
+                "#operator": "Sequence",
+                "#stats": {
+                  "#phaseSwitches": 1,
+                  "execTime": "1.544µs"
+                },
+                "~children": [
+                  {
+                    "#operator": "InitialProject",
+                    "#stats": {
+                      "#phaseSwitches": 1,
+                      "execTime": "980ns",
+                      "kernTime": "64.066618ms",
+                      "state": "kernel"
+                    },
+                    "result_terms": [
+                      {
+                        "expr": "self",
+                        "star": true
+                      },
+                      {
+                        "expr": "(meta(`active_requests`).`plan`)"
+                      }
+                    ]
+                  },
+                  {
+                    "#operator": "FinalProject",
+                    "#stats": {
+                      "#phaseSwitches": 1,
+                      "execTime": "827ns"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "#operator": "Stream",
+          "#stats": {
+            "#phaseSwitches": 1,
+            "execTime": "1.29µs",
+            "kernTime": "66.511806ms",
+            "state": "kernel"
+          }
+        }
+      ],
+      "~versions": [
+        "2.0.0-N1QL",
+        "6.5.0-2859-enterprise"
+      ]
+    }
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <strong>plan</strong> section contains a tree of operators that combine to execute the N1QL query.
+The root operator is a Sequence, which itself has a collection of child operators like Authorize, PrimaryScan, Fetch, and possibly even more Sequences.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="terminate-an-active-request"><a class="anchor" href="#terminate-an-active-request"></a>Terminate an Active Request</h3>
+<div class="paragraph">
+<p>The DELETE command can be used to terminate an active request, for instance, a non-responding or a long-running query.</p>
+</div>
+<div class="paragraph">
+<p>To terminate an active request <code class="var">uuid</code> with the Admin REST API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/active_requests/uuid</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To terminate an active request <code class="var">uuid</code> with N1QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:active_requests WHERE requestId = "uuid";</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sys-prepared"><a class="anchor" href="#sys-prepared"></a>system:prepareds</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This catalog provides data about the known prepared statements and their state in a query engine’s prepared statement cache.
+For each prepared statement, this catalog provides information such as name, statement, query plan, last use time, number of uses, and so on.</p>
+</div>
+<div class="paragraph">
+<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_statements" class="page">Statements</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="get-prepared-statements"><a class="anchor" href="#get-prepared-statements"></a>Get Prepared Statements</h3>
+<div class="paragraph">
+<p>To get a list of all known prepared statements, you can use the Admin REST API or a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/prepareds</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:prepareds;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To get information about a specific prepared statement <code class="var">example1</code>, you can use the Admin REST API or a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/prepareds/example1</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:prepareds WHERE name = "example1";</code></pre>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Get Prepared</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">PREPARE p1 AS SELECT * FROM default WHERE foo = 42;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "requestID": "87520590-8932-4be8-8d08-6bf4a0aad0d5",
+  "signature": "json",
+  "results": [
+    {
+      "encoded_plan": "H4sIAAAAAAAA/wEAAP//AAAAAAAAAAA=",
+      "featureControls": 12,
+      "indexApiVersion": 4,
+      "name": "[127.0.0.1:8091]p1",
+      "namespace": "default",
+      "operator": {
+        "#operator": "Sequence",
+        "~children": [
+          {
+            "#operator": "Authorize",
+            "privileges": {
+              "List": [
+                {
+                  "Priv": 7,
+                  "Target": "default:travel-sample"
+                }
+              ]
+            },
+            "~child": {
+              "#operator": "Sequence",
+              "~children": [
+                {
+                  "#operator": "PrimaryScan3",
+                  "index": "def_primary",
+                  "index_projection": {
+                    "primary_key": true
+                  },
+                  "keyspace": "travel-sample",
+                  "namespace": "default",
+                  "using": "gsi"
+                },
+                {
+                  "#operator": "Fetch",
+                  "keyspace": "travel-sample",
+                  "namespace": "default"
+                },
+                {
+                  "#operator": "Parallel",
+                  "~child": {
+                    "#operator": "Sequence",
+                    "~children": [
+                      {
+                        "#operator": "Filter",
+                        "condition": "((`travel-sample`.`foo`) = 42)"
+                      },
+                      {
+                        "#operator": "InitialProject",
+                        "result_terms": [
+                          {
+                            "expr": "self",
+                            "star": true
+                          }
+                        ]
+                      },
+                      {
+                        "#operator": "FinalProject"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "#operator": "Stream"
+          }
+        ]
+      },
+      "signature": {
+        "*": "*"
+      },
+      "text": "PREPARE p1 AS SELECT * FROM `travel-sample` WHERE foo = 42;"
+    }
+  ],
+  "status": "success",
+  "metrics": {
+    "elapsedTime": "34.712303ms",
+    "executionTime": "34.68522ms",
+    "resultCount": 1,
+    "resultSize": 3443
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:prepareds;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "requestID": "e37ab60b-b616-478f-8cf3-cdc16e39283d",
+  "signature": {
+    "*": "*",
+    "plan": "json"
+  },
+  "results": [
+    {
+      "plan": {
+        "#operator": "Sequence",
+        "~children": [
+          {
+            "#operator": "Authorize",
+            "privileges": {
+              "List": [
+                {
+                  "Priv": 7,
+                  "Target": "default:travel-sample"
+                }
+              ]
+            },
+            "~child": {
+              "#operator": "Sequence",
+              "~children": [
+                {
+                  "#operator": "PrimaryScan3",
+                  "index": "def_primary",
+                  "index_projection": {
+                    "primary_key": true
+                  },
+                  "keyspace": "travel-sample",
+                  "namespace": "default",
+                  "using": "gsi"
+                },
+                {
+                  "#operator": "Fetch",
+                  "keyspace": "travel-sample",
+                  "namespace": "default"
+                },
+                {
+                  "#operator": "Parallel",
+                  "~child": {
+                    "#operator": "Sequence",
+                    "~children": [
+                      {
+                        "#operator": "Filter",
+                        "condition": "((`travel-sample`.`foo`) = 42)"
+                      },
+                      {
+                        "#operator": "InitialProject",
+                        "result_terms": [
+                          {
+                            "expr": "self",
+                            "star": true
+                          }
+                        ]
+                      },
+                      {
+                        "#operator": "FinalProject"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "#operator": "Stream"
+          }
+        ]
+      },
+      "prepareds": {
+        "encoded_plan": "H4sIAAAAAAAA/6SSQYvbPhTEv4qY/2U36F/IdqGg0kNYHFrYUpMs7aGERNgvjrqypD7JIWlwP3uxnRCS7aUt+GBL45l5P94B5ApfUrkMVjsoQGJNOjVMD94l9jZCje8kjCtpNwnmM3E03kHdSzhdExTCGMN7DLroDkpa68YmSPhArJNnqAP+O39gTt8bcgVB4mexMbZkclBfL0WTJm08mx+dKrDZGksVxc7q0cTUy580V5TOkSqx3pL9P+o62O6/nM0W6k27aE9Jf1UlZ1Nr3s8L7V7jCGNIXYbh6nS6DOy/UZF6Rgccb5fPtIdK3FAr8Uz7E6nrur+n2ETjKihU0aCVl82mlIoN/tj02ibXrK0li3/CNDU2EUOi8K40AwPc3KwuGq1erdber27FO3F/d/uiyQdnktE2HzBCgik2Ni0TcR37RNqFThjJriERk+Yj2sULOMadndpF2z1Xknli0jX6BYmmcv3qd8OPoDBCK5Fo121YPsvyySwTYSwmczHPHrOHJzES09mnj+JqQPHlfTbLxNr7fsa3aH8FAAD//yw1h9FnAwAA",
+        "featuresControl": 12,
+        "indexApiVersion": 4,
+        "name": "p1",
+        "node": "127.0.0.1:8091",
+        "statement": "PREPARE p1 AS SELECT * FROM `travel-sample` WHERE foo = 42;",
+        "uses": 0
+      }
+    }
+  ],
+  "status": "success",
+  "metrics": {
+    "elapsedTime": "122.056934ms",
+    "executionTime": "122.03689ms",
+    "resultCount": 1,
+    "resultSize": 3499
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="delete-prepared-statement"><a class="anchor" href="#delete-prepared-statement"></a>Delete Prepared Statement</h3>
+<div class="paragraph">
+<p>To delete a specific prepared statement <code class="var">p1</code>, you can use the Admin REST API or a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/prepareds/p1</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds WHERE name = "p1";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To delete all the known prepared statements, you must use a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sys-completed-req"><a class="anchor" href="#sys-completed-req"></a>system:completed_requests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, this catalog maintains a list of the most recent completed requests that that have run longer than a predefined threshold of time.
+(You can also log completed requests that meet other conditions that you define.)</p>
+</div>
+<div class="paragraph">
+<p>For each completed request, this catalog maintains information such as requestId, statement text, prepared name (if prepared statement), request time, service time, and so on.
+This information provides a general insight into the health and performance of the query engine and the cluster.</p>
+</div>
+<div class="paragraph">
+<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_requests" class="page">Requests</a>.
+Note that most field names and meanings match exactly those of <code>system:active_requests</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Request profiling affects the <code>system:completed_requests</code> keyspace in the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When the feature is turned on, completed requests are stored with their execution plan.</p>
+</li>
+<li>
+<p>Profiling information is likely to use 100KB+ per entry.</p>
+</li>
+<li>
+<p>Due to the added overhead of running both profiling and logging, we recommend turning on both of them only when needed.
+Running only one of them continuously has no noticeable affect on performance.</p>
+</li>
+<li>
+<p>Profiling does not carry any extra cost beyond memory for completed requests, so it&#8217;s fine to run it continuously.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="get-completed-requests"><a class="anchor" href="#get-completed-requests"></a>Get Completed Requests</h3>
+<div class="paragraph">
+<p>To get a list of all logged completed requests using the Admin REST API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword http://localhost:8093/admin/completed_requests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To get a list of all logged completed requests using N1QL, including the query plan:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:completed_requests;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="purge-the-completed-requests"><a class="anchor" href="#purge-the-completed-requests"></a>Purge the Completed Requests</h3>
+<div class="paragraph">
+<p>To purge a completed request <code class="var">uuid</code> with the Admin REST API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/completed_requests/uuid</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To purge a completed request <code class="var">uuid</code> with N1QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:completed_requests WHERE requestId = "uuid";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To purge the completed requests for a given time period, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:completed_requests WHERE requestTime LIKE "2015-09-09%";</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configure-the-completed-requests"><a class="anchor" href="#configure-the-completed-requests"></a>Configure the Completed Requests</h3>
+<div class="paragraph">
+<p>You can configure the <code>system:completed_requests</code> keyspace by specifying parameters through the Admin API settings endpoint.</p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5 and later, you can specify the conditions for completed request logging using the <code>completed</code> field.</p>
+</div>
+<div class="paragraph">
+<p>This field takes a JSON object containing the names and values of logging qualifiers.
+Completed requests that meet the defined qualifiers are logged.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"user": "marco", "error": 12003}}'</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="logging-qualifiers"><a class="anchor" href="#logging-qualifiers"></a>Logging Qualifiers</h4>
+<div class="paragraph">
+<p>You can specify the following logging qualifiers.
+A completed request is logged if <em>any</em> of the qualifiers are met (logical OR).</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">threshold</dt>
+<dd>
+<p>The execution time threshold in milliseconds.</p>
+</dd>
+<dt class="hdlist1">aborted</dt>
+<dd>
+<p>Whether to log requests that generate a panic.</p>
+</dd>
+<dt class="hdlist1">error</dt>
+<dd>
+<p>Log requests returning this error number.</p>
+</dd>
+<dt class="hdlist1">client</dt>
+<dd>
+<p>Log requests from this IP address.</p>
+</dd>
+<dt class="hdlist1">user</dt>
+<dd>
+<p>Log requests with this user name.</p>
+</dd>
+<dt class="hdlist1">context</dt>
+<dd>
+<p>Log requests with this client context ID.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>For full details, refer to <a href="../../settings/query-settings.html#_logging_parameters" class="page">Logging parameters</a>.</p>
+</div>
+<div class="paragraph">
+<p>The basic syntax adds a qualifier to the logging parameters, i.e. any existing qualifiers are not removed.
+You can change the value of a logging qualifier by specifying the same qualifier again with a new value.</p>
+</div>
+<div class="paragraph">
+<p>To add a new instance of an existing qualifier, use a plus sign (<code>+</code>) before the qualifier name, e.g. <code>+user</code>.
+To remove a qualifier, use a minus sign (<code>-</code>) before the qualifier name, e.g. <code>-user</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following request will add user <code>simon</code> to those tracked, and remove error <code>12003</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"+user": "simon", "-error": 12003}}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similarly, you could remove all logging by execution time with the following request, as long as the value matches the existing threshold.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"-threshold": 1000}}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="tagged-sets"><a class="anchor" href="#tagged-sets"></a>Tagged Sets</h4>
+<div class="paragraph">
+<p>You can also specify qualifiers that have to be met as a group for the completed request to be logged (logical AND).</p>
+</div>
+<div class="paragraph">
+<p>To do this, specify the <code>tag</code> field along with a set of qualifiers, like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"user": "marco", "error": 12003, "tag": "both_user_and_error"}}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, the request will be logged when both user and error match.</p>
+</div>
+<div class="paragraph">
+<p>The tag name can be any string that is meaningful and unique.
+Requests that match a tagged set of conditions are logged with a field <code>~tag</code>, which is set to the name of the tag.</p>
+</div>
+<div class="paragraph">
+<p>To add a qualifier to a tagged set, specify the tag name again along with the new qualifier:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:8093/admin/settings -u Administrator:password -H 'Content-Type: application/json' -d '{"completed": {"client": "172.1.2.3",  "tag": "both_user_and_error"}}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You cannot add a new instance of an existing qualifier to a tagged set using a plus sign (<code>+</code>) before the qualifier name.
+For example, you cannot add a <code>user</code> qualifier to a tagged set that already contains a <code>user</code> qualifier.
+If you need to track two users with the same error, create two tagged sets, one per user.</p>
+</div>
+<div class="paragraph">
+<p>You can remove a qualifier from a tagged set using a minus sign (<code>-</code>) before the qualifier name, e.g. <code>-user</code>.
+When you remove the last qualifier from a tagged set, the tagged set is removed.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can specify multiple tagged sets.
+In this case, completed requests are logged if they match all of the qualifiers in any of the tagged sets.</p>
+</div>
+<div class="paragraph">
+<p>You can also specify a mixture of tagged sets and individual qualifiers.
+In this case, completed requests are logged if they match any of the individual qualifiers, or all of the qualifiers in any of the tagged sets.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="completed-threshold"><a class="anchor" href="#completed-threshold"></a>Completed Threshold</h4>
+<div class="paragraph">
+<p>The <code class="param">completed-threshold</code> field provides another way of specifying the <code>threshold</code> qualifier within the <code>completed</code> field.</p>
+</div>
+<div class="paragraph">
+<p>This field sets the minimum request duration after which requests are added to the <code>system:completed_requests</code> catalog.
+The default value is 1000ms.
+Specify <code class="in">0</code> to log all requests and <code class="in">-1</code> to not log any requests to the keyspace.</p>
+</div>
+<div class="paragraph">
+<p>To specify a different value, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:port/admin/settings -H 'Content-Type: application/json' -d '{"completed-threshold":0}' -u user:pword</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="completed-limit"><a class="anchor" href="#completed-limit"></a>Completed Limit</h4>
+<div class="paragraph">
+<p>The <code class="param">completed-limit</code> field sets the number of most recent requests to be tracked in the <code>system:completed_requests</code> catalog.
+The default value is 4000.
+Specify <code class="in">0</code> to not track any requests and <code class="in">-1</code> to set no limit.</p>
+</div>
+<div class="paragraph">
+<p>To specify a different value, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:port/admin/settings -H 'Content-Type: application/json' -d '{"completed-limit":1000}' -u user:pword</code></pre>
+</div>
+</div>
 <div id="example-2" class="exampleblock">
 <div class="title">Example 5. Completed Request</div>
 <div class="content">
@@ -5415,21 +5209,21 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
 <div class="title">Result</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "requestID": "33ed0271-6f30-48e0-9932-eea97b3d41fa",
+  "requestID": "1c40bf56-5b58-43a4-94dc-bf78071c8b78",
   "signature": {
     "*": "*",
     "plan": "json"
   },
   "results": [
-    {
+    { <i class="conum" data-value="1"></i><b>(1)</b>
       "completed_requests": {
-        "elapsedTime": "6.404801894s",
+        "elapsedTime": "13.13643772s",
         "errorCount": 0,
-        "node": "10.17.5.233",
+        "node": "127.0.0.1:8091",
         "phaseCounts": {
-          "fetch": 31592,
-          "primaryScan": 31592,
-          "sort": 31592
+          "fetch": 31599,
+          "primaryScan": 31591,
+          "sort": 31591
         },
         "phaseOperators": {
           "authorize": 1,
@@ -5438,49 +5232,82 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
           "sort": 1
         },
         "phaseTimes": {
-          "authorize": "576.717µs",
-          "fetch": "605.983982ms",
-          "instantiate": "625.544µs",
-          "parse": "262.266µs",
-          "plan": "254.921µs",
-          "primaryScan": "64.168512ms",
-          "run": "6.402307626s",
-          "sort": "432.85835ms"
+          "authorize": "24.749µs",
+          "fetch": "2.747088103s",
+          "instantiate": "23.974µs",
+          "parse": "343.486µs",
+          "plan": "713.077µs",
+          "primaryScan": "80.802487ms",
+          "run": "13.135258873s",
+          "sort": "465.422275ms"
         },
-        "remoteAddr": "192.168.0.109:51540",
-        "requestId": "bd0cfa57-2189-4f22-93d5-ddeca3325c3f",
-        "resultCount": 31592,
-        "resultSize": 107818622,
+        "remoteAddr": "10.143.192.1:54089",
+        "requestId": "cb59ca6e-daf8-488f-9332-529283eac7e9",
+        "requestTime": "2019-05-06 10:34:39.358924449 -0700 PDT m=+12133.228904346",
+        "resultCount": 31591,
+        "resultSize": 95381286,
         "scanConsistency": "unbounded",
-        "serviceTime": "6.40478582s",
+        "serviceTime": "13.136355403s",
         "state": "completed",
-        "statement": "select * from `travel-sample` order by name;",
-        "time": "2017-03-10 20:19:02.495406865 -0800 PST",
-        "userAgent": "Go-http-client/1.1",
-        "users": "Administrator"
+        "statement": "SELECT * FROM `travel-sample` ORDER BY title;",
+        "userAgent": "Go-http-client/1.1 (CBQ/2.0)",
+        "users": "Administrator,Administrator"
+      }
+    },
+    { <i class="conum" data-value="2"></i><b>(2)</b>
+      "completed_requests": {
+        "elapsedTime": "13.448452215s",
+        "errorCount": 0,
+        "node": "127.0.0.1:8091",
+        "phaseCounts": {
+          "fetch": 31605,
+          "primaryScan": 31591,
+          "sort": 31591
+        },
+        "phaseOperators": {
+          "authorize": 1,
+          "fetch": 1,
+          "primaryScan": 1,
+          "sort": 1
+        },
+        "phaseTimes": {
+          "authorize": "35.258µs",
+          "fetch": "2.532068358s",
+          "instantiate": "23.408µs",
+          "parse": "820.508µs",
+          "plan": "243.658µs",
+          "primaryScan": "79.406995ms",
+          "run": "13.447226791s",
+          "sort": "253.974805ms"
+        },
+        "remoteAddr": "10.143.192.1:54071",
+        "requestId": "ed11c0f5-6486-43ca-9148-16dba5e7971e",
+        "requestTime": "2019-05-06 10:34:07.004829559 -0700 PDT m=+12100.874809462",
+        "resultCount": 31591,
+        "resultSize": 95381286,
+        "scanConsistency": "unbounded",
+        "serviceTime": "13.448333228s",
+        "state": "completed",
+        "statement": "SELECT * FROM `travel-sample` ORDER BY name;",
+        "userAgent": "Go-http-client/1.1 (CBQ/2.0)",
+        "users": "Administrator,Administrator"
       },
-      "plan": { <i class="conum" data-value="1"></i><b>(1)</b>
+      "plan": {
         "#operator": "Sequence",
         "#stats": {
-          "#phaseSwitches": 2,
-          "execTime": "849ns",
-          "kernTime": "6.402305271s"
+          "#phaseSwitches": 1,
+          "execTime": "2.479µs"
         },
         "~children": [
           {
             "#operator": "Authorize",
             "#stats": {
-              "#phaseSwitches": 4,
-              "execTime": "3.452µs",
-              "kernTime": "6.401387075s",
-              "servTime": "573.265µs"
+              "#phaseSwitches": 3,
+              "execTime": "2.17µs",
+              "servTime": "33.088µs"
             },
             "privileges": {
               "List": [
-                {
-                  "Priv": 1,
-                  "Target": "default:travel-sample"
-                },
                 {
                   "Priv": 7,
                   "Target": "default:travel-sample"
@@ -5490,29 +5317,30 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
             "~child": {
               "#operator": "Sequence",
               "#stats": {
-                "#phaseSwitches": 3,
-                "execTime": "2.667µs",
-                "kernTime": "6.401379511s"
+                "#phaseSwitches": 1,
+                "execTime": "1.953µs"
               },
               "~children": [
                 {
                   "#operator": "Sequence",
                   "#stats": {
-                    "#phaseSwitches": 2,
-                    "execTime": "3.757µs",
-                    "kernTime": "638.158784ms"
+                    "#phaseSwitches": 1,
+                    "execTime": "2.138µs"
                   },
                   "~children": [
                     {
-                      "#operator": "PrimaryScan",
+                      "#operator": "PrimaryScan3",
                       "#stats": {
-                        "#itemsOut": 31592,
-                        "#phaseSwitches": 126371,
-                        "execTime": "43.239957ms",
-                        "kernTime": "557.221483ms",
-                        "servTime": "20.928555ms"
+                        "#itemsOut": 31591,
+                        "#phaseSwitches": 126367,
+                        "execTime": "50.343241ms",
+                        "kernTime": "2.451256939s",
+                        "servTime": "29.063754ms"
                       },
                       "index": "def_primary",
+                      "index_projection": {
+                        "primary_key": true
+                      },
                       "keyspace": "travel-sample",
                       "namespace": "default",
                       "using": "gsi"
@@ -5520,39 +5348,29 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
                     {
                       "#operator": "Fetch",
                       "#stats": {
-                        "#itemsIn": 31592,
-                        "#itemsOut": 31592,
-                        "#phaseSwitches": 126499,
-                        "execTime": "37.4027ms",
-                        "kernTime": "32.132249ms",
-                        "servTime": "568.581282ms"
+                        "#itemsIn": 31591,
+                        "#itemsOut": 31591,
+                        "#phaseSwitches": 130317,
+                        "execTime": "57.835564ms",
+                        "kernTime": "35.861393ms",
+                        "servTime": "2.474232794s"
                       },
                       "keyspace": "travel-sample",
                       "namespace": "default"
                     },
                     {
-                      "#operator": "Sequence",
+                      "#operator": "InitialProject",
                       "#stats": {
-                        "#phaseSwitches": 5,
-                        "execTime": "2.14µs",
-                        "kernTime": "638.143448ms"
+                        "#itemsIn": 31591,
+                        "#itemsOut": 31591,
+                        "#phaseSwitches": 126367,
+                        "execTime": "12.688544ms",
+                        "kernTime": "2.555252091s"
                       },
-                      "~children": [
+                      "result_terms": [
                         {
-                          "#operator": "InitialProject",
-                          "#stats": {
-                            "#itemsIn": 31592,
-                            "#itemsOut": 31592,
-                            "#phaseSwitches": 126375,
-                            "execTime": "3.887302ms",
-                            "kernTime": "634.243391ms"
-                          },
-                          "result_terms": [
-                            {
-                              "expr": "self",
-                              "star": true
-                            }
-                          ]
+                          "expr": "self",
+                          "star": true
                         }
                       ]
                     }
@@ -5561,11 +5379,11 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
                 {
                   "#operator": "Order",
                   "#stats": {
-                    "#itemsIn": 31592,
-                    "#itemsOut": 31592,
-                    "#phaseSwitches": 126373,
-                    "execTime": "432.85835ms",
-                    "kernTime": "5.925425699s"
+                    "#itemsIn": 31591,
+                    "#itemsOut": 31591,
+                    "#phaseSwitches": 94778,
+                    "execTime": "253.974805ms",
+                    "kernTime": "2.561721648s"
                   },
                   "sort_terms": [
                     {
@@ -5576,11 +5394,11 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
                 {
                   "#operator": "FinalProject",
                   "#stats": {
-                    "#itemsIn": 31592,
-                    "#itemsOut": 31592,
-                    "#phaseSwitches": 126375,
-                    "execTime": "16.142571ms",
-                    "kernTime": "6.385221481s"
+                    "#itemsIn": 31591,
+                    "#itemsOut": 31591,
+                    "#phaseSwitches": 94774,
+                    "execTime": "72.083151ms",
+                    "kernTime": "10.510896696s"
                   }
                 }
               ]
@@ -5589,66 +5407,41 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
           {
             "#operator": "Stream",
             "#stats": {
-              "#itemsIn": 31592,
-              "#itemsOut": 31592,
-              "#phaseSwitches": 63191,
-              "execTime": "4.397577ms",
-              "kernTime": "6.397903458s"
+              "#itemsIn": 31591,
+              "#itemsOut": 31591,
+              "#phaseSwitches": 63185,
+              "execTime": "9.936962437s",
+              "kernTime": "3.510240579s"
             }
           }
+        ],
+        "~versions": [
+          "2.0.0-N1QL",
+          "6.5.0-2859-enterprise"
         ]
-      }
-    },
-    { <i class="conum" data-value="2"></i><b>(2)</b>
-      "completed_requests": {
-        "elapsedTime": "6.404801894s",
-        "errorCount": 0,
-        "node": "192.168.0.109",
-        "phaseCounts": {
-          "fetch": 31592,
-          "primaryScan": 31592,
-          "sort": 31592
-        },
-        "phaseOperators": {
-          "authorize": 1,
-          "fetch": 1,
-          "primaryScan": 1,
-          "sort": 1
-        },
-        "remoteAddr": "192.168.0.109:51540",
-        "requestId": "bd0cfa57-2189-4f22-93d5-ddeca3325c3f",
-        "requestTime": "2017-03-10T20:19:02.495406865-08:00",
-        "resultCount": 31592,
-        "resultSize": 107818622,
-        "scanConsistency": "unbounded",
-        "serviceTime": "6.40478582s",
-        "state": "completed",
-        "statement": "select * from `travel-sample` order by name;",
-        "userAgent": "Go-http-client/1.1",
-        "users": "Administrator"
       }
     }
   ],
   "status": "success",
   "metrics": {
-    "elapsedTime": "74.124629ms",
-    "executionTime": "74.112155ms",
-    "resultCount": 4,
-    "resultSize": 14608
+    "elapsedTime": "38.651064ms",
+    "executionTime": "38.56312ms",
+    "resultCount": 2,
+    "resultSize": 8740
   },
   "profile": { <i class="conum" data-value="3"></i><b>(3)</b>
     "phaseTimes": {
-      "authorize": "551.089µs",
-      "fetch": "34.260218ms",
-      "instantiate": "20.455µs",
-      "parse": "297.811µs",
-      "plan": "36.651µs",
-      "primaryScan": "35.703598ms",
-      "run": "70.693651ms"
+      "authorize": "23.522µs",
+      "fetch": "11.976706ms",
+      "instantiate": "14.916µs",
+      "parse": "714.888µs",
+      "plan": "86.626µs",
+      "primaryScan": "25.407183ms",
+      "run": "37.731739ms"
     },
     "phaseCounts": {
-      "fetch": 4,
-      "primaryScan": 4
+      "fetch": 8,
+      "primaryScan": 2
     },
     "phaseOperators": {
       "authorize": 1,
@@ -5668,11 +5461,11 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>meta().plan</code> with all detailed statistics collected for Query 1.</td>
+<td>The profile attribute with all phases-related statistics for Query 2.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Only profile attribute with all phases-related statistics for Query 2.</td>
+<td>The <code>meta().plan</code> with all detailed statistics collected for Query 1.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -5706,11 +5499,19 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "my_user_info": {
-      "domain": "ns_server",
-      "id": "Administrator",
-      "name": "Administrator",
+      "domain": "local",
+      "external_groups": [],
+      "groups": [],
+      "id": "simon",
+      "name": "Simon Dew",
+      "password_change_date": "2019-05-07T02:31:53.000Z",
       "roles": [
         {
+          "origins": [
+            {
+              "type": "user"
+            }
+          ],
           "role": "admin"
         }
       ]
@@ -5744,19 +5545,19 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
   {
     "user_info": {
       "domain": "local",
-      "id": "anil",
-      "name": "Anil",
+      "external_groups": [],
+      "groups": [],
+      "id": "simon",
+      "name": "Simon Dew",
+      "password_change_date": "2019-05-07T02:31:53.000Z",
       "roles": [
         {
-          "role": "replication_admin"
-        },
-        {
-          "bucket_name": "travel-sample",
-          "role": "select"
-        },
-        {
-          "bucket_name": "*",
-          "role": "select"
+          "origins": [
+            {
+              "type": "user"
+            }
+          ],
+          "role": "admin"
         }
       ]
     }
