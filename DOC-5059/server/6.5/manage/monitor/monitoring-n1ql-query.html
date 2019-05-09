@@ -2410,7 +2410,7 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
-    <a class="nav-link" href="../../cli/cbrestore-tween-opsys.html">cli:cbrestore-tween-opsys.adoc</a>
+    <a class="nav-link" href="../../cli/cbrestore-tween-opsys.html">rehash=1</a>
     </span>
   </li>
 </ul>
@@ -4424,7 +4424,7 @@ This information can be very useful to assess the current workload and performan
 The profile related attributes are described in the section <a href="#profile">Attribute profile in Query Response.</a></p>
 </div>
 <div class="sect2">
-<h3 id="get-active-requests"><a class="anchor" href="#get-active-requests"></a>Get Active Requests</h3>
+<h3 id="sys-active-get"><a class="anchor" href="#sys-active-get"></a>Get Active Requests</h3>
 <div class="paragraph">
 <p>To view active requests with Admin REST API:</p>
 </div>
@@ -4441,6 +4441,31 @@ The profile related attributes are described in the section <a href="#profile">A
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT *, meta().plan FROM system:active_requests;</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="sys-active-delete"><a class="anchor" href="#sys-active-delete"></a>Terminate an Active Request</h3>
+<div class="paragraph">
+<p>The DELETE command can be used to terminate an active request, for instance, a non-responding or a long-running query.</p>
+</div>
+<div class="paragraph">
+<p>To terminate an active request <code class="var">uuid</code> with the Admin REST API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/active_requests/uuid</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To terminate an active request <code class="var">uuid</code> with N1QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:active_requests WHERE requestId = "uuid";</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sys-active-examples"><a class="anchor" href="#sys-active-examples"></a>Examples</h3>
 <div class="exampleblock">
 <div class="title">Example 3. Get Active</div>
 <div class="content">
@@ -4622,28 +4647,6 @@ The root operator is a Sequence, which itself has a collection of child operator
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="terminate-an-active-request"><a class="anchor" href="#terminate-an-active-request"></a>Terminate an Active Request</h3>
-<div class="paragraph">
-<p>The DELETE command can be used to terminate an active request, for instance, a non-responding or a long-running query.</p>
-</div>
-<div class="paragraph">
-<p>To terminate an active request <code class="var">uuid</code> with the Admin REST API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/active_requests/uuid</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To terminate an active request <code class="var">uuid</code> with N1QL:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:active_requests WHERE requestId = "uuid";</code></pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -4657,7 +4660,7 @@ For each prepared statement, this catalog provides information such as name, sta
 <p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_statements" class="page">Statements</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="get-prepared-statements"><a class="anchor" href="#get-prepared-statements"></a>Get Prepared Statements</h3>
+<h3 id="sys-prepared-get"><a class="anchor" href="#sys-prepared-get"></a>Get Prepared Statements</h3>
 <div class="paragraph">
 <p>To get a list of all known prepared statements, you can use the Admin REST API or a N1QL query:</p>
 </div>
@@ -4684,6 +4687,33 @@ For each prepared statement, this catalog provides information such as name, sta
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:prepareds WHERE name = "example1";</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="sys-prepared-delete"><a class="anchor" href="#sys-prepared-delete"></a>Delete Prepared Statements</h3>
+<div class="paragraph">
+<p>To delete a specific prepared statement <code class="var">p1</code>, you can use the Admin REST API or a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/prepareds/p1</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds WHERE name = "p1";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To delete all the known prepared statements, you must use a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sys-prepared-examples"><a class="anchor" href="#sys-prepared-examples"></a>Examples</h3>
 <div class="exampleblock">
 <div class="title">Example 4. Get Prepared</div>
 <div class="content">
@@ -4885,30 +4915,6 @@ For each prepared statement, this catalog provides information such as name, sta
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="delete-prepared-statement"><a class="anchor" href="#delete-prepared-statement"></a>Delete Prepared Statement</h3>
-<div class="paragraph">
-<p>To delete a specific prepared statement <code class="var">p1</code>, you can use the Admin REST API or a N1QL query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -u Administrator:pword -X DELETE http://localhost:8093/admin/prepareds/p1</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds WHERE name = "p1";</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To delete all the known prepared statements, you must use a N1QL query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM system:prepareds;</code></pre>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -4958,7 +4964,7 @@ Running only one of them continuously has no noticeable affect on performance.</
 </table>
 </div>
 <div class="sect2">
-<h3 id="get-completed-requests"><a class="anchor" href="#get-completed-requests"></a>Get Completed Requests</h3>
+<h3 id="sys-completed-get"><a class="anchor" href="#sys-completed-get"></a>Get Completed Requests</h3>
 <div class="paragraph">
 <p>To get a list of all logged completed requests using the Admin REST API:</p>
 </div>
@@ -4977,7 +4983,7 @@ Running only one of them continuously has no noticeable affect on performance.</
 </div>
 </div>
 <div class="sect2">
-<h3 id="purge-the-completed-requests"><a class="anchor" href="#purge-the-completed-requests"></a>Purge the Completed Requests</h3>
+<h3 id="sys-completed-delete"><a class="anchor" href="#sys-completed-delete"></a>Purge the Completed Requests</h3>
 <div class="paragraph">
 <p>To purge a completed request <code class="var">uuid</code> with the Admin REST API:</p>
 </div>
@@ -5004,7 +5010,7 @@ Running only one of them continuously has no noticeable affect on performance.</
 </div>
 </div>
 <div class="sect2">
-<h3 id="configure-the-completed-requests"><a class="anchor" href="#configure-the-completed-requests"></a>Configure the Completed Requests</h3>
+<h3 id="sys-completed-config"><a class="anchor" href="#sys-completed-config"></a>Configure the Completed Requests</h3>
 <div class="paragraph">
 <p>You can configure the <code>system:completed_requests</code> keyspace by specifying parameters through the Admin API settings endpoint.</p>
 </div>
@@ -5026,33 +5032,57 @@ Completed requests that meet the defined qualifiers are logged.</p>
 <p>You can specify the following logging qualifiers.
 A completed request is logged if <em>any</em> of the qualifiers are met (logical OR).</p>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">threshold</dt>
-<dd>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+threshold
+</td>
+<td class="hdlist2">
 <p>The execution time threshold in milliseconds.</p>
-</dd>
-<dt class="hdlist1">aborted</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+aborted
+</td>
+<td class="hdlist2">
 <p>Whether to log requests that generate a panic.</p>
-</dd>
-<dt class="hdlist1">error</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+error
+</td>
+<td class="hdlist2">
 <p>Log requests returning this error number.</p>
-</dd>
-<dt class="hdlist1">client</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+client
+</td>
+<td class="hdlist2">
 <p>Log requests from this IP address.</p>
-</dd>
-<dt class="hdlist1">user</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+user
+</td>
+<td class="hdlist2">
 <p>Log requests with this user name.</p>
-</dd>
-<dt class="hdlist1">context</dt>
-<dd>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+context
+</td>
+<td class="hdlist2">
 <p>Log requests with this client context ID.</p>
-</dd>
-</dl>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>For full details, refer to <a href="../../settings/query-settings.html#_logging_parameters" class="page">Logging parameters</a>.</p>
@@ -5173,6 +5203,10 @@ Specify <code class="in">0</code> to not track any requests and <code class="in"
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl http://localhost:port/admin/settings -H 'Content-Type: application/json' -d '{"completed-limit":1000}' -u user:pword</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sys-completed-examples"><a class="anchor" href="#sys-completed-examples"></a>Examples</h3>
 <div id="example-2" class="exampleblock">
 <div class="title">Example 5. Completed Request</div>
 <div class="content">
@@ -5476,7 +5510,6 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
 <h2 id="sys_my-user-info"><a class="anchor" href="#sys_my-user-info"></a>system:my_user_info</h2>
 <div class="sectionbody">
@@ -5502,8 +5535,8 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
       "domain": "local",
       "external_groups": [],
       "groups": [],
-      "id": "simon",
-      "name": "Simon Dew",
+      "id": "jane",
+      "name": "Jane Doe",
       "password_change_date": "2019-05-07T02:31:53.000Z",
       "roles": [
         {
@@ -5547,8 +5580,8 @@ cbq&gt; SELECT * FROM `travel-sample` ORDER BY title;</code></pre>
       "domain": "local",
       "external_groups": [],
       "groups": [],
-      "id": "simon",
-      "name": "Simon Dew",
+      "id": "jane",
+      "name": "Jane Doe",
       "password_change_date": "2019-05-07T02:31:53.000Z",
       "roles": [
         {
