@@ -1662,7 +1662,7 @@
 <ul class="nav-list">
   <li class="nav-item is-current-page is-active" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="fts-query-string-queries.html">Query String Queries</a>
+    <a class="nav-link" href="query-string-queries.html">Query String Queries</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3596,12 +3596,12 @@
     <li class="crumb"><a href="full-text-intro.html">Search</a></li>
     <li class="crumb"><a href="fts-queries.html">Understanding Queries</a></li>
     <li class="crumb"><a href="fts-query-types.html">Query Types</a></li>
-    <li class="crumb"><a href="fts-query-string-queries.html">Query String Queries</a></li>
+    <li class="crumb"><a href="query-string-queries.html">Query String Queries</a></li>
   </ul>
 </nav>
 <div class="tools" role="navigation">
   <ul>
-    <li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/fts/pages/fts-query-string-queries.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+    <li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/fts/pages/query-string-queries.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
   </ul>
 </div>
   </div>
@@ -3662,7 +3662,7 @@ The path must use Search syntax rather than N1QL syntax; in other words, you can
 <div class="sectionbody">
 <div class="paragraph">
 <p>When a query string includes multiple items, by default these are placed into the SHOULD clause of a <a href="fts-query-types.html#boolean-query" class="page">boolean query</a>.
-You can adjust this by prefixing items with either <code>+</code> or <code>-</code>.</p>
+You can adjust this by prefixing items with <code>+</code> or <code>-</code>.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -3698,7 +3698,60 @@ Result documents satisfying the SHOULD clause score higher than those that do no
 <p>You can specify numeric ranges with the <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, and <code>&lt;=</code> operators, each followed by a numeric value.</p>
 </div>
 <div class="paragraph">
-<p>For example, <code>reviews.ratings.Cleanliness:&gt;4</code> performs a <a href="fts-query-types.html#numeric-range" class="page">Numeric Range Query</a> on the <code>reviews.ratings.Cleanliness</code> field, for values greater than 4.</p>
+<p>For example, <code>reviews.ratings.Cleanliness:&gt;4</code> performs a <a href="fts-query-types.html#numeric-range" class="page">numeric range query</a> on the <code>reviews.ratings.Cleanliness</code> field, for values greater than 4.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="date-ranges"><a class="anchor" href="#date-ranges"></a>Date Ranges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can perform date range searches by using the <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, and <code>&lt;=</code> operators, followed by a date value in quotes.</p>
+</div>
+<div class="paragraph">
+<p>For example, <code>created:&gt;"2016-09-21"</code> will perform a <a href="fts-query-types.html#date-range" class="page">date range query</a> on the <code>created</code> field for values after September 21, 2016.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="escaping"><a class="anchor" href="#escaping"></a>Escaping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following quoted string enumerates the characters which may be escaped:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"+-=&amp;|&gt;&lt;!(){}[]^\"~*?:\\/ "</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This list contains the space character.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In order to escape these characters, they are prefixed with the <code>\</code> (backslash) character.
+In all cases, using the escaped version produces the character itself and is not interpreted by the lexer.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>my\ name</code> is interpreted as a single argument to a match query with the value "my name".</p>
+</li>
+<li>
+<p><code>"contains a\" character"</code> is interpreted as a single argument to a phrase query with the value <code>contains a " character</code>.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
