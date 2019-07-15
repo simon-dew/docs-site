@@ -3627,9 +3627,6 @@
 Configure the temporary working space for the N1QL engine and its embedded GSI client.
 </blockquote>
 </div>
-<div class="paragraph">
-<p><em>(Introduced in Couchbase Server 5.5)</em></p>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -3637,7 +3634,7 @@ Configure the temporary working space for the N1QL engine and its embedded GSI c
 <div class="sectionbody">
 <div class="paragraph">
 <p>When a query has an extremely large corresponding index scan, the indexer <code>gsiClient</code> buffers the results into the <code>/tmp</code> directory.
-Since this method has caused some high I/O and works differently on Windows, Couchbase Server 5.5 now lets the user configure the backfill directory via the UI, which will then pass the settings to the server.</p>
+Since this method has caused some high I/O and works differently on Windows, Couchbase Server 5.5 enables you to configure the backfill directory via the UI, which will then pass the settings to the server.</p>
 </div>
 </div>
 </div>
@@ -3714,52 +3711,50 @@ Since this method has caused some high I/O and works differently on Windows, Cou
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p><strong>Example 1:</strong> Curl request to get the current "Advanced Query Settings".</p>
-</div>
+<div id="Ex1" class="exampleblock">
+<div class="title">Example 1. Curl request to get the current "Advanced Query Settings"</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>curl --GET -u Administrator:password http://localhost:8091/settings/querySettings</pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl --GET -u Administrator:password http://localhost:8091/settings/querySettings</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Results:</p>
 </div>
 <div class="listingblock">
+<div class="title">Results</div>
 <div class="content">
-<pre>{"queryTmpSpaceDir":"/opt/couchbase/tmp","queryTmpSpaceSize":5120,"queryCurlWhitelist":{"all_access":false,"allowed_urls":["http://localhost:8091/settings/querySettings",""],"disallowed_urls":[""]}}</pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"queryTmpSpaceDir":"/opt/couchbase/tmp","queryTmpSpaceSize":5120,"queryCurlWhitelist":{"all_access":false,"allowed_urls":["http://localhost:8091/settings/querySettings",""],"disallowed_urls":[""]}}</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><strong>Example 2:</strong> Curl request to change the temp file directory to <code>tmp2</code> (after making a <code>tmp2</code> directory).</p>
 </div>
+</div>
+<div id="Ex2" class="exampleblock">
+<div class="title">Example 2. Curl request to change the temp file directory to <code>tmp2</code> (after making a <code>tmp2</code> directory)</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>curl -X POST -u Administrator:password -d 'queryTmpSpaceDir=/opt/couchbase/tmp2'  http://localhost:8091/settings/querySettings</pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X POST -u Administrator:password -d 'queryTmpSpaceDir=/opt/couchbase/tmp2'  http://localhost:8091/settings/querySettings</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Results:</p>
 </div>
 <div class="listingblock">
+<div class="title">Results</div>
 <div class="content">
-<pre>{"queryTmpSpaceDir":"/opt/couchbase/tmp2","queryTmpSpaceSize":5120,"queryCurlWhitelist":{"all_access":false,"allowed_urls":["http://localhost:8091/settings/querySettings",""],"disallowed_urls":[""]}}</pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"queryTmpSpaceDir":"/opt/couchbase/tmp2","queryTmpSpaceSize":5120,"queryCurlWhitelist":{"all_access":false,"allowed_urls":["http://localhost:8091/settings/querySettings",""],"disallowed_urls":[""]}}</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><strong>Example 3:</strong> Curl request to change the temp file size to 2048 MB.</p>
 </div>
+</div>
+<div id="Ex3" class="exampleblock">
+<div class="title">Example 3. Curl request to change the temp file size to 2048 MB</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>curl -X POST -u Administrator:password -d 'queryTmpSpaceDir=/opt/couchbase/tmp' -d 'queryTmpSpaceSize=2048' http://localhost:8091/settings/querySettings</pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X POST -u Administrator:password -d 'queryTmpSpaceDir=/opt/couchbase/tmp' -d 'queryTmpSpaceSize=2048' http://localhost:8091/settings/querySettings</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Results:</p>
 </div>
 <div class="listingblock">
+<div class="title">Results</div>
 <div class="content">
-<pre>{"queryTmpSpaceDir":"/opt/couchbase/tmp","queryTmpSpaceSize":2048,"queryCurlWhitelist":{"all_access":false,"allowed_urls":["http://localhost:8091/settings/querySettings",""],"disallowed_urls":[""]}}</pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"queryTmpSpaceDir":"/opt/couchbase/tmp","queryTmpSpaceSize":2048,"queryCurlWhitelist":{"all_access":false,"allowed_urls":["http://localhost:8091/settings/querySettings",""],"disallowed_urls":[""]}}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3767,13 +3762,15 @@ Since this method has caused some high I/O and works differently on Windows, Cou
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>_time=2017-12-06T14:12:39.709-08:00 _level=INFO _msg=New settings received: {"query.settings.tmp_space_dir":"/opt/couchbase/tmp/","query.settings.tmp_space_size":2048}
+<pre class="highlightjs highlight"><code>_time=2017-12-06T14:12:39.709-08:00 _level=INFO _msg=New settings received: {"query.settings.tmp_space_dir":"/opt/couchbase/tmp/","query.settings.tmp_space_size":2048}
 
 _time=2017-12-06T14:12:39.712-08:00 _level=INFO _msg=Settings notifier from metakv
 
 2017-12-06T14:12:39.715-08:00 [Info] GSIC - Setting config map[query_tmpspace_dir:/opt/couchbase/tmp/ query_tmpspace_limit:2048]
 
-_time=2017-12-06T14:12:39.715-08:00 _level=INFO _msg= Indexer settings have been updated map[query_tmpspace_dir:/opt/couchbase/tmp/ query_tmpspace_limit:2048]</pre>
+_time=2017-12-06T14:12:39.715-08:00 _level=INFO _msg= Indexer settings have been updated map[query_tmpspace_dir:/opt/couchbase/tmp/ query_tmpspace_limit:2048]</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
