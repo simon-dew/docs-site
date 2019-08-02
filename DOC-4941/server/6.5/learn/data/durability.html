@@ -1500,6 +1500,11 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../n1ql/n1ql-language-reference/dropfunction.html">DROP FUNCTION</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../n1ql/n1ql-language-reference/dropindex.html">DROP INDEX</a>
     </span>
   </li>
@@ -3488,26 +3493,6 @@
     <a class="nav-link" href="../../rest-api/rbac.html">Role Based Admin Access (RBAC)</a>
     </span>
   </li>
-  <li class="nav-item" data-depth="5">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-user-create.html">Create a Read-Only Administrator</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="5">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-user-getname.html">Retrieve the Read-Only Administrator&#8217;s Name</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="5">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-user-password-put.html">Change the Read-Only Administrator&#8217;s Password</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="5">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-user-delete.html">Delete the Read-Only Administrator</a>
-    </span>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3648,6 +3633,9 @@ If commitment was not possible, Couchbase Server notifies the client of failure;
 <p>Couchbase Server supports durability for single-document writes only.
 This form of write is referred to as a <em>durable</em> or <em>synchronous</em> write.</p>
 </div>
+<div class="paragraph">
+<p>Couchbase Server supports durability for up to <em>two</em> replicas: it <em>does not</em> support durability for <em>three</em> replicas.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3660,17 +3648,19 @@ This form of write is referred to as a <em>durable</em> or <em>synchronous</em> 
 <ul>
 <li>
 <p>A <em>regular</em> write is <em>asynchronous</em>, and is not supported by durability.
-Such a write may be appropriate when writing only a small amount of data, the loss of which would produce only a minor inconvenience.</p>
+Such a write may be appropriate when writing data whose loss would produce only a minor inconvenience.
+For example, a single instance of sensor data, out of the tens of thousands of instances that are being continuously received.</p>
 </li>
 <li>
 <p>A <em>durable</em> write is <em>synchronous</em>, and is supported by durability.
-Such a write may be appropriate when saving a large amount of data, the loss of which could have a considerable, negative impact on the user, and possibly on the system as a whole.</p>
+Such a write may be appropriate when saving data whose loss could have a considerable, negative impact.
+For example, data corresponding to a financial transaction.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>Note that in most cases, a durable write takes significantly longer than a regular write; due to the increased amount of either replication or persistence it demands from Couchbase Server, prior to completion.
-Application-performance might therefore suffer, if durable writes are used to excess.</p>
+In considering whether to use durability, therefore, the application-designer must choose between the higher throughput (and lesser data-protection) provided by regular writes, and the greater data-protection (and lower throughput) provided by durable writes.</p>
 </div>
 </div>
 </div>
@@ -3707,7 +3697,7 @@ The correspondences are as follows:</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Not supported</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -3729,7 +3719,7 @@ The possible values are:</p>
 <ul>
 <li>
 <p><em>majority</em>.
-The mutation must be replicated to (that is, held in the bucket&#8217;s memory on) a majority of the Data Service nodes.</p>
+The mutation must be replicated to (that is, held in the memory allocated to the bucket on) a majority of the Data Service nodes.</p>
 </li>
 <li>
 <p><em>majorityAndPersistActive</em>.
@@ -3747,7 +3737,7 @@ Accordingly, it will be written to disk on those nodes.</p>
 <li>
 <p><em>Timeout</em>.
 The number of milliseconds within which the durability requirements must be met.
-If not specified, a server-defined default is used.
+If not specified by the SDK, the server-defined default of 30 seconds is used.
 If the number is exceeded, the entire synchronous write is aborted.</p>
 </li>
 </ul>
@@ -3776,39 +3766,37 @@ Clients that attempt to write to a key whose value is undergoing a durable write
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Client 1 specifies durability requirements for a durable write, to change a key’s existing value, of a, to b.</p>
+<p>Client 1 specifies durability requirements for a durable write, to change a key’s existing value from a to b.</p>
 </li>
 <li>
 <p>The Active Node receives the request, and the durable write process is initiated.
-During the course of the durable write, Couchbase Server attempts to meet the client’s specified durability requirements.</p>
+Couchbase Server attempts to meet the client’s specified durability requirements.</p>
 </li>
 <li>
 <p>During the durable write process, Client 2 performs a read on the value undergoing the durable write.
 Couchbase Server returns the value, a,  that preceded the durable-write request.</p>
 </li>
 <li>
-<p>During the durable-write process, Client 3 attempts either a durable write or an regular write on the value that is already undergoing durable write.
-Couchbase Server returns an error.
-(See below for information on regular writes.)</p>
+<p>During the durable-write process, Client 3 attempts either a durable write or a regular write on the value that is already undergoing a durable write.
+Couchbase Server returns a <code>SYNC_WRITE_IN_PROGRESS</code> message, to indicate that the new write cannot occur.</p>
 </li>
 <li>
-<p>At the point the mutation has met the specified durability requirements, the Active Node commits the durable write, and sends a status response of SUCCESS to Client 1.</p>
+<p>At the point the mutation has met the specified durability requirements, the Active Node commits the durable write, and sends a status response of <code>SUCCESS</code> to Client 1.</p>
 </li>
 <li>
 <p>After the durable-write process, Client 2 performs a second read on the  value.
 Couchbase Server returns the value, b, committed by the durable write.
-Indeed, from this point, all clients see the value b.
-If Couchbase Server aborts a durable write, all mutations to active and replica vBuckets in memory and on disk are rolled back, and all copies of the data are reverted to their value from before the data-write.
-Couchbase Server duly informs the client with an error message.
+Indeed, from this point, all clients see the value b.</p>
+<div class="paragraph">
+<p>If Couchbase Server aborts a durable write, all mutations to active and replica vBuckets in memory and on disk are rolled back, and all copies of the data are reverted to their value from before the data-write.
+Couchbase Server duly informs the client.
 See <a href="#failure-scenarios">Failure Scenarios</a>, below.</p>
+</div>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>In some circumstances, rather than acknowledging to a client that the durable write has been either committed or aborted, Couchbase Server acknowledges an ambiguous outcome: for example, due to the client-specified timeout having elapsed.</p>
-</div>
-<div class="paragraph">
-<p>A client that specifies durability requirements should not disconnect from the server before receiving acknowledgement of the durable write’s success or failure.</p>
+<p>In some circumstances, rather than acknowledging to a client that the durable write has succeeded, Couchbase Server acknowledges an <em>ambiguous outcome</em>: for example, due to the client-specified timeout having elapsed.</p>
 </div>
 <div class="paragraph">
 <p>Subsequent to a durable write’s commitment and due acknowledgement, Couchbase Server continues the process of replication and persistence, until all active and replica vBuckets, both in memory and on disk, have been appropriately updated across all nodes.</p>
@@ -3820,9 +3808,9 @@ See <a href="#failure-scenarios">Failure Scenarios</a>, below.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>If a client writes data to Couchbase Server without specifying durability requirements, this is considered a <em>regular</em> (that is <em>asynchronous</em>) write.
-By default, no durability requirement is imposed.
-The client receives acknowledgment of a successful write as soon as the data is in memory, on the node hosting the active vBucket.
-A regular write provides no guarantee of durability.</p>
+No durability requirement is imposed.
+Couchbase Server acknowledges success to the client as soon as the data is in the memory of the node hosting the active vBucket: Couchbase Server <em>does not</em> confirm that the write has been propagated to any replica.
+A regular write therefore provides no guarantee of durability.</p>
 </div>
 </div>
 </div>
@@ -3836,12 +3824,12 @@ A regular write provides no guarantee of durability.</p>
 <ol class="arabic">
 <li>
 <p><em>Server timeout exceeded</em>.
-The active node aborts the durable write, issues an undo request to all replica nodes, and informs the client that the durable write has had an ambiguous result.</p>
+The active node aborts the durable write, instructs all replica nodes also to abort the pending write, and informs the client that the durable write has had an ambiguous result.</p>
 </li>
 <li>
 <p><em>Replica node fails while SyncWrite is pending (that is, before the active node can identify whether the node hosted a replica)</em>.
 If enough alternative replica nodes can be identified, the durable write can proceed.
-Otherwise, the active node waits until a server-side timeout has expired; then aborts the durable write, and duly informs the client.</p>
+Otherwise, the active node waits until a server-side timeout has expired; then aborts the durable write, and duly informs the client that the durable write has had an ambiguous result.</p>
 </li>
 <li>
 <p><em>Active node fails while SyncWrite is pending</em>.
@@ -3850,7 +3838,7 @@ If the active node is failed over, a replica is promoted from a replica node: de
 </li>
 <li>
 <p><em>Write while SyncWrite is pending</em>.
-A client that attempts a durable or an asynchronous write on a key whose value is currently undergoing a durable write receives a corresponding error message.
+A client that attempts a durable or an asynchronous write on a key whose value is currently undergoing a durable write receives a <code>SYNC_WRITE_IN_PROGRESS</code> message, to indicate that the new write cannot currently proceed.
 The client may retry.</p>
 </li>
 </ol>
@@ -3877,6 +3865,14 @@ The constraints are related to the <em>level</em> of durability specified by the
 The guarantees and associated constraints are stated on this page, below.</p>
 </div>
 <div class="sect2">
+<h3 id="replica-count-restriction"><a class="anchor" href="#replica-count-restriction"></a>Replica-Count Restriction</h3>
+<div class="paragraph">
+<p>Couchbase-Server durability supports buckets with up to <em>two</em> replicas.
+It does <em>not</em> support buckets with <em>three</em> replicas.
+If a durable write is attempted on a bucket that has been configured with three replicas, the write fails with an <code>EDurabilityImpossible</code> message.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="protection-guarantees-and-automatic-failover"><a class="anchor" href="#protection-guarantees-and-automatic-failover"></a>Protection Guarantees and Automatic Failover</h3>
 <div class="paragraph">
 <p><a href="../clusters-and-availability/automatic-failover.html" class="page">Automatic Failover</a> removes a non-responsive node from the cluster automatically, following an administrator-configured timeout.
@@ -3884,10 +3880,16 @@ Active vBuckets thereby lost are replaced by the promotion of replica vBuckets, 
 A maximum of three sequential automatic failovers can be configured to occur.</p>
 </div>
 <div class="paragraph">
-<p>In cases where commitment based on <em>persistToMajority</em> has occurred, but no further propagation of the new data across the cluster occurred, failover of the nodes containing the new data results in the data&#8217;s loss &#8212; since no updated replica vBucket yet exists elsewhere on the cluster.</p>
+<p>In cases where commitment based on <em>persistToMajority</em> has occurred, but no further propagation of the new data across the cluster has yet occurred, automatic failover of the nodes containing the new data results in the data&#8217;s loss &#8212; since no updated replica vBucket yet exists elsewhere on the cluster.</p>
 </div>
 <div class="paragraph">
-<p>To prevent this, and thereby maintain guaranteed protection, at least one of the non-communicative nodes containing the new data should <em>not</em> be failed over; and auto-failover should be configured to occur sequentially only up to the number of times that supports this requirement.</p>
+<p>For example, if a bucket has two replicas, the total number of nodes on which the data resides is <em>three</em>; and the <em>majority</em> of nodes, on which persistence must occur prior to commitment, is <em>two</em>.
+After commitment, if those two nodes become unresponsive, automatic failover, if configured to occur up to a maximum of two times, allows those two nodes to be failed over <em>before</em> the durable write has been made persistent on the third node.
+In such a case, the durable write is lost, and the success message already delivered to the application rendered false.</p>
+</div>
+<div class="paragraph">
+<p>To prevent this, and thereby maintain guaranteed protection, at least one of the unresponsive nodes containing the new data should <em>not</em> be failed over.
+Therefore, auto-failover should be configured to occur sequentially only up to the number of times that supports this requirement.</p>
 </div>
 </div>
 </div>
@@ -3933,7 +3935,7 @@ The replica vBucket is promoted to active status on the replica node, and the ne
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, but restarts before autofailover occurs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, but restarts before auto-failover occurs.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory of the active node; but exists on the disk of the active node, and is thereby recovered when the active node has restarted.</p></td>
 </tr>
 </tbody>
@@ -3953,7 +3955,7 @@ The replica vBucket is promoted to active status on the replica node, and the ne
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, but restarts before autofailover occurs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, but restarts before auto-failover occurs.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory of the active node; but exists on the disk of the active node, and is thereby recovered when the active node has restarted.</p></td>
 </tr>
 <tr>
@@ -3973,134 +3975,12 @@ Then, the promoted replica node itself fails, and the new data is temporarily un
 <div class="sectionbody">
 <div class="paragraph">
 <p>The durability protection guarantees for two replicas are identical to those described above, for <a href="#protection-guarantees-1-replica">One Replica</a>.
-This is because <em>majority</em> is <code>2</code> for both cases: see the table in <a href="#majority">Majority</a>, above.
-Commitment therefore occurs without the second replica being guaranteed an update.</p>
+This is because <em>majority</em> is <code>2</code> for both cases: see the table in <a href="#majority">Majority</a>, above.</p>
 </div>
 <div class="paragraph">
-<p>To ensure auto-failover does not conflict with guaranteed protection, when two replicas have been configured, establish <code>1</code> as the maximum number of sequential automatic failovers that can take place without administrator intervention.</p>
+<p>Commitment therefore occurs without the second replica being guaranteed an update.
+To ensure auto-failover does not conflict with guaranteed protection, when two replicas have been configured, establish <code>1</code> as the maximum number of sequential automatic failovers that can take place without administrator intervention.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="protection-guarantees-3-replicas"><a class="anchor" href="#protection-guarantees-3-replicas"></a>Protection Guarantees: Three Replicas</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>When three replicas have been defined, protection guarantees, from the point of commitment until the new data has been fully propagated across the cluster, are as described below.</p>
-</div>
-<div class="paragraph">
-<p>Note that to support <em>persistToMajority</em> protection guarantees, auto-failover should be set to occur no more than <code>2</code> times, sequentially.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 30%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Level</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Failure(s)</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>majority</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory of the active node; but exists in the memory of two replica nodes.
-A replica vBucket is promoted to active status on one of the replicas node, and the new data is thus preserved.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.
-Then, the promoted replica node itself fails, and is automatically failed over.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory of the active node; but exists in the memory of the two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p>
-<p class="tableblock">Then, the promoted replica node itself fails, and is automatically failed over.
-The new data is lost from the memory of the promoted replica node; but exists in the memory of the second replica node.
-The second replica node is promoted to active status, and the new data is thus preserved.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 30%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>majorityAndPersistActive</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory and disk of the active node; but exists in the memory of two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.
-Then, the promoted replica node itself fails, and is automatically failed over.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory and disk of the active node; but exists in the memory of two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p>
-<p class="tableblock">Then, the promoted replica node itself fails, and is automatically failed over.
-The second replica node is promoted to active status, and the new data is thus preserved.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, but restarts before auto-failover occurs.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory of the active node; but exists on the disk of the active node, and is thereby recovered when the active node has restarted.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 30%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>persistToMajority</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory and disk of the active node; but exists in the memory and on the disks of two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.
-Then, the promoted replica node itself fails, and is automatically failed over.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory and disk of the active node; but exists in the memory and on the disks of two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p>
-<p class="tableblock">Then, the promoted replica node itself fails, and is automatically failed over.
-The second replica node is promoted to active status, and the new data is thus preserved.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, but restarts before auto-failover occurs.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory of the active node; but exists on the disk of the active node, and is thereby recovered when the active node has restarted.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.
-Then, the promoted replica node itself fails, and is restarted.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory and disk of the active node; but exists in the memory and on the disks of two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p>
-<p class="tableblock">Then, the promoted replica node itself fails; but is restarted before the end of time-period that must elapse before auto-failover is triggered.
-The new data is retrieved from disk, and is thus preserved.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The active node fails, and is automatically failed over.
-Then, the promoted replica node itself fails, and is automatically failed over.
-The second replica node is promoted.
-The second replica node itself then fails, but is restarted.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The new data is lost from the memory and disk of the active node; but exists in the memory and on the disks of two replica nodes.
-A replica vBucket is promoted to active status on one of the replica nodes, and the new data is thus preserved.</p>
-<p class="tableblock">Then, the promoted replica node itself fails, and is automatically failed over.
-The new data is lost from the memory and disk of the promoted replica node; but exists in the memory and on the disk of the second replica node.
-A replica vBucket is promoted to active status on the second replica node, and the new data is thus preserved.</p>
-<p class="tableblock">The second replica node itself then fails, but is restarted.
-The new data is retrieved from disk, and is thus preserved.</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 </article>
