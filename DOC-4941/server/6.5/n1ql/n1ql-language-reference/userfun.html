@@ -1082,7 +1082,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-active" data-depth="0">
+  <li class="nav-item is-current-path is-active" data-depth="0">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Develop</span>
@@ -1146,7 +1146,7 @@
     <a class="nav-link" href="../../getting-started/starter-kits.html">Starter Kits</a>
     </span>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-path is-active" data-depth="1">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../query.html">Query</a>
@@ -1218,7 +1218,7 @@
     <a class="nav-link" href="../../settings/query-settings.html">Settings and Parameters</a>
     </span>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-path is-active" data-depth="2">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="index.html">N1QL Language Reference</a>
@@ -1297,7 +1297,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item is-current-path is-active" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="functions.html">Functions</a>
@@ -1368,7 +1368,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="patternmatchingfun.html">Pattern-matching Functions</a>
+    <a class="nav-link" href="patternmatchingfun.html">Pattern-Matching Functions</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -1389,6 +1389,11 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="typefun.html">Type Functions</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="userfun.html">User-Defined Functions</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3601,6 +3606,10 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../../introduction/intro.html">Couchbase Server</a></li>
+    <li class="crumb">Develop</li>
+    <li class="crumb"><a href="../query.html">Query</a></li>
+    <li class="crumb"><a href="index.html">N1QL Language Reference</a></li>
+    <li class="crumb"><a href="functions.html">Functions</a></li>
     <li class="crumb"><a href="userfun.html">User-Defined Functions</a></li>
   </ul>
 </nav>
@@ -3621,7 +3630,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-You can use a user-defined function in an expression anywhere.
+You can call a user-defined function in an expression anywhere.
 </blockquote>
 </div>
 <div class="admonitionblock caution">
@@ -3646,6 +3655,208 @@ No Enterprise Support is provided for Developer Preview features.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you have created a user-defined function, you can call it in any expression, just like a built-in function.
+User-defined functions have the same syntax as built-in functions, with brackets <code>()</code> to contain any arguments.</p>
+</div>
+<div class="paragraph">
+<p>The name of the function may be an unqualified identifier, such as <code>func1</code> or <code>`func-1`</code>, or a qualified identifier with a namespace, such as <code>default:func1</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The name of a user-defined function <em>is</em> case-sensitive, unlike that of a built-in function.
+You must call the user-defined function using the same case that was used when it was created.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A user-defined function has zero, one, or more arguments, separated by commas, just like a built-in function.
+Each argument is a N1QL expression required by the function.</p>
+</div>
+<div class="paragraph">
+<p>If the function was created with named parameters, you must supply all the arguments that were specified when the function was created.
+If the function was created without named parameters, it is variadic, and you can supply as many arguments as needed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="return-value"><a class="anchor" href="#return-value"></a>Return Value</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The function returns one value, of any valid N1QL type.
+The result (and the data type of the result) depend on the expression or code that were used to define the function.</p>
+</div>
+<div class="paragraph">
+<p>If you supply the wrong number of arguments, or arguments with the wrong data type, the possible results differ, depending on whether the function was defined with or without any named parameters.</p>
+</div>
+<div class="paragraph">
+<p>If the function was defined <em>with</em> named parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you do not supply enough arguments, the function generates error <code>10104: Incorrect number of arguments</code>.</p>
+</li>
+<li>
+<p>If you supply too many arguments, the function generates error <code>10104: Incorrect number of arguments</code>.</p>
+</li>
+<li>
+<p>If any of the arguments have the wrong data type, the function may return unexpected results, depending on the function expression or code.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the function was defined <em>without</em> named parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you do not supply enough arguments, the function may return unexpected results, depending on the function expression or code.</p>
+</li>
+<li>
+<p>If you supply too many arguments, the extra parameters are ignored.</p>
+</li>
+<li>
+<p>If any of the arguments have the wrong data type, the function may return unexpected results, depending on the function expression or code.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For simplicity, none of these examples implement any data validation or error checking.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Inline function with expression</div>
+<div class="content">
+<div class="paragraph">
+<p>The following statement creates a function called <code>to_meters</code>, which converts feet to meters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE FUNCTION to_meters() { args[0] / 0.3048 };</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following query uses the <code>to_meters</code> function to express the elevation of the selected airports in meters above mean sea level (mamsl).
+The built-in ROUND function is used to round the output to zero decimal places.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT airportname, ROUND(to_meters(geo.alt)) AS mamsl
+FROM `travel-sample`
+WHERE type = "airport"
+LIMIT 5;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "airportname": "Calais Dunkerque",
+    "mamsl": 39
+  },
+  {
+    "airportname": "Peronne St Quentin",
+    "mamsl": 968
+  },
+  {
+    "airportname": "Les Loges",
+    "mamsl": 1404
+  },
+  {
+    "airportname": "Couterne",
+    "mamsl": 2356
+  },
+  {
+    "airportname": "Bray",
+    "mamsl": 1194
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Inline function with subquery</div>
+<div class="content">
+<div class="paragraph">
+<p>The following statement creates a function called <code>locations</code>, which selects name and address information from all documents of the specified type in the <code>travel-sample</code> bucket.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE FUNCTION locations(vType) { (
+  SELECT id, name, address, city
+  FROM `travel-sample`
+  WHERE type = vType) };</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following query uses the <code>locations</code> function as the FROM term in a SELECT query.
+Compare this query with Example 2 in the section on <a href="from.html#select-expr" class="page">FROM Subquery</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT l.name, l.city
+FROM locations("landmark") as l
+WHERE l.city = "Gillingham";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "city": "Gillingham",
+    "name": "Royal Engineers Museum"
+  },
+  {
+    "city": "Gillingham",
+    "name": "Hollywood Bowl"
+  },
+  {
+    "city": "Gillingham",
+    "name": "Thai Won Mien"
+  },
+  {
+    "city": "Gillingham",
+    "name": "Spice Court"
+  },
+  {
+    "city": "Gillingham",
+    "name": "Beijing Inn"
+  },
+  {
+    "city": "Gillingham",
+    "name": "Ossie's Fish and Chips"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
 <div class="sectionbody">
 <div class="ulist">
@@ -3657,7 +3868,7 @@ No Enterprise Support is provided for Developer Preview features.</p>
 <p>To execute user-defined functions, refer to <a href="execfunction.html" class="page">EXECUTE FUNCTION</a>.</p>
 </li>
 <li>
-<p>To monitor user-defined functions, refer to <a href="../n1ql-intro/sysinfo.html" class="page">Getting System Information</a>.</p>
+<p>To view user-defined functions, refer to <a href="../n1ql-intro/sysinfo.html" class="page">Getting System Information</a>.</p>
 </li>
 <li>
 <p>To drop user-defined functions, refer to <a href="dropfunction.html" class="page">DROP FUNCTION</a>.</p>
