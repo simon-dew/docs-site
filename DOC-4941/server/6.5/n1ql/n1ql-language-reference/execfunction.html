@@ -1082,7 +1082,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-active" data-depth="0">
+  <li class="nav-item is-current-path is-active" data-depth="0">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Develop</span>
@@ -1146,7 +1146,7 @@
     <a class="nav-link" href="../../getting-started/starter-kits.html">Starter Kits</a>
     </span>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-path is-active" data-depth="1">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../query.html">Query</a>
@@ -1218,7 +1218,7 @@
     <a class="nav-link" href="../../settings/query-settings.html">Settings and Parameters</a>
     </span>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-path is-active" data-depth="2">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="index.html">N1QL Language Reference</a>
@@ -1429,7 +1429,7 @@
     <a class="nav-link" href="booleanlogic.html">Boolean Logic</a>
     </span>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item is-current-path is-active" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Statements</span>
@@ -1516,6 +1516,11 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="execute.html">EXECUTE</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="execfunction.html">EXECUTE FUNCTION</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3596,6 +3601,10 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../../introduction/intro.html">Couchbase Server</a></li>
+    <li class="crumb">Develop</li>
+    <li class="crumb"><a href="../query.html">Query</a></li>
+    <li class="crumb"><a href="index.html">N1QL Language Reference</a></li>
+    <li class="crumb">Statements</li>
     <li class="crumb"><a href="execfunction.html">EXECUTE FUNCTION</a></li>
   </ul>
 </nav>
@@ -3641,6 +3650,118 @@ No Enterprise Support is provided for Developer Preview features.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="purpose"><a class="anchor" href="#purpose"></a>Purpose</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>EXECUTE FUNCTION</code> statement enables you to execute a user-defined function.
+It is useful for testing user-defined functions outside the context of a query.</p>
+</div>
+<div class="paragraph">
+<p>You cannot use the <code>EXECUTE FUNCTION</code> statement to execute a built-in N1QL function.
+If you do this, error <code>10101: Function not found</code> is generated.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>execute-function ::= <a href="#name">name</a> '(' [ <a href="#expression">expression</a> ( ',' <a href="#expression">expression</a> )* ] ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/execute-function.png" alt="'EXECUTE' 'FUNCTION' name '(' (expression (',' expression)* )? ')'">
+</div>
+</div>
+<div id="name" class="dlist">
+<dl>
+<dt class="hdlist1">name</dt>
+<dd>
+<p>The name of the function.
+This may be an unqualified identifier, such as <code>func1</code> or <code>`func-1`</code>, or a qualified identifier with a namespace, such as <code>default:func1</code>.</p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The name of a user-defined function <em>is</em> case-sensitive, unlike that of a built-in function.
+You must execute the user-defined function using the same case that was used when it was created.
+</td>
+</tr>
+</table>
+</div>
+<div id="expression" class="dlist">
+<dl>
+<dt class="hdlist1">expression</dt>
+<dd>
+<p>[Optional] A N1QL expression required by the function as an argument.
+If the function was created with named parameters, you must supply all the arguments that were specified when the function was created.
+If the function was created without named parameters, it is variadic, and you can supply as many arguments as needed.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="return-value"><a class="anchor" href="#return-value"></a>Return Value</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The function returns one value, of any valid N1QL type.
+The result (and the data type of the result) depend on the expression or code that were used to define the function.</p>
+</div>
+<div class="paragraph">
+<p>If you supply the wrong number of arguments, or arguments with the wrong data type, the possible results differ, depending on whether the function was defined with or without any named parameters.</p>
+</div>
+<div class="paragraph">
+<p>If the function was defined <em>with</em> named parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you do not supply enough arguments, the function generates error <code>10104: Incorrect number of arguments</code>.</p>
+</li>
+<li>
+<p>If you supply too many arguments, the function generates error <code>10104: Incorrect number of arguments</code>.</p>
+</li>
+<li>
+<p>If any of the arguments have the wrong data type, the function may return unexpected results, depending on the function expression or code.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the function was defined <em>without</em> named parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you do not supply enough arguments, the function may return unexpected results, depending on the function expression or code.</p>
+</li>
+<li>
+<p>If you supply too many arguments, the extra parameters are ignored.</p>
+</li>
+<li>
+<p>If any of the arguments have the wrong data type, the function may return unexpected results, depending on the function expression or code.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For examples, refer to <a href="createfunction.html#examples" class="page">CREATE FUNCTION</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
 <div class="sectionbody">
 <div class="ulist">
@@ -3652,7 +3773,7 @@ No Enterprise Support is provided for Developer Preview features.</p>
 <p>To include user-defined functions in an expression, refer to <a href="userfun.html" class="page">User-Defined Functions</a>.</p>
 </li>
 <li>
-<p>To monitor user-defined functions, refer to <a href="../n1ql-intro/sysinfo.html" class="page">Getting System Information</a>.</p>
+<p>To view user-defined functions, refer to <a href="../n1ql-intro/sysinfo.html" class="page">Getting System Information</a>.</p>
 </li>
 <li>
 <p>To drop user-defined functions, refer to <a href="dropfunction.html" class="page">DROP FUNCTION</a>.</p>
