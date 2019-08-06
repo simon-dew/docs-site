@@ -1045,6 +1045,11 @@
   </li>
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
+    <a class="nav-link" href="manage-tls.html">Manage TLS</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
     <a class="nav-link" href="manage-auditing.html">Manage Auditing</a>
     </span>
   </li>
@@ -3599,6 +3604,11 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-encryption.html">Encryption On-the-Wire API</a>
     </span>
   </li>
@@ -3834,102 +3844,17 @@ from which the Java client can access it.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="working-with-supported-protocols"><a class="anchor" href="#working-with-supported-protocols"></a>Working with Supported Protocols</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Couchbase Server client-libraries support client-side encryption, using the
-Secure Sockets Layer (SSL) and Transport Layer Security (TLS).
-TLS versions 1.0 to 1.2 are supported by default.
-The highest-supported version of TLS is recommended.</p>
-</div>
-<div class="paragraph">
-<p>Optionally, the minimum version of TLS can be set to be 1.2 or higher per
-cluster, using
-the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -X POST -u Administrator:password http://127.0.0.1:8091/diag/eval -d "ns_config:set(ssl_minimum_protocol, 'tlsv1.2')"</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="enabling-client-security"><a class="anchor" href="#enabling-client-security"></a>Securing Client-Application Access</h2>
+<h2 id="enabling-client-security"><a class="anchor" href="#enabling-client-security"></a>Securing Client Access with TLS</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>For an application to communicate securely with Couchbase Server, SSL/TLS must
 be enabled on the client side.
-To perform enablement, you must acquire a copy of the certificate used by
-Couchbase Server, and then follow the steps appropriate for your client.
-Access the certificate from the Couchbase Web Console: see
+Enablement requires a copy of the certificate used by Couchbase Server: this can be accessed from the Couchbase Web Console, as described in
 <a href="manage-security-settings.html#root-certificate-security-screen-display" class="page">Root
-Certificate</a>.
-Note that if, at some point, this certificate gets regenerated on the
-server-side, you must obtain a copy of the new version, and re-enable the client.</p>
+Certificate</a>.</p>
 </div>
 <div class="paragraph">
-<p>When a TLS connection is established between a client application and Couchbase
-Server running on port 18091, a <em>handshake</em> occurs, as defined by the <em>TLS
-Handshake Protocol</em>.
-As part of this exchange, the client must send to the server a
-<em>cipher-suite list</em>; which indicates the cipher-suites that the client
-supports, in order of preference.
-The server replies with a notification of the cipher-suite it has duly
-selected from the list.
-Additionally, symmetric keys to be used by client and server are selected
-by means of the <em>RSA key-exchange</em> algorithm.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="overriding-supported-ciphers"><a class="anchor" href="#overriding-supported-ciphers"></a>Overriding Supported Ciphers</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Couchbase Server uses ciphers that are accepted by default by OpenSSL. The
-default behavior employs <em>high</em>-security ciphers, built into OpenSSL.</p>
-</div>
-<div class="paragraph">
-<p>You can override this selection, by setting the <code>COUCHBASE_SSL_CIPHER_LIST</code>
-environment variable — this must be performed <em>before</em> starting Couchbase Server.
-The environment variable can be set in either of the following ways:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Specify an explicit list of ciphers to be used.
-For example:</p>
-<div class="listingblock">
-<div class="content">
-<pre>COUCHBASE_SSL_CIPHER_LIST="DHE-DSS-AES128-SHA,CAMELLIA128-SHA"</pre>
-</div>
-</div>
-</li>
-<li>
-<p>Specify ciphers by security-level.
-For example, to specify that all ciphers in both <em>medium</em> and <em>high</em> categories
-be used, enter the following:</p>
-<div class="listingblock">
-<div class="content">
-<pre>COUCHBASE_SSL_CIPHER_LIST="MEDIUM,HIGH"</pre>
-</div>
-</div>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To display the ciphers available on your Linux platform for a particular security level, use the <code>openssl</code> command.
-For example, to display the <em>high</em>-level ciphers, enter the following:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>openssl ciphers -v 'HIGH'</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To check the current value of the <code>COUCHBASE_SSL_CIPHER_LIST</code> environment
-variable, type <code>printenv</code> at the Linux prompt: this returns a list of all
-currently set environment variables.</p>
+<p>Note that if, at some point, this certificate gets regenerated on the server-side, a copy of the new version must be obtained, and the client re-enabled.</p>
 </div>
 </div>
 </div>

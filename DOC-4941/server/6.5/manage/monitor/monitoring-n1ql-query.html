@@ -1045,6 +1045,11 @@
   </li>
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
+    <a class="nav-link" href="../manage-security/manage-tls.html">Manage TLS</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
     <a class="nav-link" href="../manage-security/manage-auditing.html">Manage Auditing</a>
     </span>
   </li>
@@ -3599,6 +3604,11 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-encryption.html">Encryption On-the-Wire API</a>
     </span>
   </li>
@@ -3813,6 +3823,12 @@ All the power of the N1QL query language can be applied on the keyspaces to obta
 </li>
 <li>
 <p><a href="#sys_my-user-info">system:my_user_info</a></p>
+</li>
+<li>
+<p><a href="#sys-functions">system:functions</a></p>
+</li>
+<li>
+<p><a href="#sys-functions-cache">system:functions_cache</a></p>
 </li>
 </ul>
 </div></div></td>
@@ -6104,6 +6120,245 @@ This is datastore dependent.</p>
 </div>
 <div class="paragraph">
 <p>For more examples, take a look at the blog: <a href="https://blog.couchbase.com/optimize-n1ql-performance-using-request-profiling/" target="_blank" rel="noopener">Optimize N1QL performance using request profiling</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sys-functions"><a class="anchor" href="#sys-functions"></a>system:functions</h2>
+<div class="sectionbody">
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This is a Developer Preview feature, intended for development purposes only.
+Do not use this feature in production.
+No Enterprise Support is provided for Developer Preview features.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../../developer-preview/preview-mode.html" class="page">Developer Preview Mode</a> for more information.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This catalog maintains a list of all user-defined functions.
+To see the list of all user-defined functions, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:functions;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will result in a list similar to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "functions": {
+      "definition": {
+        "#language": "javascript",
+        "library": "math77",
+        "object": "add"
+      },
+      "identity": {
+        "name": "javaScriptAdd",
+        "namespace": "default",
+        "type": "global"
+      }
+    }
+  },
+  {
+    "functions": {
+      "definition": {
+        "#language": "inline",
+        "expression": "substr0(`vString`, (length(`vString`) - `vLen`), `vLen`)",
+        "parameters": [
+          "vString",
+          "vLen"
+        ]
+      },
+      "identity": {
+        "name": "rstr",
+        "namespace": "default",
+        "type": "global"
+      }
+    }
+  }
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This query returns the following attributes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="out">definition.#language</code>: string (the language of the function, for example, inline)</p>
+</li>
+<li>
+<p><code class="out">definition.expression</code>: string (for inline functions only: the expression defining the function)</p>
+</li>
+<li>
+<p><code class="out">definition.library</code>: string (for JavaScript functions only: the library containing the function)</p>
+</li>
+<li>
+<p><code class="out">definition.object</code>: string (for JavaScript functions only: the object defining the function)</p>
+</li>
+<li>
+<p><code class="out">definition.parameters</code>: array of strings (the parameters required by the function)</p>
+</li>
+<li>
+<p><code class="out">identity.name</code>: string (the name of the function)</p>
+</li>
+<li>
+<p><code class="out">identity.namespace</code>: string (the namespace of the function, for example, default)</p>
+</li>
+<li>
+<p><code class="out">identity.type</code>: string (the type of the function, for example, global)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sys-functions-cache"><a class="anchor" href="#sys-functions-cache"></a>system:functions_cache</h2>
+<div class="sectionbody">
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This is a Developer Preview feature, intended for development purposes only.
+Do not use this feature in production.
+No Enterprise Support is provided for Developer Preview features.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../../developer-preview/preview-mode.html" class="page">Developer Preview Mode</a> for more information.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This catalog maintains a list of recently-used user-defined functions.
+To see the list of recently-used user-defined functions, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:functions_cache;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will result in a list similar to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "functions_cache": {
+      "#language": "javascript",
+      "avgServiceTime": "674.264µs",
+      "lastUse": "2019-08-06 06:08:35.37498882 -0700 PDT m=+2236.523899555",
+      "library": "math77",
+      "maxServiceTime": "674.264µs",
+      "minServiceTime": "0s",
+      "name": "javaScriptAdd",
+      "namespace": "default",
+      "node": "127.0.0.1:8091",
+      "object": "add",
+      "type": "global",
+      "uses": 1
+    }
+  },
+  {
+    "functions_cache": {
+      "#language": "inline",
+      "avgServiceTime": "8.926µs",
+      "expression": "substr0(`vString`, (length(`vString`) - `vLen`), `vLen`)",
+      "lastUse": "2019-08-06 06:10:50.681845642 -0700 PDT m=+2371.830756442",
+      "maxServiceTime": "8.926µs",
+      "minServiceTime": "0s",
+      "name": "rstr",
+      "namespace": "default",
+      "node": "127.0.0.1:8091",
+      "parameters": [
+        "vString",
+        "vLen"
+      ],
+      "type": "global",
+      "uses": 1
+    }
+  }
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This query returns the following attributes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="out">#language</code>: string (the language of the function, for example, inline)</p>
+</li>
+<li>
+<p><code class="out">expression</code>: string (for inline functions only: the expression defining the function)</p>
+</li>
+<li>
+<p><code class="out">library</code>: string (for JavaScript functions only: the library containing the function)</p>
+</li>
+<li>
+<p><code class="out">object</code>: string (for JavaScript functions only: the object defining the function)</p>
+</li>
+<li>
+<p><code class="out">parameters</code>: array of strings (the parameters required by the function)</p>
+</li>
+<li>
+<p><code class="out">name</code>: string (the name of the function)</p>
+</li>
+<li>
+<p><code class="out">namespace</code>: string (the namespace of the function, for example, default)</p>
+</li>
+<li>
+<p><code class="out">type</code>: string (the type of the function, for example, global)</p>
+</li>
+<li>
+<p><code class="out">avgServiceTime</code>: string (the mean service time for the function)</p>
+</li>
+<li>
+<p><code class="out">maxServiceTime</code>: string (the maximum service time for the function)</p>
+</li>
+<li>
+<p><code class="out">minServiceTime</code>: string (the minimum service time for the function)</p>
+</li>
+<li>
+<p><code class="out">lastUse</code>: string (the date and time when the function was last used)</p>
+</li>
+<li>
+<p><code class="out">uses</code>: number (the number of uses of the function)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Refer to <a href="../../n1ql/n1ql-intro/sysinfo.html" class="page">Getting System Information</a> for more information on the system namespace.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
