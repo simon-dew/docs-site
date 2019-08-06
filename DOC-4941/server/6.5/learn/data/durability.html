@@ -3421,6 +3421,11 @@
     <a class="nav-link" href="../../n1ql/n1ql-rest-api/admin.html">Admin REST API</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../../n1ql/n1ql-rest-api/functions.html">Functions REST API</a>
+    </span>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="3">
@@ -3448,7 +3453,7 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
-    <a class="nav-link" href="../../eventing/eventing-api.html">Functions REST API</a>
+    <a class="nav-link" href="../../eventing/eventing-api.html">Eventing REST API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="3">
@@ -3903,7 +3908,8 @@ See <a href="#failure-scenarios">Failure Scenarios</a>, below.</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>In some circumstances, rather than acknowledging to a client that the durable write has succeeded, Couchbase Server acknowledges an <em>ambiguous outcome</em>: for example, due to the client-specified timeout having elapsed.</p>
+<p>In some circumstances, rather than acknowledging to a client that the durable write has succeeded, Couchbase Server acknowledges an <em>ambiguous outcome</em>: for example, due to the client-specified timeout having elapsed.
+See <a href="#handling-ambiguous-results">Handling Ambiguous Results</a>, below.</p>
 </div>
 <div class="paragraph">
 <p>Subsequent to a durable write’s commitment and due acknowledgement, Couchbase Server continues the process of replication and persistence, until all active and replica vBuckets, both in memory and on disk, have been appropriately updated across all nodes.</p>
@@ -3931,7 +3937,8 @@ A regular write therefore provides no guarantee of durability.</p>
 <ol class="arabic">
 <li>
 <p><em>Server timeout exceeded</em>.
-The active node aborts the durable write, instructs all replica nodes also to abort the pending write, and informs the client that the durable write has had an ambiguous result.</p>
+The active node aborts the durable write, instructs all replica nodes also to abort the pending write, and informs the client that the durable write has had an ambiguous result.
+See <a href="#handling-ambiguous-results">Handling Ambiguous Results</a>, below.</p>
 </li>
 <li>
 <p><em>Replica node fails while SyncWrite is pending (that is, before the active node can identify whether the node hosted a replica)</em>.
@@ -3949,6 +3956,29 @@ A client that attempts a durable or an asynchronous write on a key whose value i
 The client may retry.</p>
 </li>
 </ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="handling-ambiguous-results"><a class="anchor" href="#handling-ambiguous-results"></a>Handling Ambiguous Results</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Server informs the client of an ambiguous result whenever Couchbase Server cannot confirm that an intended commit was successful.
+This situation may be caused by node-failure, network-failure, or timeout.</p>
+</div>
+<div class="paragraph">
+<p>If a client receives notification of an ambiguous result, and the attempted durable write is <em>idempotent</em>, the durable write can be re-attempted.
+If the attempted durable write is <em>not</em> idempotent, the options are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Verify the current state of the saved data; and re-attempt the durable write if appropriate.</p>
+</li>
+<li>
+<p>Return an error to the user.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>

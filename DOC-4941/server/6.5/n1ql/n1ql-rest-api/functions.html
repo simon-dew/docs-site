@@ -2411,7 +2411,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-active" data-depth="0">
+  <li class="nav-item is-current-path is-active" data-depth="0">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Reference</span>
@@ -3014,13 +3014,13 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-path is-active" data-depth="1">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../rest-api/rest-intro.html">REST API Reference</a>
     </span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-path is-active" data-depth="2">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../rest-api/rest-endpoints-all.html">REST API endpoint list</a>
@@ -3352,7 +3352,7 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item is-current-path is-active" data-depth="3">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="index.html">N1QL REST API</a>
@@ -3421,6 +3421,11 @@
     <a class="nav-link" href="admin.html">Admin REST API</a>
     </span>
   </li>
+  <li class="nav-item is-current-page is-active" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="functions.html">Functions REST API</a>
+    </span>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="3">
@@ -3448,7 +3453,7 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
-    <a class="nav-link" href="../../eventing/eventing-api.html">Functions REST API</a>
+    <a class="nav-link" href="../../eventing/eventing-api.html">Eventing REST API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="3">
@@ -3703,6 +3708,10 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../../introduction/intro.html">Couchbase Server</a></li>
+    <li class="crumb">Reference</li>
+    <li class="crumb"><a href="../../rest-api/rest-intro.html">REST API Reference</a></li>
+    <li class="crumb"><a href="../../rest-api/rest-endpoints-all.html">REST API endpoint list</a></li>
+    <li class="crumb"><a href="index.html">N1QL REST API</a></li>
     <li class="crumb"><a href="functions.html">Functions REST API</a></li>
   </ul>
 </nav>
@@ -3714,13 +3723,8 @@
   </div>
 <article class="doc">
 <h1 class="page">Functions REST API</h1>
-<div class="sect1">
-<h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
+<div id="preamble">
 <div class="sectionbody">
-<div class="paragraph">
-<p>The Functions REST API is a secondary API provided by the Query service.
-This API enables you to manage the JavaScript libraries and objects for N1QL user-defined functions.</p>
-</div>
 <div class="admonitionblock caution">
 <table>
 <tr>
@@ -3739,6 +3743,432 @@ No Enterprise Support is provided for Developer Preview features.</p>
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Functions REST API is a secondary API provided by the Query service.
+This API enables you to manage the JavaScript libraries and objects that are used to create N1QL user-defined functions.</p>
+</div>
+<div class="paragraph">
+<p>The API schemes and host URLs are as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>http://node:8093/</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>where <code class="var">node</code> is the host name or IP address of a computer running the N1QL query engine.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For all REST API calls:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <code>name</code> attribute appears in the body, it must match the name specified in the path.</p>
+</li>
+<li>
+<p>If the <code>name</code> is not specified in the body, it defaults to the name specified in the path.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="version-information"><a class="anchor" href="#version-information"></a>Version information</h3>
+<div class="paragraph">
+<p><em>Version</em> : 6.5</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="consumes"><a class="anchor" href="#consumes"></a>Consumes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>application/json</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="produces"><a class="anchor" href="#produces"></a>Produces</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>application/json</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-update-a-function"><a class="anchor" href="#create-update-a-function"></a>Create or Update a Function</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>POST /functions/v1/libraries/{library_name}/functions/{function_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if the function already exists in the library, it is overwritten.
+Otherwise, the function is added to the library.
+If a library does not exist, one will be created.</p>
+</div>
+<div class="paragraph">
+<p>Only JavaScript functions whose name matches the name of the Couchbase function object are exported.</p>
+</div>
+<div class="paragraph">
+<p>The example below creates a function called <code>sub</code> in library <code>math</code>.
+The function <code>sub</code> is publicly exported, while the function <code>helper</code> is not.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X POST \
+  http://localhost:8093/functions/v1/libraries/math/functions/sub \
+  -u Administrator:password \
+  -H 'content-type: application/json' \
+  -d '{
+    "name": "sub",
+    "code": "function sub(a,b) { return helper(a,b); }\n function helper(a,b) { return a - b; }"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-update-a-library"><a class="anchor" href="#create-update-a-library"></a>Create or Update a Library</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>POST /functions/v1/libraries/{library_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if the library exists, the function specified will be added to the existing library.
+If a specified function already exists in the old library, it will be overwritten.</p>
+</div>
+<div class="paragraph">
+<p>The example below creates a library called <code>math</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X POST \
+  http://localhost:8093/functions/v1/libraries/math \
+  -u Administrator:password \
+  -H 'content-type: application/json' \
+  -d '{
+    "name": "math",
+    "functions": [
+        {"name": "add","code": "function add(a, b) { let data = a + b; return data; } "},
+        {"name": "sub","code": "function sub(a, b) { let data = a - b; return data; } "},
+        {"name": "mul","code": "function mul(a, b) { let data = a * b; return data; } "}
+    ]
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-update-a-collection-of-libraries"><a class="anchor" href="#create-update-a-collection-of-libraries"></a>Create or Update a Collection of Libraries</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>POST /functions/v1/libraries</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if any specified library exists, the functions specified in the body for that library will be appended to the existing library.
+If the function in the library exists in the library on the server, the function will be overwritten.</p>
+</div>
+<div class="paragraph">
+<p>The example below adds or updates two libraries, <code>math</code> and <code>science</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X POST \
+  http://localhost:8093/functions/v1/libraries \
+  -u Administrator:password \
+  -H 'content-type: application/json' \
+  -d '[
+  {
+    "name": "math",
+    "functions":
+    [
+      {
+        "name": "adder",
+        "code": "function adder(a, b) { return a + b; } function helper() { return; }"
+      },
+      {
+        "name": "multiplier",
+        "code": "function multiplier(a, b) { return a * b; } function helper() { return; }"
+      }
+    ]
+  },
+  {
+    "name": "science",
+    "functions":
+    [
+      {
+        "name": "f2c",
+        "code": "function f2c(f) { return (5/9)*(f-32); }"
+      }
+    ]
+  }
+]'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-a-function"><a class="anchor" href="#read-a-function"></a>Read a Function</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>GET /functions/v1/libraries/{library_name}/functions/{function_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns the specified function from the specified library.</p>
+</div>
+<div class="paragraph">
+<p>The example below gets the function <code>sub</code> from the library <code>math</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X GET \
+  http://localhost:8093/functions/v1/libraries/math/functions/sub \
+  -u Administrator:password</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-a-library"><a class="anchor" href="#read-a-library"></a>Read a Library</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>GET /functions/v1/libraries/{library_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns a library with all its functions.</p>
+</div>
+<div class="paragraph">
+<p>The example below gets all functions in the library <code>math</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X GET \
+  http://localhost:8093/functions/v1/libraries/math \
+  -u Administrator:password</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-all-libraries"><a class="anchor" href="#read-all-libraries"></a>Read All Libraries</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>GET /functions/v1/libraries</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns all libraries and functions.</p>
+</div>
+<div class="paragraph">
+<p>The example below fetches all defined libraries.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X GET \
+  http://localhost:8093/functions/v1/libraries \
+  -u Administrator:password</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delete-a-function-in-a-library"><a class="anchor" href="#delete-a-function-in-a-library"></a>Delete a Function in a Library</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>DELETE /functions/v1/libraries/{library_name}/functions/{function_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Deletes the specified function in a library.</p>
+</div>
+<div class="paragraph">
+<p>The example below deletes the function <code>sub</code> in the <code>math</code> library.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X DELETE \
+  http://localhost:8093/functions/v1/libraries/math/functions/sub \
+  -u Administrator:password \
+  -H 'content-type: application/json'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delete-an-entire-library"><a class="anchor" href="#delete-an-entire-library"></a>Delete an Entire Library</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>DELETE /functions/v1/libraries/{library_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Deletes the specified library entirely.</p>
+</div>
+<div class="paragraph">
+<p>The example below deletes the <code>math</code> library entirely.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X DELETE \
+  http://localhost:8093/functions/v1/libraries/math \
+  -u Administrator:password</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delete-all-libraries"><a class="anchor" href="#delete-all-libraries"></a>Delete All Libraries</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>DELETE /functions/v1/libraries</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Deletes all libraries entirely.</p>
+</div>
+<div class="paragraph">
+<p>The example below deletes all libraries defined in the system.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X DELETE \
+  http://localhost:8093/functions/v1/libraries \
+  -u Administrator:password</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="replace-a-function"><a class="anchor" href="#replace-a-function"></a>Replace a Function</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>PUT /functions/v1/libraries/{library_name}/functions/{function_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This has same effect as <a href="#create-update-a-function">creating or updating a function</a>, and is included for completeness.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="replace-a-library"><a class="anchor" href="#replace-a-library"></a>Replace a Library</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>PUT /functions/v1/libraries/{library_name}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This has exactly the same effect as <a href="#delete-an-entire-library">deleting an entire library</a> followed by <a href="#create-update-a-library">creating a library</a>.</p>
+</div>
+<div class="paragraph">
+<p>That is, if the library exists, it is deleted entirely and replaced with the contents of the library specified in the body of this call, resulting in the library having only functions specified by this call exclusively.</p>
+</div>
+<div class="paragraph">
+<p>The example below replaces the <code>math</code> library with a new copy, dropping any old <code>math</code> library.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X PUT \
+  http://localhost:8093/functions/v1/libraries/math \
+  -u Administrator:password \
+  -H 'content-type: application/json' \
+  -d '{
+    "name": "math",
+    "functions": [
+        {"name": "add","code": "function add(a, b) { let data = a + b; return data; } "},
+        {"name": "sub","code": "function sub(a, b) { let data = a - b; return data; } "},
+        {"name": "mul","code": "function mul(a, b) { let data = a * b; return data; } "}
+    ]
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="replace-all-libraries"><a class="anchor" href="#replace-all-libraries"></a>Replace All Libraries</h2>
+<div class="sectionbody">
+<div class="literalblock">
+<div class="title">Path</div>
+<div class="content">
+<pre>PUT /functions/v1/libraries</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This has exactly the same effect as <a href="#delete-all-libraries">deleting all libraries</a> followed by <a href="#create-update-a-collection-of-libraries">creating a collection of libraries</a>.</p>
+</div>
+<div class="paragraph">
+<p>That is, all existing libraries in the system are deleted, and the libraries specified in the body of this call are created, resulting in the system having exclusively the libraries specified by this call.</p>
+</div>
+<div class="paragraph">
+<p>The example below removes all libraries in the system and creates a new <code>math</code> library.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -X PUT \
+  http://localhost:8093/functions/v1/libraries \
+  -u Administrator:password \
+  -H 'content-type: application/json' \
+  -d '[
+    {
+        "name": "math",
+        "functions": [
+            {"name": "add","code": "function add(a, b) { let data = a + b; return data; } "},
+            {"name": "sub","code": "function sub(a, b) { let data = a - b; return data; } "},
+            {"name": "mul","code": "function mul(a, b) { let data = a * b; return data; } "}
+        ]
+    }
+]'</code></pre>
+</div>
 </div>
 </div>
 </div>
