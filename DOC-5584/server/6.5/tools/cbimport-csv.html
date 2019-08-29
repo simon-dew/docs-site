@@ -2451,6 +2451,11 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-info.html">cbbackupmgr info</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
     <a class="nav-link" href="../backup-restore/cbbackupmgr-list.html">cbbackupmgr list</a>
     </span>
   </li>
@@ -3793,7 +3798,8 @@
              [--limit-rows &lt;num&gt;] [--skip-rows &lt;num&gt;] [--field-separator &lt;char&gt;]
              [--cacert &lt;path&gt;] [--no-ssl-verify] [--threads &lt;num&gt;] [--error-log &lt;path&gt;]
              [--log-file &lt;path&gt;] [--verbose] [--field-delimiter &lt;char&gt;]
-             [--generator-delimiter &lt;char&gt;]</pre>
+             [--generator-delimiter &lt;char&gt;]
+             [--scope-collection-exp &lt;scope_collection_expression&gt;]</pre>
 </div>
 </div>
 </div>
@@ -3923,6 +3929,12 @@ that contain empty values specify this flag.</p>
 <p>Specifies a CA certificate that will be used to verify the identity of the
 server being connecting to. Either this flag or the --no-ssl-verify flag
 must be specified when using an SSL encrypted connection.</p>
+</dd>
+<dt class="hdlist1">--scope-collection-exp &lt;scope_collection_expression&gt;</dt>
+<dd>
+<p>When exporting to a collection aware cluster you may optionally choose to
+provide a scope/collection expression which will be used to determine which
+scope/collection to insert the imported document in.</p>
 </dd>
 <dt class="hdlist1">-t,--threads &lt;num&gt;</dt>
 <dd>
@@ -4055,6 +4067,70 @@ be imported to a file.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="scopecollection-parser"><a class="anchor" href="#scopecollection-parser"></a>SCOPE/COLLECTION PARSER</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Scope/collection parsers are used in order to determine which scope/collection
+to insert documents into. There are currently two supported parsers text/field.</p>
+</div>
+<div class="paragraph">
+<p>Given the CSV dataset:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>product, stock, type, subtype
+apple, 100, produce, fruit</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Scope/collection expression:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>--scope-collection-exp %type%.%subtype%</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The row would be inserted into the 'fruit' collection inside the 'produce'
+scope.</p>
+</div>
+<div class="paragraph">
+<p>Given the CSV dataset:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>fname,age
+alice,40
+barry,36</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Scope/collection expression:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>--scope-collection-exp uk.manchester</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, no fields in the row will be used to determine the scope or
+collection; all the rows would be inserted into the 'manchester' collection
+inside the 'uk' scope.</p>
+</div>
+<div class="paragraph">
+<p>There is nothing stopping the mixture of text/field expressions the following
+are all valid expressions.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>uk.%city%
+uk.%city%-5
+%country%.%city%::%town%</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -4122,6 +4198,27 @@ import the data with the command below.</p>
  -b default -d http://data.org/people.csv -g key::%fname%::#UUID# -t 4</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>If the CSV dataset contains information which would allow importing into
+scopes/collections then an command like the one below could be used.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>product, stock, type, subtype
+apple, 100, produce, fruit</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbimport csv -c couchbase://127.0.0.1 -u Administrator -p password
+ -b default -d file://data/list.csv -g %product%
+ --scope-collection-exp %type%.%subtype%</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command would place the row into the fruit collection inside the
+produce scope.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -4131,7 +4228,7 @@ import the data with the command below.</p>
 <p>The cbimport-csv command is used to quickly import data from various files
 containing CSV, TSV or other separated format data. While importing CSV the
 cbimport command only utilizes a single reader. As a result importing large
-dataset may benefit from being paritioned into multiple files and running a
+dataset may benefit from being partitioned into multiple files and running a
 separate cbimport process on each file.</p>
 </div>
 </div>

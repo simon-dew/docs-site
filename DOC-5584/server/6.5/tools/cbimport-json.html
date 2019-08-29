@@ -2451,6 +2451,11 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-info.html">cbbackupmgr info</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
     <a class="nav-link" href="../backup-restore/cbbackupmgr-list.html">cbbackupmgr list</a>
     </span>
   </li>
@@ -3792,7 +3797,8 @@
               [--format &lt;data_format&gt;][--username &lt;username&gt;] [--password &lt;password&gt;]
               [--generate-key &lt;key_expr&gt;][--cacert &lt;path&gt;][--no-ssl-verify]
               [--threads &lt;num&gt;] [--error-log &lt;path&gt;][--log-file &lt;path&gt;] [--verbose]
-              [--ignore-field] [--field-delimiter &lt;char&gt;] [--generator-delimiter &lt;char&gt;]</pre>
+              [--ignore-field] [--field-delimiter &lt;char&gt;] [--generator-delimiter &lt;char&gt;]
+              [--scope-collection-exp &lt;scope_collection_expression&gt;]</pre>
 </div>
 </div>
 </div>
@@ -3909,6 +3915,12 @@ dataset and only want to partially load it.</p>
 data. If this flag is used together with the --limit-rows flag then we will
 import the number of rows specified by --limit-rows after we ave skipped the
 rows specified by --skip-rows.</p>
+</dd>
+<dt class="hdlist1">--scope-collection-exp &lt;scope_collection_expression&gt;</dt>
+<dd>
+<p>When exporting to a collection aware cluster you may optionally choose to
+provide a scope/collection expression which will be used to determine which
+scope/collection to insert the imported document in.</p>
 </dd>
 <dt class="hdlist1">-t,--threads &lt;num&gt;</dt>
 <dd>
@@ -4135,6 +4147,72 @@ be imported to a file.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="scopecollection-parser"><a class="anchor" href="#scopecollection-parser"></a>SCOPE/COLLECTION PARSER</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Scope/collection parsers are used in order to determine which scope/collection
+to insert documents into. There are currently two supported parsers text/field.</p>
+</div>
+<div class="paragraph">
+<p>Given the JSON dataset:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[
+  {"product": "apple", "stock": 100, "type": "produce", "subtype": "fruit"}
+]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Scope/collection expression:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>--scope-collection-exp %type%.%subtype%</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The document would be inserted into the 'fruit' collection inside the 'produce'
+scope.</p>
+</div>
+<div class="paragraph">
+<p>Given the JSON dataset:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[
+  {"fname": "alice", "age": 40},
+  {"fname": "barry", "age": 36}
+]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Scope/collection expression:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>--scope-collection-exp uk.manchester</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, no fields in the document will be used to determine the scope or
+collection; all the documents would be inserted into the 'manchester' collection
+inside the 'uk' scope.</p>
+</div>
+<div class="paragraph">
+<p>There is nothing stopping the mixture of text/field expressions the following
+are all valid expressions.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>uk.%city%
+uk.%city%-5
+%country%.%city%::%town%</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -4201,6 +4279,26 @@ below.</p>
 <pre>$ cbimport json -c couchbase://127.0.0.1 -u Administrator -p password \
  -b default -d http://data.org/list.json -f list -g key::%name%::#UUID# -t 4</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>If the JSON dataset contains information which would allow importing into
+scopes/collections then an command like the one below could be used.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[{"product": "apple", "stock": 100, "type": "produce", "subtype": "fruit"}]</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbimport json -c couchbase://127.0.0.1 -u Administrator -p password
+ -b default -d file://data/list.csv -f list -g %product%
+ --scope-collection-exp %type%.%subtype%</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command would place the document into the fruit collection inside the
+produce scope.</p>
 </div>
 </div>
 </div>

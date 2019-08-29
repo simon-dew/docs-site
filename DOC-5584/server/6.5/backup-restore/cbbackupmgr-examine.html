@@ -2451,6 +2451,11 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
+    <a class="nav-link" href="cbbackupmgr-info.html">cbbackupmgr info</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
     <a class="nav-link" href="cbbackupmgr-list.html">cbbackupmgr list</a>
     </span>
   </li>
@@ -3787,7 +3792,7 @@
 <div class="verseblock">
 <pre class="content">cbbackupmgr examine [--archive &lt;archive_dir&gt;] [--repo &lt;repo_name&gt;]
                     [--bucket &lt;bucket_name&gt;] [--key &lt;key_name&gt;]
-                    [--tombstones] [--backup &lt;backup_name&gt;] [--json] [hex]</pre>
+                    [--tombstones] [--backups &lt;backup_list&gt;] [--json] [hex]</pre>
 </div>
 </div>
 </div>
@@ -3836,9 +3841,11 @@ however, in this case only one document will be returned.</p>
 <h3 id="optional"><a class="anchor" href="#optional"></a>Optional</h3>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">-B,--backup</dt>
+<dt class="hdlist1">-B,--bucket &lt;bucket_list&gt;</dt>
 <dd>
-<p>The name (on disk) of a backup to examine.</p>
+<p>The name of a specific backup or a comma separated pair of dates/indices
+which are examined as a range. See the BACKUP RANGES section for more
+information on accepted date/index pairs.</p>
 </dd>
 <dt class="hdlist1">-t,--tombstones</dt>
 <dd>
@@ -3880,6 +3887,29 @@ tombstone will be returned.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="backup-ranges"><a class="anchor" href="#backup-ranges"></a>BACKUP RANGES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The examine command accepts a pair of dates or indices using the '--backups' argument
+which can be used to refine the search space for your data.</p>
+</div>
+<div class="paragraph">
+<p>When given the backup range '0,5' examine will search all of the backups in chronological
+order starting from the first backup, finishing with the fifth backup.</p>
+</div>
+<div class="paragraph">
+<p>When given the backup range '20-08-2019,23-08-2019' examine will search in all the backups
+which fall within these two dates. Note that the format must be 'day-month-year' this means
+that '01-30-19' is an invalid date and will be rejected by examine.</p>
+</div>
+<div class="paragraph">
+<p>Examine also accepts a backup range using the names of backups e.g. '2019-08-23T09_36_56.957232625Z'.
+Therefore, given the backup range '2019-08-20T11_39_34.232308323Z, 2019-08-23T09_36_56.957232625Z'
+examine will search in any backups which fall within these two backups.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -3894,6 +3924,26 @@ Key: document_001
   Deleted: false
   Meta: {"flags":33554438,"expiry":0,"locktime":0,"cas":1563551624866037760,"revseqno":1,"datatype":1}
   Value: {"type":"example"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By using the optional '--backups' argument you can refine the search space by limiting the search
+to a set range of backups.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>$ cbbackupmgr examine -a /data/backups -r example -b default -k document_001 --backups '20-08-2019,23-08-2019'
+Key: document_001
+  Backup: 2019-08-20T15_54_29.251286016Z
+  Deleted: false
+  Meta: {"flags":33554438,"expiry":0,"locktime":0,"cas":1563551624866037760,"revseqno":1,"datatype":1}
+  Value: {"type":"example"}
+
+Key: document_001
+  Backup: 2019-08-22T12_36_20.381276326Z
+  Deleted: false
+  Meta: {"flags":33554438,"expiry":0,"locktime":0,"cas":1566554379279592866,"revseqno":2,"datatype":1}
+  Value: {"type":"example", "subtype": "examine-example"}</code></pre>
 </div>
 </div>
 <div class="paragraph">

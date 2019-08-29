@@ -2451,6 +2451,11 @@
   </li>
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
+    <a class="nav-link" href="../backup-restore/cbbackupmgr-info.html">cbbackupmgr info</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
     <a class="nav-link" href="../backup-restore/cbbackupmgr-list.html">cbbackupmgr list</a>
     </span>
   </li>
@@ -3791,7 +3796,8 @@
 <pre class="content">cbexport json [--cluster &lt;url&gt;] [--bucket &lt;bucket_name&gt;] [--format &lt;data_format&gt;]
               [--username &lt;username&gt;] [--password &lt;password&gt;] [--cacert &lt;path&gt;]
               [--no-ssl-verify] [--threads &lt;num&gt;] [--log-file &lt;path&gt;]
-              [--include-key &lt;key&gt;] [--verbose]</pre>
+              [--include-key &lt;key&gt;] [--verbose] [--scope-field &lt;scope_field&gt;]
+              [--collection-field &lt;collection_field&gt;]</pre>
 </div>
 </div>
 </div>
@@ -3884,6 +3890,18 @@ when using an SSL encrypted connection.</p>
 <p>Specifies a CA certificate that will be used to verify the identity of the
 server being connecting to. Either this flag or the --no-ssl-verify flag
 must be specified when using an SSL encrypted connection.</p>
+</dd>
+<dt class="hdlist1">--scope-field &lt;scope_field&gt;</dt>
+<dd>
+<p>When exporting from a collection aware cluster this field will be created
+in each JSON document; it will be used to store the name of the scope the
+document came from.</p>
+</dd>
+<dt class="hdlist1">--collection-field &lt;collection_field&gt;</dt>
+<dd>
+<p>When exporting from a collection aware cluster this field will be created
+in each JSON document; it will be used to store the name of the collection
+the document came from.</p>
 </dd>
 <dt class="hdlist1">-t,--threads &lt;num&gt;</dt>
 <dd>
@@ -4004,6 +4022,28 @@ can be run.</p>
 <div class="content">
 <pre>$ cbexport json -c couchbase://127.0.0.1 -u Administrator -p password \
  -b default -o /data/list.json -f list</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To export data from a collections aware cluster with the scope and collection being
+added to the scope/collection field the following command can be run.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbexport json -c couchbase://127.0.0.1 -u Administrator -p password \
+ -b default -o /data/list.json -f list --scope-field scope --collection-field collection</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[
+  {
+    "scope": "myscope1",
+    "collection": "mycollection1",
+    "key": "mykey1",
+    "value": "myvalue1",
+  }
+]</pre>
 </div>
 </div>
 </div>

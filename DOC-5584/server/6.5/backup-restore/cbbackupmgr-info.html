@@ -2406,19 +2406,19 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-active" data-depth="0">
+  <li class="nav-item is-current-path is-active" data-depth="0">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <span class="nav-text">Reference</span>
     </span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-path is-active" data-depth="1">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../cli/cli-intro.html">CLI Reference</a>
     </span>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-path is-active" data-depth="2">
     <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="cbbackupmgr.html">cbbackupmgr</a>
@@ -2447,6 +2447,11 @@
   <li class="nav-item" data-depth="3">
     <span class="nav-line">
     <a class="nav-link" href="cbbackupmgr-help.html">cbbackupmgr help</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="cbbackupmgr-info.html">cbbackupmgr info</a>
     </span>
   </li>
   <li class="nav-item" data-depth="3">
@@ -3763,6 +3768,9 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../introduction/intro.html">Couchbase Server</a></li>
+    <li class="crumb">Reference</li>
+    <li class="crumb"><a href="../cli/cli-intro.html">CLI Reference</a></li>
+    <li class="crumb"><a href="cbbackupmgr.html">cbbackupmgr</a></li>
     <li class="crumb"><a href="cbbackupmgr-info.html">cbbackupmgr info</a></li>
   </ul>
 </nav>
@@ -3921,20 +3929,24 @@ the following command:</p>
 Backup                       | Size     | Type  | Source                 | Range  | Events  | Aliases  | Complete  |
 2019-03-15T12_18_00.514284Z  | 52.42MB  | FULL  | http://localhost:8091  | N/A    | 0       | 1        | true      |
 
- -   Bucket          | Size     | Docs   | Views  | FTS  | Indexes  | CBAS  |
- -   beer-sample     | 6.85MB   | 7303   | 1      | 0    | 1        | 0     |
- -   gamesim-sample  | 2.86MB   | 586    | 1      | 0    | 1        | 0     |
- -   travel-sample   | 42.72MB  | 31591  | 0      | 0    | 10       | 0     |</pre>
+ -   Bucket          | Size     | Items  | Mutations | Tombstones | Views  | FTS  | Indexes  | CBAS  |
+ -   beer-sample     | 6.85MB   | 7303   | 7303      | 0          | 1      | 0    | 1        | 0     |
+ -   gamesim-sample  | 2.86MB   | 586    | 586       | 0          | 1      | 0    | 1        | 0     |
+ -   travel-sample   | 42.72MB  | 31591  | 31591     | 0          | 0      | 0    | 10       | 0     |</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The command above provides information about all buckets in the specific
 backup. This includes the size of the data in each bucket, the number of
-mutations, deletions and tombstone stored, the number of view, full text
-indexes, the number of GSIs and the number of analytics metadata records.</p>
+items which includes mutations and tombstones, the number of mutations
+and the number of deletions. For backups made with <code>cbbackupmgr</code> older
+than 6.5 mutations and deletions will always be 0 as this is only
+supported by archives made with <code>cbbcakupmgr 6.5+</code>. For the buckets it will
+also shows the number of view, full text  indexes, the number of GSIs and the
+number of analytics metadata records.</p>
 </div>
 <div class="paragraph">
-<p>Yo see information for one bucket only we would use the <code>--bucket</code>
+<p>To see information for one bucket only we would use the <code>--bucket</code>
 flag and give it the name of the bucket and this would return just the
 information for that bucket.</p>
 </div>
@@ -3956,10 +3968,10 @@ backup_repo  | 55.56MB  | 1        |
 +    Backup                      | Size     | Type   | Source  | Range                                      | Events  | Aliases  | Complete  |
 +    2019-03-15T13_52_27.18301Z  | 55.56MB  | MERGE  | MERGE   | 2019-03-15T13_51_44-2019-03-15T13_51_58:3  | 0       | 1        | true      |
 
--      Bucket          | Size     | Docs   | Views  | FTS  | Indexes  | CBAS  |
--      gamesim-sample  | 3.70MB   | 686    | 1      | 0    | 1        | 0     |
--      travel-sample   | 44.05MB  | 31691  | 0      | 0    | 10       | 0     |
--      beer-sample     | 7.81MB   | 7503   | 1      | 0    | 1        | 0     |</pre>
+-      Bucket          | Size     | Items  | Mutations | Tombstones | Views  | FTS  | Indexes  | CBAS  |
+-      beer-sample     | 6.85MB   | 7303   | 7303      | 0          | 1      | 0    | 1        | 0     |
+-      gamesim-sample  | 2.86MB   | 586    | 586       | 0          | 1      | 0    | 1        | 0     |
+-      travel-sample   | 42.72MB  | 31591  | 31591     | 0          | 0      | 0    | 10       | 0     |</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3992,7 +4004,9 @@ in bytes and that for non-merge backups the range field will be empty.</p>
             {
               “name”: BUCKET_NAME,
               “size”: SIZE,
-              “doc_count”: COUNT,
+              “items”: COUNT,
+              "mutations": COUNT,
+              "tombstones": COUNT,
               “views_count”: COUNT,
               “fts_count”: COUNT,
               “analytics”: COUNT
