@@ -3788,9 +3788,11 @@
     <li class="status"><span>Developer Preview</span></li>
   </ul>
 </div>
+<div id="preamble">
+<div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The <code>ADVISE</code> statement provides recommendations for GSI indexes to optimize query response time.
+The ADVISE statement provides index recommendations to optimize query response time.
 </blockquote>
 </div>
 <div class="admonitionblock caution">
@@ -3812,8 +3814,793 @@ No Enterprise Support is provided for Developer Preview features.</p>
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="purpose"><a class="anchor" href="#purpose"></a>Purpose</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>For information on this feature, take a look at the blog: <a href="https://blog.couchbase.com/?p=7370&amp;preview=true" target="_blank" rel="noopener">Index Advisor for N1QL Query Statement</a>.</p>
+<p>The ADVISE statement invokes the <em>index advisor</em> to provide index recommendations for a single query.
+You can use the ADVISE statement with any of the following types of query:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="selectintro.html" class="page">SELECT</a> queries</p>
+</li>
+<li>
+<p><a href="update.html" class="page">UPDATE</a> queries</p>
+</li>
+<li>
+<p><a href="delete.html" class="page">DELETE</a> queries</p>
+</li>
+<li>
+<p><a href="merge.html" class="page">MERGE</a> queries</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The index advisor can recommend regular secondary indexes, partial indexes, and array indexes for operations including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Predicates in the WHERE clause</p>
+</li>
+<li>
+<p>Join conditions in the ON clause for operations of INDEX JOIN, ANSI JOIN(inner), ANSI NEST(inner), INDEX NEST, and ANSI MERGE</p>
+</li>
+<li>
+<p>Predicates of elements in an UNNEST array</p>
+</li>
+<li>
+<p>Predicates with the ANY expression</p>
+</li>
+<li>
+<p>Predicates of subqueries in the FROM clause</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The index advisor also suggests covering indexes and covering array indexes for queries in a single keyspace, including JOIN operations, ANY expressions, and UNNEST predicates.</p>
+</div>
+<div class="paragraph">
+<p>The index advisor checks the indexes currently used by the query.
+If the query is already using the recommended indexes, the index advisor informs you, and does not recommend an index unnecessarily.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To execute the ADVISE statement, you must have the privileges required for the N1QL statement for which you want advice.
+For more details about user roles, see <a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>advise-index ::= ADVISE [ INDEX ] ( <a href="selectintro.html" class="page">select</a> | <a href="update.html" class="page">update</a> | <a href="delete.html" class="page">delete</a> | <a href="merge.html" class="page">merge</a> )</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/advise-index.png" alt="'ADVISE' 'INDEX'? ( select | update | delete | merge )">
+</div>
+</div>
+<div class="paragraph">
+<p>The statement consists of the <code>ADVISE</code> keyword, and optionally the <code>INDEX</code> keyword, followed by the query for which you want index advice.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="usage"><a class="anchor" href="#usage"></a>Usage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you run the ADVISE statement in the Query Workbench, you must use the <strong>Table</strong>, <strong>JSON</strong>, or <strong>Tree</strong> link to see the result.
+You cannot use the <strong>Advice</strong> link in the Query Workbench to see the result of the ADVISE statement.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="return-value"><a class="anchor" href="#return-value"></a>Return Value</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The ADVISE statement returns an object with the following properties.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>#operator</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The name of the operator&#8201;&#8212;&#8201;in this case, <code>Advise</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>advice</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>An object giving advice returned by the operator.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="#advice">Advice</a></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>query</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The N1QL query used to generate the advice.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div id="advice" class="paragraph">
+<p><strong>Advice</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>#operator</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The name of the operator&#8201;&#8212;&#8201;in this case, <code>IndexAdvice</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>adviseinfo</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>An array of objects giving index information.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>&lt; <a href="#information">Information</a> &gt; array</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div id="information" class="paragraph">
+<p><strong>Information</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>current_indexes</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>An array of Index objects, each giving information about one of the indexes (primary or secondary) that is currently used by the query.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>&lt; <a href="#indexes">Indexes</a> &gt; array</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>recommended_indexes</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If the index advisor recommends any indexes, this is an object giving information about the recommended indexes.</p>
+</div>
+<div class="paragraph">
+<p>If the index advisor cannot recommend any indexes, this is a string stating that there are no recommended indexes at this time.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="#recommended_indexes">Recommended Indexes</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div id="recommended_indexes" class="paragraph">
+<p><strong>Recommended Indexes</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>covering_indexes</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If there are any recommended covering indexes, this is an array of Index objects, each giving information about one of the recommended covering indexes.</p>
+</div>
+<div class="paragraph">
+<p>If there are no recommended covering indexes, this field does not appear.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>&lt; <a href="#indexes">Indexes</a> &gt; array</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>indexes</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>An array of Index objects, each giving information about one of the recommended secondary indexes.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>&lt; <a href="#indexes">Indexes</a> &gt; array</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div id="indexes" class="paragraph">
+<p><strong>Indexes</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>index_statement</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The N1QL command used to define the index.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>index_status</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Information on the status of the index, stating whether the index is identical to the recommended index, or whether the index is an optimal covering index.</p>
+</div>
+<div class="paragraph">
+<p>This field is only returned for current indexes.
+If the index is not identical to the recommended index, or if it is not an optimal covering index, this field does not appear.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>recommending_rule</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The rules used to generate the recommendation.</p>
+</div>
+<div class="paragraph">
+<p>This field is only returned for recommended indexes, or for current indexes if they are identical to the recommended index.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="recommendation-rules"><a class="anchor" href="#recommendation-rules"></a>Recommendation Rules</h3>
+<div class="paragraph">
+<p>The index advisor recommends secondary indexes based on the query predicate, according to the following rules.
+The rules are listed below in priority order.
+Within each recommended index, if there is more than one index key, they are sorted according to the priority order of these rules.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 30%;">
+<col style="width: 35%;">
+<col style="width: 35%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Rule</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="1">
+<li>
+<p>Leading array index for UNNEST</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query uses a predicate which applies to individual elements in an unnested array.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>UNNEST schedule AS x WHERE x.day = 1</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>An <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#array-index" class="page">array index</a>, where the leading index key is an array expression indexing all elements in the unnested array.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="2">
+<li>
+<p>Equality</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a predicate with an <a href="comparisonops.html" class="page">equality</a> expression.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE id = 10</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="3">
+<li>
+<p>IN predicates</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a predicate with an <a href="collectionops.html#collection-op-in" class="page">IN</a> expression.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE id IN [10, 20]</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="4">
+<li>
+<p>Not less than / between / not greater than</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a predicate with a <a href="comparisonops.html" class="page">&lt;=</a>, <a href="comparisonops.html" class="page">BETWEEN</a>, or <a href="comparisonops.html" class="page">&gt;=</a> expression.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE id &gt;= 10</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="5">
+<li>
+<p>Less than / between / greater than</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a predicate with a <a href="comparisonops.html" class="page">&lt;</a>, <a href="comparisonops.html" class="page">BETWEEN</a>, or <a href="comparisonops.html" class="page">&gt;</a> expression.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE id BETWEEN 10 AND 25</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="6">
+<li>
+<p>Array predicate</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a predicate with an <a href="collectionops.html#collection-op-any" class="page">ANY</a> expression.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE ANY v IN schedule SATISFIES v.utc &gt; "19:00" END</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>An <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#array-index" class="page">array index</a>, where the index key is an array expression recursively indexing all elements referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="7">
+<li>
+<p>Derived join filter as leading key</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a <a href="join.html" class="page">join</a>, which is filtered using an ON clause on the left-hand side keyspace.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>FROM `travel-sample` r JOIN `travel-sample` a ON r.airlineid = META(a).id</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the leading index key is the field from the left-hand side keyspace in the ON clause.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="8">
+<li>
+<p>IS NOT NULL / MISSING / VALUED predicates</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a predicate with <a href="comparisonops.html" class="page">IS NOT NULL</a>, <a href="comparisonops.html" class="page">IS NOT MISSING</a>, or <a href="comparisonops.html" class="page">IS NOT VALUED</a>.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE id IS NOT NULL</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="9">
+<li>
+<p>Functional predicates</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query contains an indexable function.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE LOWER(name) = "john"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#functional-index" class="page">functional index</a>, where the index key contains the function referenced by the predicate expression.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="10">
+<li>
+<p>Flavor for partial index</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query includes filters on a particular <a href="infer.html#schema-output" class="page">flavor</a> of document.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>WHERE type = "hotel"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#partial-index" class="page">partial index</a> for that flavor of document.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="index-names"><a class="anchor" href="#index-names"></a>Index Names</h3>
+<div class="paragraph">
+<p>The index advisor suggests a name for each index it recommends, starting with <code>adv_</code>, followed by the <code>DISTINCT</code> or <code>ALL</code> keyword for array indexes if applicable, and including the names of the fields referenced in the index definition, separated by underscores&#8201;&#8212;&#8201;for example, <code>adv_city_type_name</code>.
+Some field names may be truncated if they are too long.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The names that the index advisor suggests are not guaranteed to be unique.
+You should check the suggested index names and change any that are duplicates.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 1. Recommended index only</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT * FROM `travel-sample` a WHERE a.type = 'hotel' AND a.country = 'France';</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "#operator": "Advise",
+    "advice": {
+      "#operator": "IndexAdvice",
+      "adviseinfo": [
+        {
+          "current_indexes": [
+            {
+              "index_statement": "CREATE INDEX def_type ON `travel-sample`(`type`)"
+            }
+          ],
+          "recommended_indexes": {
+            "indexes": [
+              {
+                "index_statement": "CREATE INDEX adv_country_type ON `travel-sample`(`country`) WHERE `type` = 'hotel'",
+                "recommending_rule": "Index keys follow order of predicate types: 2. equality, 10. flavor for partial index."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "query": "SELECT * FROM `travel-sample` a WHERE a.type = 'hotel' AND a.country = 'France';"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Recommended index and covering index</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT airportname FROM `travel-sample` WHERE type = 'airport' AND geo.alt NOT BETWEEN 0 AND 100;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "#operator": "Advise",
+    "advice": {
+      "#operator": "IndexAdvice",
+      "adviseinfo": [
+        {
+          "current_indexes": [
+            {
+              "index_statement": "CREATE INDEX def_type ON `travel-sample`(`type`)"
+            }
+          ],
+          "recommended_indexes": {
+            "covering_indexes": [
+              {
+                "index_statement": "CREATE INDEX adv_geo_alt_type_airportname ON `travel-sample`(`geo`.`alt`,`airportname`) WHERE `type` = 'airport'"
+              }
+            ],
+            "indexes": [
+              {
+                "index_statement": "CREATE INDEX adv_geo_alt_type ON `travel-sample`(`geo`.`alt`) WHERE `type` = 'airport'",
+                "recommending_rule": "Index keys follow order of predicate types: 5. less than/between/greater than, 10. flavor for partial index."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "query": "SELECT airportname FROM `travel-sample` WHERE type = 'airport' AND geo.alt NOT BETWEEN 0 AND 100;"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Current index is identical to the recommended index</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT * FROM `travel-sample` WHERE type LIKE 'air%'or type LIKE 'rou%';</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "#operator": "Advise",
+    "advice": {
+      "#operator": "IndexAdvice",
+      "adviseinfo": [
+        {
+          "current_indexes": [
+            {
+              "index_statement": "CREATE INDEX def_type ON `travel-sample`(`type`)",
+              "index_status": "SAME TO THE INDEX WE CAN RECOMMEND",
+              "recommending_rule": "Index keys follow order of predicate types: 4. not less than/between/not greater than."
+            }
+          ],
+          "recommended_indexes": "No index recommendation at this time."
+        }
+      ]
+    },
+    "query": "SELECT * FROM `travel-sample` WHERE type LIKE 'air%'or type LIKE 'rou%';"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Current index is an optimal covering index</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT type FROM `travel-sample` WHERE type LIKE 'air%'or type LIKE 'rou%';</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "#operator": "Advise",
+    "advice": {
+      "#operator": "IndexAdvice",
+      "adviseinfo": [
+        {
+          "current_indexes": [
+            {
+              "index_statement": "CREATE INDEX def_type ON `travel-sample`(`type`)",
+              "index_status": "THIS IS AN OPTIMAL COVERING INDEX."
+            }
+          ],
+          "recommended_indexes": "No index recommendation at this time."
+        }
+      ]
+    },
+    "query": "SELECT type FROM `travel-sample` WHERE type LIKE 'air%'or type LIKE 'rou%';"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. No index can be recommended</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT * FROM `travel-sample` LIMIT 5;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "#operator": "Advise",
+    "advice": {
+      "#operator": "IndexAdvice",
+      "adviseinfo": [
+        {
+          "current_indexes": [
+            {
+              "index_statement": "CREATE PRIMARY INDEX def_primary ON `travel-sample`"
+            }
+          ],
+          "recommended_indexes": "No index recommendation at this time."
+        }
+      ]
+    },
+    "query": "SELECT * FROM `travel-sample` LIMIT 5;"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="../../tools/query-workbench.html#index-advisor" class="page">Index Advisor</a> in the Query Workbench</p>
+</li>
+<li>
+<p>The <a href="#">n1ql-language-reference/advisor.adoc</a> function</p>
+</li>
+<li>
+<p>Blog post: <a href="https://blog.couchbase.com/?p=7370&amp;preview=true" target="_blank" rel="noopener">Index Advisor for N1QL Query Statement</a>.</p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </article>
 </main>
