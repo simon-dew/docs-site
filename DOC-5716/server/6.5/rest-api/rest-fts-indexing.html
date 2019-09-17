@@ -1448,6 +1448,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="5">
     <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/advisor.html">ADVISOR Function</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
     <a class="nav-link" href="../n1ql/n1ql-language-reference/curl.html">CURL Function</a>
     </span>
   </li>
@@ -4156,7 +4161,7 @@
 </div>
 </div>
 <div class="sect1">
-<h2 id="index-monitoring"><a class="anchor" href="#index-monitoring"></a>Index Monitoring</h2>
+<h2 id="index-monitoring-and-debugging"><a class="anchor" href="#index-monitoring-and-debugging"></a>Index Monitoring And Debugging</h2>
 <div class="sectionbody">
 <div class="dlist">
 <dl>
@@ -4239,160 +4244,7 @@
 </div>
 </div>
 </dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="index-querying"><a class="anchor" href="#index-querying"></a>Index Querying</h2>
-<div class="sectionbody">
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a id="g-api-index-name-count"></a>GET /api/index/{indexName}/count</dt>
-<dd>
-<p>Returns the count of indexed documents.</p>
-<div class="paragraph">
-<p><strong>Permission Required</strong>: cluster.bucket[<code class="var">bucket_name</code>].fts!read</p>
-</div>
-<div class="paragraph">
-<p><strong>Role Required</strong>: FTS-Searcher, FTS-Admin</p>
-</div>
-<div class="paragraph">
-<p><strong>Parameters</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code class="param">indexName</code>: required, string, URL path parameter</p>
-<div class="paragraph">
-<p>The name of the index whose count is to be retrieved.</p>
-</div>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1"><a id="p-api-index-name-query"></a>POST /api/index/{indexName}/query</dt>
-<dd>
-<p>Queries an index.</p>
-<div class="paragraph">
-<p><strong>Permission Required</strong>: cluster.bucket[<code class="var">bucket_name</code>].fts!read</p>
-</div>
-<div class="paragraph">
-<p><strong>Role Required</strong>: FTS-Searcher, FTS-Admin</p>
-</div>
-<div class="paragraph">
-<p><strong>Parameters</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code class="param">indexName</code>: required, string, URL path parameter</p>
-<div class="paragraph">
-<p>The name of the index to be queried.</p>
-</div>
-<div class="paragraph">
-<p>The request&#8217;s POST body depends on the index type.
-For index type bleve, here&#8217;s a simple query POST body:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>{
-    "query": {
-        "query": "a sample query",
-        "boost": 1
-    },
-    "size": 10,
-    "from": 0,
-    "highlight": null,
-    "fields": null,
-    "facets": null,
-    "explain": false
-    }</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>An example POST body using from/size for results paging, using ctl for a timeout and for "at_plus" consistency level.
-On consistency, the index must have incorporated at least mutation sequence-number 123 for partition (vbucket) 0 and mutation sequence-number 234 for partition (vbucket) 1 (where vbucket 1 should have a vbucketUUID of a0b1c2):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>{
-    "ctl": {
-        "timeout": 10000,
-        "consistency": {
-            "level": "at_plus",
-                "vectors": {
-                    "customerIndex": {
-                        "0": 123,
-                        "1/a0b1c2": 234
-                    }
-                }
-            }
-        },
-        "query": {
-            "query": "alice smith",
-            "boost": 1
-        },
-        "size": 10,
-        "from": 20,
-        "highlight": {
-            "style": null,
-            "fields": null
-        },
-        "fields": [
-            "*"
-        ],
-        "facets": null,
-        "explain": true
-}</pre>
-</div>
-</div>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="response-object"><a class="anchor" href="#response-object"></a>Response Object</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The response object has a status section that must be checked for every request.
-Under nearly all circumstances, the query response will be HTTP 200 even though individual index shards (pindexes) may encounter a timeout or return an error.</p>
-</div>
-<div class="paragraph">
-<p><strong>Consistency and Timeouts</strong></p>
-</div>
-<div class="paragraph">
-<p>A query can specify a timeout value, a consistency requirement, or both.
-This section explains how this affects the query behavior and how to handle the resulting query return values.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>logical first phase consistency wait - if timeout in this period, get 416 error with message saying request could not be satisfied).</p>
-</li>
-<li>
-<p>If consistency wait times out with 416, return value to client will indicate the sequence number range processed so the client will have an idea how far the processing got and has the option of retrying more intelligently.</p>
-</li>
-<li>
-<p>In phase 2, you have the normal pindex timeout.
-This will start whenever the first phase completes.
-At this point, request will return 200 HTTP response code unless there is an internal server error.</p>
-</li>
-<li>
-<p>Client must check response status, which will return any errors or timeouts for each pindex.
-If The response includes the number of errors, and the client can determine whether they need the complete results or can continue as long as enough pindexes return to give a reasonable user experience.
-Note that the query return status will be 200 even if all pindexes return errors so it&#8217;s critical to check the response status and code accordingly.</p>
-</li>
-<li>
-<p>If client sets timeout very low, e.g.
-1ms, you may receive a 200 error with all timeouts instead of a consistency wait timeout.</p>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a id="p-api-index-name-analyzeDoc"></a>POST /api/index/{indexName}/analyzeDoc</dt>
+<dt class="hdlist1"><a id="g-api-stats-index-name-analyzeDoc"></a>POST /api/index/{indexName}/analyzeDoc</dt>
 <dd>
 <p>Sends a json document to the given index for text analysis.</p>
 <div class="paragraph">
@@ -4404,10 +4256,8 @@ Note that the query return status will be 200 even if all pindexes return errors
 <div class="paragraph">
 <p><strong>Parameters</strong></p>
 </div>
-</dd>
-</dl>
-</div>
-</li>
+<div class="ulist">
+<ul>
 <li>
 <p><code class="param">indexName</code>: required, string, URL path parameter</p>
 <div class="paragraph">
@@ -4428,21 +4278,14 @@ For example:</p>
 </li>
 </ul>
 </div>
+</dd>
+</dl>
 </div>
-</div>
-<div class="sect1">
-<h2 id="response-object-2"><a class="anchor" href="#response-object-2"></a>Response Object</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="response-object"><a class="anchor" href="#response-object"></a>Response Object</h3>
 <div class="paragraph">
-<p>The response object has a status section that must be checked for every request.</p>
-</div>
-<div class="paragraph">
-<p>+
-A sample response for an index definition with keyword analyzer set against the title field and an ngram
+<p>A sample response for an index definition with keyword analyzer set against the title field and an ngram
 (min=2, max=5) tokenfilter set against the name field would be like below for the above request.</p>
-</div>
-<div class="paragraph">
-<p>+</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4565,6 +4408,159 @@ A sample response for an index definition with keyword analyzer set against the 
   ]
 }</pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-querying"><a class="anchor" href="#index-querying"></a>Index Querying</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a id="g-api-index-name-count"></a>GET /api/index/{indexName}/count</dt>
+<dd>
+<p>Returns the count of indexed documents.</p>
+<div class="paragraph">
+<p><strong>Permission Required</strong>: cluster.bucket[<code class="var">bucket_name</code>].fts!read</p>
+</div>
+<div class="paragraph">
+<p><strong>Role Required</strong>: FTS-Searcher, FTS-Admin</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">indexName</code>: required, string, URL path parameter</p>
+<div class="paragraph">
+<p>The name of the index whose count is to be retrieved.</p>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a id="p-api-index-name-query"></a>POST /api/index/{indexName}/query</dt>
+<dd>
+<p>Queries an index.</p>
+<div class="paragraph">
+<p><strong>Permission Required</strong>: cluster.bucket[<code class="var">bucket_name</code>].fts!read</p>
+</div>
+<div class="paragraph">
+<p><strong>Role Required</strong>: FTS-Searcher, FTS-Admin</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="param">indexName</code>: required, string, URL path parameter</p>
+<div class="paragraph">
+<p>The name of the index to be queried.</p>
+</div>
+<div class="paragraph">
+<p>The request&#8217;s POST body depends on the index type.
+For index type bleve, here&#8217;s a simple query POST body:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+    "query": {
+        "query": "a sample query",
+        "boost": 1
+    },
+    "size": 10,
+    "from": 0,
+    "highlight": null,
+    "fields": null,
+    "facets": null,
+    "explain": false
+    }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An example POST body using from/size for results paging, using ctl for a timeout and for "at_plus" consistency level.
+On consistency, the index must have incorporated at least mutation sequence-number 123 for partition (vbucket) 0 and mutation sequence-number 234 for partition (vbucket) 1 (where vbucket 1 should have a vbucketUUID of a0b1c2):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+    "ctl": {
+        "timeout": 10000,
+        "consistency": {
+            "level": "at_plus",
+                "vectors": {
+                    "customerIndex": {
+                        "0": 123,
+                        "1/a0b1c2": 234
+                    }
+                }
+            }
+        },
+        "query": {
+            "query": "alice smith",
+            "boost": 1
+        },
+        "size": 10,
+        "from": 20,
+        "highlight": {
+            "style": null,
+            "fields": null
+        },
+        "fields": [
+            "*"
+        ],
+        "facets": null,
+        "explain": true
+}</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="response-object-2"><a class="anchor" href="#response-object-2"></a>Response Object</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The response object has a status section that must be checked for every request.
+Under nearly all circumstances, the query response will be HTTP 200 even though individual index shards (pindexes) may encounter a timeout or return an error.</p>
+</div>
+<div class="paragraph">
+<p><strong>Consistency and Timeouts</strong></p>
+</div>
+<div class="paragraph">
+<p>A query can specify a timeout value, a consistency requirement, or both.
+This section explains how this affects the query behavior and how to handle the resulting query return values.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>logical first phase consistency wait - if timeout in this period, get 416 error with message saying request could not be satisfied).</p>
+</li>
+<li>
+<p>If consistency wait times out with 416, return value to client will indicate the sequence number range processed so the client will have an idea how far the processing got and has the option of retrying more intelligently.</p>
+</li>
+<li>
+<p>In phase 2, you have the normal pindex timeout.
+This will start whenever the first phase completes.
+At this point, request will return 200 HTTP response code unless there is an internal server error.</p>
+</li>
+<li>
+<p>Client must check response status, which will return any errors or timeouts for each pindex.
+If The response includes the number of errors, and the client can determine whether they need the complete results or can continue as long as enough pindexes return to give a reasonable user experience.
+Note that the query return status will be 200 even if all pindexes return errors so it&#8217;s critical to check the response status and code accordingly.</p>
+</li>
+<li>
+<p>If client sets timeout very low, e.g.
+1ms, you may receive a 200 error with all timeouts instead of a consistency wait timeout.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
