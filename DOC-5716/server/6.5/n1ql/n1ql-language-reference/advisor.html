@@ -3800,9 +3800,9 @@
 <blockquote>
 The <code>ADVISOR</code> function provides recommendations for GSI indexes to optimize query response time.
 There are two main scenarios for using this function.
-One is to invoke the index advisor for a given query or set of queries; the other is to start a session in which every query of interest is collected for a set time period, then invoke the index analyzer for that collection of queries after the session ends.
+One is to invoke the index advisor <em>immediately</em> for a given query or set of queries; the other is to start a session in which every query of interest is collected for a set time period, then invoke the index advisor <em>asynchronously</em> for that collection of queries when the session ends.
 Within these two scenarios, this function has several different usages.
-The operation and output of the function depends on the function&#8217;s single argument.
+The operation and output of each usage depends on the function&#8217;s single argument.
 For clarity, each usage is listed separately on this page.
 </blockquote>
 </div>
@@ -3843,7 +3843,7 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <dl>
 <dt class="hdlist1">string</dt>
 <dd>
-<p>A single N1QL query for which you want index advice.</p>
+<p>A string, or an expression which resolves to a string, containing a single N1QL query.</p>
 </dd>
 </dl>
 </div>
@@ -3851,7 +3851,7 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <div class="sect2">
 <h3 id="return-value"><a class="anchor" href="#return-value"></a>Return Value</h3>
 <div class="paragraph">
-<p>An index advisor results object with the following properties.</p>
+<p>Returns an index advisor results object with the following properties.</p>
 </div>
 <div id="results" class="paragraph">
 <p><strong>Results</strong></p>
@@ -3876,10 +3876,10 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <em>optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>If the query uses an index, this is an array of Index objects, each giving information about one of the currently used primary or secondary indexes.</p>
+<p>If the query engine can select any current primary or secondary indexes to use with an input query, this is an array of Index objects, each giving information about one of the current indexes.</p>
 </div>
 <div class="paragraph">
-<p>If the query does not currently use an index, this field does not appear.</p>
+<p>If the query engine cannot select a current index to use with an input query, this field does not appear.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>&lt; <a href="#indexes">Indexes</a> &gt; array</p>
@@ -3922,9 +3922,9 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 61.1111%;">
-<col style="width: 22.2223%;">
+<col>
+<col>
+<col>
 </colgroup>
 <thead>
 <tr>
@@ -4080,7 +4080,7 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <dl>
 <dt class="hdlist1">array</dt>
 <dd>
-<p>An array of strings, each of which contains a N1QL query for which you want index advice.</p>
+<p>An array of strings, or an expression which resolves to an array of strings, each of which contains a N1QL query.</p>
 </dd>
 </dl>
 </div>
@@ -4088,7 +4088,7 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <div class="sect2">
 <h3 id="return-value-2"><a class="anchor" href="#return-value-2"></a>Return Value</h3>
 <div class="paragraph">
-<p>An <a href="#results">index advisor results</a> object.</p>
+<p>Returns an <a href="#results">index advisor results</a> object.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4268,8 +4268,9 @@ As long as the session is running, any queries that meet the criteria you specif
 </div>
 <div class="paragraph">
 <p>By default, the session continues running for the duration you specify when you start the session.
-At the end of the duration, the session is retained in the <em>tasks cache</em>.
-You can then <a href="#advisor-session-get">invoke the index advisor</a> for any queries that have been collected as part of this session.</p>
+At the end of the duration, the index advisor analyzes any queries that have been collected by this session.
+The session and any resulting index advice are retained in the <em>tasks cache</em>.
+You can then <a href="#advisor-session-get">get the results</a> for this session to see the index advice.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4318,17 +4319,37 @@ You can change the service-level <code>completed-limit</code> setting to change 
 <div class="sect2">
 <h3 id="return-value-3"><a class="anchor" href="#return-value-3"></a>Return Value</h3>
 <div class="paragraph">
-<p>An object with the following property:</p>
+<p>Returns an object with the following property:</p>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">session</dt>
-<dd>
-<p>A string in UUID format, specifying the name of the index analyzer session.
-You will need to refer to this name to <a href="#advisor-session-get">invoke the index analyzer</a> for this session, or to <a href="#advisor-session-stop">stop</a>, <a href="#advisor-session-abort">abort</a>, or <a href="#advisor-session-purge">purge</a> this session.</p>
-</dd>
-</dl>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><strong>session</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The name of the index advisor session.
+You will need to refer to this name to <a href="#advisor-session-get">get the results</a> for this session, or to <a href="#advisor-session-stop">stop</a>, <a href="#advisor-session-abort">abort</a>, or <a href="#advisor-session-purge">purge</a> this session.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>string (UUID)</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect2">
 <h3 id="example-2"><a class="anchor" href="#example-2"></a>Example</h3>
@@ -4367,7 +4388,8 @@ All completed queries taking longer than 0 seconds will be collected.</p>
 <div class="sect2">
 <h3 id="description-4"><a class="anchor" href="#description-4"></a>Description</h3>
 <div class="paragraph">
-<p>When used with a <code>list_obj</code> object argument, the function can be used to list index advisor sessions.</p>
+<p>When used with a <code>list_obj</code> object argument, the function can be used to list index advisor sessions.
+Each index advisor session is stored as a scheduled task in the <a href="../../manage/monitor/monitoring-n1ql-query.html#sys-tasks-cache" class="page">system:tasks_cache</a> catalog.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4385,8 +4407,10 @@ All completed queries taking longer than 0 seconds will be collected.</p>
 </dd>
 <dt class="hdlist1">status</dt>
 <dd>
-<p>[Required] A string specifying the status of the index advisor sessions to list.
+<p>[Optional] A string specifying the status of the index advisor sessions to list.
 This must be one of the following:</p>
+<div class="openblock">
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
@@ -4399,6 +4423,11 @@ This must be one of the following:</p>
 <p><code>all</code>&#8201;&#8212;&#8201;list all sessions</p>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If omitted, the default is <code>all</code>.</p>
 </div>
 </dd>
 </dl>
@@ -4435,7 +4464,7 @@ This must be one of the following:</p>
 <em>required</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>A nested object that gives information about a session.</p>
+<p>A nested object that gives information about an index advisor session.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p><a href="#session">Session</a></p>
@@ -4503,7 +4532,7 @@ This must be one of the following:</p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>The name of the session.
-You will need to refer to this name to <a href="#advisor-session-get">invoke the index analyzer</a> for this session, or to <a href="#advisor-session-stop">stop</a>, <a href="#advisor-session-abort">abort</a>, or <a href="#advisor-session-purge">purge</a> this session.</p>
+You will need to refer to this name to <a href="#advisor-session-get">get the results</a> for this session, or to <a href="#advisor-session-stop">stop</a>, <a href="#advisor-session-abort">abort</a>, or <a href="#advisor-session-purge">purge</a> this session.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>string (UUID)</p>
@@ -4618,17 +4647,17 @@ You will need to refer to this name to <a href="#advisor-session-get">invoke the
 </tbody>
 </table>
 <div class="paragraph">
-<p>Returns an empty array if the tasks cache is empty.</p>
+<p>Returns an empty array if there are no index advisor sessions in the tasks cache.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
 <div class="exampleblock">
-<div class="title">Example 5. List index advisor sessions</div>
+<div class="title">Example 5. List all index advisor sessions</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ADVISOR({"action": "list", "status": "all"}) AS List;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ADVISOR({"action": "list"}) AS List;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -4686,8 +4715,9 @@ You will need to refer to this name to <a href="#advisor-session-get">invoke the
 <h3 id="description-5"><a class="anchor" href="#description-5"></a>Description</h3>
 <div class="paragraph">
 <p>When used with a <code>stop_obj</code> object argument, the function can be used to stop an index advisor session.
-In this case, the session is stopped, but the session is retained in the tasks cache.
-You can then <a href="#advisor-session-get">invoke the index advisor</a> for any queries that have been collected as part of this session.</p>
+In this case, the session is stopped, and the index advisor analyzes any queries that have been collected by this session so far.
+The session and any resulting index advice are retained in the <em>tasks cache</em>.
+You can then <a href="#advisor-session-get">get the results</a> for this session to see the index advice.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4716,7 +4746,7 @@ You can then <a href="#advisor-session-get">invoke the index advisor</a> for any
 <div class="sect2">
 <h3 id="return-value-5"><a class="anchor" href="#return-value-5"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns NULL.</p>
+<p>Returns an empty array.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4734,7 +4764,7 @@ You can then <a href="#advisor-session-get">invoke the index advisor</a> for any
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
-    "Stop": null
+    "Stop": []
   }
 ]</code></pre>
 </div>
@@ -4780,7 +4810,7 @@ In this case, the session is stopped, and the session is removed from the tasks 
 <div class="sect2">
 <h3 id="return-value-6"><a class="anchor" href="#return-value-6"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns NULL.</p>
+<p>Returns an empty array.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4798,7 +4828,7 @@ In this case, the session is stopped, and the session is removed from the tasks 
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
-    "Abort": null
+    "Abort": []
   }
 ]</code></pre>
 </div>
@@ -4955,7 +4985,7 @@ The index advisor is invoked for any collected <a href="selectintro.html" class=
 <div class="sect2">
 <h3 id="return-value-8"><a class="anchor" href="#return-value-8"></a>Return Value</h3>
 <div class="paragraph">
-<p>Returns NULL.</p>
+<p>Returns an empty array.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4973,7 +5003,7 @@ The index advisor is invoked for any collected <a href="selectintro.html" class=
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
-    "Purge": null
+    "Purge": []
   }
 ]</code></pre>
 </div>
