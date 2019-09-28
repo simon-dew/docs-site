@@ -3844,12 +3844,12 @@ The cost-based optimizer uses these distribution statistics, together with keysp
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>update-statistics ::= UPDATE STATISTICS [ FOR ] <a href="#named-keyspace-ref">named-keyspace-ref</a> '(' <a href="#index-key">index-key</a> [ ',' <a href="#index-key">index-key</a> ]* ')' [ WITH <a href="#options">options</a> ]</pre>
+<pre>update-statistics ::= UPDATE STATISTICS [ FOR ] <a href="#named-keyspace-ref">named-keyspace-ref</a> '(' <a href="#index-expr">index-expr</a> [ ',' <a href="#index-expr">index-expr</a> ]* ')' [ WITH <a href="#options">options</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/update-statistics.png" alt="'UPDATE' 'STATISTICS' 'FOR'? named-keyspace-ref '(' index-key ( ',' index-key )* ')' 'WITH' options">
+<img src="../_images/n1ql-language-reference/update-statistics.png" alt="'UPDATE' 'STATISTICS' 'FOR'? named-keyspace-ref '(' index-expr ( ',' index-expr )* ')' 'WITH' options">
 </div>
 </div>
 <div class="sect2">
@@ -3867,15 +3867,16 @@ The cost-based optimizer uses these distribution statistics, together with keysp
 </div>
 </div>
 <div class="paragraph">
-<p>Specifies the name of the keyspace for which you want to update statistics.</p>
+<p>The name of the keyspace for which you want to gather statistics.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="index-key"><a class="anchor" href="#index-key"></a>Index Key</h3>
+<h3 id="index-expr"><a class="anchor" href="#index-expr"></a>Index Expression</h3>
 <div class="paragraph">
-<p>This may be any of the expressions used to create an index, including, but not limited to:</p>
+<p>The expression for which you want to gather statistics.
+This may be any expression that is supported as an index key, including, but not limited to:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -3884,9 +3885,6 @@ The cost-based optimizer uses these distribution statistics, together with keysp
 </li>
 <li>
 <p>An <a href="indexing-arrays.html#array-expr" class="page">array expression</a>, as used when creating an array index.</p>
-</li>
-<li>
-<p>An <a href="adaptive-indexing.html#index-key" class="page">expression with the PAIRS() function</a>, as used in an adaptive index.</p>
 </li>
 <li>
 <p>An <a href="indexing-meta-info.html#metakeyspace_expr-property" class="page">expression with the META() function</a>, as used in a metadata index.</p>
@@ -3933,6 +3931,9 @@ If omitted, a default timeout value is calculated based on the number of samples
 <div class="paragraph">
 <p>When you use an index with a query, you typically create the index on the fields which the query uses to filter.
 To use the cost-based optimizer with that query, you must collect statistics on the same fields that you used to create the index.</p>
+</div>
+<div class="paragraph">
+<p>A query may have predicates on non-indexed fields, and you can collect statistics on those fields also to help the optimizer.</p>
 </div>
 <div class="paragraph">
 <p>For a query which filters on an array or array of objects, you must collect the statistics using exactly the same expression that you used to create the index.</p>
@@ -4067,11 +4068,22 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
 <div class="title">Example 2. Multiple predicates</div>
 <div class="content">
 <div class="paragraph">
-<p>This example uses the same indexes and statistics as <a href="#ex1">Example 1</a>.</p>
+<p>This example uses the same indexes as <a href="#ex1">Example 1</a>.</p>
 </div>
 <div class="listingblock">
+<div class="title">Update statistics</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT COUNT(*) FROM `travel-sample` WHERE country = 'United States' AND type = 'hotel';</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE STATISTICS for `travel-sample`(type, city, country, free_breakfast);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is no index on the <code>free_breakfast</code> field.
+However, the query below refers to this field as a predicate, so we collect statistics on this field also.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT COUNT(*) FROM `travel-sample` WHERE country = 'United States' AND type = 'hotel' AND free_breakfast = true;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -4084,8 +4096,8 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
       "~children": [
         {
           "#operator": "IndexScan3",
-          "cardinality": 740.8095238095237, <i class="conum" data-value="1"></i><b>(1)</b>
-          "cost": 417.07576190476186,
+          "cardinality": 703.8225187176041, <i class="conum" data-value="1"></i><b>(1)</b>
+          "cost": 396.2520780380112,
           "index": "idx_country_city",
           "index_id": "ebcdefa561f1e3f6",
           "index_projection": {
@@ -4109,8 +4121,8 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
         },
         {
           "#operator": "Fetch",
-          "cardinality": 740.8095238095237, <i class="conum" data-value="2"></i><b>(2)</b>
-          "cost": 4047.042428571428,
+          "cardinality": 703.8225187176041, <i class="conum" data-value="2"></i><b>(2)</b>
+          "cost": 3296.0008551545407,
           "keyspace": "travel-sample",
           "namespace": "default"
         },
@@ -4121,14 +4133,14 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
             "~children": [
               {
                 "#operator": "Filter",
-                "cardinality": 16.542774045435976, <i class="conum" data-value="3"></i><b>(3)</b>
-                "condition": "(((`travel-sample`.`country`) = \"United States\") and ((`travel-sample`.`type`) = \"hotel\"))",
-                "cost": 4049.2648571428567
+                "cardinality": 0.2514468840707154, <i class="conum" data-value="3"></i><b>(3)</b>
+                "condition": "((((`travel-sample`.`country`) = \"United States\") and ((`travel-sample`.`type`) = \"hotel\")) and ((`travel-sample`.`free_breakfast`) = true))",
+                "cost": 3298.1123227106937
               },
               {
                 "#operator": "InitialGroup",
                 "aggregates": [
-                  "count(1)"
+                  "count(*)"
                 ],
                 "group_keys": []
               }
@@ -4138,14 +4150,14 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
         {
           "#operator": "IntermediateGroup",
           "aggregates": [
-            "count(1)"
+            "count(*)"
           ],
           "group_keys": []
         },
         {
           "#operator": "FinalGroup",
           "aggregates": [
-            "count(1)"
+            "count(*)"
           ],
           "group_keys": []
         },
@@ -4158,7 +4170,7 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
                 "#operator": "InitialProject",
                 "result_terms": [
                   {
-                    "expr": "count(1)"
+                    "expr": "count(*)"
                   }
                 ]
               },
@@ -4170,7 +4182,7 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
         }
       ]
     },
-    "text": "select count(1) from `travel-sample` where country = 'United States' and type = 'hotel'"
+    "text": "SELECT COUNT(*) FROM `travel-sample` WHERE country = 'United States' AND type = 'hotel' AND free_breakfast = true;"
   }
 ]</code></pre>
 </div>

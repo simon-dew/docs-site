@@ -3809,7 +3809,7 @@
     [--encryption &lt;tls|startTLS|none&gt;] [--disable-cert-validation]
     [--ldap-cacert &lt;path&gt;] [--user-dn-mapping &lt;mapping&gt;][--request-timeout &lt;ms&gt;]
     [--max-parallel &lt;max&gt;] [--max-cache-size &lt;size&gt;]
-    [--cache-value-lifetime &lt;ms&gt;] [--query-dn &lt;dn&gt;] [--query-pass &lt;pass&gt;]
+    [--cache-value-lifetime &lt;ms&gt;] [--bind-dn &lt;dn&gt;] [--bind-password &lt;password&gt;]
     [--group-query &lt;query&gt;] [--enable-nested-groups &lt;0|1&gt;]
     [--nested-group-max-depth &lt;depth&gt;]</pre>
 </div>
@@ -3903,13 +3903,15 @@ servers.</p>
 <dd>
 <p>Lifetime of values in cache in milliseconds. Default 300000 ms.</p>
 </dd>
-<dt class="hdlist1">--query-dn &lt;dn&gt;</dt>
+<dt class="hdlist1">--bind-dn &lt;dn&gt;</dt>
 <dd>
-<p>DN for user search and groups synchronization</p>
+<p>The DN of a user to autheicate as to allow user search and groups
+synchronization. If bind details are not provided anonymous bind
+will be used instead.</p>
 </dd>
-<dt class="hdlist1">--query-pass &lt;pass&gt;</dt>
+<dt class="hdlist1">--bind-password &lt;password&gt;</dt>
 <dd>
-<p>Password for user search and groups synchronization</p>
+<p>The bind user password</p>
 </dd>
 <dt class="hdlist1">--group-query &lt;query&gt;</dt>
 <dd>
@@ -3934,6 +3936,49 @@ This option is only valid when nested groups are enabled. The depth is an
 integer between 1 and 100, default is 10.</p>
 </dd>
 </dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="host-formats"><a class="anchor" href="#host-formats"></a>HOST FORMATS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When specifying a host for the couchbase-cli command the following formats are expected:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>couchbase://&lt;addr&gt;</code></p>
+</li>
+<li>
+<p><code>&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+<li>
+<p><code>http://&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It is recommended to use the couchbase://&lt;addr&gt; format for standard
+installations. The other two formats allow an option to take a port number which
+is needed for non-default installations where the admin port has been set up on
+a port other that 8091.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To enable authentication and authorization using ldap server ldap.couchbase.com
+with encryption disabled:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-ldap -c 192.168.1.5 -u Administrator \
+ -p password --authentication-enabled 1 --authorization-enabled 1 \
+ --hosts ldap.couchbase.com --encryption 0</pre>
+</div>
 </div>
 </div>
 </div>
