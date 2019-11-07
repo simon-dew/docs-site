@@ -3536,7 +3536,8 @@ which means that every <code>CREATE INDEX</code> statement blocks until the oper
 Index building starts by creating a task that is queued for index build.
 After this phase, if you lose connectivity, the index build operation continues in the background.
 You can also run index creation asynchronously using the <code>defer_build</code> clause.
-In the asynchronous mode, <code>CREATE INDEX</code> starts a task to create the primary index and returns as soon as the task is queued for execution, and then the full index creation operation happens in the background.</p>
+In the asynchronous mode, <code>CREATE INDEX</code> starts a task to create the index definition, and returns as soon as the task finishes.
+You can then build the index using the <a href="build-index.html" class="page">BUILD INDEX</a> command.</p>
 </div>
 <div class="paragraph">
 <p>Both GSI and View indexes provide a status field and mark index status pending.
@@ -3570,7 +3571,10 @@ The following error is reported if a second index creation operation is kicked o
 </table>
 </div>
 <div class="paragraph">
-<p>You can create multiple identical secondary indexes on a bucket for better index availability and place them on separate nodes using the "nodes" clause.</p>
+<p>You can create multiple identical secondary indexes on a bucket and place them on separate nodes for better index availability.
+In Couchbase Server Enterprise Edition, the recommended way to do this is using the <code>num_replicas</code> option.
+In Couchbase Server Community Edition, you need to create multiple identical indexes and place them using the <code>nodes</code> option.
+Refer to <a href="#index-with">WITH Clause</a> below for more details.</p>
 </div>
 <h5 id="rbac-privileges" class="discrete">RBAC Privileges</h5>
 <div class="paragraph">
@@ -3828,11 +3832,11 @@ This property is only available in Couchbase Server Enterprise Edition.
 </table>
 </div>
 <div class="paragraph">
-<p>[Optional] Integer that specifies the number of replicas of the index to create.</p>
+<p>[Optional] Integer that specifies the number of <a href="../../learn/services-and-indexes/indexes/index-replication.html#index-replication" class="page">replicas</a> of the index to create.</p>
 </div>
 <div class="paragraph">
-<p>The indexer will automatically distribute these indexes amongst index nodes in the cluster for load-balancing and high availability purposes.
-When creating an index with replicas in this manner, the indexer will attempt to distribute the replicas based on the server groups in use in the cluster where possible.</p>
+<p>The indexer will automatically distribute these replicas amongst index nodes in the cluster for load-balancing and high availability purposes.
+The indexer will attempt to distribute the replicas based on the server groups in use in the cluster where possible.</p>
 </div>
 <div class="paragraph">
 <p>If the value of this property is not less than the number of index nodes in the cluster, then the index creation will fail.</p>
@@ -3892,6 +3896,9 @@ For example, given the index <code>alt_idx</code> created using the following st
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT MIN(geo.alt), MAX(geo.alt) FROM `travel-sample`;</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="../../learn/services-and-indexes/indexes/index_pushdowns.html#operator-pushdowns" class="page">Operator Pushdowns</a>.</p>
 </div>
 </div>
 </div>
