@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>setting-compaction | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4241/server/6.0/cli/cbcli/couchbase-cli-setting-compaction.html">
+    <link rel="stylesheet" href="../../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="server">
+    <meta name="dcterms.identifier" content="6.0">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4241">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../index.html">Server</a></li>
+                  <li><a href="../../../../server/6.0/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../../server/6.0/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../../server/6.0/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../../server/6.0/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../../server/6.0/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="#">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../../server/6.0/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../../server/6.0/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="#">Talend</a></li>
+                  <li><a href="../../../../server/6.0/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../../index.html"><span class="title">server</span> <span class="version">6.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../../../6.5/cli/cbcli/couchbase-cli-setting-compaction.html">server 6.5 BETA</a></li>
+                  <li><a class="navbar-item" href="../../../5.5/index.html">server 5.5</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../../index.html">server</a></li>
+    <li class="crumb"><a href="couchbase-cli-setting-compaction.html">setting-compaction</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/couchbase-cli/edit/alice/docs/modules/cli/pages/cbcli/couchbase-cli-setting-compaction.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">setting-compaction</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Modifies compaction settings</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="synopsis"><a class="anchor" href="#synopsis"></a>SYNOPSIS</h2>
+<div class="sectionbody">
+<div class="verseblock">
+<pre class="content"><em>couchbase-cli setting-compaction</em> [--cluster &lt;url&gt;] [--username &lt;user&gt;]
+    [--password &lt;password&gt;] [--compaction-db-percentage &lt;num&gt;]
+    [--compaction-db-size &lt;megabytes&gt;] [--compaction-view-percentage &lt;num&gt;]
+    [--compaction-view-size &lt;megabytes&gt;] [--compaction-period-from &lt;HH:MM&gt;]
+    [--compaction-period-to &lt;HH:MM&gt;] [--enable-compaction-abort &lt;num&gt;]
+    [--enable-compaction-parallel &lt;num&gt;] [--metadata-purge-interval &lt;num&gt;]
+    [--gsi-compaction-mode &lt;mode&gt;] [--compaction-gsi-percentage &lt;percent&gt;]
+    [--compaction-gsi-interval &lt;list_of_days&gt;]
+    [--compaction-gsi-period-from &lt;HH:MM&gt;]
+    [--compaction-gsi-period-to &lt;HH:MM&gt;] [--enable-gsi-compaction-abort &lt;1|0&gt;]</pre>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="description"><a class="anchor" href="#description"></a>DESCRIPTION</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This command sets cluster-wide compaction settings for the views and data
+service.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="options"><a class="anchor" href="#options"></a>OPTIONS</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">-c</dt>
+<dt class="hdlist1">--cluster</dt>
+<dd>
+<p>Specifies the hostname of a node in the cluster. See the HOST FORMATS
+section for more information on specifying a hostname.</p>
+</dd>
+<dt class="hdlist1">-u</dt>
+<dt class="hdlist1">--user &lt;username&gt;</dt>
+<dd>
+<p>Specifies the username of the user executing the command. If you do not have
+a user account with permission to execute the command then it will fail with
+an unauthorized error.</p>
+</dd>
+<dt class="hdlist1">-p</dt>
+<dt class="hdlist1">--password &lt;password&gt;</dt>
+<dd>
+<p>Specifies the password of the user executing the command. If you do not have
+a user account with permission to execute the command then it will fail with
+an unauthorized error. If this argument is specified, but no password is
+given then the command will prompt the user for a password through
+non-echoed stdin. You may also specify your password by using the
+environment variable CB_REST_PASSWORD.</p>
+</dd>
+<dt class="hdlist1">--compaction-db-percentage &lt;num&gt;</dt>
+<dd>
+<p>Compacts database files once the fragmentation percentage is greater than
+the value set for this option. The value must be between 2 and 100.</p>
+</dd>
+<dt class="hdlist1">--compaction-db-size &lt;megabytes&gt;</dt>
+<dd>
+<p>Compacts the database files once the file fragmentation (in MB) is greater
+than the value of this option. This option must be set to a value
+greater than 1.</p>
+</dd>
+<dt class="hdlist1">--compaction-view-percentage &lt;num&gt;</dt>
+<dd>
+<p>Compacts view files once the fragmentation percentage is greater than the
+value set for this option. The value must be between 2 and 100.</p>
+</dd>
+<dt class="hdlist1">--compaction-view-size: &lt;megabytes&gt;</dt>
+<dd>
+<p>Compacts the view files once the file fragmentation (in MB) is greater than
+the value of this option. This option must be set to a value greater than 1.</p>
+</dd>
+<dt class="hdlist1">--compaction-period-from &lt;HH:MM&gt;</dt>
+<dd>
+<p>This option is unison in conjunction with the --compaction-period-to option
+and is used to specify a time period where compaction is allowed to run. You
+could for example specify that compaction should only run between midnight
+and 5AM each day by setting the compaction from period to "00:00" and the
+compaction to period to "5:00". When setting the value for this option you
+must use the format HH:MM when HH corresponds to the hour and MM corresponds
+to the minute. If this option is not specified then the compaction will run
+at any time of the day. This option only affects view and database file
+compaction.</p>
+</dd>
+<dt class="hdlist1">--compaction-period-to &lt;HH:MM&gt;</dt>
+<dd>
+<p>This option is unison in conjunction with the --compaction-period-from option
+and is used to specify a time period where compaction is allowed to run. You
+could for example specify that compaction should only run between midnight
+and 5AM each day by setting the compaction from period to "00:00" and the
+compaction to period to "5:00". When setting the value for this option you
+must use the format HH:MM when HH corresponds to the hour and MM corresponds
+to the minute. If this option is not specified then the compaction will run
+at any time of the day. This option only affects view and database file
+compaction.</p>
+</dd>
+<dt class="hdlist1">--enable-compaction-abort &lt;num&gt;</dt>
+<dd>
+<p>If a compaction from period and compaction to period are specified then this
+flag tells the server how to respond if a compaction starts during the
+allowed compaction interval and is still running once after the allowed
+interval has ended. If this option is set to "1" then the compaction will
+be aborted. If it is set to "0" then the compaction will be allowed to
+complete. By default this option is set to "0".</p>
+</dd>
+<dt class="hdlist1">--enable-compaction-parallel &lt;num&gt;</dt>
+<dd>
+<p>Specifies whether view and database file compaction can run at the same
+time. Compaction can be disk intensive operations so it may be beneficial
+to only allow one type of compaction to run at a time. To allow parallel
+compaction set the value of this option to "1". To disable parallel
+compaction set the value of this option to "0". By default this option is
+set to "0".</p>
+</dd>
+<dt class="hdlist1">--metadata-purge-interval &lt;days&gt;</dt>
+<dd>
+<p>Couchbase persists deletes to disk because these deletes may need to be
+replicated in the future during intra-cluster replication as well as during
+Cross Data Center Replication. Couchbase cannot however keep these deletes
+forever because they will cause the database disk size to increase
+infinitely over time. To combat this issue Couchbase purges old deletes from
+disk periodically. This flag allow the user to set this interval. By default
+the purge interval is set to 7 days. This means that we purge deletes from
+disk that are more than 7 days old. The value of this option must be between
+0.04 (1 hour) and 60 (days).</p>
+</dd>
+<dt class="hdlist1">--gsi-compaction-mode &lt;mode&gt;</dt>
+<dd>
+<p>Specifies the strategy for compaction in GSI Indexes. This option may be set
+to either append or circular. The append compaction strategy works by
+creating a new index file, moving the active data to the new index file, and
+then removing the old index file. This strategy will cause increased disk
+usage during compaction, but will cause the new index file to be smaller
+than the old one and as a result will free up disk space. The circular
+compaction strategy will append data at first until the index is 65%
+fragmented. At which point it will start to write data over old blocks in the
+file that are no longer being used. A full compaction will be triggered once a
+day on the day set via --compaction-gsi-interval.</p>
+</dd>
+<dt class="hdlist1">--compaction-gsi-percentage &lt;percent&gt;</dt>
+<dd>
+<p>Specifies that GSI compaction should be started when the fragmentation in an
+index file has exceeded this percentage. This parameter only applies if the
+append compaction mode is used.</p>
+</dd>
+<dt class="hdlist1">--compaction-gsi-interval &lt;list_of_days&gt;</dt>
+<dd>
+<p>Specifies that GSI compaction should only run on the specified days. This
+option takes a comma separated list of days where the name of the day is
+capitalized. Accepted values are Monday, Tuesday, Wednesday, Thursday,
+Friday, Saturday, and Sunday. If you only want compaction to run on Monday
+and Tuesday then the value of this option should be set to "Monday,Tuesday".
+This parameter only applies if circular compaction mode is used.</p>
+</dd>
+<dt class="hdlist1">--compaction-gsi-period-from &lt;HH:MM&gt;</dt>
+<dd>
+<p>This option is unison in conjunction with the --compaction-gsi-period-to
+option and is used to specify a time period where GSI compaction is allowed
+to run. You could for example specify that GSI compaction should only run
+between midnight and 5AM each day by setting the GSI compaction from period
+to "00:00" and the GSI compaction to period to "5:00". When setting the
+value for this option you must use the format HH:MM when HH corresponds to
+the hour and MM corresponds to the minute. If this option is not specified
+then compaction will run at any time of the day. This parameter only
+applies if circular compaction mode is used.</p>
+</dd>
+<dt class="hdlist1">--compaction-gsi-period-to &lt;HH:MM&gt;</dt>
+<dd>
+<p>This option is unison in conjunction with the --compaction-gsi-period-from
+option and is used to specify a time period where GSI compaction is allowed
+to run. You could for example specify that GSI compaction should only run
+between midnight and 5AM each day by setting the GSI compaction from period
+to "00:00" and the GSI compaction to period to "5:00". When setting the
+value for this option you must use the format HH:MM when HH corresponds to
+the hour and MM corresponds to the minute. If this option is not specified
+then GSI compaction will run at any time of the day. This parameter only
+applies if circular compaction mode is used.</p>
+</dd>
+<dt class="hdlist1">--enable-gsi-compaction-abort &lt;1|0&gt;</dt>
+<dd>
+<p>If a GSI compaction from period and GSI compaction to period are specified
+then this flag tells the server how to respond if a compaction starts during
+the allowed GSI compaction interval and is still running after the allowed
+interval has ended. If this option is set to "1" then the GSI compaction
+will be aborted. If it is set to "0" then the GSI compaction will be allowed
+to complete. By default this option is set to "0". This parameter only
+applies if circular compaction mode is used.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="host-formats"><a class="anchor" href="#host-formats"></a>HOST FORMATS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When specifying a host for the couchbase-cli command the following formats are expected:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>couchbase://&lt;addr&gt;</code></p>
+</li>
+<li>
+<p><code>&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+<li>
+<p><code>http://&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It is recommended to use the couchbase://&lt;addr&gt; format for standard
+installations. The other two formats allow an option to take a port number which
+is needed for non-default installations where the admin port has been set up on
+a port other that 8091.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If we want to set our view and database compaction percentage thresholds to 30%
+each, but also wanted to ensure that our fragmentation didn&#8217;t grow above 1GB
+we would run the following command</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-compaction -c 192.168.1.5 --username Administrator \
+ --password password --compaction-view-size 1024 --compaction-db-size 1024 \
+ --compaction-view-percentage 30 --compaction-db-percentage 30</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we want to have the same settings as above, but we wanted compaction to only
+run at night so that we didn&#8217;t run the risk of compaction affecting normal
+application traffic we would run the following command. Note that in this
+example we will assume our night time period is midnight to 6AM. We will also
+enable compaction aborts so that we can ensure compaction is never running
+outside of this time window.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-compaction -c 192.168.1.5 --username Administrator \
+ --password password --compaction-view-size 1024 --compaction-db-size 1024 \
+ --compaction-view-percentage 30 --compaction-db-percentage 30 \
+ --compaction-period-from 00:00 --compaction-period-to 6:00 \
+ --enable-compaction-abort 1</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we don&#8217;t mind when compaction runs and we have the disk overhead to run both
+view and database compaction at the same time then we might set up compaction
+with the settings in the first example, but also enable parallel compaction.
+This can be done by running the command below.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-compaction -c 192.168.1.5 --username Administrator \
+ --password password --compaction-view-size 1024 --compaction-db-size 1024 \
+ --compaction-view-percentage 30 --compaction-db-percentage 30 \
+ --enable-compaction-parallel</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If your application heavily uses expirations or you create and delete a lot of
+documents quickly then you might want to shorten your metadata purge interval
+in order to ensure that you don&#8217;t use too much disk space. If we want our
+compaction to run when the fragmentation is 30% or 1GB and we want to change
+the metadata purge interval to 2 days then we would run the following command.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-compaction -c 192.168.1.5 --username Administrator \
+ --password password --compaction-view-size 1024 --compaction-db-size 1024 \
+ --compaction-view-percentage 30 --compaction-db-percentage 30 \
+ --meta-data-purge-interval 2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you need to change the GSI index compaction settings to use the append
+compaction mode and want GSI compaction only to happen once your file is 50%
+fragmented specify the following command.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-compaction -c 192.168.1.5 --username Administrator \
+ --password password --gsi-compaction-mode append \
+ --compaction-gsi-percentage 50</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to change the GSI index compaction settings to use the circular
+compaction mode and want GSI compaction only to happen on Tuesdays and Thursdays
+between midnight and 3AM and don&#8217;t want GSI compaction running outside of those
+time windows even if the compaction started at a valid time specify the
+following command.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-compaction -c 192.168.1.5 --username Administrator \
+ --password password --gsi-compaction-mode circular \
+ --compaction-gsi-interval Tuesday,Thursday \
+ --compaction-gsi-period-from 00:00 \
+ --compaction-gsi-period-to 3:00 --enable-gsi-compaction-abort 1</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="environment-and-configuration-variables"><a class="anchor" href="#environment-and-configuration-variables"></a>ENVIRONMENT AND CONFIGURATION VARIABLES</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">CB_REST_USERNAME</dt>
+<dd>
+<p>Specifies the username to use when executing the command. This environment
+variable allows you to specify a default argument for the -u/--username
+argument on the command line.</p>
+</dd>
+<dt class="hdlist1">CB_REST_PASSWORD</dt>
+<dd>
+<p>Specifies the password of the user executing the command. This environment
+variable allows you to specify a default argument for the -p/--password
+argument on the command line. It also allows the user to ensure that their
+password are not cached in their command line history.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>SEE ALSO</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="couchbase-cli-bucket-compact.html" class="page">bucket-compact</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="couchbase-cli"><a class="anchor" href="#couchbase-cli"></a>COUCHBASE-CLI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Part of the <a href="couchbase-cli.html" class="page">couchbase-cli</a> suite</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://plus.google.com/+CouchbaseServer" class="icon">
+              <svg width="50px" height="50px" viewBox="36.72 225.573 542.326 343.67"><path d="m209.02 363.05v68.732h93.212c-15.065 44.252-37.662 68.732-93.212 68.732-56.492 0-100.74-46.135-100.74-102.63s44.252-102.63 100.74-102.63c30.129 0 48.96 10.357 66.849 25.422 14.123-14.123 13.182-16.006 48.96-49.902-31.071-28.246-71.557-45.194-115.81-45.194-95.096-0.94-172.3 76.266-172.3 171.36s77.206 172.3 172.3 172.3c142.17 0 177.01-124.28 165.71-206.2-33.896-1e-3 -165.71-1e-3 -165.71-1e-3zm310.71 3.766v-59.317h-42.369v59.317h-61.2v42.369h61.2v61.2h42.369v-61.2h59.317v-42.369h-59.317z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2018 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
