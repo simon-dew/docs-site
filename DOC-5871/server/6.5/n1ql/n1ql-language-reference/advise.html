@@ -4223,18 +4223,18 @@ Within each recommended index, if there is more than one index key, they are sor
 <td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
 <ol class="arabic" start="2">
 <li>
-<p>Equality</p>
+<p>Equality / NULL / MISSING</p>
 </li>
 </ol>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>The query has a predicate with an <a href="comparisonops.html" class="page">equality</a> expression.</p>
+<p>The query has a predicate with an <a href="comparisonops.html" class="page">equality</a>, <a href="comparisonops.html" class="page">IS NULL</a>, or <a href="comparisonops.html" class="page">IS MISSING</a> expression.</p>
 </div>
 <div class="paragraph">
 <p>Example: <code>WHERE id = 10</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where one index key is the field referenced by the predicate expression.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -4252,7 +4252,7 @@ Within each recommended index, if there is more than one index key, they are sor
 <p>Example: <code>WHERE id IN [10, 20]</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where one index key is the field referenced by the predicate expression.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -4270,7 +4270,7 @@ Within each recommended index, if there is more than one index key, they are sor
 <p>Example: <code>WHERE id &gt;= 10</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where one index key is the field referenced by the predicate expression.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -4288,7 +4288,7 @@ Within each recommended index, if there is more than one index key, they are sor
 <p>Example: <code>WHERE id BETWEEN 10 AND 25</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where one index key is the field referenced by the predicate expression.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -4318,7 +4318,7 @@ Within each recommended index, if there is more than one index key, they are sor
 </ol>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>The query has a <a href="join.html" class="page">join</a>, which is filtered using an ON clause on the left-hand side keyspace.</p>
+<p>The query has a <a href="join.html" class="page">join</a> using an ON clause which filters on the left-hand side keyspace.</p>
 </div>
 <div class="paragraph">
 <p>Example: <code>FROM `travel-sample` r JOIN `travel-sample` a ON r.airlineid = META(a).id</code></p>
@@ -4342,7 +4342,7 @@ Within each recommended index, if there is more than one index key, they are sor
 <p>Example: <code>WHERE id IS NOT NULL</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where the index key is the field referenced by the predicate expression.</p>
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where one index key is the field referenced by the predicate expression.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -4366,6 +4366,24 @@ Within each recommended index, if there is more than one index key, they are sor
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
 <ol class="arabic" start="10">
+<li>
+<p>Non-static join predicate</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The query has a <a href="join.html" class="page">join</a> using an ON clause in which neither the left-hand side source object nor the right-hand side source object is static.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>FROM `travel-sample` r JOIN `travel-sample` a ON r.airline = a.iata</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <a href="../../learn/services-and-indexes/indexes/indexing-and-query-perf.html#secondary-index" class="page">secondary index</a>, where one index key is the field from the right-hand side keyspace in the ON clause.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic" start="11">
 <li>
 <p>Flavor for partial index</p>
 </li>
