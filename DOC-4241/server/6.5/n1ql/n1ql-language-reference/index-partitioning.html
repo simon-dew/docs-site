@@ -3796,6 +3796,12 @@
   </div>
 <article class="doc">
 <h1 class="page">Index Partitioning</h1>
+<div class="labels">
+  <ul>
+    <li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
+    <li class="status"><span>Couchbase Server 5.5</span></li>
+  </ul>
+</div>
 <div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
@@ -3803,9 +3809,6 @@
 Index Partitioning enables you to increase aggregate query performance by dividing and spreading a large index of documents across multiple nodes, horizontally scaling out an index as needed.
 The system partitions the index across a number of index nodes using a hash partitioning strategy in a way that is transparent to queries.
 </blockquote>
-</div>
-<div class="paragraph">
-<p><em>(Introduced in Couchbase Server 5.5 Enterprise Edition)</em></p>
 </div>
 <div id="idx-partition-intro" class="openblock">
 <div class="content">
@@ -3833,135 +3836,192 @@ The system partitions the index across a number of index nodes using a hash part
 </div>
 </div>
 <div class="sect1">
-<h2 id="create-partitioned-index"><a class="anchor" href="#create-partitioned-index"></a>Create Partitioned Index</h2>
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <div class="sectionbody">
-<div class="imageblock">
-<div class="content">
-<img src="../_images/n1ql-language-reference/create-partitioned-index-syntax.png" alt="create partitioned index syntax">
-</div>
-<div class="title">Figure 1. Syntax</div>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_name ON bucket_name ( field_name [ , field_name2 ] * )
-    PARTITION BY HASH partition_key_expr
-    [ WITH { with_expr [ , with_expr2 ] * } ];</pre>
+<pre>create-index ::= CREATE INDEX <em>index-name</em> ON <a href="#named-keyspace-ref">named-keyspace-ref</a> '(' <a href="#index-key">index-key</a> [ ',' <a href="#index-key">index-key</a> ] * ')' [ <a href="#index-partition">index-partition</a> ] [ <a href="#where-clause">where-clause</a> ] [ <a href="#index-using">index-using</a> ] [ <a href="#index-with">index-with</a> ]</pre>
 </div>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/create-partitioned-index-syntax.png" alt="'CREATE' 'INDEX' index-name 'ON' named-keyspace-ref '(' index-key ( ',' index-key )* ')' index-partition? where-clause? index-using? index-with?">
 </div>
 </div>
-<div class="sect1">
-<h2 id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-<div class="sectionbody">
 <div class="dlist">
 <dl>
-<dt class="hdlist1"><code><em class="var">idx_name</em></code></dt>
+<dt class="hdlist1"><em>index-name</em></dt>
 <dd>
 <p><a href="identifiers.html" class="page">Identifier</a> representing the name of your index.
-The partitioned index name must unique within a bucket.</p>
+The partitioned index name must be unique within a keyspace or bucket.</p>
 </dd>
-<dt class="hdlist1"><code><em class="var">bucket_name</em></code></dt>
-<dd>
-<p>String representing the bucket to be indexed.</p>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If there is a hyphen (-) inside the bucket name, backticks (` `) are needed around the bucket name.
-</td>
-</tr>
-</table>
+</dl>
 </div>
-</dd>
-<dt class="hdlist1"><code>( <em class="var">field_name</em> )</code></dt>
-<dd>
-<p>String of one or more field names (comma-separated) to be included in the index.</p>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The field name(s) must be enclosed inside parentheses.
-</td>
-</tr>
-</table>
+<div class="sect2">
+<h3 id="named-keyspace-ref"><a class="anchor" href="#named-keyspace-ref"></a>Named Keyspace Reference</h3>
+<div class="listingblock">
+<div class="content">
+<pre>named-keyspace-ref ::= [ <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> ':' ] <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">keyspace</a></pre>
 </div>
-</dd>
-<dt class="hdlist1"><code>( <em class="var">partition_key_expr</em> )</code></dt>
-<dd>
-<p>One or more fields or an expression of one or more fields representing the partition keys.</p>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-This expression must be enclosed inside parentheses.
-</td>
-</tr>
-</table>
 </div>
-</dd>
-<dt class="hdlist1"><code>WITH { }</code></dt>
-<dd>
-<p>[Optional] The reserved word to be used with one or more of the following arguments.</p>
-</dd>
-<dt class="hdlist1"><code><em class="var">with_expr</em></code></dt>
-<dd>
-<p>Required if <code>WITH {}</code> is present.
-The <em class="var">with_expr</em> must contain at least one of the following arguments.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/from-keyspace-ref.png" alt="( namespace ':' )? keyspace">
+</div>
+</div>
+<div class="paragraph">
+<p>The namespace and keyspace or bucket name on which to create the index.
+Refer to the <a href="createindex.html#named-keyspace-ref" class="page">CREATE INDEX</a> statement for details of the syntax.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="index-key"><a class="anchor" href="#index-key"></a>Index Key</h3>
+<div class="listingblock">
+<div class="content">
+<pre>index-key ::= <em>expr</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/cond.png" alt="expr">
+</div>
+</div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1"><code>"num_partition": <em class="var">partition_int</em></code></dt>
+<dt class="hdlist1"><em>expr</em></dt>
 <dd>
-<p>The integer <em class="var">partition_int</em> defines the number of partitions to divide into.
+<p>A <a href="index.html" class="page">N1QL expression</a> over any fields in the document.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="index-partition"><a class="anchor" href="#index-partition"></a>PARTITION BY HASH Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>index-partition ::= PARTITION BY HASH '(' <em>partition-key-expr</em> [ ',' <em>partition-key-expr</em> ] * ')'</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/index-partition.png" alt="'PARTITION' 'BY' 'HASH' '(' partition-key-expr ( ',' partition-key-expr )* ')'">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><em>partition-key-expr</em></dt>
+<dd>
+<p>A field or an expression over a field representing a partition key.
+For details and examples, refer to <a href="#partition-keys">Partition Keys</a>.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="where-clause"><a class="anchor" href="#where-clause"></a>WHERE Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>where-clause ::= WHERE <em>cond</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/where-clause.png" alt="'WHERE' cond">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><em>cond</em></dt>
+<dd>
+<p>Specifies WHERE clause predicates to qualify the subset of documents to include in the index.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="index-using"><a class="anchor" href="#index-using"></a>USING Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>index-using ::= USING ( VIEW | GSI )</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/index-using.png" alt="'USING' ( 'VIEW' | 'GSI' )">
+</div>
+</div>
+<div class="paragraph">
+<p>The USING clause specifies the index type to use.
+To create an adaptive index, the index type must be <code>GSI</code>; as this is the default, the USING clause may be omitted.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="index-with"><a class="anchor" href="#index-with"></a>WITH Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>index-with ::= WITH <em>expr</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/index-with.png" alt="'WITH' expr">
+</div>
+</div>
+<div class="paragraph">
+<p>Use the WITH clause to specify additional options.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><em>expr</em></dt>
+<dd>
+<p>An object with the following properties:</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">num_partition</dt>
+<dd>
+<p>[Optional] An integer that defines the number of partitions to divide into.
 The default value is 8.
-For details and examples, see <a href="#number-of-partitions">Number of Partitions</a>.</p>
+For more details and examples, refer to <a href="#number-of-partitions">Number of Partitions</a>.</p>
 </dd>
-<dt class="hdlist1"><code>"nodes": ["<em class="var">###.###.###.###:####</em>", ...]</code></dt>
+<dt class="hdlist1">nodes</dt>
 <dd>
-<p>The node list to restrict the set of nodes available for placement, separated by commas.
-For details and examples, see <a href="#partition-placement">Partition Placement</a>.</p>
+<p>[Optional] An array of strings, specifying a list of nodes.
+The node list to restrict the set of nodes available for placement.
+Refer to the <a href="createindex.html#index-with" class="page">CREATE INDEX</a> statement for details of the syntax.
+For more details and examples, refer to <a href="#partition-placement">Partition Placement</a>.</p>
 </dd>
-<dt class="hdlist1"><code>"defer_build": true | false</code></dt>
+<dt class="hdlist1">defer_build</dt>
 <dd>
-<p>When <code>defer_build</code> is set to true, the index creation operation queues the task for building the index but immediately pauses the building of the index of type GSI.
-Index building requires an expensive scan operation and deferring building of an index with multiple indexes can optimize the expensive scan operation.
-Administrators can defer building multiple indexes and use the BUILD INDEX statement to build multiple indexes efficiently with one efficient scan of the bucket data.
-When <code>defer_build</code> is set to false, the CREATE INDEX operation queues the task for building the index and immediately kicks off the building of the index of type GSI.</p>
+<p>[Optional] Boolean.
+When set to true, the index creation operation queues the task for building the index, but immediately pauses the building of the index.
+Refer to the <a href="createindex.html#index-with" class="page">CREATE INDEX</a> statement for more details.</p>
 </dd>
-<dt class="hdlist1"><code>"num_replica": <em class="var">num_replica_num</em></code></dt>
+<dt class="hdlist1">num_replica</dt>
 <dd>
-<p>The number of replicas of the partitioned index to create.
-The index service will automatically distribute these indexes amongst the index nodes in the cluster for load balancing and high availability purposes.
-When creating an index with replicas in this manner, the index service attempts to distribute the replicas based on the server groups in use in the cluster where possible.
-If <em class="var">num_replica_num</em> is not less than the number of index nodes in the cluster, then the index creation will fail.</p>
+<p>[Optional] An integer specifying the number of replicas of the partitioned index to create.
+If this integer is greater than or equal to the number of index nodes in the cluster, then the index creation will fail.
+Refer to the <a href="createindex.html#index-with" class="page">CREATE INDEX</a> statement for more details.</p>
 </dd>
-<dt class="hdlist1"><code>"secKeySize": <em class="var">sec_int</em></code></dt>
+<dt class="hdlist1">secKeySize</dt>
 <dd>
-<p>The average length of the combined index keys.
-For details and examples, see <a href="#sizing-hints">Sizing Hints</a>.</p>
+<p>[Optional] An integer, specifying the average length of the combined index keys.
+For more details and examples, refer to <a href="#sizing-hints">Sizing Hints</a>.</p>
 </dd>
-<dt class="hdlist1"><code>"docKeySize": <em class="var">doc_int</em></code></dt>
+<dt class="hdlist1">docKeySize</dt>
 <dd>
-<p>The average length of the document key.
-For details and examples, see <a href="#sizing-hints">Sizing Hints</a>.</p>
+<p>[Optional] An integer, specifying the average length of the document key.
+For more details and examples, refer to <a href="#sizing-hints">Sizing Hints</a>.</p>
 </dd>
-<dt class="hdlist1"><code>"arrSize": <em class="var">arr_int</em></code></dt>
+<dt class="hdlist1">arrSize</dt>
 <dd>
-<p>The average length of the aray fields.
-For details and examples, see <a href="#sizing-hints">Sizing Hints</a>.</p>
+<p>[Optional] An integer, specifying the average length of the array fields.
+For more details and examples, refer to <a href="#sizing-hints">Sizing Hints</a>.</p>
 </dd>
 </dl>
 </div>
 </dd>
 </dl>
+</div>
 </div>
 </div>
 </div>
@@ -3975,7 +4035,7 @@ The partition ID is then used to identify the partition in which the document&#8
 </div>
 <div class="paragraph">
 <p>The partition keys should be immutable, that is, its values shouldn&#8217;t change once the document is created.
-For example, the 'travel-sample' field type almost never changes and is therefore a good candidate for partition key.
+For example, in the <code>travel-sample</code> keyspace, the field named <code>type</code> almost never changes, and is therefore a good candidate for partition key.
 If the partition keys have changed, then the corresponding document should be deleted and recreated with the new partition keys.</p>
 </div>
 <div class="paragraph">
@@ -4002,8 +4062,8 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <td class="tableblock halign-left valign-top"><p class="tableblock">The document key.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample`(country, airline, id)
- PARTITION BY HASH(META().id);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(country, airline, id)
+ PARTITION BY HASH(META().id);</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -4011,8 +4071,8 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <td class="tableblock halign-left valign-top"><p class="tableblock">Any single or multiple immutable field in the defined index.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample`(sourceairport,destinationairport, stops, airline, id)
- PARTITION BY HASH(sourceairport,destinationairport);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(sourceairport,destinationairport, stops, airline, id)
+ PARTITION BY HASH(sourceairport,destinationairport);</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -4020,8 +4080,8 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <td class="tableblock halign-left valign-top"><p class="tableblock">Any single or multiple immutable non-leading field in the defined index.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample`(airline, sourceairport, destinationairport, stops, id)
- PARTITION BY HASH(sourceairport, destinationairport);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(airline, sourceairport, destinationairport, stops, id)
+ PARTITION BY HASH(sourceairport, destinationairport);</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -4029,8 +4089,8 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <td class="tableblock halign-left valign-top"><p class="tableblock">Any single or multiple immutable document field not defined in the index.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample` (sourceairport, stops, airline, id)
- PARTITION BY HASH (sourceairport, destinationairport)</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample` (sourceairport, stops, airline, id)
+ PARTITION BY HASH (sourceairport, destinationairport)</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -4038,8 +4098,8 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <td class="tableblock halign-left valign-top"><p class="tableblock">A function on the index fields, such as <code>LOWER(), LEAST(), GREATEST(), SUBSTR()</code>, etc.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample`(LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
- PARTITION BY HASH(LOWER(sourceairport), LOWER(destinationairport));</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
+ PARTITION BY HASH(LOWER(sourceairport), LOWER(destinationairport));</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -4047,8 +4107,8 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <td class="tableblock halign-left valign-top"><p class="tableblock">A complex expression on the index fields combining functions and operators.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample`(POSITION(meta().id,'__')+2, destinationairport, sourceairport, stops, airline, id)
- PARTITION BY HASH(POSITION(meta().id,'__')+2));</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(POSITION(meta().id,'__')+2, destinationairport, sourceairport, stops, airline, id)
+ PARTITION BY HASH(POSITION(meta().id,'__')+2));</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -4067,13 +4127,13 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_pe1 ON `travel-sample`(country, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe1 ON `travel-sample`(country, airline, id)
  PARTITION BY HASH(META().id);
 
 SELECT airline, id
 FROM `travel-sample`
 WHERE country="United States"
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4096,10 +4156,12 @@ In this case, the application can maintain a low query latency while allowing th
 <div class="exampleblock">
 <div class="title">Example 2. Create a partitioned index with partition keys matching query equality predicate</div>
 <div class="content">
+<div class="paragraph">
+<p>Lookup all airlines with non-stop flights from SFO to JFK.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Lookup all airlines with non-stop flights from SFO to JFK
-CREATE INDEX idx_pe2 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe2 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
@@ -4107,7 +4169,7 @@ FROM `travel-sample`
 WHERE sourceairport="SFO" AND
 destinationairport="JFK" AND
 stops == 0
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4120,10 +4182,12 @@ The following example scans a single partition with a given pair of <code>source
 <div class="exampleblock">
 <div class="title">Example 3. Create a partitioned index with partition keys being non-leading index keys</div>
 <div class="content">
+<div class="paragraph">
+<p>Lookup all non-stop flights from SFO to JFK for the given airlines.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Lookup all non-stop flights from SFO to JFK for the given airlines
-CREATE INDEX idx_pe3 ON `travel-sample` (airline, sourceairport, destinationairport, stops, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe3 ON `travel-sample` (airline, sourceairport, destinationairport, stops, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
@@ -4132,7 +4196,7 @@ WHERE airline in ["UA", "AA"] AND
 sourceairport="SFO" AND
 destinationairport="JFK" AND
 stops == 0
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4143,10 +4207,12 @@ ORDER BY airline;</pre>
 <div class="exampleblock">
 <div class="title">Example 4. Create a partitioned index with partition keys as expressions</div>
 <div class="content">
+<div class="paragraph">
+<p>Case-insensitive lookup for all airlines with non-stop flights from SFO to JFK.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Case-insensitive lookup for all airlines with non-stop flights from SFO to JFK
-CREATE INDEX idx_pe4 ON `travel-sample` (LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe4 ON `travel-sample` (LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
  PARTITION BY HASH (LOWER(sourceairport), LOWER(destinationairport))
 
 SELECT airline, id
@@ -4154,7 +4220,7 @@ FROM `travel-sample`
 WHERE LOWER(sourceairport)="sfo" AND
 LOWER(destinationairport)="jfk" AND
 stops == 0
-ORDER BY airline</pre>
+ORDER BY airline</code></pre>
 </div>
 </div>
 </div>
@@ -4166,10 +4232,12 @@ The following example scans at most three partitions with <code>sourceairport "S
 <div class="exampleblock">
 <div class="title">Example 5. Create a partitioned index with partition keys matching query IN clause</div>
 <div class="content">
+<div class="paragraph">
+<p>Lookup for all airlines with non-stop flights from SFO, SJC, or OAK to JFK.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Lookup for all airlines with non-stop flights from SFO, SJC, or OAK to JFK
-CREATE INDEX idx_pe5 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe5 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
@@ -4177,7 +4245,7 @@ FROM `travel-sample`
 WHERE sourceairport in ["SFO", "SJC", "OAK"] AND
 destinationairport="JFK" AND
 stops == 0
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4190,17 +4258,19 @@ Consequently, this query will gather qualifying index keys from all partitions.<
 <div class="exampleblock">
 <div class="title">Example 6. Create a partitioned index with non-matching query equality predicate</div>
 <div class="content">
+<div class="paragraph">
+<p>Lookup all airlines with non-stop flights from SFO.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Lookup all airlines with non-stop flights from SFO
-CREATE INDEX idx_pe6 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe6 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
 FROM `travel-sample`
 WHERE sourceairport="SFO" AND
 stops == 0
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4211,10 +4281,12 @@ ORDER BY airline;</pre>
 <div class="exampleblock">
 <div class="title">Example 7. Create a partitioned index with query non-equality predicate</div>
 <div class="content">
+<div class="paragraph">
+<p>Lookup all airlines with non-stop flights from SFO.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Lookup all airlines with non-stop flights from SFO
-CREATE INDEX idx_pe7 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe7 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
@@ -4222,7 +4294,7 @@ FROM `travel-sample`
 WHERE sourceairport="SFO" AND
 destinationport is not missing AND
 stops == 0
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4234,17 +4306,19 @@ The following index always gathers keys from all partitions as <code>destination
 <div class="exampleblock">
 <div class="title">Example 8. Create a partitioned index with partition keys not being index keys</div>
 <div class="content">
+<div class="paragraph">
+<p>Lookup all airlines with flights from SFO to JFK.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Lookup all airlines with flights from SFO to JFK
-CREATE INDEX idx_pe8 ON `travel-sample` (sourceairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe8 ON `travel-sample` (sourceairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
 FROM `travel-sample`
 WHERE sourceairport="SFO" AND
 destinationairport="JFK"
-ORDER BY airline;</pre>
+ORDER BY airline;</code></pre>
 </div>
 </div>
 </div>
@@ -4253,10 +4327,14 @@ ORDER BY airline;</pre>
 <p>When choosing partition keys other than the document key, the size of each partition can potentially be subjected to data skew of the chosen partition keys.
 For example, for the index in the following example, the partitions containing the major airlines would have more entries since more index keys would end up hashing into the same partition.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx ON `travel-sample`(airline, destinationairport, sourceairport)
- PARTITION BY HASH(airline);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(airline, destinationairport, sourceairport)
+ PARTITION BY HASH(airline);</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -4276,17 +4354,19 @@ The query engine then computes the final aggregate result from the partial aggre
 <div class="exampleblock">
 <div class="title">Example 9. Create a partitioned index with partition key being document key</div>
 <div class="content">
+<div class="paragraph">
+<p>Find number of fights out of SFO for every destination across all airlines.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Find number of fights out of SFO for every destination across all airlines
-CREATE INDEX idx_pe9 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe9 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
  PARTITION BY HASH (meta().id) where type="route";
 
 SELECT sourceairport, destinationairport, SUM(ARRAY_COUNT(schedule))
 FROM `travel-sample`
 WHERE sourceairport = "SFO"
 AND type = "route"
-GROUP BY sourceairport, destinationairport;</pre>
+GROUP BY sourceairport, destinationairport;</code></pre>
 </div>
 </div>
 </div>
@@ -4313,17 +4393,19 @@ To enable a full aggregate computation, the index must be created with the follo
 <div class="exampleblock">
 <div class="title">Example 10. Create a partitioned index with the partition keys for full aggregate pushdown</div>
 <div class="content">
+<div class="paragraph">
+<p>Find number of fights out of SFO for every destination across all airlines.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre># Find number of fights out of SFO for every destination across all airlines
-CREATE INDEX idx_pe10 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe10 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
  PARTITION BY HASH (sourceairport, destinationairport) where type="route";
 
 SELECT sourceairport, destinationairport, SUM(ARRAY_COUNT(schedule))
 FROM `travel-sample`
 WHERE sourceairport = "SFO"
 AND type = "route"
-GROUP BY sourceairport, destinationairport;</pre>
+GROUP BY sourceairport, destinationairport;</code></pre>
 </div>
 </div>
 </div>
@@ -4343,8 +4425,8 @@ The Administrator can override the number of partitions at index creation time.<
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_pe11 ON `travel-sample`(airline, sourceairport, destinationairport)
- PARTITION BY HASH(airline) WITH {"num_partition":16};</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe11 ON `travel-sample`(airline, sourceairport, destinationairport)
+ PARTITION BY HASH(airline) WITH {"num_partition":16};</code></pre>
 </div>
 </div>
 </div>
@@ -4368,15 +4450,33 @@ If the index has a replica, then the replica partition will not be placed onto t
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_pe12 ON `travel-sample`(airline, sourceairport, destinationairport)
- PARTITION BY KEY(airline) WITH {"nodes":["127.0.0.1:9001", "127.0.0.1:9002"]};</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe12 ON `travel-sample`(airline, sourceairport, destinationairport)
+ PARTITION BY KEY(airline) WITH {"nodes":["127.0.0.1:9001", "127.0.0.1:9002"]};</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p><a id="sizing-hints"></a>You can optionally provide sizing hints too.
-Given the sizing hints, the planner uses a formula  to estimate the memory and CPU usage of the index.
+<p>If you create a partitioned index on a specific set of nodes, and then decide that you want to specify a different set of nodes for partition placement, you need to remove the partitioned index and then recreate the partitioned index on a smaller or greater number of nodes.
+However, refer also to the section on <a href="#rebalancing">rebalancing a partitioned index</a> below.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To avoid any downtime, before removing the partitioned index, first create an equivalent index for your queries to continue using.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="sizing-hints"><a class="anchor" href="#sizing-hints"></a>Sizing Hints</h3>
+<div class="paragraph">
+<p>You can optionally provide sizing hints too.
+Given the sizing hints, the planner uses a formula to estimate the memory and CPU usage of the index.
 Based on the estimated memory and CPU usage, the planner tries to place the partitions according to the free resources available to each index node.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -4395,20 +4495,20 @@ Based on the estimated memory and CPU usage, the planner tries to place the part
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">secKeySize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>secKeySize</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The average length of the combined index keys</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>20</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">docKeySize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>docKeySize</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The average length of the document key meta().id</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>20</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">arrSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>arrSize</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The average length of the array field.
 Non-array fields will be ignored.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>10</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -4420,8 +4520,8 @@ Non-array fields will be ignored.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_pe13 ON `travel-sample`(airline, sourceairport, destinationairport)
- PARTITION BY HASH (airline) WITH {"secKeySize":20, "docKeySize":20};</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe13 ON `travel-sample`(airline, sourceairport, destinationairport)
+ PARTITION BY HASH (airline) WITH {"secKeySize":20, "docKeySize":20};</code></pre>
 </div>
 </div>
 </div>
@@ -4431,8 +4531,9 @@ Non-array fields will be ignored.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_pe14 ON `travel-sample`(airline, sourceairport, schedule)
- PARTITION BY HASH (airline) WITH {"secKeySize":20, "docKeySize":20, "arrSize": 100};</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe14 ON `travel-sample`(airline, sourceairport, schedule)
+ PARTITION BY HASH (airline) WITH {"secKeySize":20, "docKeySize":20, "arrSize": 100};</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -4454,8 +4555,8 @@ Therefore, index replicas can also be used to load rebalancing of query requests
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX idx_pe15 ON `travel-sample`(airline, sourceairport, schedule)
- PARTITION BY HASH (airline) WITH {"num_replica":2};</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe15 ON `travel-sample`(airline, sourceairport, schedule)
+ PARTITION BY HASH (airline) WITH {"num_replica":2};</code></pre>
 </div>
 </div>
 </div>

@@ -3882,7 +3882,7 @@ The CA, being at the top of this two-tier hierarchy, is often referred to as the
 <p>A <em>two-plus-tier</em> certificate hierarchy is one where a Root CA has issued a certificate to an <em>intermediate authority</em>, which in turn has issued a certificate either to another intermediate authority, or directly to one or more entities that are to be identified.
 Use of a two-plus-tier hierarchy requires that all intermediate certificates, as well as a given entity&#8217;s certificate, be available for inspection when authentication is attempted; otherwise, the ultimate authority of the root will not be traced, and authentication will fail.
 All certificates, both on the server-side and on the client-side, should therefore be made available in a complete <em>trust chain</em>: which is a file that contains the entity&#8217;s own certificate, concatenated with all its associated intermediate certificates in the order that corresponds to their signing-sequence.
-The root certificate itself is never included in the trust chain.</p>
+The root certificate itself is never included in the trust chain: however, it may be held in an entity&#8217;s <em>trust store</em> of trusted certificate-authorities, and recognized on that basis.</p>
 </div>
 </div>
 </div>
@@ -3891,8 +3891,8 @@ The root certificate itself is never included in the trust chain.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>By default, Couchbase Server provides minimally defined <em>root</em> and <em>entity</em> certificates to protect cluster and individual nodes.
-Administrators can replace these, with customized certificates and certificate-chains.
-All certificates and certificate-chains for client-side use need to be explicitly created by administrators, as appropriate.</p>
+Administrators can replace these, with customized or externally acquired certificates, and with corresponding certificate-chains.
+All certificates and certificate-chains for client-side use need to be explicitly created and/or deployed by administrators, as appropriate.</p>
 </div>
 <div class="sect2">
 <h3 id="cluster-certificate"><a class="anchor" href="#cluster-certificate"></a>Cluster Certificate</h3>
@@ -3919,7 +3919,7 @@ When an existing certificate is to be used to grant its authority to another, th
 <div class="paragraph">
 <p>Note that the private key of the default, self-signed cluster certificate is <em>not</em> made available.
 Consequently, custom certificate-chains based on the default certificate <em>cannot</em> be created.
-To create custom certificate-chains, a custom cluster certificate and private key must be generated.</p>
+To create custom certificate-chains, a custom cluster certificate and private key must be generated (or alternatively, a Root CA must be acquired from an external authority, and certificate-chains then created based on an authority-signed <em>intermediate certificate</em>, as described below).</p>
 </div>
 <div class="paragraph">
 <p>Examples of creating cluster and other certificates based on private keys are provided in <a href="../../manage/manage-security/configure-server-certificates.html" class="page">Configure Server Certificates</a></p>
@@ -3928,7 +3928,7 @@ To create custom certificate-chains, a custom cluster certificate and private ke
 <div class="sect2">
 <h3 id="intermediate-certificates"><a class="anchor" href="#intermediate-certificates"></a>Intermediate Certificates</h3>
 <div class="paragraph">
-<p>An <em>intermediate certificate</em> (often referred to an <em>Intermediate or Signing CA</em>) can be either:</p>
+<p>An <em>intermediate certificate</em> (sometimes referred to as a <em>subordinate certificate</em>, an <em>Intermediate CA</em>, or a <em>Signing CA</em>) can be either:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -4001,14 +4001,18 @@ If the certificate has not expired and is valid in all other necessary respects,
 If the user exists, and the associated roles are appropriate, access is granted; otherwise, access is denied.</p>
 </div>
 <div class="paragraph">
-<p>Note that the private key used to create the client certificate may itself need to be used in the process whereby the client authenticates itself against the server: the client digitally signs a message, using its private key, and sends this message to the server; allowing the client&#8217;s <em>public</em> key then to be used by the server to verify that the message has indeed been sent by the client.
+<p>Note that the private key used to create the client certificate is itself used in the process whereby the client authenticates itself against the server: the client digitally signs a message, using its private key, and sends this message to the server; allowing the client&#8217;s <em>public</em> key then to be used by the server to verify that the message has indeed been sent by the client.
 (An example of this, in the context of securing XDCR, is provided in <a href="../../manage/manage-xdcr/enable-full-secure-replication.html#specify-full-xdcr-security-with-certificates" class="page">Specify Root and Client Certificates, and Client Private Key</a>.)</p>
 </div>
 <div class="sect3">
 <h4 id="identity-encoding-in-client-certificates"><a class="anchor" href="#identity-encoding-in-client-certificates"></a>Specifying Usernames for Client-Certificate Authentication</h4>
 <div class="paragraph">
-<p>The <em>username</em> to be authorized by Couchbase Server can be specified as any of several elements included in the client certificate.
-Couchbase Server can be configured to search for the appropriate element within the client certificate; and then attempt to authenticate and authorize, using the element as a Couchbase-Server username.</p>
+<p>The <em>username</em> to be authorized by Couchbase Server can be specified by means of several elements included in the client certificate.
+Couchbase Server can be configured to search for appropriate elements within the client certificate; and then attempt to authenticate and authorize, using each element as the basis for a Couchbase-Server username.</p>
+</div>
+<div class="paragraph">
+<p>If multiple elements within the client certificate are so used, the first to be successfully authenticated by Couchbase Server is the one used.
+The order in which the elements are examined is that configured on Couchbase Server, as described in <a href="../../manage/manage-security/enable-client-certificate-handling.html" class="page">Enable Client Certificate Handling</a>.</p>
 </div>
 <div class="sect4">
 <h5 id="specifying-usernames-in-certificates"><a class="anchor" href="#specifying-usernames-in-certificates"></a>Embedding Usernames in Certificates</h5>
@@ -4025,14 +4029,19 @@ This is the means of username-declaration used by most clients.</p>
 <li>
 <p>The <code>DNS</code> name, provided as a <em>Subject Alternative Name</em> for the certificate.
 For example, <code>subjectAltName = DNS:node2.cb.com</code> would, with no prefix or delimiter specified in the Couchbase Server handling-configuration, allow <code>node2.cb.com</code> to be identified as the username.</p>
+<div class="paragraph">
+<p><em>Prefix</em> and <em>delimiter</em> are explained below, in <a href="#identifying-certificate-based-usernames-on-couchbase-server">Identifying Certificate-Based Usernames on Couchbase Server</a>.</p>
+</div>
 </li>
 <li>
 <p>The <code>email</code>, provided as a <em>Subject Alternative Name</em> for the certificate.
-For example, <code>subjectAltName = email:john.smith@mail.com</code> would, with no prefix configured, and a delimiter specified as <code>@</code>, allow <code>john.smith</code> to be extracted and identified as the username.</p>
+For example, <code>subjectAltName = email:john.smith@mail.com</code> would, with no prefix configured or delimiter specified, allow <code>john.smith@mail.com</code> to be extracted and identified as the username.
+Note, however, that since the character <code>@</code> is not permitted in Couchbase Server usernames, no such user could exist.
+Nevertheless, the user <code>john.smith</code> <em>could</em> be defined on Couchbase Server; and this name could be extracted from <code>john.smith@mail.com</code>, given appropriate server-side configuration of a <em>delimiter</em>, as explained in <a href="#identifying-certificate-based-usernames-on-couchbase-server">Identifying Certificate-Based Usernames on Couchbase Server</a>, below.</p>
 </li>
 <li>
 <p>The <code>URI</code> provided as a <em>Subject Alternative Name</em> for the certificate.
-For example, <code>subjectAltName = URI:www.acme.com</code> would, with a prefix of <code>www.</code> configured, and a delimiter specified as <code>.</code>, allow <code>acme</code> to be extracted and identified as the username.</p>
+For example, <code>subjectAltName = URI:www.acme.com</code> would, with no prefix or delimiter specified, allow <code>www.acme.com</code> to be extracted and identified as the username.</p>
 </li>
 </ul>
 </div>
@@ -4046,10 +4055,10 @@ For example, <code>subjectAltName = URI:www.acme.com</code> would, with a prefix
 <p>Client-certificate handling is <em>disabled</em> by default on Couchbase Server: it can optionally be <em>enabled</em>; and if required, specified as <em>mandatory</em>.</p>
 </div>
 <div class="paragraph">
-<p>When client-certificate handling has been enabled, multiple combinations of <em>path</em>, <em>prefix</em>, and <em>delimiter</em> values can be specified to be matched with elements within client certificates presented for authentication.</p>
+<p>When client-certificate handling has been enabled, <em>paths</em> specified within the client certificate can be configured to be searched for, in order to retrieve <em>usernames</em> for authentication.</p>
 </div>
 <div class="paragraph">
-<p>The <em>path</em> can be one of the following:</p>
+<p>Each specified <em>path</em> can be one of the following path-types:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -4072,10 +4081,52 @@ The <code>URI</code> <em>Subject Alternative Name</em> for the certificate will 
 </ul>
 </div>
 <div class="paragraph">
-<p>Once extracted, the <em>path</em> can be parsed, so that the symbols that constitute the username are isolated from extraneous characters.
-This is achieved by specifying, for each path, a <em>prefix</em> and a <em>delimiter</em>.
-A specified prefix is discarded from the extracted value: for example, if a specified <code>san.uri</code> is <code>www.couchbase.com</code>, a prefix of <code>www.</code> is removed; and so leaves the symbols <code>couchbase.com</code>.
-A specified delimiter causes both itself and subsequent characters to be discarded: for example, a delimiter of <code>.</code> discards the symbols <code>.com</code> from <code>couchbase.com</code>; and leaves <code>couchbase</code> as the username to be authenticated.</p>
+<p>Any number of paths can be specified on Couchbase Server, with multiple instances of any path-type.</p>
+</div>
+<div class="paragraph">
+<p>The name retrieved by searching for a Couchbase Server-specified path can optionally be <em>parsed</em>, so that the symbols that constitute the username are isolated from extraneous characters.
+This is achieved by associating the path with a specified <em>prefix</em> and/or <em>delimiter</em>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If neither a prefix nor a delimiter is specified for a given path, no parsing of the corresponding name is attempted; and authentication is attempted with the unparsed name.</p>
+</li>
+<li>
+<p>If only a prefix is specified for a given path, parsing is attempted in accordance with the specified prefix.
+If no instance of the prefix is located in the name, authentication is then attempted with the name unchanged.</p>
+</li>
+<li>
+<p>If only a delimiter is specified for a given path, parsing is attempted in accordance with the specified delimiter.
+If no instance of the delimiter is located in the name, authentication is then attempted with the name unchanged.</p>
+</li>
+<li>
+<p>If both a prefix and a delimiter are specified for a given path, parsing is attempted for each in turn &#8212; prefix first, then delimiter &#8212; as described above.
+Authentication is then attempted with the string produced by these sequential parsing-attempts.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><em>Prefix</em> and <em>delimiter</em> are defined as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Prefix</em>: One or more characters that, if exactly matched with the substring that begins the string specified as the Subject Common Name or Subject Alternative Name, are removed from that string.
+For example, if a certificate-specified <code>san.uri</code> is <code>www.couchbase.com</code>, and the server-specified prefix is <code>www.</code>, then <code>www.</code> is removed from <code>www.couchbase.com</code>, leaving the string <code>couchbase.com</code>.</p>
+<div class="paragraph">
+<p>However, if a certificate-specified <code>san.uri</code> is <code>foo.bar.com</code>, and the server-specified prefix is <code>www.</code>, nothing is removed from <code>foo.bar.com</code>.</p>
+</div>
+</li>
+<li>
+<p><em>Delimiter</em>: A single character that, if matched with a single instance in the string being parsed, causes both itself and all subsequent characters to be discarded from the string.
+For example, a delimiter of <code>.</code> causes the substring <code>.com</code> to be discarded from <code>couchbase.com</code>; and leaves <code>couchbase</code> as the username to be authenticated.</p>
+<div class="paragraph">
+<p>Note that if a string contains multiple instances of the character specified as the delimiter, the <em>first</em> instance is the one used.
+For example, a delimiter of <code>.</code> causes the substring <code>.couchbase.com</code> to be discarded from <code>www.couchbase.com</code>, leaving <code>www</code> as the username to be authenticated.</p>
+</div>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>For step-by-step instructions, see <a href="../../manage/manage-security/enable-client-certificate-handling.html" class="page">Enable Client Certificate Handling</a>.</p>

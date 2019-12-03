@@ -3824,6 +3824,25 @@ Before attempting to follow either procedure, see the conceptual and architectur
 <div class="paragraph">
 <p>The second procedure, <a href="#root-intermediate-and-node-certificates">Cluster Protection with Root, Intermediate, and Node Certificates</a>, demonstrates how a created root certificate and its private key are used to sign one or more <em>intermediate</em> certificates; which are then in turn used with their own private keys to sign individual, per node certificates: such use of intermediate certificates and their private keys increases security &#8212; in that it minimizes use of the private key associated with the root certificate, when the signing of many node-certificates or client-certificates is required.</p>
 </div>
+<div class="paragraph">
+<p>Although these procedures demonstrate certificate management and deployment on single-node clusters, the steps they contain can also be used on <em>multi-node</em> clusters; with some of the steps being necessarily repeated, across the different nodes.
+See <a href="#protection-of-multi-node-clusters">Protection of Multi-Node Clusters</a>, below, for details.</p>
+</div>
+<div class="paragraph">
+<p>Note also that once a cluster has been protected with administrator-defined certificates in accordance with these procedures, any new nodes subsequently to be added to the cluster must be individually protected with conformant certificates, before addition can take place.
+See <a href="#adding-new-cluster-nodes">Adding New Cluster-Nodes</a>, below, for details.</p>
+</div>
+<div class="sect2">
+<h3 id="using-an-externally-provided-root-certificate"><a class="anchor" href="#using-an-externally-provided-root-certificate"></a>Using an Externally Provided Root Certificate</h3>
+<div class="paragraph">
+<p>The examples below show how to <em>create</em> a root certificate, and how to use that certificate&#8217;s <em>private key</em> to <em>sign</em> (and thereby confer limited authority to) other certificates.
+However, production deployments of Couchbase Server will frequently deploy an <em>externally provided</em> root certificate for the cluster, this having been provided by a recognized certificate authority.
+Additionally, an <em>intermediate</em> (sometimes referred to as a <em>subordinate</em>) certificate, defined by the system administrator for the production environment, is likely to have been signed by the external authority, using its root certificate&#8217;s private key: this allows the intermediate certificate and its private key to be used by the system administrator in creating additional certificates for deployment, each of these certificates thereby acquiring authority indirectly from the root.</p>
+</div>
+<div class="paragraph">
+<p>Therefore, to use the procedures provided below in the context of a root certificate having been provided by, and an intermediate certificate signed by, an external authority, substitute the externally provided root certificate for the generated <code>ca.pem</code>; use the externally signed intermediate in place of the generated intermediate; and use the private key of the externally signed intermediate to sign node and client certificates as appropriate.</p>
+</div>
+</div>
 <div class="sect2">
 <h3 id="node-to-node-encryption-and-certificate-management"><a class="anchor" href="#node-to-node-encryption-and-certificate-management"></a>Node-to-Node Encryption and Certificate Management</h3>
 <div class="paragraph">
@@ -3836,8 +3855,11 @@ If the command output shows that node-to-node encryption is enabled, disable it;
 Once management of <em>node</em> and <em>intermediate</em> certificates has been concluded, use the same command with the <code>--enable</code> flag, to re-enable node-to-node encryption.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="root-and-node-certificates"><a class="anchor" href="#root-and-node-certificates"></a>Cluster Protection with Root and Node Certificates</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="root-and-node-certificates"><a class="anchor" href="#root-and-node-certificates"></a>Cluster Protection with Root and Node Certificates</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The following procedure shows how to create a root certificate that is the trusted, self-signed authority used to sign individual, per node certificates.
 Note that corresponding, subsequent procedures that create certificates for <em>client</em>-authentication are provided in <a href="configure-client-certificates.html#client-certificate-authorized-by-a-root-certificate" class="page">Client Access: Root Certificate Authorization</a> and <a href="configure-client-certificates.html#java-client-access-root-certificate-authorization" class="page">Java Client Access: Root Certificate Authorization</a>.</p>
@@ -4074,7 +4096,7 @@ EOF</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The value of <code>extendedKeyUsage</code> is specified as <code>serverAuth</code>, indicating that the cluster is to be used for server authentication.
+<p>The value of <code>extendedKeyUsage</code> is specified as <code>serverAuth</code>, indicating that the certificate is to be used for server authentication.
 The values of <code>keyUsage</code> are <code>digitalSignature</code>, specifying that the certificate&#8217;s public key can be used in the verifying of information-origin; and <code>keyEncipherment</code>, specifying that the public key can be used in the encrypting of <em>symmetric keys</em> (through the exchange and use of which symmetrically encrypted communications between server and client can occur).</p>
 </div>
 </li>
@@ -4163,9 +4185,9 @@ sudo chmod a+x /opt/couchbase/var/lib/couchbase/inbox/pkey.key</pre>
 </div>
 </li>
 <li>
-<p>Upload and activate the root certificate for the cluster.</p>
+<p><em>Upload</em> and, in order to activate, <em>reload</em> the root certificate for the cluster.</p>
 <div class="paragraph">
-<p>The root certificate is uploaded and activated with the following REST commands:</p>
+<p>The root certificate is uploaded and reloaded with the following REST commands:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4196,8 +4218,8 @@ Then, left-click on the <strong>Root Certificate</strong> tab, located on the up
 </li>
 </ol>
 </div>
-<div class="sect3">
-<h4 id="configure-client-access-simple"><a class="anchor" href="#configure-client-access-simple"></a>Configuring Client Access</h4>
+<div class="sect2">
+<h3 id="configure-client-access-simple"><a class="anchor" href="#configure-client-access-simple"></a>Configuring Client Access</h3>
 <div class="paragraph">
 <p>Once the cluster has been protected by the deployment of root and node certificates described above, a <em>client</em> certificate can be signed by the root certificate, to allow a client to access the cluster.
 Client-certificate preparation varies, depending on the type of client to be supported.
@@ -4209,11 +4231,13 @@ For steps to prepare a certificate supportive of a Java client, see <a href="con
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="root-intermediate-and-node-certificates"><a class="anchor" href="#root-intermediate-and-node-certificates"></a>Cluster Protection with Root, Intermediate, and Node Certificates</h3>
+</div>
+<div class="sect1">
+<h2 id="root-intermediate-and-node-certificates"><a class="anchor" href="#root-intermediate-and-node-certificates"></a>Cluster Protection with Root, Intermediate, and Node Certificates</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Optionally, a root certificate can be used to sign an <em>intermediate</em> certificate, which is then itself used to sign node certificates.
-This increases security, since it minimizes use of the private key associated with root certificate, when many node or client-certificates are to be signed.</p>
+This increases security, since it minimizes use of the private key associated with the root certificate, when many node or client-certificates are to be signed.</p>
 </div>
 <div class="paragraph">
 <p>The steps and descriptions below assume that the previous procedure, <a href="#root-and-node-certificates">Cluster Protection with Root and Node Certificates</a>, has already been successfully completed; and that familiarity with the basic certificate-related concepts explained there has been attained.</p>
@@ -4477,9 +4501,6 @@ Then, rename the private key for the node.</p>
 cp private/couchbase.node.svc.key pkey.key</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>This step, and each of the following steps in this procedure, must be performed for each node in the cluster.</p>
-</div>
 </li>
 <li>
 <p>Move the node certificate and node private key into the <code>inbox</code> for the current node.</p>
@@ -4513,8 +4534,8 @@ curl -X POST http://Administrator:password@10.143.192.102:8091/node/controller/r
 <p>This concludes the certificate-deployment process.
 The root certificate can be examined by means of Couchbase Web Console, as shown in <a href="#see-root-certificate-with-couchbase-web-console">Step 10</a> of the previous example on this page.</p>
 </div>
-<div class="sect3">
-<h4 id="configure-client-access-advanced"><a class="anchor" href="#configure-client-access-advanced"></a>Configuring Client Access</h4>
+<div class="sect2">
+<h3 id="configure-client-access-advanced"><a class="anchor" href="#configure-client-access-advanced"></a>Configuring Client Access</h3>
 <div class="paragraph">
 <p>Once the cluster has been protected by the deployment of root, intermediate, and node certificates described above, a <em>client</em> certificate can be signed by a <em>client-intermediate</em> certificate that itself inherits the authority of the root: this allows the client certificate to access the cluster.
 Client-certificate preparation varies, depending on the type of client to be supported.
@@ -4525,6 +4546,82 @@ For steps to prepare a certificate supportive of a Java client, see <a href="con
 <p>Note that access by means of a client certificate must be specifically enabled, on the cluster that is to be accessed: see <a href="enable-client-certificate-handling.html" class="page">Enable Client-Certificate Handling</a>.</p>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="protection-of-multi-node-clusters"><a class="anchor" href="#protection-of-multi-node-clusters"></a>Protection of Multi-Node Clusters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The certificate-management procedures described above, for single-node clusters, can be used for multi-node clusters, if the following modifications are made:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A separate <code>chain.pem</code> must be prepared for each node.
+Each <code>chain.pem</code> should be generated from a new, unique private key (<code>pkey.key</code>); must be an appropriate concatenation of the node certificate with whatever intermediate certificates have formed its chain; and must have its own node&#8217;s IP address specified as a <code>subjectAltName</code>.</p>
+</li>
+<li>
+<p>If created on the same system as all other keys and certificates, the <code>chain.pem</code> and <code>pkey.key</code> for each node must be independently transferred onto the node they are intended to protect.
+An inbox must be created on that node, and the <code>chain.pem</code> and <code>pkey.key</code> files then moved there.</p>
+</li>
+<li>
+<p>The root certificate for the cluster, referred to above as <code>ca.pem</code>, must be reloaded individually for each node in the cluster, after the <code>chain.pem</code> and <code>pkey.key</code> file have been moved into the node&#8217;s inbox.
+Each reload command must therefore specify the node&#8217;s own IP address.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Since this is a gradual process, prior to its conclusion, the certificates for the cluster will go through periods of mismatch.
+Error messages are duly provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When the root certificate is uploaded and reloaded for any one of the nodes in the cluster, it becomes the root certificate for all the nodes in the cluster.
+However, for each node whose corresponding <code>chain.pem</code> and <code>pkey.key</code> files have not yet been copied to its inbox, the following error message appears on the <strong>Root Certificate</strong> panel of the Couchbase Web Console <strong>Security</strong> screen: <code>Warning: ns_1:&lt;ip-address&gt;: Certificate is not signed with cluster CA</code>.</p>
+<div class="paragraph">
+<p>Respond by copying the <code>chain.pem</code> and <code>pkey.key</code> for the node into its inbox, then perform a reload of the cluster certificate, specifying the IP address of the node.
+This coordinates and activates the new certificates for the node, and removes the error message.</p>
+</div>
+</li>
+<li>
+<p>If a new cluster certificate is uploaded and reloaded for a node <em>before</em> the node&#8217;s <code>chain.pem</code> and <code>pkey.pem</code> have been copied into the node&#8217;s inbox, the successful reload gives the following error message: <code>"Unable to read certificate chain file /opt/couchbase/var/lib/couchbase/inbox/chain.pem. The file does not exist"</code>.</p>
+<div class="paragraph">
+<p>Respond by copying the <code>chain.pem</code> and <code>pkey.pem</code> files to the inbox, and then uploading and reloading the cluster certificate, specifying the node&#8217;s IP address.
+This coordinates and activates the new certificates for the node.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="adding-new-nodes"><a class="anchor" href="#adding-new-nodes"></a>Adding New Nodes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The default certificates provided with Couchbase Server allow nodes to be either <em>added</em> or <em>joined</em> to a cluster, without any explicit certificate-management required.
+This is because the Cluster Manager automatically handles the creation and deployment of the default cluster and node certificates.</p>
+</div>
+<div class="paragraph">
+<p>However, when new cluster and other certificates have been (as in the examples above) explicitly prepared by the system administrator and deployed on an existing cluster, no new node can become a member of that cluster until conformant certificates have been explicitly deployed on the node by the administrator.
+Consequently:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>No node can be <em>joined</em> to a cluster.
+This is because a node can be joined to a cluster only prior to the node&#8217;s provisioning; while certificate-deployment can only occur <em>subsequent to</em> the node&#8217;s provisioning.</p>
+</li>
+<li>
+<p>A node can be <em>added</em> to a cluster only after the appropriate certificates have been deployed on it, as a provisioned, one-node cluster.
+If certificate-preparation has not been completed, the following error message appears in the <strong>Add Server Node</strong> dialog of Couchbase Web Console: <code>Attenton: Prepare join failed. failed to establish TLS connection to &lt;ip-address&gt;:8091: "unknown ca"</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Therefore, to perform node-addition, prepare a <code>chain.pem</code> and <code>pkey.key</code> for the node; transfer these files to the running node, create an inbox, and move the files into the inbox; then upload and reload the cluster certificate for the cluster to which the node is to be added.
+When this sequence has been completed, the new node can be added to the cluster.
+(Note that although other aspects of the node&#8217;s prior provisioning will be erased by the addition, the new certificates will remain in place.)</p>
 </div>
 </div>
 </div>

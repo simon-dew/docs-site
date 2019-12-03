@@ -6,6 +6,7 @@
     <title>CREATE INDEX | Couchbase Docs (Staging)</title>
     <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4241/server/6.0/index.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
+    <meta name="keywords" content="secondary, index, placement">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
     <meta name="dcterms.identifier" content="6.5">
@@ -3825,7 +3826,7 @@ This status field and other index metadata can be queried using <code>system:ind
 <td class="content">
 <div class="paragraph">
 <p>Indexes cannot be built concurrently on a given bucket unless the <code>defer_build</code> option of the CREATE INDEX statement is used in combination with BUILD INDEX statement.
-The following error is reported if a second index creation operation is kicked off before the completion of the ongoing index creation.</p>
+The following error is reported if a second index build operation is kicked off before the completion of the ongoing index build.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3847,6 +3848,21 @@ The following error is reported if a second index creation operation is kicked o
 In Couchbase Server Enterprise Edition, the recommended way to do this is using the <code>num_replicas</code> option.
 In Couchbase Server Community Edition, you need to create multiple identical indexes and place them using the <code>nodes</code> option.
 Refer to <a href="#index-with">WITH Clause</a> below for more details.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You cannot run multiple <code>CREATE INDEX</code> statements in parallel, even when you specify that the indexes should be created on different nodes.
+This is to avoid the possibility of duplicate index names.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <h5 id="rbac-privileges" class="discrete">RBAC Privileges</h5>
 <div class="paragraph">
@@ -3911,6 +3927,18 @@ It specifies the bucket as the source for which the index needs to be created.</
 </div>
 <div class="paragraph">
 <p>For example, <code>default:`travel-sample`</code> indicates the <code>travel-sample</code> keyspace in the <code>default</code> namespace.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If there is a hyphen (-) inside the keyspace or bucket name, you must wrap it in backticks (` `).
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -4021,7 +4049,7 @@ Secondary indexes can be created using global secondary indexes (GSI) or views.<
 <div class="paragraph">
 <p>In Couchbase Server Community Edition, a single global secondary index can be placed on a single node that runs the indexing service.
 The <code>nodes</code> property allows you to specify the node that the index is placed on.
-If <code>nodes</code> is not specified, one of the nodes running the index service is randomly picked for the index.</p>
+If <code>nodes</code> is not specified, one of the nodes running the indexing service is randomly picked for the index.</p>
 </div>
 </td>
 </tr>
@@ -4036,7 +4064,7 @@ If <code>nodes</code> is not specified, one of the nodes running the index servi
 <td class="content">
 <div class="title"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></div>
 <div class="paragraph">
-<p>In Couchbase Server Enterprise Edition, multiple nodes can be specified to distribute replicas of an index amongst multiple nodes, for example:</p>
+<p>In Couchbase Server Enterprise Edition, you can specify multiple nodes to distribute replicas of an index across nodes running the indexing service, for example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4049,7 +4077,8 @@ WITH {"nodes":["node1:8091", "node2:8091", "node3:8091"]};</code></pre>
 <p>If specifying both <code class="var">nodes</code> and <code class="var">num_replica</code>, the number of nodes in the array must be one greater than the specified number of replicas otherwise the index creation will fail.</p>
 </div>
 <div class="paragraph">
-<p>If <code class="var">nodes</code> is not specified, then nodes running the index service are randomly selected to host the index, based on the number of replicas.</p>
+<p>If <code class="var">nodes</code> is not specified, then the system chooses nodes on which to place the new index and any replicas, in order to achieve the best resource utilization across nodes running the indexing service.
+This is done by taking into account the current resource usage statistics of index nodes.</p>
 </div>
 </td>
 </tr>
@@ -4137,21 +4166,28 @@ We recommend that you do not create (or drop) secondary indexes when any node wi
 <div class="sect1">
 <h2 id="usage"><a class="anchor" href="#usage"></a>Usage</h2>
 <div class="sectionbody">
-<h5 id="array-indexing" class="discrete">Array Indexing</h5>
+<div class="sect2">
+<h3 id="array-indexing"><a class="anchor" href="#array-indexing"></a>Array Indexing</h3>
 <div class="paragraph">
 <p>Array indexing enables you to create global indexes on array elements and optimize the execution of queries involving array elements.
 For details, refer to <a href="indexing-arrays.html" class="page">Array Indexing</a>.</p>
 </div>
-<h5 id="index-partitioning" class="discrete">Index Partitioning</h5>
+</div>
+<div class="sect2">
+<h3 id="index-partitioning"><a class="anchor" href="#index-partitioning"></a>Index Partitioning</h3>
 <div class="paragraph">
 <p>Index partitioning helps increase the query performance by dividing and spreading a large index of documents across multiple nodes, horizontally scaling out an index as needed.
 For details, refer to <a href="index-partitioning.html" class="page">Index Partitioning</a>.</p>
 </div>
-<h5 id="using-the-meta-id-function" class="discrete">Using the <code>meta().id</code> Function</h5>
+</div>
+<div class="sect2">
+<h3 id="using-the-meta-id-function"><a class="anchor" href="#using-the-meta-id-function"></a>Using the <code>meta().id</code> Function</h3>
 <div class="paragraph">
 <p>For details, refer to <a href="indexing-meta-info.html" class="page">Indexing Meta Info</a>.</p>
 </div>
-<h5 id="using-indexes-for-aggregates" class="discrete">Using Indexes for Aggregates</h5>
+</div>
+<div class="sect2">
+<h3 id="using-indexes-for-aggregates"><a class="anchor" href="#using-indexes-for-aggregates"></a>Using Indexes for Aggregates</h3>
 <div class="paragraph">
 <p>If there is an index on the expression of an aggregate, that index may be used to satisfy the query.
 For example, given the index <code>alt_idx</code> created using the following statement:</p>
@@ -4171,6 +4207,24 @@ For example, given the index <code>alt_idx</code> created using the following st
 </div>
 <div class="paragraph">
 <p>For details, refer to <a href="../../learn/services-and-indexes/indexes/index_pushdowns.html#operator-pushdowns" class="page">Operator Pushdowns</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="index-replicas"><a class="anchor" href="#index-replicas"></a>Index Replicas</h3>
+<div class="paragraph">
+<p>In the <a href="../../manage/manage-ui/manage-ui.html#console-indexes" class="page">Indexes screen in the Couchbase Web Console</a>, index replicas are marked with their replica ID.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/create-index-replica-id.png" alt="The Indexes screen showing an index and index replica with replica ID">
+</div>
+</div>
+<div class="paragraph">
+<p>If you select <code>view by server node</code> from the drop-down menu, you can see the server node where each index and index replica is placed.</p>
+</div>
+<div class="paragraph">
+<p>You can also use the <a href="../../rest-api/get-status-indexes.html" class="page">Index service REST API</a> to find the ID of an index replica and see which node it is placed on.</p>
+</div>
 </div>
 </div>
 </div>
