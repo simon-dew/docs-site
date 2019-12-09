@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Data Definition Language (DDL) | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5003/server/6.5/analytics/5_ddl.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <meta name="description" content="A description of the DDLs in Couchbase Analytics.">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="server">
+    <meta name="dcterms.identifier" content="6.5">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5003">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../index.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="#">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../index.html"><span class="title">server</span> <span class="version">6.5</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../../6.0/analytics/5_ddl.html">server 6.0</a></li>
+                  <li><a class="navbar-item" href="../../5.5/analytics/5_ddl.html">server 5.5</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../index.html">server</a></li>
+    <li class="crumb"><a href="5_ddl.html">Data Definition Language (DDL)</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-analytics/edit/release/6.5/modules/analytics/pages/5_ddl.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Data Definition Language (DDL)</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section lists all supported DDL statements in Couchbase Analytics.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A user must have one of the following RBAC roles to be able
+to execute DDL statements (Admin, Cluster Admin, or Analytics Manager).
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+No <code>CREATE</code>/<code>DROP</code> or <code>CONNECT</code>/<code>DISCONNECT</code> statement can
+be executed while the cluster topology changes (e.g. during rebalance).
+The evaluation of such DDL statements will fail and it can be reattempted after
+the topology change has completed.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Entities"><a class="anchor" href="#Entities"></a>Entities</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>These are the entities that are required to create shadow datasets for Data Service buckets.</p>
+</div>
+<div class="sect2">
+<h3 id="Dataverses"><a class="anchor" href="#Dataverses"></a>Dataverses</h3>
+<div class="paragraph">
+<p>A dataverse is a namespace for the other metadata entities (links, buckets, datasets, indexes).
+There is one <code>Default</code> dataverse that is available without creating it and that cannot be deleted.
+Because the <code>Default</code> dataverse is always available, creating a dataverse is optional.</p>
+</div>
+<div class="paragraph">
+<p>Refer to
+<a href="#Creating_and_dropping">Create Statements</a>,
+<a href="#Use_statements">Use Statements</a>, and
+<a href="#Drop_statements">Drop Statements</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Datasets"><a class="anchor" href="#Datasets"></a>Datasets</h3>
+<div class="paragraph">
+<p>Datasets contain a shadow of the data of a bucket.
+A dataset is updated as the bucket that it shadows is updated.
+A dataset can contain the full content of the bucket or a filtered subset.
+Multiple datasets can shadow the same bucket.
+A dataset is created <code>ON</code> a bucket with an optional filter expression.
+The name of the dataset is optional and defaults to the name of the bucket.
+Creating a dataset fails if there is an existing dataset with the same name
+in the selected dataverse and <code>IF NOT EXISTS</code> is not specified.</p>
+</div>
+<div class="paragraph">
+<p>Refer to
+<a href="#Creating_and_dropping">Create Statements</a> and
+<a href="#Drop_statements">Drop Statements</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Links"><a class="anchor" href="#Links"></a>Links</h3>
+<div class="paragraph">
+<p>A link represents a connection to a Couchbase cluster, specifically to all buckets available to a specific user on a
+Couchbase cluster.
+Every dataverse implicitly contains a <code>Local</code> link for all buckets in the local cluster that are available to the
+current user.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When a bucket has one or more shadow datasets and the <code>Local</code> link is connected,
+you cannot create a new dataset to shadow that bucket, or drop a dataset which shadows that bucket.
+However, you can always create a new dataset on any bucket which does <em>not</em> currently have a shadow dataset,
+even if the <code>Local</code> link is connected.
+In this case, data ingestion to the new shadow dataset does not start at once.
+To start ingestion to the new shadow dataset, you must disconnect the <code>Local</code> link and connect it again.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Refer to
+<a href="#Connecting_and_disconnecting">Connect Statements</a> and
+<a href="#Disconnect_statements">Disconnect Statements</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Indexes"><a class="anchor" href="#Indexes"></a>Indexes</h3>
+<div class="paragraph">
+<p>An index is a materialized access path for data in a dataset.
+You can create more than one index on the same dataset.
+Each index name must be unique within a dataset.
+Creating an index fails if there is an existing index with the same name
+in the target dataset and <code>IF NOT EXISTS</code> is not specified.</p>
+</div>
+<div class="paragraph">
+<p>For each JSON document ingested into a dataset, the system computes the indexed key for each index.
+The index key of a secondary index is computed as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The target field values are extracted from the JSON document according to the specified path of fields;</p>
+</li>
+<li>
+<p>For non-numeric typed index fields (i.e., the specified type is <code>STRING</code>),
+if the specified type of the field is the same as the actual field value&#8217;s type,
+the value becomes part of the indexed key, otherwise the indexed key cannot be built;</p>
+</li>
+<li>
+<p>For numeric typed index fields (i.e., the specified type is <code>DOUBLE</code> or <code>BIGINT</code>),
+the actual field value can be cast to the specified type and it becomes part of the indexed key.
+If the cast is impossible, the indexed key cannot be built;</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After the indexed key has been built, it is inserted into the secondary index.
+In case the index key cannot be built, there is no entry made in the index for this object.</p>
+</div>
+<div class="paragraph">
+<p>Secondary indexes are automatically maintained by the system during data ingestion
+(i.e., when their corresponding buckets are connected and data are flowing into the system).
+In addition, they are automatically rebalanced when their shadow datasets are rebalanced.</p>
+</div>
+<div class="paragraph">
+<p>Refer to
+<a href="#Creating_and_dropping">Create Statements</a> and
+<a href="#Drop_statements">Drop Statements</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Statements"><a class="anchor" href="#Statements"></a>Statements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to queries, N1QL for Analytics (the Couchbase Analytics implementation of SQL&#43;&#43;) supports statements for
+data definition and to connect Couchbase Analytics to Data Service buckets.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Statement       ::= ( ( SingleStatement )? ( ";" )+ )* &lt;EOF&gt;
+SingleStatement ::= CreateStatement
+                  | UseStatement
+                  | DropStatement
+                  | ConnectStatement
+                  | DisconnectStatement
+                  | Query</pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Creating_and_dropping"><a class="anchor" href="#Creating_and_dropping"></a>Create Statements</h3>
+<div class="paragraph">
+<p>The CREATE statement is used to create dataverses, datasets, and indexes.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CreateStatement     ::= "CREATE" ( DataverseSpecification
+                                 | DatasetSpecification
+                                 | IndexSpecification)
+
+DataverseSpecification ::= "DATAVERSE" Identifier ( IfNotExists )?             ➊
+
+IfNotExists         ::= "IF" "NOT" "EXISTS"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>➀ For dataverses, the <code>Identifier</code> is the dataverse name.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DatasetSpecification ::= "DATASET" ( IfNotExists )? ( QualifiedName )?         ➊
+                         ( "WITH" ObjectValue )?                               ➋
+                         "ON" Identifier ( "WHERE" Expression )?               ➌
+
+QualifiedName        ::= Identifier ( "." Identifier )?
+
+ObjectValue          ::= "{" ( Pair ( "," Pair )* )? "}"
+Pair                 ::= StringLiteral ":" ParameterValue
+ParameterValue       ::= ObjectValue | ArrayValue | Literal
+ArrayValue           ::= "[" ( ParameterValue ( "," ParameterValue )* )? "]"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>➀ For datasets, the <code>QualifiedName</code> is the full name of the dataset.
+It consists of an optional dataverse name and a name for the dataset.
+If no dataverse name is given, the dataset is created in the <code>Default</code> dataverse,
+or in the dataverse specified by the immediately preceding USE statement.
+If the full name of the dataset is not specified, the bucket name is used as the dataset name.</p>
+</div>
+<div class="paragraph">
+<p>➁ Parameters for the dataset can be provided though the <code>ObjectValue</code> object after <code>WITH</code>.
+The <code>ObjectValue</code> contains key-value pairs, one for each parameter.</p>
+</div>
+<div class="paragraph">
+<p>The <code>storage-block-compression</code> parameter determines the storage compression used for this dataset.
+This parameter takes a nested object value&#8201;&#8212;&#8201;<code>scheme</code>.
+Possible values for <code>scheme</code> are <code>snappy</code> or <code>none</code>.
+The default storage compression scheme is <code>none</code>.</p>
+</div>
+<div class="paragraph">
+<p>➂ The <code>Identifier</code> in the <code>ON</code> clause is the bucket which this dataset will shadow.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>IndexSpecification ::= "INDEX" ( IfNotExists )? Identifier                     ➊
+                       "ON" QualifiedName                                      ➋
+                       "(" FieldSpecification ( ","  FieldSpecification )* ")" ➌
+
+FieldSpecification ::= NestedField ":" "STRING"|"BIGINT"|"DOUBLE"
+
+NestedField        ::= Identifier ( "." Identifier )*</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>➀ For indexes, the first <code>Identifier</code> is the index name.</p>
+</div>
+<div class="paragraph">
+<p>➁ The <code>QualifiedName</code> identifies the dataset on which the index is built.
+It consists of an optional dataverse name and the name of the dataset.
+If no dataverse name is given, the dataset is assumed to be in the <code>Default</code> dataverse,
+or in the dataverse specified by the immediately preceding USE statement.</p>
+</div>
+<div class="paragraph">
+<p>➂ The <code>FieldSpecification</code> consists of a <code>NestedField</code> that specifies a field path into the indexed JSON document,
+and a type identifier.</p>
+</div>
+<div class="literalblock">
+<div class="title">Examples</div>
+<div class="content">
+<pre>CREATE DATAVERSE `beer-data`;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creates a dataverse with the name <code>beer-data</code> to be used to manage other metadata entities.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CREATE DATASET beers ON `beer-sample` WHERE `type` = "beer";
+
+CREATE DATASET breweries WITH {"storage-block-compression": {"scheme": "snappy"}}
+ON `beer-sample` WHERE `type` = "brewery";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example creates 2 datasets <code>beers</code> and <code>breweries</code> on the <code>beer-sample</code> bucket and filters
+the content for each dataset by the value of the <code>type</code> field of the record.
+For the <code>breweries</code> dataset, the <code>snappy</code> storage compression scheme is specified.
+Note that back-ticks are only necessary for reserved keywords, such as <code>type</code>, or certain operators, such as <code>-</code>.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CREATE INDEX beers_name_idx on beers (name: string);
+CREATE INDEX breweries_name_idx on breweries (name: string);
+CREATE INDEX breweries_loc_idx on breweries (geo.lon: double, geo.lat: double);</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creates indexes on the identified fields for the specified types.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Use_statements"><a class="anchor" href="#Use_statements"></a>Use Statements</h3>
+<div class="paragraph">
+<p>The USE statement sets the <code>Identifier</code> to be the default dataverse for the following statement.
+If no USE statement is issued, the <code>Default</code> dataverse is used.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>UseStatement ::= "USE" Identifier</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The USE statement only works in a conjunction with another statement in a single request.</p>
+</div>
+<div class="literalblock">
+<div class="title">Example</div>
+<div class="content">
+<pre>USE `beer-data`;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example sets <code>beer-data</code> to be the default dataverse for the statement immediately following.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Drop_statements"><a class="anchor" href="#Drop_statements"></a>Drop Statements</h3>
+<div class="paragraph">
+<p>The DROP statement is the inverse of the CREATE statement.
+It can be used to drop dataverses, datasets, and indexes.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DropStatement ::= "DROP" ( "DATAVERSE" Identifier ( IfExists )?                ➊
+                         | "DATASET" QualifiedName ( IfExists )?               ➋
+                         | "INDEX" DoubleQualifiedName ( IfExists )? )         ➌
+
+DoubleQualifiedName ::= Identifier "." Identifier ( "." Identifier )?
+
+IfExists      ::= "IF" "EXISTS"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>➀ For dataverses, the <code>Identifier</code> is the dataverse name.</p>
+</div>
+<div class="paragraph">
+<p>➁ For datasets, the <code>QualifiedName</code> is the full name of the dataset.
+It consists of an optional dataverse name and the name of the dataset.
+If no dataverse name is given, the dataset is assumed to be in the <code>Default</code> dataverse,
+or in the dataverse specified by the immediately preceding USE statement.</p>
+</div>
+<div class="paragraph">
+<p>➂ For indexes, the <code>DoubleQualifiedName</code> is the full name of the index.
+It consists of an optional dataverse name, the name of the dataset, and the name of the index.
+If no dataverse name is given, the dataset is assumed to be in the <code>Default</code> dataverse,
+or in the dataverse specified by the immediately preceding USE statement.</p>
+</div>
+<div class="literalblock">
+<div class="title">Examples</div>
+<div class="content">
+<pre>DROP DATAVERSE `beer-data` IF EXISTS;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example drops the <code>beer-data</code> dataverse, if it already exists.
+Dropping a dataverse disconnects any links and drops any datasets contained in it.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DROP DATASET beers;
+DROP DATASET breweries;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example removes the datasets and all contained data.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DROP INDEX beers.beers_name_idx;
+DROP INDEX breweries.breweries_name_idx;
+DROP INDEX breweries.breweries_loc_idx;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Drops the indexes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Connecting_and_disconnecting"><a class="anchor" href="#Connecting_and_disconnecting"></a>Connect Statements</h3>
+<div class="paragraph">
+<p>The CONNECT statement connects all datasets in the given dataverse(s) to the buckets on which the datasets were
+created.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>ConnectStatement  ::= "CONNECT" "LINK" LinkSpecification                       ➊
+                      ( "WITH" ObjectValue )                                   ➋
+
+LinkSpecification ::= ( Identifier "." )? "Local"
+                      ( "," ( Identifier "." )? "Local" )*</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>➀ For links, the <code>LinkSpecification</code> is the full name of the link.
+It consists of (optionally) the name of the dataverse to connect to, and the name of the link, which is <code>Local</code>.
+If no dataverse name is given, the link is created in the <code>Default</code> dataverse,
+or in the dataverse specified by the immediately preceding USE statement.</p>
+</div>
+<div class="paragraph">
+<p>➁ Parameters for the connection can be provided though the <code>ObjectValue</code> object after <code>WITH</code>.
+The <code>ObjectValue</code> contains key-value pairs, one for each parameter.</p>
+</div>
+<div class="paragraph">
+<p>Only one parameter is currently supported for the connection:
+the <code>force</code> parameter, which takes a Boolean value (true / false)&#8201;&#8212;&#8201;default false.
+This parameter determines the behavior of CONNECT LINK if there has been a change in the bucket&#8217;s UUID,
+i.e. the bucket has been deleted and recreated with the same name.</p>
+</div>
+<div class="paragraph">
+<p>If <code>force</code> is false, then CONNECT LINK fails&#8201;&#8212;&#8201;this is the default behavior.
+If <code>force</code> is true, CONNECT LINK proceeds:
+Analytics deletes all existing data in the dataset and ingests all data from the bucket again.</p>
+</div>
+<div class="literalblock">
+<div class="title">Example</div>
+<div class="content">
+<pre>CONNECT LINK Local;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example connects all datasets to their Data Service buckets and starts shadowing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Disconnect_statements"><a class="anchor" href="#Disconnect_statements"></a>Disconnect Statements</h3>
+<div class="paragraph">
+<p>The DISCONNECT statement is the inverse of the CONNECT statement.
+It disconnects all datasets in the given dataverse(s).</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DisconnectStatement ::= "DISCONNECT" "LINK" LinkSpecification</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="title">Example</div>
+<div class="content">
+<pre>DISCONNECT LINK Local;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example stops all datasets shadowing and disconnects their Data Service buckets.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="metadata-introspection"><a class="anchor" href="#metadata-introspection"></a>Metadata Introspection</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Metadata entities can be introspected by querying the datasets in the <code>Metadata</code> dataverse.
+The Metadata dataverse contains the datasets <code>Dataverse</code>, <code>Dataset</code>, <code>Index</code> and <code>Link</code>.
+Each dataset contains the queryable metadata for each entity type.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>SELECT VALUE d.DataverseName || '.' || d.DatasetName
+FROM Metadata.`Dataset` d
+WHERE d.DataverseName &lt;&gt; "Metadata"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns the qualified names of all datasets that are not in the <code>Metadata</code> dataverse.
+While dataverses, datasets, and indexes are created and removed by the corresponding CREATE and DROP statements,
+the lifecycle of links is managed by the system&#8201;&#8212;&#8201;they are created and removed as needed.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
