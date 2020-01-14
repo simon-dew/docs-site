@@ -3812,6 +3812,11 @@
   </div>
 <article class="doc">
 <h1 class="page">Queries</h1>
+<div class="labels">
+  <ul>
+    <li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
+  </ul>
+</div>
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
@@ -6108,14 +6113,14 @@ with an OVER clause.</p>
 <div class="literalblock">
 <div class="content">
 <pre>WindowFunctionCall ::= WindowFunctionType "(" WindowFunctionArguments ")"
-(WindowFunctionOptions)? &lt;OVER&gt; (Variable &lt;AS&gt;)? "(" WindowClause ")"</pre>
+(WindowFunctionOptions)? &lt;OVER&gt; (Variable &lt;AS&gt;)? "(" WindowDefinition ")"</pre>
 </div>
 </div>
 <div class="sect3">
 <h4 id="Window_function_type"><a class="anchor" href="#Window_function_type"></a>Window Function Type</h4>
 <div class="literalblock">
 <div class="content">
-<pre>WindowFunctionType ::= AggregateFunctions | WindowFunctions</pre>
+<pre>WindowFunctionType ::= AggregateFunction | WindowFunction</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6209,9 +6214,9 @@ this alias, for example:</p>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>FROM source AS src
-SELECT ARRAY_COUNT(DISTINCT (FROM alias SELECT VALUE alias.src.field))
-OVER alias AS (PARTITION BY … ORDER BY …)</pre>
+<pre>SELECT ARRAY_COUNT(DISTINCT (FROM alias SELECT VALUE alias.src.field))
+OVER alias AS (PARTITION BY … ORDER BY …)
+FROM source AS src</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6227,9 +6232,8 @@ For example, the following query with the <code>sum()</code> function:</p>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>FROM source AS src
-SELECT SUM(field)
-OVER (PARTITION BY … ORDER BY …)</pre>
+<pre>SELECT SUM(field) OVER (PARTITION BY … ORDER BY …)
+FROM source AS src</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6237,9 +6241,9 @@ OVER (PARTITION BY … ORDER BY …)</pre>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>FROM source AS src
-SELECT ARRAY_SUM( (FROM alias SELECT VALUE alias.src.field) )
-OVER alias AS (PARTITION BY … ORDER BY …)</pre>
+<pre>SELECT ARRAY_SUM( (SELECT VALUE alias.src.field FROM alias) )
+  OVER alias AS (PARTITION BY … ORDER BY …)
+FROM source AS src</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6268,8 +6272,8 @@ window functions.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The <strong>window partition clause</strong> divides the tuples into partitions using
-one or more expressions.</p>
+<p>The <strong>window partition clause</strong> divides the tuples into logical partitions
+using one or more expressions.</p>
 </div>
 <div class="paragraph">
 <p>This clause may be used with any <a href="8_builtin.html#WindowFunctions">window function</a>,
@@ -6299,14 +6303,8 @@ or any <a href="8_builtin.html#AggregateFunctions">aggregate function</a> used a
 function.</p>
 </div>
 <div class="paragraph">
-<p>This clause is optional for some functions, and required for others.
-Refer to the <a href="8_builtin.html#AggregateFunctions">Aggregate Functions</a> section or
-the <a href="8_builtin.html#WindowFunctions">Window Functions</a> section for details of
-the syntax of individual functions.</p>
-</div>
-<div class="paragraph">
-<p>If this clause is omitted, all tuples are considered peers, i.e. their order
-is tied.
+<p>This clause is optional.
+If omitted, all tuples are considered peers, i.e. their order is tied.
 When tuples in the window partition are tied, each window function behaves
 differently.</p>
 </div>
@@ -6418,12 +6416,10 @@ The function produces deterministic results.</p>
 <div class="paragraph">
 <p>If this clause uses <code>RANGE</code> with either <code>Expression PRECEDING</code> or
 <code>Expression FOLLOWING</code>, the <a href="#Window_order_clause">window order clause</a> must
-have only a single ordering term.
-The ordering term expression must evaluate to a number, a date, a time, or a
-datetime.
-If the ordering term expression evaluates to a date, a time, or a datetime, the
-expression in <code>Expression PRECEDING</code> or <code>Expression FOLLOWING</code> must evaluate to
-a duration.</p>
+have only a single ordering term.</p>
+</div>
+<div class="paragraph">
+<p>The ordering term expression must evaluate to a number.</p>
 </div>
 <div class="paragraph">
 <p>If these conditions are not met, the window frame will be empty,
@@ -6454,10 +6450,11 @@ data type that can be added to the ordering expression.</p>
 <h4 id="Window_frame_extent"><a class="anchor" href="#Window_frame_extent"></a>Window Frame Extent</h4>
 <div class="literalblock">
 <div class="content">
-<pre>WindowFrameExtent ::= ( &lt;UNBOUNDED&gt; &lt;PRECEDING&gt; | &lt;CURRENT&gt; &lt;ROW&gt; |
-Expression &lt;FOLLOWING&gt; ) | &lt;BETWEEN&gt; ( &lt;UNBOUNDED&gt; &lt;PRECEDING&gt; | &lt;CURRENT&gt;
-&lt;ROW&gt; | Expression ( &lt;PRECEDING&gt; | &lt;FOLLOWING&gt; ) ) &lt;AND&gt; ( &lt;UNBOUNDED&gt;
-&lt;FOLLOWING&gt; | &lt;CURRENT&gt; &lt;ROW&gt; | Expression ( &lt;PRECEDING&gt; | &lt;FOLLOWING&gt; ) )</pre>
+<pre>WindowFrameExtent ::= ( ( &lt;UNBOUNDED&gt; | Expression ) &lt;PRECEDING&gt; | &lt;CURRENT&gt; &lt;ROW&gt; ) |
+&lt;BETWEEN&gt;
+  ( &lt;UNBOUNDED&gt; &lt;PRECEDING&gt; | &lt;CURRENT&gt; &lt;ROW&gt; | Expression ( &lt;PRECEDING&gt; | &lt;FOLLOWING&gt; ) )
+&lt;AND&gt;
+  ( &lt;UNBOUNDED&gt; &lt;FOLLOWING&gt; | &lt;CURRENT&gt; &lt;ROW&gt; | Expression ( &lt;PRECEDING&gt; | &lt;FOLLOWING&gt; ) )</pre>
 </div>
 </div>
 <div class="paragraph">

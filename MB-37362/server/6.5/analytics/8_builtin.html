@@ -3812,6 +3812,11 @@
   </div>
 <article class="doc">
 <h1 class="page">Builtin Functions</h1>
+<div class="labels">
+  <ul>
+    <li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
+  </ul>
+</div>
 <div class="sect1">
 <h2 id="NumericFunctions"><a class="anchor" href="#NumericFunctions"></a>Numeric Functions</h2>
 <div class="sectionbody">
@@ -5965,14 +5970,28 @@ By default, white space is the character to trim.</p>
 </div>
 </li>
 <li>
-<p>Returns the first position of <code>string_pattern</code> within <code>string</code>.</p>
+<p>Returns the first position of <code>string_pattern</code> within <code>string</code>. The function returns the 0-based position. Another
+version of the function returns the 1-based position. Below are the aliases for each version:</p>
+</li>
+<li>
+<p>Aliases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>0-based: <code>position</code>, <code>pos</code>, <code>position0</code>, <code>pos0</code>.</p>
+</li>
+<li>
+<p>1-based: <code>position1</code>, <code>pos1</code>.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>string</code> : a <code>string</code> that might contain the pattern,</p>
+<p><code>string</code> : a <code>string</code> that might contain the pattern.</p>
 </li>
 <li>
 <p><code>string_pattern</code> : a pattern <code>string</code> to be matched.</p>
@@ -5995,7 +6014,7 @@ By default, white space is the character to trim.</p>
 <p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value,</p>
 </li>
 <li>
-<p>any other non-string input value will cause a type error.</p>
+<p>any other non-string input value will return a <code>null</code>.</p>
 </li>
 </ul>
 </div>
@@ -6006,7 +6025,9 @@ By default, white space is the character to trim.</p>
 <div class="content">
 <pre>{
   "v1": position("ppphonepp", "phone"),
-  "v2": position("hone", "phone")
+  "v2": position("hone", "phone"),
+  "v3": position1("ppphonepp", "phone"),
+  "v4": position1("hone", "phone"),
 };</pre>
 </div>
 </div>
@@ -6015,7 +6036,7 @@ By default, white space is the character to trim.</p>
 <p>The expected result is:</p>
 <div class="literalblock">
 <div class="content">
-<pre>{ "v1": 3, "v2": -1 }</pre>
+<pre>{ "v1": 2, "v2": -1, v3": 3, "v4": -1 }</pre>
 </div>
 </div>
 </li>
@@ -6039,14 +6060,24 @@ By default, white space is the character to trim.</p>
 pattern <code>string_pattern</code> (a Java regular expression pattern).</p>
 </li>
 <li>
+<p>Aliases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>regexp_contains</code>, <code>regex_contains</code>, <code>contains_regexp</code>, <code>contains_regex</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
 <p>Arguments:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>string</code> : a <code>string</code> that might contain the pattern,</p>
+<p><code>string</code> : a <code>string</code> that might contain the pattern.</p>
 </li>
 <li>
-<p><code>string_pattern</code> : a pattern <code>string</code> to be matched,</p>
+<p><code>string_pattern</code> : a pattern <code>string</code> to be matched.</p>
 </li>
 <li>
 <p><code>string_flag</code> : (Optional) a <code>string</code> with flags to be used during regular expression matching.</p>
@@ -6066,19 +6097,16 @@ pattern <code>string_pattern</code> (a Java regular expression pattern).</p>
 <div class="ulist">
 <ul>
 <li>
-<p>a <code>boolean</code>, returns <code>true</code> if <code>string</code> contains the pattern <code>string_pattern</code>,</p>
+<p>a <code>boolean</code>, returns <code>true</code> if <code>string</code> contains the pattern <code>string_pattern</code>, <code>false</code> otherwise.</p>
 </li>
 <li>
-<p><code>missing</code> if any argument is a <code>missing</code> value,</p>
+<p><code>missing</code> if any argument is a <code>missing</code> value.</p>
 </li>
 <li>
-<p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value,</p>
+<p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value.</p>
 </li>
 <li>
-<p>any other non-string input value will cause a type error,</p>
-</li>
-<li>
-<p><code>false</code> otherwise.</p>
+<p>any other non-string input value will return a <code>null</code>.</p>
 </li>
 </ul>
 </div>
@@ -6090,7 +6118,7 @@ pattern <code>string_pattern</code> (a Java regular expression pattern).</p>
 <pre>{
   "v1": regexp_contains("pphonepp", "p*hone"),
   "v2": regexp_contains("hone", "p+hone")
-}</pre>
+};</pre>
 </div>
 </div>
 </li>
@@ -6122,14 +6150,24 @@ pattern <code>string_pattern</code> (a Java regular expression pattern).</p>
 (a Java regular expression pattern).</p>
 </li>
 <li>
+<p>Aliases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>regexp_like</code>, <code>regex_like</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
 <p>Arguments:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>string</code> : a <code>string</code> that might contain the pattern,</p>
+<p><code>string</code> : a <code>string</code> that might contain the pattern.</p>
 </li>
 <li>
-<p><code>string_pattern</code> : a pattern <code>string</code> that might be contained,</p>
+<p><code>string_pattern</code> : a pattern <code>string</code> that might be contained.</p>
 </li>
 <li>
 <p><code>string_flag</code> : (Optional) a <code>string</code> with flags to be used during regular expression matching.</p>
@@ -6149,19 +6187,16 @@ pattern <code>string_pattern</code> (a Java regular expression pattern).</p>
 <div class="ulist">
 <ul>
 <li>
-<p>a <code>boolean</code> value, <code>true</code> if <code>string</code> contains the pattern <code>string_pattern</code>,</p>
+<p>a <code>boolean</code> value, <code>true</code> if <code>string</code> contains the pattern <code>string_pattern</code>, <code>false</code> otherwise.</p>
 </li>
 <li>
-<p><code>missing</code> if any argument is a <code>missing</code> value,</p>
+<p><code>missing</code> if any argument is a <code>missing</code> value.</p>
 </li>
 <li>
-<p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value,</p>
+<p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value.</p>
 </li>
 <li>
-<p>any other non-string input value will cause a type error,</p>
-</li>
-<li>
-<p><code>false</code> otherwise.</p>
+<p>any other non-string input value will return a <code>null</code>.</p>
 </li>
 </ul>
 </div>
@@ -6201,18 +6236,33 @@ pattern <code>string_pattern</code> (a Java regular expression pattern).</p>
 </div>
 </li>
 <li>
-<p>Returns first position of the regular expression <code>string_pattern</code> (a Java regular expression pattern)
-within <code>string</code>.</p>
+<p>Returns first position of the regular expression <code>string_pattern</code> (a Java regular expression pattern) within <code>string</code>.
+The function returns the 0-based position. Another version of the function returns the 1-based position. Below are the
+aliases for each version:</p>
+</li>
+<li>
+<p>Aliases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>0-Based: <code>regexp_position</code>, <code>regexp_pos</code>, <code>regexp_position0</code>, <code>regexp_pos0</code>, <code>regex_position</code>, <code>regex_pos</code>,
+<code>regex_position0</code>, <code>regex_pos0</code>.</p>
+</li>
+<li>
+<p>1-Based: <code>regexp_position1</code>, <code>regexp_pos1</code>, <code>regex_position1</code> <code>regex_pos1</code>.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>string</code> : a <code>string</code> that might contain the pattern,</p>
+<p><code>string</code> : a <code>string</code> that might contain the pattern.</p>
 </li>
 <li>
-<p><code>string_pattern</code> : a pattern <code>string</code> to be matched,</p>
+<p><code>string_pattern</code> : a pattern <code>string</code> to be matched.</p>
 </li>
 <li>
 <p><code>string_flag</code> : (Optional) a <code>string</code> with flags to be used during regular expression matching.</p>
@@ -6242,7 +6292,7 @@ within <code>string</code>.</p>
 <p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value,</p>
 </li>
 <li>
-<p>any other non-string input value will cause a type error.</p>
+<p>any other non-string input value will return a <code>null</code>.</p>
 </li>
 </ul>
 </div>
@@ -6253,7 +6303,9 @@ within <code>string</code>.</p>
 <div class="content">
 <pre>{
   "v1": regexp_position("pphonepp", "p*hone"),
-  "v2": regexp_position("hone", "p+hone")
+  "v2": regexp_position("hone", "p+hone"),
+  "v3": regexp_position1("pphonepp", "p*hone"),
+  "v4": regexp_position1("hone", "p+hone")
 };</pre>
 </div>
 </div>
@@ -6262,7 +6314,7 @@ within <code>string</code>.</p>
 <p>The expected result is:</p>
 <div class="literalblock">
 <div class="content">
-<pre>{ "v1": 1, "v2": -1 }</pre>
+<pre>{ "v1": 0, "v2": -1, "v3": 1, "v4": -1 }</pre>
 </div>
 </div>
 </li>
@@ -6288,17 +6340,27 @@ regular expression pattern <code>string_pattern</code> (a Java regular expressio
 and replaces the matched pattern <code>string_pattern</code> with the new pattern <code>string_replacement</code>.</p>
 </li>
 <li>
+<p>Aliases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>regexp_replace</code>, <code>regex_replace</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
 <p>Arguments:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>string</code> : a <code>string</code> that might contain the pattern,</p>
+<p><code>string</code> : a <code>string</code> that might contain the pattern.</p>
 </li>
 <li>
-<p><code>string_pattern</code> : a pattern <code>string</code> to be matched,</p>
+<p><code>string_pattern</code> : a pattern <code>string</code> to be matched.</p>
 </li>
 <li>
-<p><code>string_replacement</code> : a pattern <code>string</code> to be used as the replacement,</p>
+<p><code>string_replacement</code> : a pattern <code>string</code> to be used as the replacement.</p>
 </li>
 <li>
 <p><code>string_flag</code> : (Optional) a <code>string</code> with flags to be used during replace.</p>
@@ -6322,16 +6384,16 @@ and replaces the matched pattern <code>string_pattern</code> with the new patter
 <div class="ulist">
 <ul>
 <li>
-<p>Returns a <code>string</code> that is obtained after the replacements,</p>
+<p>Returns a <code>string</code> that is obtained after the replacements.</p>
 </li>
 <li>
-<p><code>missing</code> if any argument is a <code>missing</code> value,</p>
-</li>
-<li>
-<p>any other non-string input value will cause a type error,</p>
+<p><code>missing</code> if any argument is a <code>missing</code> value.</p>
 </li>
 <li>
 <p><code>null</code> if any argument is a <code>null</code> value but no argument is a <code>missing</code> value.</p>
+</li>
+<li>
+<p>any other non-string input value will return a <code>null</code>.</p>
 </li>
 </ul>
 </div>
@@ -6340,7 +6402,7 @@ and replaces the matched pattern <code>string_pattern</code> with the new patter
 <p>Example:</p>
 <div class="literalblock">
 <div class="content">
-<pre>regexp_replace(" like x-phone the voicemail_service is awesome", " like x-phone", "like product-a")</pre>
+<pre>regexp_replace(" like x-phone the voicemail_service is awesome", " like x-phone", "like product-a");</pre>
 </div>
 </div>
 </li>
@@ -6799,18 +6861,33 @@ By default, white space is the character to trim.</p>
 </div>
 </li>
 <li>
-<p>Returns the substring from the given string <code>string</code> based on the given start offset <code>offset</code> with the optional <code>length</code>.</p>
+<p>Returns the substring from the given string <code>string</code> based on the given start offset <code>offset</code> with the optional <code>length</code>.
+The function uses the 0-based position. Another version of the function uses the 1-based position. Below are the
+aliases for each version:</p>
+</li>
+<li>
+<p>Aliases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>0-Based: <code>substring</code>, <code>substr</code>, <code>substring0</code>, <code>substr0</code>.</p>
+</li>
+<li>
+<p>1-Based: <code>substring1</code>, <code>substr1</code>.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>string</code> : a <code>string</code> to be extracted,</p>
+<p><code>string</code> : a <code>string</code> to be extracted.</p>
 </li>
 <li>
 <p><code>offset</code> : an <code>tinyint</code>/<code>smallint</code>/<code>integer</code>/<code>bigint</code> value as the starting offset of the substring in <code>string</code>
-(starting at 0). If negative then counted from the end of the string,</p>
+(starting at 0). If negative then counted from the end of the string.</p>
 </li>
 <li>
 <p><code>length</code> : (Optional) an an <code>tinyint</code>/<code>smallint</code>/<code>integer</code>/<code>bigint</code> value as the length of the substring.</p>
@@ -6833,17 +6910,17 @@ By default, white space is the character to trim.</p>
 be obtained because the starting offset is not within string bounds or <code>length</code> is negative.</p>
 </li>
 <li>
-<p>a type error will be raised if:</p>
+<p>a <code>null</code> will be returned if:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>the first argument is any other non-string value,</p>
+<p>the first argument is any other non-string value.</p>
 </li>
 <li>
-<p>or, the second argument is not a <code>tinyint</code>, <code>smallint</code>, <code>integer</code>, or <code>bigint</code>,</p>
+<p>the second argument is not a <code>tinyint</code>, <code>smallint</code>, <code>integer</code>, or <code>bigint</code>.</p>
 </li>
 <li>
-<p>or, the third argument is not a <code>tinyint</code>, <code>smallint</code>, <code>integer</code>, or <code>bigint</code> if the argument is present.</p>
+<p>the third argument is not a <code>tinyint</code>, <code>smallint</code>, <code>integer</code>, or <code>bigint</code> if the argument is present.</p>
 </li>
 </ul>
 </div>
@@ -6855,7 +6932,7 @@ be obtained because the starting offset is not within string bounds or <code>len
 <p>Example:</p>
 <div class="literalblock">
 <div class="content">
-<pre>substr("test string", 6, 3);</pre>
+<pre>{ "v1": substr("test string", 6, 3), "v2": substr1("test string", 6, 3) };</pre>
 </div>
 </div>
 </li>
@@ -6863,7 +6940,7 @@ be obtained because the starting offset is not within string bounds or <code>len
 <p>The expected result is:</p>
 <div class="literalblock">
 <div class="content">
-<pre>"str"</pre>
+<pre>{ "v1": "tri", "v2": "str" }</pre>
 </div>
 </div>
 </li>
@@ -17485,7 +17562,7 @@ described in the section on <a href="3_query.html#SELECT_statements">SELECT Stat
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>CUME_DIST() OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>CUME_DIST() OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
@@ -17494,6 +17571,11 @@ described in the section on <a href="3_query.html#SELECT_statements">SELECT Stat
 distribution&#8201;&#8212;&#8201;that is, the number of tuples ranked lower than or equal to
 the current tuple, including the current tuple, divided by the total number
 of tuples in the window partition.</p>
+<div class="paragraph">
+<p>The window order clause determines the sort order of the tuples.
+  If the window order clause is omitted, the function returns the same
+  result (1.0) for each tuple.</p>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
@@ -17513,7 +17595,7 @@ of tuples in the window partition.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -17600,7 +17682,7 @@ FROM GleambookMessages AS m;</pre>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>DENSE_RANK() OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>DENSE_RANK() OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
@@ -17610,7 +17692,9 @@ distinct tuples preceding this tuple in the current window partition, plus
 one.</p>
 <div class="paragraph">
 <p>The tuples are ordered by the window order clause.
-  If any tuples are tied, they will have the same rank.</p>
+  If any tuples are tied, they will have the same rank.
+  If the window order clause is omitted, the function returns the same
+  result (1) for each tuple.</p>
 </div>
 <div class="paragraph">
 <p>For this function, when any tuples have the same rank, the rank of the next
@@ -17637,7 +17721,7 @@ one.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -17755,7 +17839,7 @@ tuple in the window frame. <sup>[<a href="#fn_1">1</a>]</sup></p>
 <ul>
 <li>
 <p><a href="3_query.html#Nulls_treatment">Nulls Treatment</a>: (Optional) Determines how
-NULL or MISSING values are treated when finding the first tuple in the
+NULL or MISSING values are treated when finding the first value in the
 window frame.</p>
 <div class="ulist">
 <ul>
@@ -17803,7 +17887,8 @@ MISSING, those tuples are included when finding the first tuple.</p>
 The order of the tuples is determined by the window order clause.</p>
 </li>
 <li>
-<p>If all values are NULL or MISSING it returns NULL.</p>
+<p>NULL, if the frame was empty or if all values were NULL or MISSING and
+the <code>IGNORE NULLS</code> modifier was specified.</p>
 </li>
 <li>
 <p>In the following cases, this function may return unpredictable results.</p>
@@ -17912,13 +17997,18 @@ FROM GleambookMessages AS m;</pre>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>LAG(expr[, offset[, default]]) [nulls-treatment] OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>LAG(expr[, offset[, default]]) [nulls-treatment] OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
 <li>
-<p>Returns the value of a tuple at a given offset prior to the current tuple
+<p>Returns the value from a tuple at a given offset prior to the current tuple
 position.</p>
+<div class="paragraph">
+<p>The window order clause determines the sort order of the tuples.
+  If the window order clause is omitted, the return values may be
+  unpredictable.</p>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
@@ -17929,12 +18019,12 @@ position.</p>
 tuple. <sup>[<a href="#fn_1">1</a>]</sup></p>
 </li>
 <li>
-<p><code>offset</code>: (Optional) A positive integer greater than 0.
+<p><code>offset</code>: (Optional) A positive integer.
 If omitted, the default is 1.</p>
 </li>
 <li>
 <p><code>default</code>: (Optional) The value to return when the offset goes out of
-window scope.
+partition scope.
 If omitted, the default is NULL.</p>
 </li>
 </ul>
@@ -17946,19 +18036,17 @@ If omitted, the default is NULL.</p>
 <ul>
 <li>
 <p><a href="3_query.html#Nulls_treatment">Nulls Treatment</a>: (Optional) Determines how
-NULL or MISSING values are treated when finding the first tuple in the
-window frame.</p>
+NULL or MISSING values are treated when finding the offset tuple in the
+window partition.</p>
 <div class="ulist">
 <ul>
 <li>
 <p><code>IGNORE NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are ignored when finding the first tuple.
-In this case, the function returns the first non-NULL, non-MISSING
-value.</p>
+MISSING, those tuples are ignored when finding the offset tuple.</p>
 </li>
 <li>
 <p><code>RESPECT NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are included when finding the first tuple.</p>
+MISSING, those tuples are included when finding the offset tuple.</p>
 </li>
 </ul>
 </div>
@@ -17977,7 +18065,7 @@ MISSING, those tuples are included when finding the first tuple.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -17990,7 +18078,7 @@ MISSING, those tuples are included when finding the first tuple.</p>
 <p>The specified value from the offset tuple.</p>
 </li>
 <li>
-<p>If the offset tuple is out of scope, it returns the default value,
+<p>If the offset tuple is out of partition scope, it returns the default value,
 or NULL if no default is specified.</p>
 </li>
 </ul>
@@ -18101,19 +18189,19 @@ in the window frame. <sup>[<a href="#fn_1">1</a>]</sup></p>
 <ul>
 <li>
 <p><a href="3_query.html#Nulls_treatment">Nulls Treatment</a>: (Optional) Determines how
-NULL or MISSING values are treated when finding the first tuple in the
+NULL or MISSING values are treated when finding the last tuple in the
 window frame.</p>
 <div class="ulist">
 <ul>
 <li>
 <p><code>IGNORE NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are ignored when finding the first tuple.
-In this case, the function returns the first non-NULL, non-MISSING
+MISSING, those tuples are ignored when finding the last tuple.
+In this case, the function returns the last non-NULL, non-MISSING
 value.</p>
 </li>
 <li>
 <p><code>RESPECT NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are included when finding the first tuple.</p>
+MISSING, those tuples are included when finding the last tuple.</p>
 </li>
 </ul>
 </div>
@@ -18149,7 +18237,8 @@ MISSING, those tuples are included when finding the first tuple.</p>
 The order of the tuples is determined by the window order clause.</p>
 </li>
 <li>
-<p>If all values are NULL or MISSING it returns NULL.</p>
+<p>NULL, if the frame was empty or if all values were NULL or MISSING and
+the <code>IGNORE NULLS</code> modifier was specified.</p>
 </li>
 <li>
 <p>In the following cases, this function may return unpredictable results.</p>
@@ -18270,13 +18359,18 @@ FROM GleambookMessages AS m;</pre>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>LEAD(expr[, offset[, default]]) [nulls-treatment] OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>LEAD(expr[, offset[, default]]) [nulls-treatment] OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
 <li>
-<p>Returns the value of a tuple at a given offset ahead of the current tuple
+<p>Returns the value from a tuple at a given offset ahead of the current tuple
 position.</p>
+<div class="paragraph">
+<p>The window order clause determines the sort order of the tuples.
+  If the window order clause is omitted, the return values may be
+  unpredictable.</p>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
@@ -18287,12 +18381,12 @@ position.</p>
 tuple. <sup>[<a href="#fn_1">1</a>]</sup></p>
 </li>
 <li>
-<p><code>offset</code>: (Optional) A positive integer greater than 0. If omitted, the
+<p><code>offset</code>: (Optional) A positive integer. If omitted, the
 default is 1.</p>
 </li>
 <li>
 <p><code>default</code>: (Optional) The value to return when the offset goes out of
-window scope.
+window partition scope.
 If omitted, the default is NULL.</p>
 </li>
 </ul>
@@ -18304,19 +18398,17 @@ If omitted, the default is NULL.</p>
 <ul>
 <li>
 <p><a href="3_query.html#Nulls_treatment">Nulls Treatment</a>: (Optional) Determines how
-NULL or MISSING values are treated when finding the first tuple in the
-window frame.</p>
+NULL or MISSING values are treated when finding the offset tuple in the
+window partition.</p>
 <div class="ulist">
 <ul>
 <li>
 <p><code>IGNORE NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are ignored when finding the first tuple.
-In this case, the function returns the first non-NULL, non-MISSING
-value.</p>
+MISSING, those tuples are ignored when finding the offset tuple.</p>
 </li>
 <li>
 <p><code>RESPECT NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are included when finding the first tuple.</p>
+MISSING, those tuples are included when finding the offset tuple.</p>
 </li>
 </ul>
 </div>
@@ -18335,7 +18427,7 @@ MISSING, those tuples are included when finding the first tuple.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -18348,7 +18440,7 @@ MISSING, those tuples are included when finding the first tuple.</p>
 <p>The specified value from the offset tuple.</p>
 </li>
 <li>
-<p>If the offset tuple is out of scope, it returns the default value, or
+<p>If the offset tuple is out of partition scope, it returns the default value, or
 NULL if no default is specified.</p>
 </li>
 </ul>
@@ -18485,19 +18577,17 @@ In this case, an offset of 1 is the last tuple in the window frame,
 </li>
 <li>
 <p><a href="3_query.html#Nulls_treatment">Nulls Treatment</a>: (Optional) Determines how
-NULL or MISSING values are treated when finding the first tuple in the
+NULL or MISSING values are treated when finding the offset tuple in the
 window frame.</p>
 <div class="ulist">
 <ul>
 <li>
 <p><code>IGNORE NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are ignored when finding the first tuple.
-In this case, the function returns the first non-NULL, non-MISSING
-value.</p>
+MISSING, those tuples are ignored when finding the offset tuple.</p>
 </li>
 <li>
 <p><code>RESPECT NULLS</code>: If the values for any tuples evaluate to NULL or
-MISSING, those tuples are included when finding the first tuple.</p>
+MISSING, those tuples are included when finding the offset tuple.</p>
 </li>
 </ul>
 </div>
@@ -18537,9 +18627,6 @@ MISSING, those tuples are included when finding the first tuple.</p>
 <ul>
 <li>
 <p>If the window order clause is omitted.</p>
-</li>
-<li>
-<p>If the window frame clause is omitted.</p>
 </li>
 <li>
 <p>If the window frame is defined by <code>ROWS</code>, and there are tied tuples
@@ -18735,7 +18822,7 @@ FROM GleambookMessages AS m;</pre>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>NTILE(num_tiles) OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>NTILE(num_tiles) OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
@@ -18747,6 +18834,11 @@ When the set of tuples is not equally divisible by the number of tiles, the
 function puts more tuples into the lower-numbered tiles.
 For each tuple, the function returns the number of the tile into which that
 tuple was placed.</p>
+<div class="paragraph">
+<p>The window order clause determines the sort order of the tuples.
+  If the window order clause is omitted then the tuples are processed in
+  an undefined order.</p>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
@@ -18756,9 +18848,7 @@ tuple was placed.</p>
 <p><code>num_tiles</code>: The number of tiles into which you want to divide
 the window partition.
 This argument can be an expression and must evaluate to a number.
-If the number is not an integer, it will be truncated.
-If the expression depends on a tuple, it evaluates from the first
-tuple in the window partition.</p>
+If the number is not an integer, it will be truncated.</p>
 </li>
 </ul>
 </div>
@@ -18771,7 +18861,7 @@ tuple in the window partition.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -18857,7 +18947,7 @@ FROM GleambookMessages AS m;</pre>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>PERCENT_RANK() OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>PERCENT_RANK() OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
@@ -18865,6 +18955,11 @@ FROM GleambookMessages AS m;</pre>
 <p>Returns the percentile rank of the current tuple&#8201;&#8212;&#8201;that is, the rank of the
 tuples minus one, divided by the total number of tuples in the window
 partition minus one.</p>
+<div class="paragraph">
+<p>The window order clause determines the sort order of the tuples.
+  If the window order clause is omitted, the function returns the same
+  result (0) for each tuple.</p>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
@@ -18884,7 +18979,7 @@ partition minus one.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -18971,7 +19066,7 @@ FROM GleambookMessages AS m;</pre>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>RANK() OVER ([window-partition-clause] window-order-clause)</pre>
+<pre>RANK() OVER ([window-partition-clause] [window-order-clause])</pre>
 </div>
 </div>
 </li>
@@ -18980,13 +19075,18 @@ FROM GleambookMessages AS m;</pre>
 tuples preceding this tuple in the current window partition, plus one.</p>
 <div class="paragraph">
 <p>The tuples are ordered by the window order clause.
-  If any tuples are tied, they will have the same rank.</p>
+  If any tuples are tied, they will have the same rank.
+  If the window order clause is omitted, the function returns the same
+  result (1) for each tuple.</p>
 </div>
 <div class="paragraph">
 <p>When any tuples have the same rank, the rank of the next tuple will include
   all preceding tuples, so there may be a gap in the sequence of returned
   values.
   For example, if there are three tuples ranked 2, the next rank is 5.</p>
+</div>
+<div class="paragraph">
+<p>To avoid gaps in the returned values, use the DENSE_RANK() function instead.</p>
 </div>
 </li>
 <li>
@@ -19007,7 +19107,7 @@ tuples preceding this tuple in the current window partition, plus one.</p>
 <p>(Optional) <a href="3_query.html#Window_partition_clause">Window Partition Clause</a>.</p>
 </li>
 <li>
-<p>(Required) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
+<p>(Optional) <a href="3_query.html#Window_order_clause">Window Order Clause</a>.</p>
 </li>
 </ul>
 </div>
@@ -19106,7 +19206,7 @@ FROM GleambookMessages AS m;</pre>
 </li>
 <li>
 <p>Returns the fractional ratio of the specified value for each tuple to the
-sum of values for all tuples in the window partition.</p>
+sum of values for all tuples in the window frame.</p>
 </li>
 <li>
 <p>Arguments:</p>
@@ -19143,7 +19243,7 @@ fractional ratio. <sup>[<a href="#fn_1">1</a>]</sup></p>
 <p>A number between 0 and 1, representing the fractional ratio of the value
 for the current tuple to the sum of values for all tuples in the
 current window frame.
-The sum of values for all tuples in the current window frame is 1.</p>
+The sum of returned values for all tuples in the current window frame is 1.</p>
 </li>
 <li>
 <p>If the input expression does not evaluate to a number, or the sum of
