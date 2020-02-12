@@ -3984,22 +3984,34 @@ If index-maintenance is running behind, the query waits for it to catch up.</p>
 In cases where recovery requires an Index-Service node to be restarted, the node’s indexes are rebuilt from the snapshots retained on disk.</p>
 </div>
 <div class="paragraph">
-<p>You can change the number of committed rollback points for memory-optimized index storage via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-mode" class="page">UI</a>.
-You can change more index snapshot settings via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="page">CLI</a> or the <a href="../../../manage/manage-settings/general-settings.html#index-settings-via-rest" class="page">REST API</a>.</p>
+<p>You can change index snapshot settings via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="page">CLI</a> or the <a href="../../../manage/manage-settings/general-settings.html#index-settings-via-rest" class="page">REST API</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-rollback"><a class="anchor" href="#index-rollback"></a>Index Rollback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The index service also maintains a <a href="../../clusters-and-availability/intra-cluster-replication.html#database-change-protocol" class="page">DCP failover log</a>.
+If necessary, the data service can request the index service to return to a specified rollback point and update its history.</p>
+</div>
+<div class="paragraph">
+<p>You can change index rollback settings via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="page">CLI</a> or the <a href="../../../manage/manage-settings/general-settings.html#index-settings-via-rest" class="page">REST API</a>.
+You can also change the number of committed rollback points for memory-optimized index storage via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-mode" class="page">UI</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="index-rollback"><a class="anchor" href="#index-rollback"></a>Index Rollback</h3>
+<h3 id="index-rollback-after-failover"><a class="anchor" href="#index-rollback-after-failover"></a>Index Rollback After Auto-Failover</h3>
 <div class="paragraph">
 <p>When a data node <a href="../../clusters-and-availability/automatic-failover.html" class="page">fails over automatically</a>, a replica data node is promoted to active.
-If the index service has more recent data than the new active data node, the data node issues a <a href="../../clusters-and-availability/intra-cluster-replication.html#database-change-protocol" class="page">DCP rollback request</a> to the index service.</p>
+If the index service has more recent data than the new active data node, the data node issues a rollback request to the index service.</p>
 </div>
 <div class="paragraph">
-<p>In Couchbase Server 6.5 and later, when the index service receives the rollback request, it first attempts to roll back to a current index snapshot.
+<p>In Couchbase Server 6.5 and later, when the index service receives the rollback request, it first attempts to revert to a current index snapshot.
 If successful, the index service does not need to rebuild its indexes from scratch when the data node fails over automatically.
 The index service can continue servicing query clients without interruption.</p>
 </div>
 <div class="paragraph">
-<p>If the index service cannot roll back to a current index snapshot, it rebuilds all indexes from scratch.</p>
+<p>If the index service cannot revert to a current index snapshot, it rebuilds all indexes from scratch.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4009,7 +4021,7 @@ The index service can continue servicing query clients without interruption.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>If <a href="#index-consistency">scan consistency</a> is set to <code>not_bounded</code> or <code>at_plus</code>, the index service may return stale data for a short time after rolling back to a snapshot, until the index service is fully up-to-date with the new active data node.
+<p>If <a href="#index-consistency">scan consistency</a> is set to <code>not_bounded</code> or <code>at_plus</code>, the index service may return stale data for a short time after reverting to a snapshot, until the index service is fully up-to-date with the new active data node.
 If <a href="#index-consistency">scan consistency</a> is set to <code>request_plus</code>, the index service will not perform any scans until a consistent snapshot is created.
 In this case, stale results are not returned.</p>
 </div>
