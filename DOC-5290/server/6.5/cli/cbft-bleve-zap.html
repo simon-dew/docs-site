@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>cbft-bleve for Zap Files | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/cli/cbft-bleve-zap.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/cli/cbft-bleve-zap.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3853,6 +3873,9 @@ The basic syntax is as follows:</p>
 <p>The possible values of <code>command</code> are listed in the sections below.
 The only possible value of <code>flags</code> is <code>--help</code> (or <code>-h</code>), which prints help text to standard output.</p>
 </div>
+<div class="paragraph">
+<p>All examples provided below are for MacOS.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3879,9 +3902,10 @@ See <a href="../fts/fts-creating-indexes.html" class="page">Creating Indexes</a>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap dict \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap country</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap dict \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/000000000113.zap country</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3889,8 +3913,7 @@ testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap country<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 03:40:19 cbauth: key: fts/remoteClients registered for tls config updates
-dictionary for field starts at 60155 (eafb)
+<pre>dictionary for field starts at 60155 (eafb)
 vellum length: 79
 raw vellum data:
  01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10 82 ca cb c5 c7 00 10 90 c4 d2 d7 cb c8 00 10 86 c2 c1 c5 c1 00 10 92 c2 c1 c8 cb d0 ea 2b ea aa e9 73 e9 01 08 0f 17 75 73 6b 66 12 04 04 00 00 00 00 00 00 00 3e 00 00 00 00 00 00 00
@@ -3933,9 +3956,10 @@ No document number is specified.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap docvalue \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap country</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap docvalue \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/000000000113.zap country</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3943,8 +3967,7 @@ testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap country<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 04:03:05 cbauth: key: fts/remoteClients registered for tls config updates
-Total Doc Values Size on Disk: 0.000159 MB
+<pre>Total Doc Values Size on Disk: 0.000159 MB
 FieldID: 2 'country' docvalue at 60235 (eb4b) numChunks 2  diskSize 0.000159 MB
 Number of docvalue chunks: 2</pre>
 </div>
@@ -3954,10 +3977,11 @@ Number of docvalue chunks: 2</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap docvalue \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap \
-country 214</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap docvalue \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_139f2619566ac4d4_acbbef99.pindex/store/0000000000ba.zap country \
+214</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3965,8 +3989,7 @@ country 214</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 04:12:39 cbauth: key: fts/remoteClients registered for tls config updates
-Total Doc Values Size on Disk: 0.000159 MB
+<pre>Total Doc Values Size on Disk: 0.000159 MB
 No field values found for localDocNum: 214
 Try docNums present in chunk: 86, 99, 180, 319, 406, 581, 653, 955,</pre>
 </div>
@@ -3977,10 +4000,11 @@ For example, <code>86</code> can now be tried:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap docvalue \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap \
-country 86</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap docvalue \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_139f2619566ac4d4_acbbef99.pindex/store/0000000000ba.zap country \
+86</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3988,8 +4012,7 @@ country 86</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 04:13:11 cbauth: key: fts/remoteClients registered for tls config updates
-Total Doc Values Size on Disk: 0.000159 MB
+<pre>Total Doc Values Size on Disk: 0.000159 MB
  kingdom  united</pre>
 </div>
 </div>
@@ -4021,9 +4044,10 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap stored \
-/vmhost_home/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-demoIndex_1125629e41599ad8_92af29e5.pindex/store/000000000025.zap 2000</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap stored \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_139f2619566ac4d4_acbbef99.pindex/store/0000000000ba.zap 2000</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4031,8 +4055,7 @@ demoIndex_1125629e41599ad8_92af29e5.pindex/store/000000000025.zap 2000</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/20 23:46:51 cbauth: key: fts/remoteClients registered for tls config updates
-Stored field starts at 30827 (0x786b)
+<pre>Stored field starts at 30827 (0x786b)
 Meta Len: 1
 Data Len: 15
 Raw meta: 0e
@@ -4064,9 +4087,10 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap explore \
-/vmhost_home/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap \
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap explore \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_139f2619566ac4d4_acbbef99.pindex/store/0000000000ba.zap \
 country france</pre>
 </div>
 </div>
@@ -4075,8 +4099,7 @@ country france</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 05:43:57 cbauth: key: fts/remoteClients registered for tls config updates
-dictionary for field starts at 60155 (eafb)
+<pre>dictionary for field starts at 60155 (eafb)
 vellum length: 79
 raw vellum data:
  01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10 82 ca cb c5 c7 00 10 90 c4 d2 d7 cb c8 00 10 86 c2 c1 c5 c1 00 10 92 c2 c1 c8 cb d0 ea 2b ea aa e9 73 e9 01 08 0f 17 75 73 6b 66 12 04 04 00 00 00 00 00 00 00 3e 00 00 00 00 00 00 00
@@ -4116,9 +4139,10 @@ within the <code>travel-sample</code> bucket.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve zap fields \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve zap fields \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_139f2619566ac4d4_acbbef99.pindex/store/0000000000ba.zap</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4126,8 +4150,7 @@ testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/000000000026.zap</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 04:30:14 cbauth: key: fts/remoteClients registered for tls config updates
-field 0 '_id' starts at 44746 (aeca)
+<pre>field 0 '_id' starts at 44746 (aeca)
 field 1 '_all' starts at 59665 (e911)
 field 2 'country' starts at 60155 (eafb)</pre>
 </div>
@@ -4157,8 +4180,9 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sudo /opt/couchbase/bin/cbft-bleve zap footer \
-/Library/Application\ Support/\
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin/\
+cbft-bleve zap footer \
+/Users/&lt;username&gt;/Library/Application\ Support/\
 Couchbase/var/lib/couchbase/data/@fts/\
 demoIndex_1125629e41599ad8_1c9ffdcc.pindex/store/000000000026.zap</pre>
 </div>
@@ -4168,8 +4192,7 @@ demoIndex_1125629e41599ad8_1c9ffdcc.pindex/store/000000000026.zap</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/21 00:25:24 cbauth: key: fts/remoteClients registered for tls config updates
-Length: 164944
+<pre>Length: 164944
 CRC: 0xcf1c9806
 Version: 11
 Chunk Factor: 1024

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Document Expiry | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/eventing/eventing-examples-docexpiry.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/eventing/eventing-examples-docexpiry.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3850,24 +3870,108 @@ This function retrieves a specified value from the document, and stores a docume
 The original document in the source bucket is not changed (and will be deleted).</p>
 </div>
 <div class="paragraph">
-<p>We will use a Couchbase SDK (either a Python 2.5 SDK script or a Java 2.7.11 SDK program) to create a document in the 'source' bucket with a key of <strong>SampleDocument2</strong>, and a value of <strong>{'a_key': 'a_value'}</strong> with its expiration (or TTL) set to 600 seconds or 10 minutes).</p>
+<p><strong>Preparations</strong>:</p>
+</div>
+<div class="paragraph">
+<p>For this example, three buckets <strong>'source'</strong>, <strong>'target'</strong>, and <strong>'metadata'</strong>, are required (note the metadata bucket for Eventing can be shared with other Eventing functions). Make all three buckets with minimum size of 100MB.</p>
+</div>
+<div class="paragraph">
+<p>For steps to create buckets, see <a href="../manage/manage-buckets/create-bucket.html" class="page">Create a Bucket</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <strong>'metadata'</strong> bucket is for the sole use of the Eventing system, do not add, modify, or delete documents from this bucket. In addition do not drop or flush or delete the bucket while you have any deployed Eventing functions.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You will need to run <em>cbc</em> (the command-line KV client) or alternatively an SDK python script or Java program to create or update a document in the 'source' bucket, with an expiration time of 600 seconds.</p>
+</div>
+<div class="paragraph">
+<p><strong>Procedure</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The example requires a document to be created in the 'source' bucket with a key of <strong>SampleDocument2</strong>, a value of <strong>{'a_key': 'a_value'}</strong>, and most importantly that the document&#8217;s expiration (or TTL) set to 600 seconds or 10 minutes).</p>
+<div class="paragraph">
+<p>There are several methods to make a test document with an expiration set. The easiest is most likely using <em>cbc</em>.  However you can use any Couchbase SDK (the command-line KV client is compiled from the C SDK).  For example you can use a Python script or a Java program.</p>
 </div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset1_python-2-5-sdk-script"></a>Python 2.5 SDK script</p>
+<p><a id="tabset1_the-cbc-binary-or-kv-client"></a>The cbc binary, or KV client</p>
 </li>
 <li>
-<p><a id="tabset1_java-2-7-11-sdk-program"></a>Java 2.7.11 SDK program</p>
+<p><a id="tabset1_python-sdk-script"></a>Python SDK script</p>
+</li>
+<li>
+<p><a id="tabset1_java-sdk-program"></a>Java SDK program</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_python-2-5-sdk-script">
+<div class="tab-pane" aria-labelledby="tabset1_the-cbc-binary-or-kv-client">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">On Linux</dt>
+</dl>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from couchbase.cluster import Cluster
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">/opt/couchbase/bin/cbc \
+    create SampleDocument2 -V '{"a_key": "a_value"}' -U couchbase://localhost/source \
+    -u Administrator -P password \
+    --expiry=600</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>on macOS</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin/cbc \
+     create SampleDocument2 -V '{"a_key": "a_value"}' -U couchbase://localhost/source \
+    -u Administrator -P password \
+    --expiry=600</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>on Windows</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">"C:\Program Files\Couchbase\Server\bin\cbc" ^
+     create SampleDocument2 -V "{'a_key': 'a_value'}" -U couchbase://localhost/source ^
+    -u Administrator -P password ^
+    --expiry=600</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the command-line KV client, e.g. the <em>cbc</em> binary, and cut-n-paste one of the above commands to create the needed sample document.</p>
+</div>
+<div class="paragraph">
+<p>We are passing --expiry the number of time in seconds from now at which the item should expire. However if you want an expiry over 30 days you must use the number of seconds since Unix Epoch.</p>
+</div>
+<div class="paragraph">
+<p>On macOS (or OS-X) if you get a 'dyld: Library not loaded' when running <em>cbc</em> a solution is documented in <a href="https://issues.couchbase.com/browse/MB-37768" target="_blank" rel="noopener">MB-37768</a>.</p>
+</div>
+<div class="paragraph">
+<p>For information on the cbc tool, refer to <a href="#">docs-sdk-c::webui-cli-access.adoc#using-the-command-line-kv-client</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_python-sdk-script">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># This is a Python 2.5 SDK example
+from couchbase.cluster import Cluster
 from couchbase.cluster import PasswordAuthenticator
 import time
 cluster = Cluster('couchbase://localhost:8091')
@@ -3879,14 +3983,20 @@ cb.touch('SampleDocument2', ttl=10*60)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>+
-For information on the Couchbase Python SDK, refer to <a href="#">python-sdk::start-using-sdk.adoc</a>.</p>
+<p>Issue the command <em>python</em> to start a Python session then cut-n-paste the above to create the needed sample document.  Type ^D (or ctrl-D) to close the Python session.</p>
+</div>
+<div class="paragraph">
+<p>For information on the Couchbase Python SDK, refer to <a href="#">python-sdk::start-using-sdk.adoc</a>.</p>
 </div>
 </div>
-<div class="tab-pane" aria-labelledby="tabset1_java-2-7-11-sdk-program">
+<div class="tab-pane" aria-labelledby="tabset1_java-sdk-program">
+<div class="paragraph">
+<p>A Java 2.7.11 SDK program example</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import java.time.Duration;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Original Bucket API
+import java.time.Duration;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseCluster;
@@ -3915,70 +4025,50 @@ public class UpsertAndSetExpiry {
 </div>
 </div>
 <div class="paragraph">
-<p>+
-For information on the Couchbase Java SDK, refer to <a href="#">java-sdk::start-using-sdk.adoc</a>.</p>
+<p>A Java 3.0 SDK program example</p>
 </div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Preparations</strong>:</p>
-</div>
-<div class="paragraph">
-<p>For this example, three buckets 'source', 'target', and 'metadata', are required (note the metadata bucket for Eventing can be shared with other Eventing functions). Make all three buckets with minimum size of 100MB.</p>
-</div>
-<div class="paragraph">
-<p>For steps to create buckets, see <a href="../manage/manage-buckets/create-bucket.html" class="page">Create a Bucket</a>.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The 'metadata' bucket is for the sole use of the Eventing system, do not add, modify, or delete documents from this bucket. In addition do not drop or flush or delete the bucket while you have any deployed Eventing functions.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Make sure you can run the Python SDK script (above) to create or update a document in the 'source' bucket, with an expiration time of 600 seconds.</p>
-</div>
-<div class="paragraph">
-<p><strong>Procedure</strong>:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Start the Python interpreter.</p>
 <div class="listingblock">
 <div class="content">
-<pre>./python</pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// New Collections API
+package com.jonstrabala;
+import java.time.Duration;
+import com.couchbase.client.java.*;
+import com.couchbase.client.java.json.JsonObject;
+import static com.couchbase.client.java.kv.UpsertOptions.upsertOptions;
+public class UpsertAndSetExpiry_v3 {
+    public static void main(String... args) throws Exception {
+    	Cluster cluster = Cluster.connect("localhost", "Administrator", "password");
+    	Bucket bucket = cluster.bucket("source");
+    	Collection collection = bucket.defaultCollection();
+    	String docID = "SampleDocument2";
+    	Duration dura = Duration.ofMinutes(10);
+    	try {
+    		collection.upsert(
+    			docID, JsonObject.create().put("a_key", "a_value"),
+    			upsertOptions().expiry(dura) );
+    		System.out.println("docID: " + docID + " expires in " + dura.getSeconds());
+    	} catch (Exception e) {
+    		System.out.println("upsert error for docID: " + docID + " " + e);
+    	}
+        bucket = null;
+        collection = null;
+    	cluster.disconnect(Duration.ofSeconds(2000));
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Download the proper SDK and then compile and run one of the above Java programs</p>
+</div>
+<div class="paragraph">
+<p>For information on the Couchbase Java SDK, refer to <a href="#">java-sdk::start-using-sdk.adoc</a>.</p>
+</div>
+</div>
 </div>
 </div>
 </li>
 <li>
-<p>On the Python prompt, enter the provided code -or- cut and paste the entire script above.</p>
-<div class="listingblock">
-<div class="content">
-<pre>&gt;&gt;&gt; from couchbase.cluster import Cluster
-&gt;&gt;&gt; from couchbase.cluster import PasswordAuthenticator
-&gt;&gt;&gt; import time
-&gt;&gt;&gt; cluster = Cluster('couchbase://localhost:8091')
-&gt;&gt;&gt; authenticator = PasswordAuthenticator('Administrator', 'password')
-&gt;&gt;&gt; cluster.authenticate(authenticator)
-&gt;&gt;&gt; cb = cluster.open_bucket('source')
-&gt;&gt;&gt; cb.upsert('SampleDocument2', {'a_key': 'a_value'})
-OperationResult&lt;rc=0x0, key='SampleDocument2', cas=0x1519ec8cdee90000&gt;
-&gt;&gt;&gt; cb.touch('SampleDocument2', ttl=10*60)
-OperationResult&lt;rc=0x0, key='SampleDocument2', cas=0x1519ec8e686c0000&gt;
-&gt;&gt;&gt;</pre>
-</div>
-</div>
-</li>
-<li>
-<p>You now have a document in bucket 'source' with an expiration set. Type ^D (or ctrl-D) to close the Python session.</p>
+<p>You now have a document in bucket 'source' with an expiration set.</p>
 </li>
 <li>
 <p>To verify that your new document was created, access the <strong>Couchbase Web Console</strong> &gt; <strong>Buckets</strong> page and click the <strong>Documents</strong> link of the <strong>source</strong> bucket.

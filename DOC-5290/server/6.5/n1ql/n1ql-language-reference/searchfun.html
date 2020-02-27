@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Search Functions | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/n1ql/n1ql-language-reference/searchfun.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/n1ql/n1ql-language-reference/searchfun.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -4157,7 +4177,7 @@ Group aggregates and projection are not pushed.</p>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT META(t1).id
 FROM `travel-sample` AS t1
-WHERE SEARCH(t1.country, "United States");</code></pre>
+WHERE SEARCH(t1.country, "+United +States");</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -4248,7 +4268,7 @@ WHERE SEARCH(t1, {
        "field" : "reviews.ratings.Overall",
        "mode" : "max",
        "missing" : "last"
-      },
+      }
    ]
 });</code></pre>
 </div>
@@ -4272,6 +4292,39 @@ WHERE SEARCH(t1, {
 <div class="paragraph">
 <p>This query returns 10 results, and the results are ordered, as specified by the search options.
 As an alternative, you could limit the number of results and order them using the N1QL <a href="limit.html" class="page">LIMIT</a> and <a href="orderby.html" class="page">ORDER BY</a> clauses.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Search against an FTS index that carries a custom type mapping</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT META(t1).id
+FROM `travel-sample` AS t1
+WHERE t1.type = "airline" AND SEARCH(t1.country, "United States");</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "id": "airline_2577"
+  },
+  {
+    "id": "airline_2395"
+  },
+  {
+    "id": "airline_2657"
+  },
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the FTS index being queried has it&#8217;s default mapping disabled and has a custom type mapping defined ("airline" in the above example), the query would need to explicitly specify the "type".
+Here&#8217;s more on how you could define custom type mappings within the FTS index <a href="../../fts/fts-creating-indexes.html" class="page">Specifying Type Mappings</a>.
+Note that for N1QL queries, an FTS index with only 1 type mapping will be searchable.</p>
 </div>
 </div>
 </div>
@@ -4341,7 +4394,7 @@ It may also include other metadata requested by advanced search options, such as
 <div class="sect2">
 <h3 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h3>
 <div class="exampleblock">
-<div class="title">Example 4. Select search metadata</div>
+<div class="title">Example 5. Select search metadata</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -4452,7 +4505,7 @@ LIMIT 3;</code></pre>
 </table>
 </div>
 <div class="exampleblock">
-<div class="title">Example 5. Select the search metadata by outname</div>
+<div class="title">Example 6. Select the search metadata by outname</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -4565,7 +4618,7 @@ If an outname was not specified by the <a href="#search">SEARCH()</a> function, 
 <div class="sect2">
 <h3 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h3>
 <div class="exampleblock">
-<div class="title">Example 6. Select the search score</div>
+<div class="title">Example 7. Select the search score</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">

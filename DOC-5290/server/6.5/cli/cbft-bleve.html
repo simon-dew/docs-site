@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>cbft-bleve | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/cli/cbft-bleve.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/cli/cbft-bleve.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3835,7 +3855,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The <code>cbft-bleve</code> tool returns information on a <em>Full Text Index</em> partition or on a <em>Zap</em> file.
+The <code>cbft-bleve</code> tool returns information on <em>Moss</em> and <em>Scorch</em> index partitions, and on <em>Zap</em> files.
 </blockquote>
 </div>
 </div>
@@ -3845,7 +3865,7 @@ The <code>cbft-bleve</code> tool returns information on a <em>Full Text Index</e
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>cbft-bleve [command] [--help]</pre>
+<pre>cbft-bleve [command] [path] [argument] [--help]</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3865,49 +3885,84 @@ The <code>cbft-bleve</code> tool returns information on a <em>Full Text Index</e
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>check</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Checks the contents of a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Checks the contents of a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>count</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Counts the number of documents referenced by a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Counts the number of documents referenced by a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>dictionary</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Prints to standard output the <em>term dictionary</em> for a specified field in a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Prints to standard output the <em>term dictionary</em> for a specified field in a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>dump</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Dumps the contents of a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dumps the contents of a specified <em>Moss</em> index partition.
+Can be used on a <em>Moss</em> index partition.
+Cannot be used on a <em>Scorch</em> index partition.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Lists the fields in a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lists the fields in a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>mapping</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Prints to standard output the <em>mapping</em> used for a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Prints to standard output the <em>mapping</em> used for a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can also be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Executes a specified query against a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Executes a specified query against a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can also be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>registry</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Prints to standard output the <em>analyzers</em>, <em>tokenizers</em> and other components used by a specified <em>Moss</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Prints to standard output the <em>analyzers</em>, <em>tokenizers</em> and other components used by a specified index partition.
+Can be used on a <em>Moss</em> index partition.
+Can also be used on a <em>Scorch</em> index partition, but only on platforms other than <em>CentOS</em> and <em>Ubuntu</em> Linux.
+Cannot be used on a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>scorch</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Establishes that the index partition on which information is to be returned is a <em>Scorch</em>-index partition.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Establishes that the index partition on which information is to be returned is a <em>Scorch</em> index partition.
+Can be used on a <em>Scorch</em> index partition, on any Couchbase-Server supported platform.
+Cannot be used on either a <em>Moss</em> index partition or a <em>Zap</em> file.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>zap</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Estabishes that the path is that of a <code>Zap</code> file, on which information is to be returned.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Estabishes that the specified <code>path</code> is that of a <code>Zap</code> file, on which information is to be returned.
+Can be used on a <em>Zap</em> file, on any Couchbase-Server supported platform.
+Cannot be used on either a <em>Moss</em> or a <em>Scorch</em> index partition.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
 <p>When a value for <code>command</code> is <em>not</em> specified, <code>--help</code> prints help text to standard output, describing the acceptable values of <code>command</code>.
 When a value for <code>command</code> <em>is</em> specified, <code>--help</code> prints help text describing additional syntax entailed by the specified value (see <a href="#per-command-syntax">Per Command Syntax</a>, below).</p>
+</div>
+<div class="paragraph">
+<p>The <code>path</code> is the filesystem path of an index partition or a Zap file: see <a href="#specifying-index-partitions">Specifying Index Partitions</a>, immediately below.</p>
+</div>
+<div class="paragraph">
+<p>The <code>arguments</code> vary, according to the value specified for <code>command</code>.
+See the syntax and examples provided in <a href="cbft-bleve-moss.html" class="page">cbft-bleve for Moss Indexes</a> and <a href="cbft-bleve-scorch.html" class="page">cbft-bleve for Scorch Indexes</a>.</p>
 </div>
 </div>
 </div>
@@ -3950,13 +4005,14 @@ For example, <code>myIndex_690ef363c7557832_13aa53f3.pindex</code>.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>MacOS</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/Library/Application Support/Couchbase/var/lib/couchbase/data/@fts/</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/Users/&lt;username&gt;/Library/Application Support/Couchbase/var/lib/couchbase/data/@fts/</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
 <p>To specify a <em>Moss</em> index partition, the pathname of the <code>.pindex</code> directory (located in one of the <code>@fts</code> directories listed above) should be given.
-To specify a <em>Scorch</em> index partition, the pathname of the <code>store</code> subdirectory (located in the <code>.pindex</code> directory) should be given.</p>
+To specify a <em>Scorch</em> index partition with any of the command-values listed above <em>except</em> <code>scorch</code>, the pathname of the <code>.pindex</code> directory (located in one of the <code>@fts</code> directories listed above) should be given.
+To specify a <em>Scorch</em> index partition by means of the <code>scorch</code> command-value, the pathname of the <code>store</code> subdirectory (located in the <code>.pindex</code> directory) should be given.</p>
 </div>
 <div class="paragraph">
 <p>Some commands provide information on the Zap file provided with each Scorch-index partition.
@@ -3972,8 +4028,7 @@ To specify a Zap file, the pathname of the <code>.zap</code> file itself (locate
 <div class="sectionbody">
 <div class="paragraph">
 <p>Each of the top-level commands that can be specified as a value to <code>cbft-bleve</code> entails its own syntax.
-The <code>scorch</code> and <code>zap</code> values refer to a specified Scorch index and to its associated Zap file, respectively.
-All other top-level commands refer to a specified  Moss index.</p>
+The <code>scorch</code> and <code>zap</code> values refer to a specified Scorch index and to its associated Zap file, respectively.</p>
 </div>
 <div class="paragraph">
 <p>Syntax and command-line examples for <code>cbft-bleve</code> when applied to:</p>

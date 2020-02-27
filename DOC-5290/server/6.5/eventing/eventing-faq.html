@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Frequently Asked Questions | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/eventing/eventing-faq.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/eventing/eventing-faq.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -4048,34 +4068,34 @@ Couchbase’s Kafka connector is an SDK component that needs an application cont
 <li>
 <p>What is the metadata bucket? Do I need to create a separate bucket?</p>
 <div class="paragraph">
-<p>To provide better resiliency and restartability semantics across Eventing nodes, some metadata needs to be stored: a Couchbase bucket, e.g. a metadata bucket is used to solve this problem.</p>
+<p>To provide better resiliency and restartability semantics across Eventing nodes, some of the metadata that is used by the Eventing service needs to be stored in a standard <a href="../learn/buckets-memory-and-storage/buckets.html" class="page">Couchbase bucket</a> (hereafter referred to as the 'metadata bucket').</p>
+</div>
+<div class="paragraph">
+<p>After provisioning the Eventing nodes in your cluster, you&#8217;ll need to create the metadata bucket before you can start using the Eventing service.
+All Eventing functions within a cluster can share the same metadata bucket (this is a best practice but not a requirement), regardless of the number of functions, or their source and destination buckets.
+(Setting up a metadata bucket is a one-time activity for the cluster should you choose to follow this best practice.)</p>
+</div>
+<div class="paragraph">
+<p>Some additional requirements of the metadata bucket are as follows:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>All Eventing functions within a cluster can share the same metadata bucket (this is a best practice but not a requirement), regardless of the number of functions, or their source and destination buckets.</p>
+<p>You should enable <a href="../manage/manage-buckets/create-bucket.html" class="page">vBucket replicas</a> on the metadata bucket to allow for failure recovery.</p>
 </li>
 <li>
-<p>Setting up a metadata bucket is a one-time activity for the cluster.</p>
+<p>You should reserve the metadata bucket solely for Eventing housekeeping.
+It shouldn&#8217;t be used for any other data storage.</p>
 </li>
-<li>
-<p>The metadata bucket should be reserved for solely for Eventing housekeeping and not be used for any other data-storage.</p>
-<div class="ulist">
-<ul>
 <li>
 <p>Each Eventing function always requires a fixed amount of space of about 2MB (1024 docs * 1884 bytes).</p>
 </li>
 <li>
-<p>If an Eventing function uses timers then an additional fixed amount of space of about 0.2MB (1024 * docs of 196 bytes) is needed.</p>
+<p>If an Eventing function uses timers, then an additional fixed amount of space of about 0.2MB (1024 * docs of 196 bytes) is needed.</p>
 </li>
 <li>
-<p>If an Eventing function uses timers then for each active timer an additional amount of space between 832 and 1856 bytes (832 bytes + sizeof(context)) is needed. Where the context can not be larger than 1024 bytes and the maximum number of active timers is based on both the business logic and the mutation rate.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>KV replicas should be enabled on the metadata bucket this is important for failure recovery.</p>
+<p>If an Eventing function uses timers, then for each active timer, an additional amount of space between 832 and 1856 bytes (832 bytes + sizeof(context)) is needed.
+Where the context can not be larger than 1024 bytes and the maximum number of active timers is based on both the business logic and the mutation rate.</p>
 </li>
 </ul>
 </div>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>XDCR Conflict Resolution | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/learn/clusters-and-availability/xdcr-conflict-resolution.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/learn/clusters-and-availability/xdcr-conflict-resolution.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3851,7 +3871,7 @@ The conflict must be <em>resolved</em>, by determining which of the variants sho
 XDCR provides an automated <em>conflict resolution</em> process.</p>
 </div>
 <div class="paragraph">
-<p>Two, alternative conflict resolution policies are supported: <a href="#revision-id-based-conflict-resolution"><em>revision-based</em></a> (which is the default), and <a href="#timestamp-based-conflict-resolution"><em>timestamp-based</em></a>.
+<p>Two, alternative conflict resolution policies are supported: <em>sequence-number-based</em> (which is the default), and <em>timestamp-based</em>.
 Note that <em>timestamp-based</em> conflict resolution is only available in the Enterprise Edition of Couchbase Server.</p>
 </div>
 </div>
@@ -3880,16 +3900,15 @@ If the source document prevails, it is replicated to the target; if the target d
 </div>
 </div>
 <div class="sect1">
-<h2 id="revision-id-based-conflict-resolution"><a class="anchor" href="#revision-id-based-conflict-resolution"></a>Revision-Based Conflict Resolution</h2>
+<h2 id="revision-id-based-conflict-resolution"><a class="anchor" href="#revision-id-based-conflict-resolution"></a>Conflict Resolution Based on Sequence Number</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Revision-based conflict resolution uses the document&#8217;s <em>revision ID</em> to resolve conflicts.
-Revision IDs are maintained per document, and are incremented on every document-update.
-Revision-based conflict resolution compares the revision IDs of the source and target documents.
-The document with more revisions prevails.</p>
+<p>Conflicts can be resolved by referring to documents' <em>sequence numbers</em>.
+Sequence numbers are maintained per document, and are incremented on every document-update.
+The sequence numbers of source and target documents are compared; and the document with the higher sequence number prevails.</p>
 </div>
 <div class="paragraph">
-<p>If both document-versions have the same revision ID, the conflict is resolved by comparing the following metadata-elements, in the order shown:</p>
+<p>If both documents have the same sequence number, the conflict is resolved by comparing the following metadata-elements, in the order shown:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -3920,7 +3939,7 @@ The document whose updates have the more recent timestamp prevails.</p>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Revision ID</p>
+<p>Sequence number</p>
 </li>
 <li>
 <p>Expiration (TTL) value</p>
@@ -4004,7 +4023,7 @@ This is illustrated by the following examples:</p>
 <li>
 <p><em>Most Updates Wins</em>: A hit-counter, for a website, is stored as a document within Couchbase Server: a value within the document is incremented each time the website is accessed.
 In the event of conflict, the document-version that contains the higher count is the more useful, since it is more closely reflective of the actual count.
-Therefore, in this instance, revision-based conflict resolution should be used, since it ensures that the more mutated document prevails.</p>
+Therefore, in this instance, conflict resolution based on <em>sequence numbers</em> should be used, since it ensures that the more mutated document prevails.</p>
 </li>
 <li>
 <p><em>Most Recently Updated Wins</em>: A thermometer device stores the current temperature as a document within Couchbase Server, writing new values continuously to the same key.
@@ -4022,7 +4041,7 @@ Therefore, in this instance, timestamp-based conflict resolution should be used,
 <p>XDCR replications cannot be created between buckets with different conflict resolution policies: source and target buckets must always be configured with the same policy.</p>
 </div>
 <div class="paragraph">
-<p>When using XDCR with a source cluster running a pre-4.6 version of Couchbase Server, only revision-based conflict resolution can be used.</p>
+<p>When using XDCR with a source cluster running a pre-4.6 version of Couchbase Server, only conflict resolution based on <em>sequence numbers</em> can be used.</p>
 </div>
 </div>
 </div>

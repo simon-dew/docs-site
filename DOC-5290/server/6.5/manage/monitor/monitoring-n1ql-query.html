@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Monitor Queries | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/manage/monitor/monitoring-n1ql-query.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/manage/monitor/monitoring-n1ql-query.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1084,6 +1084,11 @@
     <a class="nav-link" href="../manage-statistics/manage-statistics.html">Manage Statistics</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
   <li class="nav-item is-current-path is-active" data-depth="1">
     <span class="nav-line">
     <button class="nav-toggle"></button>
@@ -1118,6 +1123,11 @@
   <li class="nav-item is-current-page is-active" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -4164,20 +4184,19 @@ The attribute details are as follows:</p>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. Attribute Details</caption>
 <colgroup>
-<col style="width: 13.6363%;">
-<col style="width: 50%;">
+<col style="width: 63.6363%;">
 <col style="width: 36.3637%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="2">Attribute</th>
+<th class="tableblock halign-left valign-top">Attribute</th>
 <th class="tableblock halign-left valign-top">Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p><code>phaseTimes</code> - Cumulative execution times for various phases involved in the query execution, such as authorize, indexscan, fetch, parse, plan, run, etc.</p>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>phaseTimes</code>&#8201;&#8212;&#8201;Cumulative execution times for various phases involved in the query execution, such as authorize, indexscan, fetch, parse, plan, run, etc.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4211,8 +4230,8 @@ The attribute details are as follows:</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p><code>phaseCounts</code> - Count of documents processed at selective phases involved in the query execution, such as authorize, indexscan, fetch, parse, plan, run, etc.</p>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>phaseCounts</code>&#8201;&#8212;&#8201;Count of documents processed at selective phases involved in the query execution, such as authorize, indexscan, fetch, parse, plan, run, etc.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4241,11 +4260,19 @@ The attribute details are as follows:</p>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>phaseOperators</code> - Indicates the number of each kind of query operators involved in different phases of the query processing.
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>phaseOperators</code>&#8201;&#8212;&#8201;Indicates the number of each kind of query operators involved in different phases of the query processing.
 For instance, this example, one non covering index path was taken, which involves 1 indexScan and 1 fetch operator.</p>
-<p class="tableblock">A join would have probably involved 2 fetches (1 per keyspace)</p>
-<p class="tableblock">A union select would have twice as many operator counts (1 per each branch of the union).</p>
-<p class="tableblock">This is in essence the count of all the operators in the <code>executionTimings</code> field.</p></td>
+</div>
+<div class="paragraph">
+<p>A join would have probably involved 2 fetches (1 per keyspace)</p>
+</div>
+<div class="paragraph">
+<p>A union select would have twice as many operator counts (1 per each branch of the union).</p>
+</div>
+<div class="paragraph">
+<p>This is in essence the count of all the operators in the <code>executionTimings</code> field.</p>
+</div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"phaseOperators": {
@@ -4257,9 +4284,66 @@ For instance, this example, one non covering index path was taken, which involve
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>executionTimings</code> - The execution details such as kernel and service execution times, number of documents processed at each query operator in each phase, and number of phase switches, for various phases involved in the query execution.</p>
-<p class="tableblock">The following statistics are collected for each operator:</p></td>
-<td class="tableblock halign-left valign-top" rowspan="7"><div class="content"><div class="listingblock">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>executionTimings</code>&#8201;&#8212;&#8201;The execution details such as kernel and service execution times, number of documents processed at each query operator in each phase, and number of phase switches, for various phases involved in the query execution.</p>
+</div>
+<div class="paragraph">
+<p>The following statistics are collected for each operator:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>#operator</code></dt>
+<dd>
+<p>Name of the operator.</p>
+</dd>
+<dt class="hdlist1"><code>#stats</code></dt>
+<dd>
+<p>These values will be dynamic, depending on the documents processed by various phases up to this moment in time.</p>
+<div class="paragraph">
+<p>A new query on <code>system:active_requests</code> will return different values.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>#itemsIn</code></dt>
+<dd>
+<p>Number of input documents to the operator.</p>
+</dd>
+<dt class="hdlist1"><code>#itemsOut</code></dt>
+<dd>
+<p>Number of output documents after the operator processing.</p>
+</dd>
+<dt class="hdlist1"><code>#phaseSwitches</code></dt>
+<dd>
+<p>Number of switches between executing, waiting for services, or waiting for the <code>goroutine</code> scheduler.</p>
+</dd>
+<dt class="hdlist1"><code>execTime</code></dt>
+<dd>
+<p>Time spent executing the operator code inside N1QL query engine.</p>
+</dd>
+<dt class="hdlist1"><code>kernTime</code></dt>
+<dd>
+<p>Time spent waiting to be scheduled for CPU time.</p>
+</dd>
+<dt class="hdlist1"><code>servTime</code></dt>
+<dd>
+<p>Time spent waiting for another service, such as index or data.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For index scan, it is time spent waiting for GSI/indexer.</p>
+</li>
+<li>
+<p>For fetch, it is time spent waiting on the KV store.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"executionTimings": {
   …
@@ -4288,42 +4372,6 @@ For instance, this example, one non covering index path was taken, which involve
     }
   }, …]</code></pre>
 </div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#operator</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the operator.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#stats</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">These values will be dynamic, depending on the documents processed by various phases up to this moment in time.</p>
-<p class="tableblock">A new query on <code>system:active_requests</code> will return different values.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#itemsIn</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number of input documents to the operator.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#itemsOut</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number of output documents after the operator processing.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>#phaseSwitches</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number of switches between executing, waiting for services, or waiting for the <code>goroutine</code> scheduler.</p>
-<p class="tableblock"><code>execTime</code> - Time spent executing the operator code inside N1QL query engine.</p>
-<p class="tableblock"><code>kernTime</code> - Time spent waiting to be scheduled for CPU time.</p>
-<p class="tableblock"><code>servTime</code> - Time spent waiting for another service, such as index or data.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="ulist">
-<ul>
-<li>
-<p>For index scan, it is time spent waiting for GSI/indexer</p>
-</li>
-<li>
-<p>For fetch, it is time spent waiting on the KV store</p>
-</li>
-</ul>
 </div></div></td>
 </tr>
 </tbody>
@@ -5161,8 +5209,37 @@ The root operator is a Sequence, which itself has a collection of child operator
 For each prepared statement, this catalog provides information such as name, statement, query plan, last use time, number of uses, and so on.</p>
 </div>
 <div class="paragraph">
-<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_statements" class="page">Statements</a>.</p>
+<p>For field names and meanings, refer to <a href="../../n1ql/n1ql-rest-api/admin.html#_statements" class="page">Statements</a>.
+Note that the <code>system:prepareds</code> catalog also returns the following property, which is not returned by the N1QL Admin REST API.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>node</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The node on which the prepared statement is stored.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 <div class="sect2">
 <h3 id="sys-prepared-get"><a class="anchor" href="#sys-prepared-get"></a>Get Prepared Statements</h3>
 <div class="paragraph">

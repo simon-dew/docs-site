@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Compaction API | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/rest-api/compaction-rest-api.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/rest-api/compaction-rest-api.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3832,245 +3852,34 @@
   </div>
 <article class="doc">
 <h1 class="page">Compaction API</h1>
-<div id="preamble">
-<div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Compaction is used to reclaim disk space and reduce disk fragmentation.
+<em>Compaction</em> allows on-disk data to be relocated into the closest-possible proximity.
 </blockquote>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase Server writes all data that you append, update and delete as files on disk.
-This can eventually lead to gaps in the data file, particularly when you delete data.
-Be aware the server also writes index files in a sequential format based on appending new results in the index.
-You can reclaim the empty gaps in all data files by performing a process called <em>compaction</em>.
-For both data files and index files, perform frequent compaction of the files on disk to help reclaim disk space and reduce disk fragmentation.</p>
+<p><em>Compaction</em> is used by Couchbase Server to relocate on-disk data; so as to ensure the data&#8217;s closest-possible proximity, and thereby reclaim fragments of unused disk-space.
+The periodic compaction of a bucket&#8217;s data helps to ensure the ongoing efficiency of both reads and writes.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Compaction endpoints</caption>
-<colgroup>
-<col style="width: 14.2857%;">
-<col style="width: 28.5714%;">
-<col style="width: 34.4285%;">
-<col style="width: 22.7144%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">HTTP method</th>
-<th class="tableblock halign-left valign-top">URI path</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Admin Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/pools/default/buckets/[bucket_name]/ \ controller/compactBucket</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compacts bucket data and indexes.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster,</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/pools/default/buckets/[bucket_name]/ \ controller/cancelBucketCompaction</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Cancels compaction for the specified bucket.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/[bucket_name]/_design/[ddoc_name]/ \ _spatial/_compact</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compacts a spatial view.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="auto-compaction-description"><a class="anchor" href="#auto-compaction-description"></a>Auto-compaction description</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Auto-compaction parameters are configured to trigger data and view compaction.
-These parameters can be specified for an entire cluster (cluster-wide) or for a specific bucket in a cluster.</p>
+<p>Administrators can initiate the compaction of a single bucket&#8217;s data at any time, and can cancel such compaction if and when necessary.
+The REST APIs that support this are described in <a href="rest-compact-post.html" class="page">Performing Compaction Manually</a>.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Administrative credentials are required to change these settings.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Additionally, settings are provided whereby compaction is triggered <em>automatically</em>, according to a specified configuration and schedule.
+This <em>auto-compaction</em> can be achieved in two ways:</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Auto-compaction endpoints</caption>
-<colgroup>
-<col style="width: 14.556%;">
-<col style="width: 36.9723%;">
-<col style="width: 29.4032%;">
-<col style="width: 19.0685%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">HTTP method</th>
-<th class="tableblock halign-left valign-top">URI path</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Admin Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/controller/setAutoCompaction</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets cluster-wide auto-compaction intervals and thresholds</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/settings/autoCompaction</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves cluster-wide settings for auto-compaction</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/pools/default/buckets/[bucket_name]</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves auto-compaction settings for named bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster, Bucket*, BucketA</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/pools/default/buckets/[bucket_name]</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets auto-compaction interval or thresholds for named bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster, Bucket*, BucketA</p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-"Bucket A" represents a bucket administrator for a single bucket, and Bucket* a bucket administrator with privileges for all buckets in the cluster.
-</td>
-</tr>
-</table>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Auto-compaction parameters</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Value</th>
-<th class="tableblock halign-left valign-top">Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">databaseFragmentationThreshold: percentage</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 2 and 100</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Percentage disk fragmentation for data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">databaseFragmentationThreshold: size</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer greater than 1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bytes of disk fragmentation for data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">viewFragmentationThreshold: percentage</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 2 and 100</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Percentage disk fragmentation for index</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">viewFragmentationThreshold: size</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer greater than 1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bytes of disk fragmentation for index</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">parallelDBAndViewCompaction</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">True or false.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Run index and data compaction in parallel.
-Global setting only.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">allowedTimePeriod: abortOutside</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">True or false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Terminate compaction if the process takes longer than the allowed time</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">allowedTimePeriod: fromHour</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 0 and 23</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compaction can occur from this hour onward</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">allowedTimePeriod: fromMinute</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 0 and 59</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compaction can occur from this minute onward</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">allowedTimePeriod: toHour</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 0 and 23</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compaction can occur up to this hour</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">allowedTimePeriod: toMinute</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 0 and 59</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compaction can occur up to this minute</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">purgeInterval</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer between 1 and 60</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number of days a item is deleted or expired.
-The key and metadata for that item is purged by auto-compaction</p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The purge interval parameter removes the key and metadata for items that have been deleted or are expired.
-This is known as tombstone purging.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="related-information"><a class="anchor" href="#related-information"></a>Related Information</h2>
-<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>To learn about the storage architecture and compaction, see <a href="../learn/buckets-memory-and-storage/storage.html" class="page">Storage</a>.</p>
+<p><em>Globally</em>, meaning that all buckets in the cluster are compacted according to the same configuration and schedule &#8212; with the exception of those buckets for which these default settings are deliberately overridden.
+The REST APIs that support global auto-compaction are described in <a href="rest-autocompact-global.html" class="page">Auto-Compaction: Global</a>.</p>
 </li>
 <li>
-<p>To update the auto-compaction settings from the Web Console, see
-<a href="../manage/manage-settings/configure-compact-settings.html" class="page">Auto-Compaction</a>.</p>
-</li>
-<li>
-<p>To update the bucket compaction settings using the CLI, see <a href="../cli/cbcli/couchbase-cli-bucket-compact.html" class="page">bucket-compact</a>.</p>
+<p><em>Per bucket</em>, meaning that a specified bucket is automatically compacted according to a different configuration and schedule than those established as the global defaults.
+The REST APIs that support per-bucket auto-compaction are described in <a href="rest-autocompact-per-bucket.html" class="page">Auto-Compaction: Per Bucket</a>.</p>
 </li>
 </ul>
-</div>
-</div>
 </div>
 </article>
 </main>

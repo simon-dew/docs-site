@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>cbft-bleve for Scorch Indexes | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/cli/cbft-bleve-scorch.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/cli/cbft-bleve-scorch.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3845,7 +3865,36 @@ The <code>cbft-bleve</code> tool supports commands that return information on <e
 <h2 id="using-cbft-bleve-on-scorch-indexes"><a class="anchor" href="#using-cbft-bleve-on-scorch-indexes"></a>Using cbft-bleve on Scorch indexes.</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The basic syntax is as follows:</p>
+<p>The <code>cbft-bleve</code> tool can be used to retrieve information on a <em>Scorch</em> index partition in either of the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By means of the subset of <em>top level</em> command-values that can also be used on <em>Moss</em> index partitions.</p>
+</li>
+<li>
+<p>Specifically by means of the <code>scorch</code> top level command-value, which entails additional syntax, and can be used on <em>Scorch</em> index partitions only.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These options are described below.
+Examples are for MacOS.</p>
+</div>
+<div class="sect2">
+<h3 id="using-top-level-command-values"><a class="anchor" href="#using-top-level-command-values"></a>Using Top Level Command-Values</h3>
+<div class="paragraph">
+<p>The top-level <a href="cbft-bleve.html#syntax" class="page">Syntax</a> for <code>cbft-bleve</code> permits the following to be specified as values for the principal <code>command</code>, and to be used alike on <em>Moss</em> index partitions (on all Couchbase-Server supported platforms) and on <em>Scorch</em> index partitions (on all platforms except <em>CentOS</em> and <em>Ubuntu</em>): <a href="cbft-bleve-moss.html#check" class="page">check</a>, <a href="cbft-bleve-moss.html#count" class="page">count</a>, <a href="cbft-bleve-moss.html#dictionary" class="page">dictionary</a>, <a href="cbft-bleve-moss.html#fields" class="page">fields</a>, <a href="cbft-bleve-moss.html#mapping" class="page">mapping</a>, <a href="cbft-bleve-moss.html#query" class="page">query</a>, and <a href="cbft-bleve-moss.html#registry" class="page">registry</a>.</p>
+</div>
+<div class="paragraph">
+<p>For a description of the syntax entailed by each value, and instances of command-output, see the examples provided for <em>Moss</em> index partitions, in <a href="cbft-bleve-moss.html" class="page">cbft-bleve for Moss Indexes</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="using-the-scorch-command-value"><a class="anchor" href="#using-the-scorch-command-value"></a>Using the <code>scorch</code> Command-Value</h3>
+<div class="paragraph">
+<p>The <code>scorch</code> command-value specifies that the target index-partition is a <em>Scorch</em> index.
+The basic syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3871,12 +3920,12 @@ Additional values are indicated as appropriate, below.</p>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="understanding-snapshots"><a class="anchor" href="#understanding-snapshots"></a>Understanding Snapshots</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Each <em>Scorch</em> index contains a number of <em>snapshots</em>, each of which represents the state of all indexed data at a particular point in time.
-This supports the possibility of <em>rollback</em> of the index.
+<p>Each <em>Scorch</em> index contains a number of <em>snapshots</em>, each of which represents the state of all indexed data at a particular point in time: this supports <em>high-performance rollbacks</em> of the index.
 By default, three snapshots are simultaneously available: each is referred to by a unique integer known as the <em>snapshot epoch</em>.
 To change the number of available snapshots, include the <code>numSnapshotsToKeep</code> key to the <code>store</code> object within the index-definition, specifying an appropriate integer as the value.
 For example, the following establishes <code>4</code> snapshots to be made simultaneously available:</p>
@@ -3918,9 +3967,10 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve scorch snapshot \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-demoIndex_1125629e41599ad8_92af29e5.pindex/store/</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve scorch snapshot \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase\
+/var/lib/couchbase/data/@fts/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3928,8 +3978,7 @@ demoIndex_1125629e41599ad8_92af29e5.pindex/store/</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/20 22:08:11 cbauth: key: fts/remoteClients registered for tls config updates
-snapshot epoch: 37
+<pre>snapshot epoch: 37
 snapshot epoch: 36
 snapshot epoch: 1</pre>
 </div>
@@ -3960,9 +4009,10 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve scorch ascii \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
-demoIndex_1125629e41599ad8_92af29e5.pindex/store/\
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve scorch ascii \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase\
+/var/lib/couchbase/data/@fts/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/ \
 37</pre>
 </div>
 </div>
@@ -3971,8 +4021,7 @@ demoIndex_1125629e41599ad8_92af29e5.pindex/store/\
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/20 22:28:17 cbauth: key: fts/remoteClients registered for tls config updates
-37    37:  5433 / 5433 -   .........................</pre>
+<pre>37    37:  5433 / 5433 -   .........................</pre>
 </div>
 </div>
 </div>
@@ -4000,18 +4049,19 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve scorch deleted \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-testScorchIndex_36fcc3edf138b47f_13aa53f3.pindex/store/ 67</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve scorch deleted \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase\
+/var/lib/couchbase/data/@fts/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/ \
+67</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If successful, the command returns the following:</p>
+<p>If successful, the command returns a list that contains deleted items, if any exist:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/22 06:45:27 cbauth: key: fts/remoteClients registered for tls config updates
-0 &lt;nil&gt;
+<pre>0 &lt;nil&gt;
 1 &lt;nil&gt;
 2 &lt;nil&gt;</pre>
 </div>
@@ -4038,9 +4088,10 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve scorch info \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-demoIndex_1125629e41599ad8_92af29e5.pindex/store/</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin\
+/cbft-bleve scorch info \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4048,8 +4099,7 @@ demoIndex_1125629e41599ad8_92af29e5.pindex/store/</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/20 22:40:32 cbauth: key: fts/remoteClients registered for tls config updates
-doc count: 5433</pre>
+<pre>doc count: 5433</pre>
 </div>
 </div>
 </div>
@@ -4081,10 +4131,10 @@ The syntax is as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>/opt/couchbase/bin/cbft-bleve scorch internal \
-/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts/\
-demoIndex_1125629e41599ad8_92af29e5.pindex/store/ \
-37 -a</pre>
+<pre>/Applications/Couchbase\ Server.app/Contents/Resources/couchbase-core/bin/\
+cbft-bleve scorch internal \
+/Users/&lt;username&gt;/Library/Application\ Support/Couchbase/var/lib/couchbase/data/@fts\
+/scorchIndex_fdcb47f176931043_13aa53f3.pindex/store/ 37 -a</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4092,8 +4142,7 @@ demoIndex_1125629e41599ad8_92af29e5.pindex/store/ \
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>2020/01/20 22:47:40 cbauth: key: fts/remoteClients registered for tls config updates
-42 ?
+<pre>42 ?
 43 ?
 _mapping {"types":{"product":{"enabled":true,"dynamic":true,"properties":{"price":{"enabled":true,"dynamic":false,"fields":[{"name":"price","type":"number","index":true,"include_term_vectors":true,"include_in_all":true}]}}}},"default_mapping":{"enabled":false,"dynamic":true},"type_field":"_type","default_type":"_default","default_analyzer":"standard","default_datetime_parser":"dateTimeOptional","default_field":"_all","store_dynamic":false,"index_dynamic":true,"docvalues_dynamic":true,"analysis":{}}
 o:39 {"seqStart":0,"seqEnd":0,"snapStart":0,"snapEnd":501,"failOverLog":[[149680438380220,0]]}

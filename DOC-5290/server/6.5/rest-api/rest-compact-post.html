@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Compacting Buckets | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/rest-api/rest-compact-post.html">
+    <title>Performing Compaction Manually | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/rest-api/rest-compact-post.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item is-current-page is-active" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3822,7 +3842,7 @@
     <li class="crumb"><a href="rest-intro.html">REST API Reference</a></li>
     <li class="crumb"><a href="rest-endpoints-all.html">REST API endpoint list</a></li>
     <li class="crumb"><a href="compaction-rest-api.html">Compaction API</a></li>
-    <li class="crumb"><a href="rest-compact-post.html">Compacting Buckets</a></li>
+    <li class="crumb"><a href="rest-compact-post.html">Performing Compaction Manually</a></li>
   </ul>
 </nav>
 <div class="tools" role="navigation">
@@ -3832,70 +3852,61 @@
 </div>
   </div>
 <article class="doc">
-<h1 class="page">Compacting Buckets</h1>
+<h1 class="page">Performing Compaction Manually</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Bucket compaction is initiated with the <code>POST /pools/default/buckets/[bucket-name]/controller/compactBucket</code> HTTP method and URI.
+Couchbase Server allows a bucket&#8217;s data to be compacted manually.
 </blockquote>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="http-method-and-uri"><a class="anchor" href="#http-method-and-uri"></a>HTTP method and URI</h2>
+<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The following URI paths are for compacting buckets data and indexes and for canceling bucket compaction.</p>
+<p>Couchbase Server allows a specified bucket&#8217;s data to be compacted by the administrator, manually.
+<em>Full Admin</em> and <em>Cluster Admin</em> permissions are required.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="http-methods-and-uris"><a class="anchor" href="#http-methods-and-uris"></a>HTTP methods and URIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following methods and URIs allow explicit initiation and cancellation of data-compaction for a specified bucket:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>// Compacting
-POST /pools/default/buckets/[bucket-name]/controller/compactBucket
+<pre>POST /pools/default/buckets/[bucket-name]/controller/compactBucket
 
-// Cancelling compaction
 POST /pools/default/buckets/[bucket-name]/controller/cancelBucketCompaction</pre>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Administrative credentials must be provided for the node in the cluster.
-</td>
-</tr>
-</table>
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="syntax-for-compaction"><a class="anchor" href="#syntax-for-compaction"></a>Syntax for compaction</h2>
+<h2 id="curl-syntax"><a class="anchor" href="#curl-syntax"></a>Curl Syntax</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>To compact data files and indexes associated with a specific bucket, use the following curl request syntax:</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>curl -i -v -X POST -u [admin]:[password]
-  http://[localhost]:8091/pools/default/buckets/[bucket-name]/controller/compactBucket</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="syntax-for-cancelling-compaction"><a class="anchor" href="#syntax-for-cancelling-compaction"></a>Syntax for cancelling compaction</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To stop bucket compaction, use the following curl request syntax:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -i -v -X POST -u [admin]:[password]
+<pre>curl -i -X POST -u [admin]:[password]
+  http://[localhost]:8091/pools/default/buckets/[bucket-name]/controller/compactBucket
+
+curl -i -X POST -u [admin]:[password]
   http://[localhost]:8091/pools/default/buckets/[bucket-name]/controller/cancelBucketCompaction</pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="responses"><a class="anchor" href="#responses"></a>Responses</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If the call is successful, <code>200 OK</code> is given, and an object containing group-related information is returned.
+An incorrectly specified bucket-name or URI gives <code>404 Object Not Found</code>.
+Failure to authenticate gives <code>401 Unauthorized</code>.</p>
 </div>
 </div>
 </div>
@@ -3903,13 +3914,33 @@ Administrative credentials must be provided for the node in the cluster.
 <h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Curl example for compacting the default bucket:</p>
+<p>The following example performs compaction on the bucket <code>travel-sample</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>curl -i -v -X POST -u Administrator:password \
-  http://10.5.2.54:8091/pools/default/buckets/default/controller/compactBucket</pre>
+http://10.143.193.101:8091/pools/default/buckets/travel-sample/controller/compactBucket</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Once initiated, the compaction-process can be terminated, with a call such as the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -i -v -X POST -u Administrator:password \
+http://10.143.193.101:8091/pools/default/buckets/travel-sample/controller/cancelBucketCompaction</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>REST APIs for establishing and retrieving auto-compaction settings are provided in <a href="rest-autocompact-global.html" class="page">Auto-Compaction: Global</a> and <a href="rest-autocompact-per-bucket.html" class="page">Auto-Compaction: Per Bucket</a>.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="../manage/manage-settings/configure-compact-settings.html" class="page">Auto-Compaction</a>, for information on managing auto-compaction with Couchbase Web Console.</p>
 </div>
 </div>
 </div>

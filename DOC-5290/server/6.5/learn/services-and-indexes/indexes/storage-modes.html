@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Storage Settings | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/learn/services-and-indexes/indexes/storage-modes.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/learn/services-and-indexes/indexes/storage-modes.html">
     <link rel="stylesheet" href="../../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3861,18 +3881,11 @@ To be consistently beneficial, memory-optimized index-storage requires that all 
 </div>
 <div class="paragraph">
 <p>If indexer RAM usage goes above 75% of the Index Service memory-quota, an <a href="../../../manage/manage-settings/configure-alerts.html" class="page">error-notification</a> is provided.
-If indexer RAM usage then goes above 95% of the Index Service memory-quota, the indexer goes into the Paused mode on that node; and although the indexes remain in <code>ONLINE</code> state, traffic is routed away from the node.</p>
+If indexer RAM usage then goes above 95% of the Index Service memory-quota, the indexer goes into the Paused mode on that node; and although the indexes remain in <code>Active</code> state, traffic is routed away from the node.</p>
 </div>
 <div class="paragraph">
 <p>Before index-operations can resume, memory must be freed.
 When the indexer RAM usage drops below 80% of the Index Service memory-quota, the indexer goes into Active mode again on that node.</p>
-</div>
-<div class="paragraph">
-<p>In cases where recovery requires an Index-Service node to be restarted, the node&#8217;s resident memory-optimized indexes are rebuilt from the snapshots retained on disk.
-Following the node&#8217;s restart, these indexes remain in the <code>BUILDING</code> state until all information has been read into memory: then, final updates are made with the indexes in <code>ONLINE</code> state.
-Note that once a rebuilt index is thus available, queries with <code>consistency=request_plus</code> or <code>consistency=at_plus</code> fail, if the specified timestamp exceeds the last timestamp processed by given index.
-However, queries with <code>consistency=unbounded</code> execute normally.
-For information on these settings, see <a href="index-replication.html" class="page">Index Availability and Performance</a>.</p>
 </div>
 <div class="paragraph">
 <p>To resume indexing operations on a node where the Indexer has paused due to low memory, consider taking one or more of the following actions:</p>
@@ -3895,6 +3908,13 @@ For information on these settings, see <a href="index-replication.html" class="p
 </div>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>In cases where recovery requires an Index-Service node to be restarted, the node&#8217;s resident memory-optimized indexes are rebuilt from the snapshots retained on disk.
+Following the node&#8217;s restart, these indexes remain in the <code>Warmup</code> state until all information has been read into memory: then, final updates are made with the indexes in <code>Active</code> state.
+Note that once a rebuilt index is thus available, queries with <code>consistency=request_plus</code> or <code>consistency=at_plus</code> fail, if the specified timestamp exceeds the last timestamp processed by given index. <sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
+However, queries with <code>consistency=unbounded</code> execute normally.
+For information on these settings, see <a href="index-replication.html" class="page">Index Availability and Performance</a>.</p>
 </div>
 </div>
 </div>
@@ -3986,6 +4006,12 @@ Note that as Index-Service nodes are removed, so are the indexes they contain; a
 <a href="../../../manage/manage-nodes/node-management-overview.html" class="page">Manage
 Nodes and Clusters</a>.</p>
 </div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. In fact, queries in this case wait for a consistent snapshot to be available and time out, rather than fail immediately.
 </div>
 </div>
 </article>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Availability and Performance | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/learn/services-and-indexes/indexes/index-replication.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/learn/services-and-indexes/indexes/index-replication.html">
     <link rel="stylesheet" href="../../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3877,9 +3897,9 @@ In the following example, an index with two replicas is created.
 The active index is on <code>node1</code>, and the replicas are on <code>node2</code> and <code>node3</code>:</p>
 <div id="nodes-example2" class="listingblock">
 <div class="content">
-<pre>CREATE INDEX productName_index1 ON bucket_name(productName, ProductID)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX productName_index1 ON bucket_name(productName, ProductID)
     WHERE type="product" USING GSI
-    WITH {"nodes":["node1:8091", "node2:8091", "node3:8091"]};</pre>
+    WITH {"nodes":["node1:8091", "node2:8091", "node3:8091"]};</code></pre>
 </div>
 </div>
 </li>
@@ -3891,9 +3911,9 @@ The replicas are automatically distributed across those nodes of the cluster tha
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX productName_index1 ON bucket_name(productName, ProductID)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX productName_index1 ON bucket_name(productName, ProductID)
     WHERE type="product" USING GSI
-    WITH {"num_replica": 2};</pre>
+    WITH {"num_replica": 2};</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3906,11 +3926,11 @@ The default is <code>0</code>.
 If the default is changed to, say, <code>2</code>, creation of a single index is henceforth accompanied by the creation of two replicas, which are automatically distributed across the nodes of the cluster running the Index Service.
 No explicit specification within the <code>CREATE INDEX</code> statement is required.</p>
 <div class="paragraph">
-<p>With credentials that provide appropriate authorization, this default can be changed; by means of the <code>curl</code> command, as follows:</p>
+<p>With credentials that provide appropriate authorization, this default can be changed by means of the <code>curl</code> command, as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>curl -u &lt;username&gt;:&lt;password&gt; &lt;host&gt;:9102/settings -d "{\"indexer.settings.num_replica\": &lt;num_replicas&gt;}"</pre>
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -u &lt;username&gt;:&lt;password&gt; &lt;host&gt;:9102/settings -d "{\"indexer.settings.num_replica\": &lt;num_replicas&gt;}"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3920,7 +3940,7 @@ No explicit specification within the <code>CREATE INDEX</code> statement is requ
 </ul>
 </div>
 <div class="paragraph">
-<p>For further information on using N1QL, see <a href="#">java-sdk::n1ql-query.adoc</a>.</p>
+<p>For further information on using N1QL, refer to <a href="../../../n1ql/query.html" class="page">Query Fundamentals</a>.</p>
 </div>
 </div>
 </div>
@@ -3950,7 +3970,7 @@ No explicit specification within the <code>CREATE INDEX</code> statement is requ
 </ul>
 </div>
 <div class="paragraph">
-<p>For detailed information, see <a href="../../../n1ql/n1ql-language-reference/index-partitioning.html" class="page">Index Partitioning</a>.</p>
+<p>For detailed information, refer to <a href="../../../n1ql/n1ql-language-reference/index-partitioning.html" class="page">Index Partitioning</a>.</p>
 </div>
 </div>
 </div>
@@ -3978,6 +3998,64 @@ If index-maintenance is running behind, the query waits for it to catch up.</p>
 </div>
 <div class="paragraph">
 <p>For N1QL, the default consistency is <code>not_bounded</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-snapshots"><a class="anchor" href="#index-snapshots"></a>Index Snapshots</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One or more index <a href="../../clusters-and-availability/intra-cluster-replication.html#database-change-protocol" class="page">snapshots</a> are maintained on disk, to permit rapid recovery if node-failures are experienced.
+In cases where recovery requires an Index-Service node to be restarted, the node’s indexes are rebuilt from the snapshots retained on disk.</p>
+</div>
+<div class="paragraph">
+<p>By default, two index snapshots are stored on disk.
+You can change index snapshot settings via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="page">CLI</a> or the <a href="../../../manage/manage-settings/general-settings.html#index-settings-via-rest" class="page">REST API</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-rollback"><a class="anchor" href="#index-rollback"></a>Index Rollback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The index service also maintains a <a href="../../clusters-and-availability/intra-cluster-replication.html#database-change-protocol" class="page">DCP failover log</a>.
+If necessary, the data service can request the index service to return to a specified rollback point and update its history.</p>
+</div>
+<div class="paragraph">
+<p>You can change index rollback settings via the <a href="../../../manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="page">CLI</a> or the <a href="../../../manage/manage-settings/general-settings.html#index-settings-via-rest" class="page">REST API</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="index-rollback-after-failover"><a class="anchor" href="#index-rollback-after-failover"></a>Index Rollback After Failover</h3>
+<div class="paragraph">
+<p>When a data node <a href="../../clusters-and-availability/failover.html" class="page">fails over</a>, a replica data node is promoted to active.
+If the index service has more recent data than the new active data node, the data node issues a rollback request to the index service.</p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5 and later, when the index service receives the rollback request, it first attempts to revert to a stored index snapshot.
+If successful, the index service does not need to rebuild its indexes from scratch when the data node fails over.
+The index service can continue servicing query clients without interruption.</p>
+</div>
+<div class="paragraph">
+<p>If the index service cannot revert to a current index snapshot, it rebuilds all indexes from scratch.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If <a href="#index-consistency">scan consistency</a> is set to <code>not_bounded</code>, the index service may return stale data for a short time after reverting to a snapshot, until the index service is fully up-to-date with the new active data node.</p>
+</div>
+<div class="paragraph">
+<p>If <a href="#index-consistency">scan consistency</a> is set to <code>request_plus</code>, the index service will not perform any scans until a consistent snapshot is created.
+In this case, stale results are not returned.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>

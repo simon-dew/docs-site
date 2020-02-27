@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Logs API | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/rest-api/logs-rest-api.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/rest-api/logs-rest-api.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3836,33 +3856,18 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The Logs REST API provides the REST API endpoints for retrieving log and diagnostic information as well as how an SDK can add entries into a log.
+REST API endpoints are provided for retrieving log and diagnostic information, and for adding entries into a log.
 </blockquote>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
+<h2 id="summary"><a class="anchor" href="#summary"></a>Summary</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase Server logs various messages, which are available via the REST API.
-These log messages are optionally categorized by the module.
-A generic list of log entries or log entries for a particular category can be retrieved.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If the system is secured, administrator credentials are required to access logs.
-</td>
-</tr>
-</table>
+<p>The following methods and URIs are provided:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Log endpoints</caption>
 <colgroup>
 <col style="width: 13.8504%;">
 <col style="width: 22.4376%;">
@@ -3872,74 +3877,35 @@ If the system is secured, administrator credentials are required to access logs.
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">HTTP method</th>
-<th class="tableblock halign-left valign-top">URI path</th>
+<th class="tableblock halign-left valign-top">URI</th>
 <th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Admin Role</th>
+<th class="tableblock halign-left valign-top">Role</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/diag</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GET</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/diag</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves log and additional server diagnostic information.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster, Bucket</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/sasl_logs</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves a generic list of log information.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster, Bucket</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GET</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/sasl_logs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves information from the <code>debug</code> log file.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/sasl_logs/[log_name]</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Retrieves information from the specified log category.
-Where the <em>log_name</em> is one of the following log types:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>babysitter</p>
-</li>
-<li>
-<p>couchdb</p>
-</li>
-<li>
-<p>debug</p>
-</li>
-<li>
-<p>error</p>
-</li>
-<li>
-<p>info</p>
-</li>
-<li>
-<p>mapreduce_errors</p>
-</li>
-<li>
-<p>ssl_proxy</p>
-</li>
-<li>
-<p>stats</p>
-</li>
-<li>
-<p>view</p>
-</li>
-<li>
-<p>xdcr</p>
-</li>
-<li>
-<p>xdcr_errors</p>
-</li>
-</ul>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster, Bucket</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GET</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/sasl_logs/[log-name]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves information from the specified log file.
+See <a href="rest-logs-get.html" class="page">Retrieving Log Information</a>, for a list of possible values for <code>log-name</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/logClientError</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Adds entries to the central log from a custom Couchbase Server SDK.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/logClientError</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds entries to the central log from a Couchbase Server SDK.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Full, Cluster</p></td>
 </tr>
 </tbody>

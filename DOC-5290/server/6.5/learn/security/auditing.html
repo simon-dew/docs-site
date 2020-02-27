@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Auditing | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/learn/security/auditing.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/learn/security/auditing.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3835,7 +3855,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Couchbase Server provides event-auditing, sending corresponding output to target files.
+Couchbase Server provides event-auditing, sending output to a log-file.
 </blockquote>
 </div>
 </div>
@@ -3844,55 +3864,35 @@ Couchbase Server provides event-auditing, sending corresponding output to target
 <h2 id="introduction-to-auditing"><a class="anchor" href="#introduction-to-auditing"></a>Introduction to Auditing</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Couchbase Server <em>auditing</em> facility recognizes specific <em>events</em>, which can be logged.
-Output is written to an audit log-file, which is periodically rotated.</p>
+<p>The Couchbase Server <em>auditing</em> facility recognizes specific, server-generated <em>events</em>, which can be logged.
+The output is written to a log-file, which is periodically rotated.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="adit_event_types"><a class="anchor" href="#adit_event_types"></a>Audit Event-Types</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase events allow administrators to track the following:</p>
+<p>Events generated by Couchbase Server are of two kinds:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Administrative and configuration changes to the cluster.
-These are logged as <em>Admin</em> events.
-An Admin event does not expose any data.</p>
+<p><em>Admin</em> events, which track administrative and configuration changes to the cluster.</p>
 </li>
 <li>
-<p>Attempts to access and change data.
-These are logged as <em>Data</em> events.</p>
+<p><em>Data</em> events, which track attempts to access and change data.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>This page lists all auditable events, and describes how they can be enabled and disabled.
-It also gives examples of the record-structures used.</p>
 </div>
 <div class="paragraph">
 <p>Note that event-auditing occurs on a <em>per node</em> basis: each node captures its own events only.
 If a cluster-wide record is needed, the individual per node records must be manually consolidated by the administrator.</p>
 </div>
 <div class="paragraph">
-<p>For information on managing auditing, see <a href="../../manage/manage-security/manage-auditing.html" class="page">Manage Auditing</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="filterable-and-non-filterable-events"><a class="anchor" href="#filterable-and-non-filterable-events"></a>Filterable and Non-Filterable Events</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Eventing for each cluster-node is <em>disabled</em> by default; and can be explicitly <em>enabled</em>.
-When enablement has occurred, a subset of Couchbase Server-events is audited, with records concatenated to the end of the <code>audit.log</code> file.
-Events relate to the following Couchbase-Server <em>modules</em>: the REST API, the Data Service, the Query and Index Services, the Eventing Service, the Analytics Service, Views, and the Audit facility.</p>
-</div>
-<div class="paragraph">
-<p>The events in the default subset are <em>non-filterable</em>.
-This means that while auditing is enabled for the node, the events are <em>always</em> recorded, and cannot be selectively disabled.</p>
-</div>
-<div class="paragraph">
-<p>An additional event-subset, of <em>filterable</em> events, is provided.
-These events relate to the same modules as the non-filterable events.
-Each filterable event has an <em>id</em> by which it can be referenced, and can be individually disabled and enabled.
-Optionally, all filterable events can be ignored, for specified users.</p>
+<p>This page explains frequently used audit fields, and gives examples of record-structures.
+For information on managing auditing, see <a href="../../manage/manage-security/manage-auditing.html" class="page">Manage Auditing</a>.
+See the reference page <a href="../../audit-event-reference/audit-event-reference.html" class="page">Audit Event Reference</a>, for a complete list of events that can be audited.</p>
 </div>
 </div>
 </div>
@@ -3900,14 +3900,14 @@ Optionally, all filterable events can be ignored, for specified users.</p>
 <h2 id="audit-fields"><a class="anchor" href="#audit-fields"></a>Audit Fields</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The table below contains some frequently used audit fields with corresponding descriptions.
+<p>The table below lists frequently used audit fields, with corresponding descriptions.
 Note that different event-types generate different field-subsets.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 30%;">
-<col style="width: 50%;">
+<col style="width: 33.3333%;">
+<col style="width: 19.0476%;">
+<col style="width: 47.6191%;">
 </colgroup>
 <thead>
 <tr>
@@ -3918,74 +3918,44 @@ Note that different event-types generate different field-subsets.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The audit-type.
-For example, Login, Startup, Shutdown, Password, AuditStart, AuditStop, AuditTruncate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"id"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The unique identifier for the event.
+For example, <code>20480</code>, <code>8192</code>, <code>28672</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timestamp</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">document</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the date and UTC time of the event in ISO 8601 format.
-For example, <a href="http://www.w3.org/TR/NOTE-datetime" class="bare" target="_blank" rel="noopener">http://www.w3.org/TR/NOTE-datetime</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"name"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the event.
+For example, <code>"login success"</code>, <code>"User was deleted"</code>, <code>"A N1QL UPSERT statement was executed"</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A unique identifier for the event-type.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"description"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A description for the event.
+For example, <code>"Unsuccessful attempt to login to couchbase cluster"</code>, <code>"Node was removed from the cluster"</code>, <code>"Bucket was created"</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>local</code></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>document</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{ip: &lt;String&gt;,
-port: &lt;int&gt;},</code></pre>
-</div>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A JSON document that contains the local IP-address and the port-number of the running instance.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"filtering_permitted"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the event is filterable.
+Can be <code>true</code> or <code>false</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>remote</code></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>document</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{ip: &lt;String&gt;,
-port: &lt;int&gt;},</code></pre>
-</div>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A JSON document that contains the remote IP-address, the port-number, and additional information on the service used on the incoming connection associated with the event.</p>
-<p class="tableblock">Possible services include <code>cbmcd</code>, <code>cbhttp</code>, <code>cbmgmt</code>, <code>cbxdcr</code>, <code>cbn1ql</code>, and <code>cbsyncgw</code>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>user</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A string that identifies the user.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>params</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">document</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Information dependent on the event-type.
-For example, for a bucket-operation, the bucket name is captured.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">integer or string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An error-code or other message, related to the attempted operation.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"mandatory_fields"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains key-value pairs that are mandatory for all events.
+These include the <code>"timestamp"</code> for the event (for example, <code>"2020-01-29T08:02:07.476-08:00"</code>: see <a href="http://www.w3.org/TR/NOTE-datetime" class="bare" target="_blank" rel="noopener">http://www.w3.org/TR/NOTE-datetime</a>), and the <code>"user"</code>.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <div class="sect1">
-<h2 id="the-audit-log-file"><a class="anchor" href="#the-audit-log-file"></a>The audit.log File</h2>
+<h2 id="saving-audit-records"><a class="anchor" href="#saving-audit-records"></a>Saving Audit Records</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When auditing is enabled, logged events are written to a file named <code>audit.log</code>.
+<p>When auditing is enabled, logged events are written to a default file, named <code>audit.log</code>.
 After an administrator-specified period — which must be a minimum of 15 minutes and a maximum of 7 days — this file is closed, and is saved under a modified name that features a timestamp corresponding to the time of saving.
 A new, empty <code>audit.log</code> file is created and saved when a new audit event is generated.
 Note that this <em>rotation</em> may happen earlier if the file reaches its maximum size of 20MB.
@@ -3994,56 +3964,59 @@ For instructions on configuring the file&#8217;s <em>rotation time</em>, see <a 
 <div class="sect2">
 <h3 id="login"><a class="anchor" href="#login"></a>Login</h3>
 <div class="paragraph">
-<p>An audit-record for a successful login might appear as follows:</p>
+<p>An audit record for a successful login might appear as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "timestamp":"2015-02-20T08:48:49.408-08:00",
-  "id":8192,
-  "name":"login success",
-  "description":"Successful login to couchbase cluster",
-  "role":"admin",
+  "description": "Successful login to couchbase cluster",
+  "id": 8192,
+  "name": "login success",
   "real_userid": {
-    "source":"ns_server",
-    "user":"bjones"
+    "domain": "builtin",
+    "user": "Administrator"
   },
- "sessionid":"0fd0b5305d1561ca2b10f9d795819b2e",
- "remote":{
-  "ip":"172.23.107.165", "port":59383
-  }
+  "remote": {
+    "ip": "10.143.192.1",
+    "port": 51410
+  },
+  "roles": [
+    "admin"
+  ],
+  "sessionid": "483a1e627e0ca710bdb3c6f5e8ac0177",
+  "timestamp": "2020-02-04T07:11:09.856-08:00"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In this example, a user named <code>bjones</code> has successfully logged into a Couchbase cluster using the domain IP address <code>172.23.107.165.</code></p>
+<p>In this example, a user named <code>Administrator</code> has successfully logged into a Couchbase cluster using the domain IP address <code>10.143.192.1</code>.</p>
 </div>
-<div class="sect3">
-<h4 id="login-failure"><a class="anchor" href="#login-failure"></a>Login Failure</h4>
+</div>
+<div class="sect2">
+<h3 id="login-failure"><a class="anchor" href="#login-failure"></a>Login Failure</h3>
 <div class="paragraph">
 <p>The following audit-record indicates that a login attempt failed:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "description": "Unsuccessful attempt to login to couchbase cluster",
+  "id": 8193,
+  "name": "login failure",
   "real_userid": {
-    "source": "rejected",
-    "user": "auditBucketUser"
+    "domain": "rejected",
+    "user": "Administrator"
   },
   "remote": {
-    "ip": "127.0.0.1",
-    "port": 64416
+    "ip": "10.143.192.1",
+    "port": 51451
   },
-  "timestamp": "2017-03-16T15:45:27.420Z",
-    "id": 8193,
-    "name": "login failure",
-    "description": "Unsuccessful attempt to login to couchbase cluster"
+  "timestamp": "2020-02-04T07:15:34.098-08:00"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that a user named <code>auditBucketUser</code> incurred an <code>Unsuccessful attempt to login to couchbase cluster</code> on <code>2017-03-16</code> at <code>15:45:27</code>.</p>
-</div>
+<p>This record indicates that a user named <code>Administrator</code> incurred an <code>Unsuccessful attempt to login to couchbase cluster</code> on <code>2020-02-04</code> at <code>07:15:34</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4054,76 +4027,82 @@ For instructions on configuring the file&#8217;s <em>rotation time</em>, see <a 
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "props":{
-    "compression_mode":"off",
-    "max_ttl":12000,
-    "storage_mode":"couchstore",
-    "conflict_resolution_type":"seqno",
-    "eviction_policy":"value_only",
-    "num_threads":3,
-    "flush_enabled":false,
-    "purge_interval":"undefined",
-    "ram_quota":163577856,
-    "replica_index":false,
-    "num_replicas":1
+  "bucket_name": "testBucket",
+  "description": "Bucket was created",
+  "id": 8201,
+  "name": "create bucket",
+  "props": {
+    "compression_mode": "passive",
+    "conflict_resolution_type": "seqno",
+    "eviction_policy": "value_only",
+    "flush_enabled": false,
+    "max_ttl": 0,
+    "num_replicas": 1,
+    "num_threads": 3,
+    "purge_interval": "undefined",
+    "ram_quota": 268435456,
+    "replica_index": false,
+    "storage_mode": "couchstore"
   },
-  "type":"membase",
-  "bucket_name":"ProductionBucket",
-  "real_userid":{
-    "source":"ns_server",
-    "user":"Administrator"
+  "real_userid": {
+    "domain": "builtin",
+    "user": "Administrator"
   },
-  "sessionid":"5dd53fe63703c7fdc45ff75596e39a35",
-  "remote":{
-    "ip":"127.0.0.1",
-    "port":61908
+  "remote": {
+    "ip": "10.143.192.1",
+    "port": 51463
   },
-  "timestamp":"2018-02-07T15:22:54.960Z",
-  "id":8201,
-  "name":"create bucket",
-  "description":"Bucket was created"
+  "sessionid": "90ba9344e7fbf0d39ae85deee00a0274",
+  "timestamp": "2020-02-04T07:16:51.804-08:00",
+  "type": "membase"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that a <code>Bucket was created</code> on <code>2018-02-07</code> at <code>15:22:54</code>; that the bucket was named <code>ProductionBucket</code>; and that its eviction-policy was defined as <code>value_only</code>.
-The bucket was created by the system&#8217;s <code>Full Administrator</code>.</p>
+<p>This record indicates that a <code>Bucket was created</code> on <code>2020-02-04</code> at <code>07:16:51</code>; that the bucket was named <code>testBucket</code>; and that its eviction-policy was defined as <code>value_only</code>.
+The bucket was created by the user <code>Administrator</code>.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="bucket-ttl-modification"><a class="anchor" href="#bucket-ttl-modification"></a>Bucket TTL Modification</h3>
 <div class="paragraph">
-<p>The audit-record below corresponds to the modification of Bucket TTL, for the bucket created immediately above.</p>
+<p>The audit record below corresponds to the modification of Bucket TTL, for the bucket created immediately above.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "props":{
-    "max_ttl":15000,
-    "storage_mode":"couchstore",
-    "eviction_policy":"value_only",
-    "num_threads":3,
-    "flush_enabled":false,
-    "purge_interval":"undefined",
-    "ram_quota":163577856,
-    "num_replicas":1
+  "bucket_name": "testBucket",
+  "description": "Bucket was modified",
+  "id": 8202,
+  "name": "modify bucket",
+  "props": {
+    "compression_mode": "passive",
+    "eviction_policy": "value_only",
+    "flush_enabled": false,
+    "max_ttl": 10000000,
+    "num_replicas": 1,
+    "num_threads": 3,
+    "purge_interval": "undefined",
+    "ram_quota": 268435456,
+    "storage_mode": "couchstore"
   },
-  "type":"membase",
-  "bucket_name":"ProductionBucket",
-  "real_userid":{
-    "source":"ns_server",
-    "user":"Administrator"
+  "real_userid": {
+    "domain": "builtin",
+    "user": "Administrator"
   },
-  "sessionid":"12774a2e146c650eeed8c6d9486857ad",
-  "remote":{
-      "ip":"127.0.0.1","port":61966
+  "remote": {
+    "ip": "10.143.192.1",
+    "port": 51498
   },
-  "timestamp":"2018-02-07T15:23:51.350Z",
-  "id":8202,
-  "name":"modify bucket",
-  "description":"Bucket was modified"
+  "sessionid": "90ba9344e7fbf0d39ae85deee00a0274",
+  "timestamp": "2020-02-04T07:18:59.669-08:00",
+  "type": "membase"
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>This record indicates that the bucket <code>testBucket</code> was modified on <code>2020-02-04</code> at <code>07:18:59</code>.
+The <code>max_ttl</code> is now represented as <code>10000000</code> seconds.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4134,1201 +4113,84 @@ The bucket was created by the system&#8217;s <code>Full Administrator</code>.</p
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "roles": [
-    "ro_admin"
-  ],
+  "description": "User was added or updated",
+  "full_name": "Test User",
+  "groups": [],
+  "id": 8232,
   "identity": {
-    "source": "builtin",
-    "user": "auditBucketUser2"
+    "domain": "local",
+    "user": "testUser"
   },
+  "name": "set user",
   "real_userid": {
-    "source": "ns_server",
+    "domain": "builtin",
     "user": "Administrator"
   },
-  "sessionid": "dca284b5efe1937a1a4085ef88c2fbcb",
+  "reason": "added",
   "remote": {
-    "ip": "127.0.0.1",
-    "port": 64416
+    "ip": "10.143.192.1",
+    "port": 51514
   },
-  "timestamp": "2017-03-16T15:44:32.254Z",
-  "id": 8232,
-  "name": "set user",
-  "description": "User was added or updated"
+  "roles": [
+    "bucket_admin[testBucket]"
+  ],
+  "sessionid": "82d1c8837f0f7cbafefe3b5c6722a016",
+  "timestamp": "2020-02-04T07:21:01.612-08:00"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that a user named <code>auditBucketUser2</code> was created by the <code>Full Administator</code> on <code>2017-03-16</code> at <code>15:44:32</code>; and that the user was given the role of <code>ro_admin</code>.</p>
+<p>This record indicates that a user named <code>testUser</code> was created by <code>Administrator</code> on <code>2020-02-04</code> at <code>07:21:01</code>; and that the user was given the role of <code>bucket_admin</code> for the bucket <code>testBucket</code>.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="index-creation"><a class="anchor" href="#index-creation"></a>Index Creation</h3>
 <div class="paragraph">
-<p>The following audit-record indicates that an index was created or updated:</p>
+<p>The following audit-record indicates that a <em>Full Text Index</em> was created or updated:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "timestamp": "2017-03-16T16:12:36.198Z",
+  "description": "FTS index was created/Updated",
+  "id": 24577,
+  "index_name": "travelSampleIndex",
+  "name": "Create/Update index",
   "real_userid": {
-    "source": "ns_server",
+    "domain": "builtin",
     "user": "Administrator"
   },
-  "index_name": "def-airportname",
-  "id": 24577,
-  "name": "Create/Update index",
-  "description": "FTS index was created/Updated"
+  "timestamp": "2020-02-04T07:23:48.482-08:00"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that an <code>FTS</code> index named <code>def-airportname</code> was created or updated on <code>201703-16</code> at <code>16:12:36</code>.</p>
+<p>This record indicates that an <code>FTS</code> index named <code>travelSampleIndex</code> was created or updated on <code>2020-02-04</code> at <code>07:23:48</code>.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="administrative-events"><a class="anchor" href="#administrative-events"></a>Event Tables</h2>
+<h2 id="filterable-and-non-filterable-events"><a class="anchor" href="#filterable-and-non-filterable-events"></a>Filterable and Non-Filterable Events</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The events listed in the following tables support the auditing of administrative and data changes, made on the cluster.
-Each table corresponds to a module.</p>
+<p>Eventing for each cluster-node is <em>disabled</em> by default; and can be explicitly <em>enabled</em>.
+When enablement has occurred, a default subset of Couchbase Server-events is audited, with records duly concatenated to the end of the <code>audit.log</code> file.
+The events in this default subset are <em>non-filterable</em>; meaning that while auditing is enabled for the node, <em>all</em> the events in the subset are <em>always</em> recorded, and cannot be selectively disabled.</p>
 </div>
 <div class="paragraph">
-<p>In each table, the first column (at the left) features the event-group heading (thereby repeating the table&#8217;s title, so as to ensure readability throughout the longer tables).
-The second column provides the event name.
-The third column provides a filter id for the event, if the event is filterable: if the event is non-filterable, a filter id is indicated to be non-applicable.
-The fourth column provides a description of the event; and the fifth indicates whether the event is classified as <em>Data</em> or <em>Admin</em>.</p>
+<p>An additional event-subset, of <em>filterable</em> events, is provided.
+These events relate to the same modules as the non-filterable events: however, filterable events can be individually disabled or enabled; and, optionally, all filterable events can be ignored, for specified users.</p>
 </div>
 <div class="paragraph">
-<p>The tables &#8212; which are for the <a href="#rest-api-event-list-table">REST API</a>, the <a href="#data-service-event-list-table">Data Service</a>, the <a href="#query-service-event-list-table">Query Service</a>, the <a href="#eventing-service-event-list-table">Eventing Service</a>, he <a href="#analytics-service-event-list-table">Analytics Service</a>, <a href="#views-event-list-table">Views</a>, and <a href="#audit-event-list-table">Audit</a> &#8212; are as follows.</p>
+<p>For information on how to filter events, see <a href="../../manage/manage-security/manage-auditing.html" class="page">Manage Auditing</a>.</p>
 </div>
-<div class="sect2">
-<h3 id="rest-api-event-list-table"><a class="anchor" href="#rest-api-event-list-table"></a>REST API Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 24%;">
-<col style="width: 12%;">
-<col style="width: 32%;">
-<col style="width: 16%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">mutate document</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8243</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Document was mutated via the REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">read document</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8255</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Document was read via the REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">alert email sent</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8257</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An alert email was successfully sent</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">login success</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Successful login to cluster</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">login failure</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unsuccessful attempt to login to cluster</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">delete user</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">user credentials change</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User credentials were changed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">add node</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Node was added to the cluster</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">remove node</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Node was removed from the cluster</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">enter node recovery</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Entered node recovery</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">rebalance initiated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Rebalance was initiated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">create bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bucket was created</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bucket was modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">delete bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bucket was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">flush bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bucket was flushed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">start loading sample</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Started loading sample</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">disk storage conf</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Disk storage configuration was set</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">rename node</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The node was renamed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">setup node services</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The services were set for the node</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">change cluster settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster settings were changed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">add group</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Server group was added</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">delete group</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Server group was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">update group</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Server group was updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr create cluster ref</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Remote cluster reference was created</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr update cluster ref</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Remote cluster reference was updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr delete cluster ref</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Remote cluster reference was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr create replication</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XDCR replication was created</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr update replication</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XDCR replication was updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr cancel replication</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">XDCR replication was canceled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">xdcr update global settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Global XDCR settings were updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">enable auto failover</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Auto Failover was enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">disable auto failover</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Auto Failover was disabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">reset auto failover count</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Count for Auto Failover was reset</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">enable cluster alerts</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster alerts were enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">disable cluster alerts</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster alerts were disabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify compaction settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Compaction settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">regenerate certificate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Self-signed SSL certificate was regenerated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">setup saslauthd</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Saslauthd settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">internal settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Internal Settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">upload cluster ca</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Upload cluster CA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">reload node certificate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reload node certificate chain and pkey from inbox</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify index storage mode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Modify Index Storage Mode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">set user</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User was added or updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">master password change</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Master password change was requested</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">encryption key rotation</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Encryption key rotation was requested</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">password policy</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Password policy was changed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">client cert auth</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client certificate authentication settings changed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">security settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Security Settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">start log collection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Log collection run was started</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify log redaction settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Log redaction settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">configured audit daemon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">loaded configuration file for audit daemon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify index settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Index service settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify query settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query service settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">set user group</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User group was added or updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">delete user group</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User group was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify ldap settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Ldap settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">developer preview settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Developer preview settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">license settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">License Settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">set user profile</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UI profile was added or updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">delete user profile</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UI profile was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">modify retry rebalance</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retry rebalance settings were modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">enable auto reprovision</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Auto reprovision was enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">disable auto reprovision</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Auto reprovision was disabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">failover settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Failover settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REST API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">logout success</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Successful logout of couchbase cluster</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
 </div>
-<div class="sect2">
-<h3 id="data-service-event-list-table"><a class="anchor" href="#data-service-event-list-table"></a>Data Service Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 24%;">
-<col style="width: 16%;">
-<col style="width: 28%;">
-<col style="width: 16%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">opened DCP connection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20480</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">opened DCP connection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">external memcached bucket flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20482</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">External user flushed the content of a memcached bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">invalid packet</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20483</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Rejected an invalid packet</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">authentication succeeded</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20485</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication to the cluster succeeded</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">document read</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20488</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Document was read</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">document locked</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20489</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Document was locked</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">document modify</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20490</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Document was modified</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">document delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20491</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Document was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">select bucket</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">20492</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The specified bucket was selected</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">authentication failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication to the cluster failed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">command access failure</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Access to command is not allowed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">privilege debug configured</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The state of the privilege debug mode changed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">privilege debug</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Access to a resource was granted due to privilege debug</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
 </div>
-<div class="sect2">
-<h3 id="query-service-event-list-table"><a class="anchor" href="#query-service-event-list-table"></a>Query Service Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 24%;">
-<col style="width: 12%;">
-<col style="width: 32%;">
-<col style="width: 16%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SELECT statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28672</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL SELECT statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EXPLAIN statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28673</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL EXPLAIN statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PREPARE statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28674</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL PREPARE statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">INFER statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28675</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL INFER statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">INSERT statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28676</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL INSERT statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UPSERT statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28677</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL UPSERT statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DELETE statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28678</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL DELETE statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UPDATE statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28679</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL UPDATE statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">MERGE statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28680</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL MERGE statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CREATE INDEX statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28681</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL CREATE INDEX statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DROP INDEX statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28682</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL DROP INDEX statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ALTER INDEX statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28683</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL ALTER INDEX statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">BUILD INDEX statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28684</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL BUILD INDEX statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GRANT ROLE statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28685</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL GRANT ROLE statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">REVOKE ROLE statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28686</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL REVOKE ROLE statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UNRECOGNIZED statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28687</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An unrecognized statement was received by the N1QL query engine</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CREATE PRIMARY INDEX statement</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28688</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A N1QL CREATE PRIMARY INDEX statement was executed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/stats API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28689</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/stats</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/vitals API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28690</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/vitals</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/prepareds API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28691</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/prepareds</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/active_requests API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28692</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/active_requests</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/indexes/prepareds API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28693</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/indexes/prepareds</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/indexes/active_requests API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28694</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/indexes/active_requests</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/indexes/completed_requests API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28695</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/indexes/completed_requests</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/ping API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28697</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/ping</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/config API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28698</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/ssl_cert API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28699</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/ssl_cert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/settings API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28700</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/clusters API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28701</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/clusters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/completed_requests API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28702</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/completed_requests</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/functions API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28704</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/admin/indexes/functions API request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">28705</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">An HTTP request was made to the API at /admin/indexes/functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">N1QL configuration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">States that N1QL is using audit configuration with specified uuid</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="eventing-service-event-list-table"><a class="anchor" href="#eventing-service-event-list-table"></a>Eventing Service Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 14.8148%;">
-<col style="width: 25.9259%;">
-<col style="width: 14.8148%;">
-<col style="width: 29.6296%;">
-<col style="width: 14.8149%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Create Function</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32768</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing function definition was created or updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Delete Function</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32769</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing function definition was deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fetch Functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32770</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing function definition was read</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List Deployed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32771</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing deployed functions list was read</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fetch Drafts</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32772</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing function draft definitions were read</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Delete Drafts</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32773</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing function draft definitions were deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Save Draft</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32774</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Save a draft definition to the store</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Start Debug</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32775</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Start eventing function debugger</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stop Debug</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32776</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stop eventing function debugger</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Start Tracing</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32777</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Start tracing eventing function execution</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stop Tracing</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32778</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stop tracing eventing function execution</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Set Settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32779</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Save settings for a given app</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fetch Config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32780</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Get config for eventing</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Save Config</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32781</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Save config for eventing</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Cleanup Eventing</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32782</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Clears up app definitions and settings from metakv</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Get Settings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32783</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Get settings for a given app</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Import Functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32784</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Import a list of functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Export Functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32785</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Export the list of functions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List Running</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">32786</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Eventing running function list was read</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="analytics-service-event-list-table"><a class="anchor" href="#analytics-service-event-list-table"></a>Analytics Service Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 14.8148%;">
-<col style="width: 25.9259%;">
-<col style="width: 14.8148%;">
-<col style="width: 29.6296%;">
-<col style="width: 14.8149%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Analytics Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Service configuration change</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">36865</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A successful service configuration change was made</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Analytics Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Node configuration change</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">36866</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A successful node configuration change was made</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="views-event-list-table"><a class="anchor" href="#views-event-list-table"></a>Views Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 15.3846%;">
-<col style="width: 23.0769%;">
-<col style="width: 15.3846%;">
-<col style="width: 30.7692%;">
-<col style="width: 15.3847%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Views</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Create Design Doc</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">40960</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Design Doc is Created</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Views</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Delete Design Doc</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">40961</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Design Doc is Deleted</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Views</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query DDoc Meta Data</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">40962</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Design Doc Meta Data Query Request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Views</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">View Query</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">40963</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">View Query Request</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Views</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Update Design Doc</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">40964</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Design Doc is Updated</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Views</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Audit Configuration Change</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Change in Audit Configuration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="audit-event-list-table"><a class="anchor" href="#audit-event-list-table"></a>Audit Events</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 15.3846%;">
-<col style="width: 23.0769%;">
-<col style="width: 15.3846%;">
-<col style="width: 30.7692%;">
-<col style="width: 15.3847%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Group</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Name</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Filter ID</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Event Type</strong></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Audit</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">configured audit daemon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Loaded configuration file for audit daemon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Audit</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">shutting down audit daemon</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The audit daemon is being shut down</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
-</tr>
-</tbody>
-</table>
+<div class="sect1">
+<h2 id="event-tables"><a class="anchor" href="#event-tables"></a>Event Tables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>See the reference page <a href="../../audit-event-reference/audit-event-reference.html" class="page">Audit Event Reference</a>, for a complete list of events that can be audited.</p>
 </div>
 </div>
 </div>

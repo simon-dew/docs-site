@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>setting-audit | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/cli/cbcli/couchbase-cli-setting-audit.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/cli/cbcli/couchbase-cli-setting-audit.html">
     <link rel="stylesheet" href="../../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="../../rest-api/get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="../../rest-api/rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="../../rest-api/rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3844,8 +3864,10 @@
 <div class="sectionbody">
 <div class="verseblock">
 <pre class="content"><em>couchbase-cli setting-audit</em> [--cluster &lt;url&gt;] [--username &lt;user&gt;]
-    [--password &lt;password&gt;] [--audit-enabled &lt;num&gt;] [--audit-log-path &lt;path&gt;]
-    [--audit-log-rotate-interval &lt;seconds&gt;] [--audit-log-rotate-size &lt;bytes&gt;]</pre>
+    [--password &lt;password&gt;] [--list-filterable-events] [--get-settings]
+    [--set] [--audit-enabled &lt;1|0&gt;] [--audit-log-path &lt;path&gt;]
+    [--audit-log-rotate-interval &lt;seconds&gt;] [--audit-log-rotate-size &lt;bytes&gt;]
+    [--disabled-users &lt;user-list&gt;] [--disable-events &lt;event-list&gt;]</pre>
 </div>
 </div>
 </div>
@@ -3856,8 +3878,10 @@
 <p>Auditing is used to observe the action of users in the cluster. It is usually
 turned on for security purposes to ensure that those without permission to
 access information do not access it. By default auditing is disabled in
-Couchbase. The setting-audit command can be used to enable auditing, set the
-auditing log path, and change the auditing log rotation interval.</p>
+Couchbase. The setting-audit command can be used to retrieve the current
+auditing configuration, retrieve the auditable events and descriptions, to
+enable and disable auditing, set the auditing log path, change the auditing log
+rotation interval and disable auditing for certain users and events.</p>
 </div>
 </div>
 </div>
@@ -3889,6 +3913,20 @@ given then the command will prompt the user for a password through
 non-echoed stdin. You may also specify your password by using the
 environment variable CB_REST_PASSWORD.</p>
 </dd>
+<dt class="hdlist1">--list-filterable-events</dt>
+<dd>
+<p>Returns a table or a JSON list (if --output json used) with all the event
+IDs with there descriptions.</p>
+</dd>
+<dt class="hdlist1">--get-settings</dt>
+<dd>
+<p>Returns the current audit settings including which events are disabled and
+which are enabled.</p>
+</dd>
+<dt class="hdlist1">--set</dt>
+<dd>
+<p>Sets the cluster audit settings.</p>
+</dd>
 <dt class="hdlist1">--audit-enabled &lt;num&gt;</dt>
 <dd>
 <p>Specifies whether or not auditing is enabled. To enabled auditing set this
@@ -3915,6 +3953,17 @@ file is rotated to ensure that the audit log does not consume too much disk
 space. The minimum audit log rotate size is 0 bytes and maximum is
 524,288,000 (500MB). When it is set to 0 the log will not be rotated based
 on size.</p>
+</dd>
+<dt class="hdlist1">--disabled-users &lt;user-list&gt;</dt>
+<dd>
+<p>A comma separated list of users to ignore events from.</p>
+</dd>
+<dt class="hdlist1">--disable-events &lt;events-list&gt;</dt>
+<dd>
+<p>A comma separated list of events IDs to disable auditing for
+(e.g 8243,8255,8257). To retrieve information of what event ID maps to
+what event use the --list-filterable-events to retrieve a list of IDs with
+descriptions.</p>
 </dd>
 </dl>
 </div>
@@ -3951,6 +4000,52 @@ a port other that 8091.</p>
 <h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>To get the current audit settings run the command below.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-audit -c 192.168.1.5:8091 --username Administrator \
+ --password password --get-settings</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If auditing is disabled the expected output will be of the form (all the
+commands can return json if <code>--output json</code> is provided):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Audit enabled: False
+UUID: 44726500
+Log path: /opt/couchbase/var/lib/couchbase/logs
+Rotate interval: 86400
+Rotate size: 20971520
+Disabled users: []</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To retrieve the list of events that can be audit use the command:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-audit -c 192.168.1.5:8091 --username Administrator \
+ --password password --list-filterable-events</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>ID    | Module         | Name                                           | Description
+-------------------------------------------------------------------------------------
+36865 | analytics      | Service configuration change                   | A successful service configuration change was made.
+36866 | analytics      | Node configuration change                      | A successful node configuration change was made.
+32768 | eventing       | Create Function                                | Eventing function definition was created or updated
+....
+40961 | view_engine    | Delete Design Doc                              | Design Doc is Deleted
+40962 | view_engine    | Query DDoc Meta Data                           | Design Doc Meta Data Query Request
+40963 | view_engine    | View Query                                     | View Query Request
+40964 | view_engine    | Update Design Doc                              | Design Doc is Updated</pre>
+</div>
+</div>
+<div class="paragraph">
 <p>To enable auditing on a cluster and set the audit log to the default logs folder
 on a linux installation with a log rotate interval of 7 days run the command
 below.</p>
@@ -3958,7 +4053,7 @@ below.</p>
 <div class="literalblock">
 <div class="content">
 <pre>$ couchbase-cli setting-audit -c 192.168.1.5:8091 --username Administrator \
- --password password --enabled 1 --audit-log-rotate-interval 604800 \
+ --password password --set --audit-enabled 1 --audit-log-rotate-interval 604800 \
  --audit-log-path /opt/couchbase/var/lib/couchbase/logs</pre>
 </div>
 </div>
@@ -3969,8 +4064,21 @@ on a linux installation with a log rotate size of 20MB run the command below.</p
 <div class="literalblock">
 <div class="content">
 <pre>$ couchbase-cli setting-audit -c 192.168.1.5:8091 --username Administrator \
- --password password --enabled 1 --audit-log-rotate-size 20971520 \
+ --password password --set --audit-enabled 1 --audit-log-rotate-size 20971520 \
  --audit-log-path /opt/couchbase/var/lib/couchbase/logs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To enable auditing on a cluster and set the audit log to the default logs folder
+on a linux installation with a log rotate size of 20MB run the command below and disable
+auditing for users backup and restore as well as disable auditing for event 40964 and 40963.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ couchbase-cli setting-audit -c 192.168.1.5:8091 --username Administrator \
+ --password password --set --audit-enabled 1 --audit-log-rotate-size 20971520 \
+ --audit-log-path /opt/couchbase/var/lib/couchbase/logs \
+ --disabled-users backup,restore --disable-events 40964,40963</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3979,7 +4087,7 @@ on a linux installation with a log rotate size of 20MB run the command below.</p
 <div class="literalblock">
 <div class="content">
 <pre>$ couchbase-cli setting-audit -c 192.168.1.5:8091 --username Administrator \
- --password password --enabled 1</pre>
+ --password password --set --audit-enabled 0</pre>
 </div>
 </div>
 </div>

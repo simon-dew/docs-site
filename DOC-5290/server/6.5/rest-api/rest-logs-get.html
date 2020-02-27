@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Retrieving Log Information | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5669/server/6.5/rest-api/rest-logs-get.html">
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5290/server/6.5/rest-api/rest-logs-get.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -27,7 +27,7 @@
       <div id="topbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown">
-            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5669">Docs</a>
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-5290">Docs</a>
             <div class="navbar-dropdown explore">
               <div class="title">Couchbase Documentation Overview</div>
               <div class="cols">
@@ -1086,6 +1086,11 @@
   </li>
   <li class="nav-item" data-depth="1">
     <span class="nav-line">
+    <a class="nav-link" href="../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
     <button class="nav-toggle"></button>
     <a class="nav-link" href="../manage/monitor/monitor-intro.html">Monitor</a>
     </span>
@@ -1118,6 +1123,11 @@
   <li class="nav-item" data-depth="2">
     <span class="nav-line">
     <a class="nav-link" href="../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
     </span>
   </li>
 </ul>
@@ -3413,17 +3423,17 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-compact-post.html">Compacting Buckets</a>
+    <a class="nav-link" href="rest-compact-post.html">Performing Compaction Manually</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-set.html">Setting Auto-Compaction</a>
+    <a class="nav-link" href="rest-autocompact-global.html">Auto-Compaction: Global</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-autocompact-get.html">Getting Auto-Compaction Settings</a>
+    <a class="nav-link" href="rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
     </span>
   </li>
 </ul>
@@ -3452,11 +3462,6 @@
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
     <a class="nav-link" href="get-statement-indexes.html">Retrieve a GSI Statement</a>
-    </span>
-  </li>
-  <li class="nav-item" data-depth="4">
-    <span class="nav-line">
-    <a class="nav-link" href="rest-index-settings.html">Index Settings API</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3682,6 +3687,11 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
+    <a class="nav-link" href="rest-whoami.html">Who Am I?</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
     <a class="nav-link" href="rest-auditing.html">Configure Auditing</a>
     </span>
   </li>
@@ -3769,9 +3779,19 @@
     <a class="nav-link" href="../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="3">
+    <span class="nav-line">
+    <a class="nav-link" href="../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+    </span>
+  </li>
 </ul>
   </li>
 </ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+    </span>
   </li>
 </ul>
   </li>
@@ -3837,207 +3857,183 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Log information is retrieved via the <code>/diag</code> and <code>/sasl_logs</code> REST endpoints.
+Diagnostic and log information can be retrieved by using the <code>GET</code> method with the <code>/diag</code> and the <code>/sasl_logs</code> URIs.
 </blockquote>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="rest-logs-get-diag"><a class="anchor" href="#rest-logs-get-diag"></a>Getting log and server info</h2>
+<h2 id="http-method-and-uris"><a class="anchor" href="#http-method-and-uris"></a>HTTP method and URIs</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="http-method-and-uri"><a class="anchor" href="#http-method-and-uri"></a>HTTP method and URI</h3>
-<div class="paragraph">
-<p>To retrieve log and server diagnostic information, perform a GET with the <code>/diag</code> endpoint.</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>GET /diag</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h3>
-<div class="paragraph">
-<p>Curl request syntax:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X GET -u [admin]:[password] http://[hostname]:8091/diag</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example"><a class="anchor" href="#example"></a>Example</h3>
-<div class="paragraph">
-<p>Curl request example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X GET -u Administrator:password \
-  http://127.0.0.1:8091/diag</pre>
-</div>
+<pre>GET /diag
+
+GET /sasl_logs/[log-name]</pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="rest-logs-get-sasl"><a class="anchor" href="#rest-logs-get-sasl"></a>Getting generic log info</h2>
+<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="http-method-and-uri-2"><a class="anchor" href="#http-method-and-uri-2"></a>HTTP method and URI</h3>
 <div class="paragraph">
-<p>To retrieve a generic list of logs, perform a GET with the <code>/sasl_logs</code> endpoint.</p>
+<p>The <code>GET /diag</code> http method and URI returns general Couchbase Server diagnostic information.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>GET /sasl_logs</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="syntax-2"><a class="anchor" href="#syntax-2"></a>Syntax</h3>
 <div class="paragraph">
-<p>Curl request syntax:</p>
+<p>The <code>GET /sasl_logs</code> http method and URI returns information in a Couchbase Server <em>log</em> file.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X GET -u [admin]:[password]
-  http://[hostname]:8091/sasl_logs</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-2"><a class="anchor" href="#example-2"></a>Example</h3>
 <div class="paragraph">
-<p>Curl request example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X GET -u Administrator:password \
-  http://127.0.0.1:8091/sasl_logs</pre>
-</div>
-</div>
+<p>For general information on logging and log files, including the location of all log files, see <a href="../manage/manage-logging/manage-logging.html" class="page">Manage Logging</a>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="rest-logs-get-sasl-single"><a class="anchor" href="#rest-logs-get-sasl-single"></a>Getting specific log info</h2>
+<h2 id="curl-syntax"><a class="anchor" href="#curl-syntax"></a>Curl Syntax</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="http-method-and-uri-3"><a class="anchor" href="#http-method-and-uri-3"></a>HTTP method and URI</h3>
-<div class="paragraph">
-<p>To retrieve a specific log file, perform a GET on the <code>sasl_logs</code> endpoint and provide a specific log category.</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>GET /sasl_logs/[log_name]</pre>
+<pre>curl -v -X GET -u [admin]:[password] http://[hostname]:8091/diag
+
+curl -v -X GET -u [admin]:[password] http://[hostname]:8091/sasl_logs[log-name]</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The <code>log-name</code> argument can be any one of the following, each of which is a Couchbase Server log file:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>audit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>babysitter</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>couchdb</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>debug</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>goxdcr</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http_access</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>info</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>json_rpc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mapreduce_errors</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>memcached</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>metakv</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ns_couchdb</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>reports</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ssl_proxy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stats</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>views</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>xdcr_target</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If no <code>log-name</code> argument is specified, the default value is <code>debug</code>; whereby the contents of the <code>debug.log</code> file are displayed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="responses"><a class="anchor" href="#responses"></a>Responses</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For both URIs, success gives <code>200 OK</code>, and displays the returned content.
+Failure to authenticate gives <code>401 Unauthorized</code>.
+When <code>GET /sasl_logs</code> is used, a <code>log-name</code> that is either incorrectly specified, or corresponds to a log file that does not currently exist, gives <code>404 Object Not Found</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following examples show how to return diagnostic information and log-file content.</p>
 </div>
 <div class="sect2">
-<h3 id="syntax-3"><a class="anchor" href="#syntax-3"></a>Syntax</h3>
+<h3 id="returning-diagnostic-information"><a class="anchor" href="#returning-diagnostic-information"></a>Returning Diagnostic Information</h3>
 <div class="paragraph">
-<p>Curl request syntax:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X GET -u [admin]:[password]
-  http://[hostname]:8091/sasl_logs/[log_name]</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Where the <em>logName</em> is one of the following log types:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>babysitter</p>
-</li>
-<li>
-<p>couchdb</p>
-</li>
-<li>
-<p>debug</p>
-</li>
-<li>
-<p>error</p>
-</li>
-<li>
-<p>info</p>
-</li>
-<li>
-<p>mapreduce_errors</p>
-</li>
-<li>
-<p>ssl_proxy</p>
-</li>
-<li>
-<p>stats</p>
-</li>
-<li>
-<p>view</p>
-</li>
-<li>
-<p>xdcr</p>
-</li>
-<li>
-<p>xdcr_errors</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
-<div class="paragraph">
-<p>Curl request example to retrieve SSL proxy log information:</p>
+<p>The following example uses <code>GET /diag</code> to return Couchbase Server diagnostic information:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>curl -v -X GET -u Administrator:password \
-  http://10.5.2.118:8091/sasl_logs/ssl_proxy</pre>
+http://10.143.194.101:8091/diag</pre>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="response"><a class="anchor" href="#response"></a>Response</h3>
 <div class="paragraph">
-<p>Returns information similar to the following:</p>
+<p>If successful, this returns (extensive) output whose initial section resembles the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>* About to connect() to 10.5.2.118 port 8091 (#0)
-*   Trying 10.5.2.118... connected
-* Connected to 10.5.2.118 (10.5.2.118) port 8091 (#0)
-* Server auth using Basic with user 'Administrator'
-&gt; GET /sasl_logs/ssl_proxy HTTP/1.1
-&gt; Authorization: Basic QWRtaW5pc3RyYXRvcjpwYXNzd29yZA==
-&gt; User-Agent: curl/7.21.4 (x86_64-unknown-linux-gnu) libcurl/7.21.4 OpenSSL/0.9.8b zlib/1.2.3
-&gt; Host: 10.5.2.118:8091
-&gt; Accept: */*
-&gt;
-&lt; HTTP/1.1 200 OK
-&lt; Transfer-Encoding: chunked
-&lt; Server: Couchbase Server
-&lt; Pragma: no-cache
-&lt; Date: Thu, 06 Feb 2014 22:50:12 GMT
-&lt; Content-Type: text/plain; charset=utf-8
-&lt; Cache-Control: no-cache
-&lt;
-logs_node (ssl_proxy):
+<pre>logs:
 -------------------------------
-[ns_server:info,2014-01-24T11:25:18.066,nonode@nohost:&lt;0.30.0&gt;:ns_ssl_proxy:init_logging:84]Brought up ns_ssl_proxy logging
-[error_logger:info,2014-01-24T11:25:18.082,nonode@nohost:error_logger&lt;0.5.0&gt;:ale_error_logger_handler:log_report:72]
-=========================PROGRESS REPORT=========================
-          supervisor: {local,ns_ssl_proxy_sup}
-             started: [{pid,&lt;0.64.0&gt;},
-                       {name,ns_ssl_proxy_server_sup},
-                       {mfargs,{ns_ssl_proxy_server_sup,start_link,[]}},
-                       {restart_type,permanent},
-                       {shutdown,infinity},
-                       {child_type,supervisor}]</pre>
+2020-02-07T04:30:30.429-08:00, ns_cookie_manager:3:info:cookie update(ns_1@cb.local) - Initial otp cookie generated: {sanitized,
+                                  &lt;&lt;"ioEsqBp4LGNDxWCwMhypDPgfIrcseb1GCgSBno+G7d8="&gt;&gt;}
+2020-02-07T04:30:30.580-08:00, menelaus_sup:1:info:web start ok(ns_1@cb.local) - Couchbase Server has started on web port 8091 on node 'ns_1@cb.local'. Version:
+ "6.5.0-4960-enterprise".
+2020-02-07T04:30:30.816-08:00, mb_master:0:info:message(ns_1@cb.local) - I'm the only node, so I'm the master.
+2020-02-07T04:30:30.880-08:00, compat_mode_manager:0:warning:message(ns_1@cb.local) - Changed cluster compat mode from undefined to [6,5]
+2020-02-07T04:30:30.937-08:00, memcached_config_mgr:0:info:message(ns_1@cb.local) - Hot-reloaded memcached.json for config change of the following keys: [&lt;&lt;"cli
+ent_cert_auth"&gt;&gt;,</pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="returning-log-file-content"><a class="anchor" href="#returning-log-file-content"></a>Returning Log-File Content</h3>
+<div class="paragraph">
+<p>The following example uses <code>GET /sasl_logs</code> with the <code>stats</code> endpoint, to return the contents of the <code>stats.log</code> log file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -v -X GET -u Administrator:password \
+http://10.143.194.101:8091/sasl_logs/stats</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If successful, this returns (extensive) output, whose initial section resembles the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>logs_node (stats.log):
+-------------------------------
+[ns_doctor:debug,2020-02-07T04:30:30.602-08:00,ns_1@cb.local:ns_doctor&lt;0.354.0&gt;:ns_doctor:handle_info:182]Got initial status:
+[{'ns_1@cb.local',
+     [{last_heard,-576460749154163105},
+      {now,-576460749183621671},
+      {active_buckets,[]},
+      {ready_buckets,[]},
+      {status_latency,29351},
+      {outgoing_replications_safeness_level,[]},
+      {incoming_replications_conf_hashes,[]},
+      {meminfo,
+          &lt;&lt;"MemTotal:        1016332 kB\nMemFree:</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>General information on logging and log files, including the location of all log files, is provided in <a href="../manage/manage-logging/manage-logging.html" class="page">Manage Logging</a>.</p>
 </div>
 </div>
 </div>
