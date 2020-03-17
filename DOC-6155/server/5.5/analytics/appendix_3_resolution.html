@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Variable Bindings and Name Resolution | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6155/server/6.5/analytics/appendix_3_resolution.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <meta name="description" content="A description of variable bindings and name resolution.">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="server">
+    <meta name="dcterms.identifier" content="5.5">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-6155">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../../../java-sdk/3.0/hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../index.html"><span class="title">Couchbase Server</span> <span class="version">5.5</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../../6.5/analytics/appendix_3_resolution.html">Couchbase Server 6.5</a></li>
+                  <li><a class="navbar-item" href="../../6.0/analytics/appendix_3_resolution.html">Couchbase Server 6.0</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../../6.5/analytics/appendix_3_resolution.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../index.html">server</a></li>
+    <li class="crumb"><a href="appendix_3_resolution.html">Variable Bindings and Name Resolution</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-analytics/edit/release/5.5/modules/analytics/pages/appendix_3_resolution.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Variable Bindings and Name Resolution</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this Appendix, we&#8217;ll look at how variables are bound and how names are resolved.
+Names can appear in every clause of a query.
+Sometimes a name consists of just a single identifier, e.g., <code>region</code> or <code>revenue</code>.
+More often a name will consist of two identifiers separated by a dot, e.g., <code>customer.address</code>.
+Occasionally a name may have more than two identifiers, e.g., <code>policy.owner.address.zipcode</code>.
+<em>Resolving</em> a name means determining exactly what the (possibly multi-part) name refers to.
+It is necessary to have well-defined rules for how to resolve a name in cases of ambiguity.
+(In the absence of schemas, such cases arise more commonly, and also differently, than they do in SQL.)</p>
+</div>
+<div class="paragraph">
+<p>The basic job of each clause in a query block is to bind variables.
+Each clause sees the variables bound by previous clauses and may bind additional variables.
+Names are always resolved with respect to the variables that are bound ("in scope") at the place where the name use in question occurs.
+It is possible that the name resolution process will fail, which may lead to an empty result or an error message.</p>
+</div>
+<div class="paragraph">
+<p>One important bit of background: When the system is reading a query and resolving its names, it has a list of all the available dataverses and datasets.
+As a result, it knows whether <code>a.b</code> is a valid name for dataset <code>b</code> in dataverse <code>a</code>.
+However, the system does not in general have knowledge of the schemas of the data inside the datasets; remember that this is a much more open world.
+As a result, in general the system cannot know whether any object in a particular dataset will have a field named <code>c</code>.
+These assumptions affect how errors are handled.
+If you try to access dataset <code>a.b</code> and no dataset by that name exists, you will get an error and your query will not run.
+However, if you try to access a field <code>c</code> in a collection of objects, your query will run and return <code>missing</code> for each object that doesn&#8217;t have a field named <code>c</code>&#8201;&#8212;&#8201;this is because it&#8217;s possible that some object (someday) could have such a field.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Binding_variables"><a class="anchor" href="#Binding_variables"></a>Binding Variables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Variables can be bound in the following ways:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>WITH and LET clauses bind a variable to the result of an expression in a straightforward way</p>
+<div class="paragraph">
+<p>Examples:</p>
+</div>
+<div class="paragraph">
+<p><code>WITH cheap_parts AS (SELECT partno FROM parts WHERE price &lt; 100)</code>
+binds the variable <code>cheap_parts</code> to the result of the subquery.</p>
+</div>
+<div class="paragraph">
+<p><code>LET pay = salary + bonus</code>
+binds the variable <code>pay</code> to the result of evaluating the expression <code>salary + bonus</code>.</p>
+</div>
+</li>
+<li>
+<p>FROM, GROUP BY, and SELECT clauses have optional AS subclauses that contain an expression and a name (called an <em>iteration variable</em> in a FROM clause, or an alias in GROUP BY or SELECT.)</p>
+<div class="paragraph">
+<p>Examples:</p>
+</div>
+<div class="paragraph">
+<p><code>FROM customer AS c, order AS o</code></p>
+</div>
+<div class="paragraph">
+<p><code>GROUP BY salary + bonus AS total_pay</code></p>
+</div>
+<div class="paragraph">
+<p><code>SELECT MAX(price) AS highest_price</code></p>
+</div>
+<div class="paragraph">
+<p>An AS subclause always binds the name (as a variable) to the result of the expression (or, in the case of a FROM clause, to the <em>individual members</em> of the collection identified by the expression.)</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s always a good practice to use the keyword AS when defining an alias or iteration variable.
+However, as in SQL, the syntax allows the keyword AS to be omitted.
+For example, the FROM clause above could have been written like this:</p>
+</div>
+<div class="paragraph">
+<p><code>FROM customer c, order o</code></p>
+</div>
+<div class="paragraph">
+<p>Omitting the keyword AS does not affect the binding of variables.
+The FROM clause in this example binds variables c and o whether the keyword AS is used or not.</p>
+</div>
+<div class="paragraph">
+<p>In certain cases, a variable is automatically bound even if no alias or variable-name is specified.
+Whenever an expression could have been followed by an AS subclause, if the expression consists of a simple name or a path expression, that expression binds a variable whose name is the same as the simple name or the last step in the path expression.
+Here are some examples:</p>
+</div>
+<div class="paragraph">
+<p><code>FROM customer, order</code> binds iteration variables named <code>customer</code> and <code>order</code></p>
+</div>
+<div class="paragraph">
+<p><code>GROUP BY address.zipcode</code> binds a variable named <code>zipcode</code></p>
+</div>
+<div class="paragraph">
+<p><code>SELECT item[0].price</code> binds a variable named <code>price</code></p>
+</div>
+<div class="paragraph">
+<p>Note that a FROM clause iterates over a collection (usually a dataset), binding a variable to each member of the collection in turn.
+The name of the collection remains in scope, but it is not a variable.
+For example, consider this FROM clause used in a self-join:</p>
+</div>
+<div class="paragraph">
+<p><code>FROM customer AS c1, customer AS c2</code></p>
+</div>
+<div class="paragraph">
+<p>This FROM clause joins the customer dataset to itself, binding the iteration variables c1 and c2 to objects in the left-hand-side and right-hand-side of the join, respectively.
+After the FROM clause, c1 and c2 are in scope as variables, and customer remains accessible as a dataset name but not as a variable.</p>
+</div>
+</li>
+<li>
+<p>Special rules for GROUP BY:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>If a GROUP BY clause specifies an expression that has no explicit alias, it binds a pseudo-variable that is lexicographically identical to the expression itself.
+For example:</p>
+<div class="paragraph">
+<p><code>GROUP BY salary + bonus</code> binds a pseudo-variable named <code>salary + bonus</code>.</p>
+</div>
+<div class="paragraph">
+<p>This rule allows subsequent clauses to refer to the grouping expression (salary + bonus) even though its constituent variables (salary and bonus) are no longer in scope.
+For example, the following query is valid:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>FROM employee
+GROUP BY salary + bonus
+HAVING salary + bonus &gt; 1000
+SELECT salary + bonus, COUNT(*) AS how_many</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>While it might have been more elegant to explicitly require an alias in cases like this, the pseudo-variable rule is retained for SQL compatibility.
+Note that the expression <code>salary + bonus</code> is not <em>actually</em> evaluated in the HAVING and SELECT clauses (and could not be since <code>salary</code> and <code>bonus</code> are no longer individually in scope).
+Instead, the expression <code>salary + bonus</code> is treated as a reference to the pseudo-variable defined in the GROUP BY clause.</p>
+</div>
+</li>
+<li>
+<p>A GROUP BY clause may be followed by a GROUP AS clause that binds a variable to the group.
+The purpose of this variable is to make the individual objects inside the group visible to subqueries that may need to iterate over them.</p>
+<div class="paragraph">
+<p>The GROUP AS variable is bound to a multiset of objects.
+Each object represents one of the members of the group.
+Since the group may have been formed from a join, each of the member-objects contains a nested object for each variable bound by the nearest FROM clause (and its LET subclause, if any).
+These nested objects, in turn, contain the actual fields of the group-member.
+To understand this process, consider the following query fragment:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>FROM parts AS p, suppliers AS s
+WHERE p.suppno = s.suppno
+GROUP BY p.color GROUP AS g</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Suppose that the objects in <code>parts</code> have fields <code>partno</code>, <code>color</code>, and <code>suppno</code>.
+Suppose that the objects in suppliers have fields <code>suppno</code> and <code>location</code>.</p>
+</div>
+<div class="paragraph">
+<p>Then, for each group formed by the GROUP BY, the variable g will be bound to a multiset with the following structure:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[ { "p": { "partno": "p1", "color": "red", "suppno": "s1" },
+    "s": { "suppno": "s1", "location": "Denver" } },
+  { "p": { "partno": "p2", "color": "red", "suppno": "s2" },
+    "s": { "suppno": "s2", "location": "Atlanta" } },
+  ...
+]</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Scoping"><a class="anchor" href="#Scoping"></a>Scoping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In general, the variables that are in scope at a particular position are those variables that were bound earlier in the current query block, in outer (enclosing) query blocks, or in a WITH clause at the beginning of the query.
+More specific rules follow.</p>
+</div>
+<div class="paragraph">
+<p>The clauses in a query block are conceptually processed in the following order:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>FROM (followed by LET subclause, if any)</p>
+</li>
+<li>
+<p>WHERE</p>
+</li>
+<li>
+<p>GROUP BY (followed by LET subclause, if any)</p>
+</li>
+<li>
+<p>HAVING</p>
+</li>
+<li>
+<p>SELECT or SELECT VALUE</p>
+</li>
+<li>
+<p>ORDER BY</p>
+</li>
+<li>
+<p>OFFSET</p>
+</li>
+<li>
+<p>LIMIT</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>During processing of each clause, the variables that are in scope are those variables that are bound in the following places:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In earlier clauses of the same query block (as defined by the ordering given above).</p>
+<div class="paragraph">
+<p>Example: <code>FROM orders AS o SELECT o.date</code>
+The variable <code>o</code> in the SELECT clause is bound, in turn, to each object in the dataset <code>orders</code>.</p>
+</div>
+</li>
+<li>
+<p>In outer query blocks in which the current query block is nested.
+In case of duplication, the innermost binding wins.</p>
+</li>
+<li>
+<p>In the WITH clause (if any) at the beginning of the query.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>However, in a query block where a GROUP BY clause is present:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In clauses processed before GROUP BY, scoping rules are the same as though no GROUP BY were present.</p>
+</li>
+<li>
+<p>In clauses processed after GROUP BY, the variables bound in the nearest FROM-clause (and its LET subclause, if any) are removed from scope and replaced by the variables bound in the GROUP BY clause (and its LET subclause, if any).
+However, this replacement does not apply inside the arguments of the five SQL special aggregating functions (MIN, MAX, AVG, SUM, and COUNT).
+These functions still need to see the individual data items over which they are computing an aggregation.
+For example, after <code>FROM employee AS e GROUP BY deptno</code>, it would not be valid to reference <code>e.salary</code>, but <code>AVG(e.salary)</code> would be valid.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Special case: In an expression inside a FROM clause, a variable is in scope if it was bound in an earlier expression in the same FROM clause.
+Example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>FROM orders AS o, o.items AS i</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The reason for this special case is to support iteration over nested collections.</p>
+</div>
+<div class="paragraph">
+<p>Note that, since the SELECT clause comes <em>after</em> the WHERE and GROUP BY clauses in conceptual processing order, any variables defined in SELECT are not visible in WHERE or GROUP BY.
+Therefore the following query will not return what might be the expected result (since in the WHERE clause, <code>pay</code> will be interpreted as a field in the <code>emp</code> object rather than as the computed value <code>salary + bonus</code>):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>SELECT name, salary + bonus AS pay
+FROM emp
+WHERE pay &gt; 1000
+ORDER BY pay</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The likely intent of the query above can be accomplished as follows:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>FROM emp AS e
+LET pay = e.salary + e.bonus
+WHERE pay &gt; 1000
+SELECT e.name, pay
+ORDER BY pay</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Resolving_names"><a class="anchor" href="#Resolving_names"></a>Resolving Names</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The process of name resolution begins with the leftmost identifier in the name.
+The rules for resolving the leftmost identifier are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><em>In a FROM clause</em>: Names in a FROM clause identify the collections over which the query block will iterate.
+These collections may be stored datasets or may be the results of nested query blocks.
+A stored dataset may be in a named dataverse or in the default dataverse.
+Thus, if the two-part name <code>a.b</code> is in a FROM clause, a might represent a dataverse and <code>b</code> might represent a dataset in that dataverse.
+Another example of a two-part name in a FROM clause is <code>FROM orders AS o, o.items AS i</code>.
+In <code>o.items</code>, <code>o</code> represents an order object bound earlier in the FROM clause, and items represents the items object inside that order.</p>
+<div class="paragraph">
+<p>The rules for resolving the leftmost identifier in a FROM clause (including a JOIN subclause), or in the expression following IN in a quantified predicate, are as follows:</p>
+</div>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>If the identifier matches a variable-name that is in scope, it resolves to the binding of that variable.
+(Note that in the case of a subquery, an in-scope variable might have been bound in an outer query block; this is called a correlated subquery.)</p>
+</li>
+<li>
+<p>Otherwise, if the identifier is the first part of a two-part name like <code>a.b</code>, the name is treated as dataverse.dataset.
+If the identifier stands alone as a one-part name, it is treated as the name of a dataset in the default dataverse.
+An error will result if the designated dataverse or dataset does not exist.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><em>Elsewhere in a query block</em>: In clauses other than FROM, a name typically identifies a field of some object.
+For example, if the expression <code>a.b</code> is in a SELECT or WHERE clause, it&#8217;s likely that <code>a</code> represents an object and <code>b</code> represents a field in that object.</p>
+<div class="paragraph">
+<p>The rules for resolving the leftmost identifier in clauses other than the ones listed in Rule 1 are:</p>
+</div>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>If the identifier matches a variable-name that is in scope, it resolves to the binding of that variable.
+(In the case of a correlated subquery, the in-scope variable might have been bound in an outer query block.)</p>
+</li>
+<li>
+<p>(The "Single Variable Rule"): Otherwise, if the FROM clause (or a LET clause if there is no FROM clause) in the current query block binds exactly one variable, the identifier is treated as a field access on the object bound to that variable.
+For example, in the query <code>FROM customer SELECT address</code>, the identifier address is treated as a field in the object bound to the variable customer.
+At runtime, if the object bound to customer has no <code>address</code> field, the <code>address</code> expression will return <code>missing</code>.
+If the FROM clause (and its LET subclause, if any) in the current query block binds multiple variables, name resolution fails with an "ambiguous name" error.
+Note that the Single Variable Rule searches for bound variables only in the current query block, not in outer (containing) blocks.
+The purpose of this rule is to permit the compiler to resolve field-references unambiguously without relying on any schema information.</p>
+<div class="paragraph">
+<p>Exception: In a query that has a GROUP BY clause, the Single Variable Rule does not apply in any clauses that occur after the GROUP BY because, in these clauses, the variables bound by the FROM clause are no longer in scope.
+In clauses after GROUP BY, only Rule 2.1 applies.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>In an ORDER BY clause following a UNION ALL expression:</p>
+<div class="paragraph">
+<p>The leftmost identifier is treated as a field-access on the objects that are generated by the UNION ALL.
+For example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>query-block-1
+UNION ALL
+query-block-2
+ORDER BY salary</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the result of this query, objects that have a foo field will be ordered by the value of this field; objects that have no foo field will appear at at the beginning of the query result (in ascending order) or at the end (in descending order.)</p>
+</div>
+</li>
+<li>
+<p>Once the leftmost identifier has been resolved, the following dots and identifiers in the name (if any) are treated as a path expression that navigates to a field nested inside that object.
+The name resolves to the field at the end of the path.
+If this field does not exist, the value <code>missing</code> is returned.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
