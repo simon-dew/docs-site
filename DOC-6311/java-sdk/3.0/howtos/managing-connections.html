@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Managing Connections using the Java SDK with Couchbase Server | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6311/java-sdk/3.0/howtos/managing-connections.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="3.0">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-6311">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../hello-world/start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">3.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li class="current"><a class="navbar-item" href="managing-connections.html">Java SDK 3.0</a></li>
+                  <li><a class="navbar-item" href="../../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="#">c-sdk</a></li>
+                  <li><a class="navbar-item" href="#">dotnet-sdk</a></li>
+                  <li><a class="navbar-item" href="#">go-sdk</a></li>
+                  <li><a class="navbar-item" href="#">nodejs-sdk</a></li>
+                  <li><a class="navbar-item" href="#">php-sdk</a></li>
+                  <li><a class="navbar-item" href="#">python-sdk</a></li>
+                  <li><a class="navbar-item" href="#">scala-sdk</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Getting Started</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/start-using-sdk.html">Start Using the Java SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/sample-application.html">Sample Application</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="kv-operations.html">Key Value Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Full Text Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Data Operations</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-async-apis.html">Async &amp; Reactive APIs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="distributed-acid-transactions-from-the-sdk.html">Distributed ACID Transactions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="transcoders-nonjson.html">Transcoders &amp; Non-JSON</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="working-with-collections.html">Working with Collections DP</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Managing Couchbase</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Errors &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Logging</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Learn</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/concepts.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/buckets-and-clusters.html">Buckets &amp; Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/collections.html">Collections &amp; Scope</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/compression.html">Compression</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-model.html">Data Model</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/documents.html">Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/nonjson.html">Non-json Docs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/subdocument-operations.html">Sub-Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/xattr.html">XATTR &amp; Virtual XATTR</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/errors.html">Errors and Diagnostics</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/health-check.html">Health Check</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/response-time-observability.html">Tracing</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/durability-replication-failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/encryption.html">Field Level Encryption</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-services.html">Service Selection</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/analytics-for-sdk-users.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/understanding-views.html">Map Reduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/n1ql-query.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/full-text-search-overview.html">Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">References</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/sdk-api/couchbase-java-client">API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../ref/client-settings.html">Client Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-release-notes.html">SDK Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/distributed-transactions-java-release-notes.html">Transactions Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/compatibility.html">Compatibility</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../hello-world/start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Managing Couchbase</li>
+    <li class="crumb"><a href="managing-connections.html">Managing Connections</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/howtos/pages/managing-connections.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Managing Connections using the Java SDK with Couchbase Server</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+This section describes how to connect the Java SDK to a Couchbase cluster.
+It contains best practices as well as information on TLS/SSL and other advanced connection options.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connecting-to-a-cluster"><a class="anchor" href="#connecting-to-a-cluster"></a>Connecting to a Cluster</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A connection to a Couchbase Server cluster is represented by a <code>Cluster</code> object.
+A <code>Cluster</code> provides access to Buckets, Scopes, and Collections, as well as various Couchbase services and management interfaces.
+The simplest way to create a <code>Cluster</code> object is to call <code>Cluster.connect()</code> with a <a href="#connection-strings">connection string</a>, username, and password:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = Cluster.connect("127.0.0.1", "username", "password");
+Bucket bucket = cluster.bucket("travel-sample");
+Collection collection = bucket.defaultCollection();
+
+// You can access multiple buckets using the same Cluster object.
+Bucket anotherBucket = cluster.bucket("beer-sample");
+
+// You can access collections other than the default
+// if your version of Couchbase Server supports this feature.
+Scope customerA = bucket.scope("customer-a");
+Collection widgets = customerA.collection("widgets");
+
+// For a graceful shutdown, disconnect from the cluster when the program ends.
+cluster.disconnect();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you are connecting to a version of Couchbase Server older than 6.5, it will be more efficient if the addresses are those of data (KV) nodes.
+You will in any case, with 6.0 and earlier, need to open a <code>`Bucket</code> instance before connecting to any other HTTP services (such as <em>Query</em> or <em>Search</em>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In a production environment, your connection string should include the addresses of multiple server nodes in case some are currently unavailable.
+Multiple addresses may be specified in a connection string by delimiting them with commas:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = Cluster.connect("192.168.56.101,192.168.56.102", "username", "password");</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You don&#8217;t need to include the address of every node in the cluster.
+The client fetches the full address list from the first node it is able to contact.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cluster-environment"><a class="anchor" href="#cluster-environment"></a>Cluster Environment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <code>ClusterEnvironment</code> manages shared resources like thread pools, timers, and schedulers.
+It also holds the client settings.
+One way to customize the client&#8217;s behavior is to build your own <code>ClusterEnvironment</code> with custom settings:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ClusterEnvironment env = ClusterEnvironment.builder()
+    // Customize client settings by calling methods on the builder
+    .build();
+
+// Create a cluster using the environment's custom client settings.
+Cluster cluster = Cluster.connect("127.0.0.1", ClusterOptions
+    .clusterOptions("username", "password")
+    .environment(env));
+
+// Shut down gracefully. Shut down the environment
+// after all associated clusters are disconnected.
+cluster.disconnect();
+env.shutdown();</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you create a <code>Cluster</code> without specifying a custom environment, the client creates a default environment used exclusively by that <code>Cluster</code>.
+This default <code>ClusterEnvironment</code> is managed completely by the Java SDK, and is automatically shut down when the associated <code>Cluster</code> is disconnected.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connection-strings"><a class="anchor" href="#connection-strings"></a>Connection Strings</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Couchbase connection string is a comma-delimited list of IP addresses and/or hostnames, optionally followed by a list of parameters.</p>
+</div>
+<div class="paragraph">
+<p>The parameter list is just like the query component of a URI; name-value pairs have an equals sign (<code>=</code>) separating the name and value, with an ampersand (<code>&amp;</code>) between each pair.
+Just as in a URI, the first parameter is prefixed by a question mark (<code>?</code>).</p>
+</div>
+<div class="listingblock">
+<div class="title">Simple connection string with one seed node</div>
+<div class="content">
+<pre>127.0.0.1</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Connection string with two seed nodes</div>
+<div class="content">
+<pre>nodeA.example.com,nodeB.example.com</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Connection string with two parameters</div>
+<div class="content">
+<pre>127.0.0.1?io.networkResolution=external&amp;timeout.kvTimeout=10s</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The full list of recognized parameters is documented in the client settings reference.
+Any client setting with a system property name may also be specified as a connection string parameter (without the <code>com.couchbase.env.</code> prefix).</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+When creating a <code>Cluster</code> using a custom <code>ClusterEnvironment</code>, <strong><em>connection string parameters are ignored</em></strong>, since client settings are frozen when the cluster environment is built.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A connection string may optionally be prefixed by either <code>"couchbase://"</code> or <code>"couchbases://"</code>, although the Java SDK completely ignores this prefix if present.
+If you wish to use TLS, the <code>ClusterEnvironment</code> must be configured as described in <a href="#ssl">Secure Connections</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connection-lifecycle"><a class="anchor" href="#connection-lifecycle"></a>Connection Lifecycle</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Most of the high-level classes in the Java SDK are designed to be safe for concurrent use by multiple threads.
+You will get the best performance if you share and reuse instances of <code>ClusterEnvironment</code>, <code>Cluster</code>, <code>Bucket</code>, <code>Scope</code>, and <code>Collection</code>, all of which are thread-safe.</p>
+</div>
+<div class="paragraph">
+<p>We recommend creating a single <code>Cluster</code> instance when your application starts up, and sharing this instance throughout your application.
+If you know at startup time which buckets, scopes, and collections your application will use, we recommend obtaining them from the <code>Cluster</code> at startup time and sharing those instances throughout your application as well.</p>
+</div>
+<div class="paragraph">
+<p>Before your application stops, gracefully shut down the client by calling the <code>disconnect()</code> method of each <code>Cluster</code> you created.
+If you created any <code>ClusterEnvironment</code> instances, call their <code>shutdown()</code> method after disconnecting the associated clusters.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multiple-clusters"><a class="anchor" href="#multiple-clusters"></a>Connecting to Multiple Clusters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If a single application needs to connect to multiple Couchbase Server clusters, we recommend creating a single <code>ClusterEnvironment</code> and sharing it between the <code>Clusters</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ClusterEnvironment env = ClusterEnvironment.builder()
+    .timeoutConfig(TimeoutConfig.kvTimeout(Duration.ofSeconds(5)))
+    .build();
+
+Cluster clusterA = Cluster.connect(
+    "clusterA.example.com",
+    ClusterOptions.clusterOptions("username", "password")
+        .environment(env));
+
+Cluster clusterB = Cluster.connect(
+    "clusterB.example.com",
+    ClusterOptions.clusterOptions("username", "password")
+        .environment(env));
+
+// ...
+
+// For a graceful shutdown, disconnect from the clusters
+// AND shut down the custom environment when then program ends.
+clusterA.disconnect();
+clusterB.disconnect();
+env.shutdown();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you manually create a <code>ClusterEnvironment</code> like this, the SDK will not shut it down when you call <code>Cluster.disconnect()</code>.
+Instead you are responsible for shutting it down after disconnecting all clusters that share the environment.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you create a <code>Cluster</code> without specifying a custom environment, the client creates a default environment used exclusively by that <code>Cluster</code>.
+This default <code>ClusterEnvironment</code> is managed completely by the Java SDK, and is automatically shut down when the associated <code>Cluster</code> is disconnected.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="alternate-addresses"><a class="anchor" href="#alternate-addresses"></a>Alternate Addresses and Custom Ports</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If your Couchbase Server cluster is running in a containerized, port mapped, or otherwise NAT&#8217;d environment like Docker or Kubernetes, a client running outside that environment may need additional information in order to connect the cluster.
+Both the client and server require special configuration in this case.</p>
+</div>
+<div class="paragraph">
+<p>On the server side, each server node must be configured to advertise its external address as well as any custom port mapping.
+This is done with the <code>setting-alternate-address</code> CLI command introduced in Couchbase Server 6.5.
+A node configured in this way will advertise two addresses: one for connecting from the same network, and another for connecting from an external network.</p>
+</div>
+<div class="paragraph">
+<p>On the client side, the externally visible ports must be used when connecting.
+If the external ports are not the default, you can specify custom ports using the overloaded <code>Cluster.connect()</code> method that takes a set of <code>SeedNode</code> objects instead of a connection string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int customKvPort = 1234;
+int customManagerPort = 2345;
+Set&lt;SeedNode&gt; seedNodes = new HashSet&lt;&gt;(Arrays.asList(
+  SeedNode.create("127.0.0.1",
+      Optional.of(customKvPort),
+      Optional.of(customManagerPort))));
+
+Cluster cluster = Cluster.connect(seedNodes, "username", "password");</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In a deployment that uses multi-dimensional scaling, a custom KV port is only applicable for nodes running the KV service.
+A custom manager port may be specified regardless of which services are running on the node.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In many cases the client is able to automatically select the correct set of addresses to use when connecting to a cluster that advertises multiple addresses.
+If the detection heuristic fails in your environment, you can override it by setting the <code>io.networkResolution</code> client setting to <code>default</code> if the client and server are on the same network, or <code>external</code> if they&#8217;re on different networks.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Any TLS certificates must be set up at the point where the connections are being made.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ssl"><a class="anchor" href="#ssl"></a>Secure Connections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Server Enterprise Edition supports full encryption of client-side traffic using Transport Layer Security (TLS).
+That includes key-value type operations, queries, and configuration communication.
+Make sure you have the Enterprise Edition of Couchbase Server before proceeding with configuring encryption on the client side.</p>
+</div>
+<div class="paragraph">
+<p>To configure encryption for the Java SDK:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Get the CA certificate from the cluster and save it in a text file.</p>
+</li>
+<li>
+<p>Enable encryption on the client side and point it to the file containing the certificate.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>It is important to make sure you are transferring the certificate in an encrypted manner from the server to the client side, so either copy it through SSH or through a similar secure mechanism.</p>
+</div>
+<div class="paragraph">
+<p>If you are running on <code>localhost</code> and just want to enable TLS for a development machine, just copying and pasting it suffices.
+Navigate in the admin UI to <span class="menuseq"><b class="menu">Settings</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Cluster</b></span> and copy the input box of the TLS certificate into a file on your machine (which we will refer to as <code>cluster.cert</code>).
+It looks similar to this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-----BEGIN CERTIFICATE-----
+MIICmDCCAYKgAwIBAgIIE4FSjsc3nyIwCwYJKoZIhvcNAQEFMAwxCjAIBgNVBAMT
+ASowHhcNMTMwMTAxMDAwMDAwWhcNNDkxMjMxMjM1OTU5WjAMMQowCAYDVQQDEwEq
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzz2I3Gi1XcOCNRVYwY5R
+................................................................
+mgDnQI8nw2arBRoseLpF6WNw22CawxHVOlMceQaGOW9gqKNBN948EvJJ55Dhl7qG
+BQp8sR0J6BsSc86jItQtK9eQWRg62+/XsgVCmDjrB5owHPz+vZPYhsMWixVhLjPJ
+mkzeUUj/kschgQ0BWT+N+pyKAFFafjwFYtD0e5NwFUUBfsOyQtYV9xu3fw+T2N8S
+itfGtmmlEfaplVGzGPaG0Eyr53g5g2BgQbi5l5Tt2awqhd22WOVbCalABd9t2IoI
+F4+FjEqAEIr1mQepDaNM0gEfVcgd2SzGhC3yhYFBAH//8W4DUot5ciEhoBs=
+-----END CERTIFICATE-----</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next step is to enable encryption and pass it the path to the certificate file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ClusterEnvironment env = ClusterEnvironment.builder()
+    .securityConfig(SecurityConfig.enableTls(true)
+        .trustCertificate(Paths.get("/path/to/cluster.cert")))
+    .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then use this custom <code>ClusterEnvironment</code> when opening the connection to the cluster.
+See <a href="#cluster-environment">Cluster Environment</a> for an example of creating a <code>Cluster</code> with a custom environment.</p>
+</div>
+<div class="paragraph">
+<p>If you want to verify it&#8217;s actually working, you can use a tool like <code class="cmd">tcpdump</code>.
+For example, an unencrypted upsert request looks like this (using <code>sudo tcpdump -i lo0 -A -s 0 port 11210</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>E..e..@.@.............+......q{...#..Y.....
+.E...Ey........9........................id{"key":"value"}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After enabling encryption, you cannot inspect the traffic in cleartext (same upsert request, but watched on port 11207 which is the default encrypted port):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>E.....@.@.............+....Z.'yZ..#........
+..... ...xuG.O=.#.........?.Q)8..D...S.W.4.-#....@7...^.Gk.4.t..C+......6..)}......N..m..o.3...d.,.	...W.....U..
+.%v.....4....m*...A.2I.1.&amp;.*,6+..#..#.5</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-dns-srv-records"><a class="anchor" href="#using-dns-srv-records"></a>Using DNS SRV records</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As an alternative to specifying multiple hosts in your program, you can get the actual bootstrap node list from a DNS SRV record.
+The following steps are necessary to make it work:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set up your DNS server to respond properly from a DNS SRV request.</p>
+</li>
+<li>
+<p>Enable it on the SDK and point it towards the DNS SRV entry.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Your DNS server should be set up like this (one row for each bootstrap node):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>_couchbase._tcp.example.com.  3600  IN  SRV  0  0  11210  node1.example.com.
+_couchbase._tcp.example.com.  3600  IN  SRV  0  0  11210  node2.example.com.
+_couchbase._tcp.example.com.  3600  IN  SRV  0  0  11210  node3.example.com.</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The ordering, priorities, and weighting are completely ignored and should not be set on the records to avoid ambiguities.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you plan to use secure connections, you use <code>_couchbases</code> instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>_couchbases._tcp.example.com.  3600  IN  SRV  0  0  11207  node1.example.com.
+_couchbases._tcp.example.com.  3600  IN  SRV  0  0  11207  node2.example.com.
+_couchbases._tcp.example.com.  3600  IN  SRV  0  0  11207  node3.example.com.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>DNS SRV bootstrapping is available in the Java SDK from version 2.1.0.
+In order to make the SDK actually use the SRV records, you need to enable DNS SRV on the environment and pass in the host name from your records (here <code>example.com</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ClusterEnvironment env = ClusterEnvironment.builder()
+    .ioConfig(IoConfig.enableDnsSrv(true))
+    .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the DNS SRV records could not be loaded properly you&#8217;ll get the exception logged and the given host name will be used as a A record lookup.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>WARNING: DNS SRV lookup failed, proceeding with normal bootstrap.
+javax.naming.NameNotFoundException: DNS name not found [response code 3];
+   remaining name '_couchbase._tcp.example.com'
+	at com.sun.jndi.dns.DnsClient.checkResponseCode(DnsClient.java:651)
+	at com.sun.jndi.dns.DnsClient.isMatchResponse(DnsClient.java:569)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also, if you pass in more than one node, DNS SRV bootstrap will not be initiated:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>INFO: DNS SRV enabled, but less or more than one seed node given.
+Proceeding with normal bootstrap.</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="async-and-reactive-apis"><a class="anchor" href="#async-and-reactive-apis"></a>Async and Reactive APIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Couchbase Java SDK provides first-class support for asynchronous and reactive programming.
+In fact, the synchronous API is just a thin wrapper around the asynchronous API.</p>
+</div>
+<div class="paragraph">
+<p>Methods in the asynchronous API return instances of the standard <code>CompletableFuture</code> introduced in Java 8.</p>
+</div>
+<div class="paragraph">
+<p>The Java SDK&#8217;s reactive API is built on <a href="https://projectreactor.io">Project Reactor</a>.
+Reactor implements the standard Reactive Streams API introduced in Java 9, and extends it with a rich set of useful operators.
+Methods in the reactive API return instances of <code>Flux</code> or <code>Mono</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to embrace the async or reactive programming model, there are two ways to get started:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Call <code>async()</code> or <code>reactive()</code> on the object to access its <code>Async*</code> or <code>Reactive*</code> counterpart.
+For example, if you have a <code>Collection</code> called <code>myCollection</code>, you can obtain a <code>ReactiveCollection</code> by calling <code>myCollection.reactive()</code>.</p>
+</li>
+<li>
+<p>Instantiate an <code>AsyncCluster</code> or <code>ReactiveCluster</code> in the first place.
+The <code>bucket()</code> method of an <code>AsyncCluster</code> returns an <code>AsyncBucket</code>, while the <code>bucket()</code> method of a <code>ReactiveCluster</code> turns a <code>ReactiveBucket</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>So if you are connecting to the bucket synchronously but then want to switch over to asynchronous data operations, you can do it like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = Cluster.connect("127.0.0.1", "username", "password");
+Bucket bucket = cluster.bucket("travel-sample");
+
+// Same API as Bucket, but completely async with CompletableFuture
+AsyncBucket asyncBucket = bucket.async();
+
+// Same API as Bucket, but completely reactive with Flux and Mono
+ReactiveBucket reactiveBucket = bucket.reactive();
+
+cluster.disconnect();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On the other hand, you can use the Async API right from the beginning:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">AsyncCluster cluster = AsyncCluster.connect("127.0.0.1", "username", "password");
+AsyncBucket bucket = cluster.bucket("travel-sample");
+
+// An async cluster's disconnect methods returns a CompletableFuture&lt;Void&gt;.
+// The disconnection starts as soon as you call disconnect().
+// The simplest way to wait for the disconnect to complete is to call `join()`.
+cluster.disconnect().join();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s the same example, but using the Reactive API instead of the Async API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ReactiveCluster cluster = ReactiveCluster.connect("127.0.0.1", "username", "password");
+ReactiveBucket bucket = cluster.bucket("travel-sample");
+
+// A reactive cluster's disconnect methods returns a Mono&lt;Void&gt;.
+// Nothing actually happens until you subscribe to the Mono.
+// The simplest way to subscribe is to await completion by calling call `block()`.
+cluster.disconnect().block();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

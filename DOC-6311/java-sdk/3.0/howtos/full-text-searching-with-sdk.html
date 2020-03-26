@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Full Text Search using the SDK | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6311/java-sdk/3.0/howtos/full-text-searching-with-sdk.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="3.0">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-6311">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../hello-world/start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">3.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li class="current"><a class="navbar-item" href="full-text-searching-with-sdk.html">Java SDK 3.0</a></li>
+                  <li><a class="navbar-item" href="../../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="#">c-sdk</a></li>
+                  <li><a class="navbar-item" href="#">dotnet-sdk</a></li>
+                  <li><a class="navbar-item" href="#">go-sdk</a></li>
+                  <li><a class="navbar-item" href="#">nodejs-sdk</a></li>
+                  <li><a class="navbar-item" href="#">php-sdk</a></li>
+                  <li><a class="navbar-item" href="#">python-sdk</a></li>
+                  <li><a class="navbar-item" href="#">scala-sdk</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Getting Started</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/start-using-sdk.html">Start Using the Java SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/sample-application.html">Sample Application</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="kv-operations.html">Key Value Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Full Text Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Data Operations</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-async-apis.html">Async &amp; Reactive APIs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="distributed-acid-transactions-from-the-sdk.html">Distributed ACID Transactions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="transcoders-nonjson.html">Transcoders &amp; Non-JSON</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="working-with-collections.html">Working with Collections DP</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Managing Couchbase</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Errors &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Logging</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Learn</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/concepts.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/buckets-and-clusters.html">Buckets &amp; Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/collections.html">Collections &amp; Scope</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/compression.html">Compression</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-model.html">Data Model</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/documents.html">Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/nonjson.html">Non-json Docs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/subdocument-operations.html">Sub-Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/xattr.html">XATTR &amp; Virtual XATTR</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/errors.html">Errors and Diagnostics</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/health-check.html">Health Check</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/response-time-observability.html">Tracing</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/durability-replication-failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/encryption.html">Field Level Encryption</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-services.html">Service Selection</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/analytics-for-sdk-users.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/understanding-views.html">Map Reduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/n1ql-query.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/full-text-search-overview.html">Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">References</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/sdk-api/couchbase-java-client">API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../ref/client-settings.html">Client Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-release-notes.html">SDK Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/distributed-transactions-java-release-notes.html">Transactions Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/compatibility.html">Compatibility</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../hello-world/start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Working with Data</li>
+    <li class="crumb"><a href="full-text-searching-with-sdk.html">Full Text Search</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/howtos/pages/full-text-searching-with-sdk.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Full Text Search using the SDK</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+You can use the Full Text Search service (FTS) to create queryable full-text indexes in Couchbase Server.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Full Text Search or FTS allows you to create, manage and query full text indexes on JSON documents stored in Couchbase buckets.
+It uses natural language processing for indexing and querying documents, provides relevance scoring on the results of your queries and has fast indexes for querying a wide range of possible text searches.</p>
+</div>
+<div class="paragraph">
+<p>Some of the supported query-types include simple queries like Match and Term queries, range queries like Date Range and Numeric Range and compound queries for conjunctions, disjunctions and/or boolean queries.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started"><a class="anchor" href="#getting-started"></a>Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After familiarizing yourself with how to create and query a search index in the UI you can query it from the SDK.
+Intentionally the API itself is very similar to the query and analytics ones, the main difference being that you cannot cast the resulting rows into a domain object directly but rather get a <code>SearchRow</code> returned.
+The reason for this is that a search row ("hit") has more metadata associated with it than you potentially want to look at.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">try {
+  final SearchResult result = cluster
+    .searchQuery("index", SearchQuery.queryString("query"));
+
+  for (SearchRow row : result.rows()) {
+    System.out.println("Found row: " + row);
+  }
+
+  System.out.println("Reported total rows: "
+    + result.metaData().metrics().totalRows());
+} catch (CouchbaseException ex) {
+  ex.printStackTrace();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s break it down.
+A search query is always performed at the <code>Cluster</code> level, using the <code>searchQuery</code> method.
+It takes the name of the index and the type of query  as required arguments and then allows to provide additional options if needed
+(in the example above, no options are specified).</p>
+</div>
+<div class="paragraph">
+<p>Once a result returns you can iterate over the returned rows, and/or access the <code>SearchMetaData</code> associated with the query.
+If something goes wrong during the execution of the search query, a subclass of the <code>CouchbaseException</code> will be thrown that also provides additional context on the operation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Exception in thread "main" com.couchbase.client.core.error.IndexNotFoundException: Index not found {"completed":true,"coreId":1,"httpStatus":400,"idempotent":true,"lastDispatchedFrom":"127.0.0.1:53818","lastDispatchedTo":"127.0.0.1:8094","requestId":3,"requestType":"SearchRequest","service":{"indexName":"unknown-index","type":"search"},"status":"INVALID_ARGS","timeoutMs":75000,"timings":{"dispatchMicros":18289,"totalMicros":1359398}}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="title">Open Buckets and Cluster-Level Queries</div>
+<div class="paragraph">
+<p>If you are using a cluster older than Couchbase Server 6.5, it is required that there is at least one bucket open before performing a cluster-level query.
+If you fail to do so, the SDK will return a <code>FeatureNotAvailableException</code> with a descriptive error message asking you to open one.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="search-queries"><a class="anchor" href="#search-queries"></a>Search Queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The second mandatory argument in the example above used <code>SearchQuery.queryString("query")</code> to specify the query to run against the search index.
+The query string is the simplest form, but there are many more available.
+The table below lists all of them with a short description of each.
+You can combine them with <code>conjuncts</code> and <code>disjuncts</code> respectively.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Available Search Queries</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>queryString(String query)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Accept query strings, which express query-requirements in a special syntax.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>match(String match)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A match query analyzes input text, and uses the results to query an index.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matchPhrase(String matchPhrase)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The input text is analyzed, and a phrase query is built with the terms resulting from the analysis.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prefix(String prefix)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A prefix query finds documents containing terms that start with the specified prefix.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>regexp(String regexp)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A regexp query finds documents containing terms that match the specified regular expression.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>termRange()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A term range query finds documents containing a term in the specified field within the specified range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>numericRange()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A numeric range query finds documents containing a numeric value in the specified field within the specified range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dateRange()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A date range query finds documents containing a date value, in the specified field within the specified range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>disjuncts(SearchQuery&#8230;&#8203; queries)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A disjunction query contains multiple child queries. Its result documents must satisfy a configurable min number of child queries.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>conjuncts(SearchQuery&#8230;&#8203; queries)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A conjunction query contains multiple child queries. Its result documents must satisfy all of the child queries.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>wildcard(String wildcard)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A wildcard query uses a wildcard expression, to search within individual terms for matches.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>docId(String&#8230;&#8203; docIds)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A doc ID query returns the indexed document or documents among the specified set.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>booleanField(boolean value)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A boolean field query searches fields that contain boolean true or false values.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>term(String term)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs an exact match in the index for the provided term.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>phrase(String&#8230;&#8203; terms)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A phrase query searches for terms occurring in the specified position and offsets.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matchAll()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches all documents in an index, irrespective of terms.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matchNone()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches no documents in the index.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>geoBoundingBox(double topLeftLon, double topLeftLat, double bottomRightLon, double bottomRightLat)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Searches inside the given bounding box coordinates.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>geoDistance(double locationLon, double locationLat, String distance)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Searches inside the distance from the given location coordinate.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-search-result"><a class="anchor" href="#the-search-result"></a>The Search Result</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Once the search query is executed successfully, the server starts sending back the resultant hits.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final SearchResult result = cluster
+  .searchQuery("my-index-name", SearchQuery.prefix("airports-"), searchOptions().fields("field-1"));
+
+for (SearchRow row : result.rows()) {
+  System.out.println("Score: " + row.score());
+  System.out.println("Document Id: " + row.id());
+
+  // Also print fields that are included in the query
+  System.out.println(row.fieldsAs(JsonObject.class));
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>SearchRow</code> contains the following methods:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. SearchRow</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>index()</code></th>
+<th class="tableblock halign-left valign-top">The name of the FTS index that gave this result.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The id of the matching document.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>score()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The score of this hit.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>explanation()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If enabled provides an explanation in JSON form.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>locations()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The individual locations of the hits as <code>SearchRowLocations</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fragments()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The fragments for each field that was requested as highlighted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fieldsAs(final Class&lt;T&gt; target)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access to the returned fields, decoded via a <code>Class</code> type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fieldsAs(final TypeRef&lt;T&gt; target)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access to the returned fields, decoded via a <code>TypeRef</code> type.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Note that the <code>SearchMetaData</code> also contains potential <code>errors</code>, because the SDK will keep streaming results if the initial response came back successfully.
+This makes sure that even with partial data usually search results are useable,
+so if you absolutely need to check if all partitions are present in the result double check the error
+(and not only catch an exception on the query itself).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="search-options"><a class="anchor" href="#search-options"></a>Search Options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The search service provides an array of options to customize your query. The following table lists them all:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Available Search Options</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>limit(int)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to limit the number of hits returned.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skip(int)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to skip the first N hits of the results returned.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>explain(boolean)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds additional explain debug information to the result.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>scanConsistency(SearchScanConsistency)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies a different consistency level for the result hits.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>consistentWith(MutationState)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to be consistent with previously performed mutations.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>highlight(HighlightStyle, String&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies highlighting rules for matched fields.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sort(Object)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to provide custom sorting rules.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>facets(Map&lt;String, SearchFacet&gt;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to fetch facets in addition to the regular hits.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fields(String&#8230;&#8203;)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies fields to be included.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>serializer(JsonSerializer)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to use a different serializer for the decoding of the rows.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>raw(String, Object)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Escape hatch to add arguments that are not covered by these options.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="limit-and-skip"><a class="anchor" href="#limit-and-skip"></a>Limit and Skip</h3>
+<div class="paragraph">
+<p>It is possible to limit the returned results to a maximum amount using the <code>limit</code> option.
+If you want to skip the first N records it can be done with the <code>skip</code> option.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SearchResult result = cluster.searchQuery(
+  "index",
+  SearchQuery.queryString("query"),
+  searchOptions().skip(3).limit(4)
+);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="scanconsistency-and-consistentwith"><a class="anchor" href="#scanconsistency-and-consistentwith"></a>ScanConsistency and ConsistentWith</h3>
+<div class="paragraph">
+<p>By default, all search queries will return the data from whatever is in the index at the time of query.
+These semantics can be tuned if needed so that the hits returned include the most recently performed mutations, at the cost of slightly higher latency since the index needs to be updated first.</p>
+</div>
+<div class="paragraph">
+<p>There are two ways to control consistency: either by supplying a custom <code>SearchScanConsistency</code> or using <code>consistentWith</code>.
+At the moment the cluster only supports <code>consistentWith</code>, which is why you only see <code>SearchScanConsistency.NOT_BOUNDED</code> in the enum which is the default setting.
+The way to make sure that recently written documents show up in the rfc works as follows (commonly referred to "read your own writes"&#8201;&#8212;&#8201;RYOW):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MutationResult mutationResult = collection.upsert("key", JsonObject.create());
+MutationState mutationState = MutationState.from(mutationResult.mutationToken().get());
+
+SearchResult searchResult = cluster.searchQuery(
+  "index",
+  SearchQuery.queryString("query"),
+  searchOptions().consistentWith(mutationState)
+);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="highlight"><a class="anchor" href="#highlight"></a>Highlight</h3>
+<div class="paragraph">
+<p>It is possible to enable highlighting for matched fields.
+You can either rely on the default highlighting style or provide a specific one.
+The following snippet uses HTML formatting for two fields:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SearchResult result = cluster.searchQuery(
+  "index",
+  SearchQuery.queryString("query"),
+  searchOptions().highlight(HighlightStyle.HTML, "field1", "field2")
+);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sort"><a class="anchor" href="#sort"></a>Sort</h3>
+<div class="paragraph">
+<p>By default the search engine will sort the results in descending order by score.
+This behavior can be modified by providing a different sorting order which can also be nested.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SearchResult result = cluster.searchQuery(
+  "index",
+  SearchQuery.queryString("query"),
+  searchOptions().sort(SearchSort.byScore(), SearchSort.byField("field"))
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Facets are aggregate information collected on a result set and are useful when it comes to categorization of result data.
+The SDK allows you to provide many different facet configurations to the search engine, the following example shows how to create a facet based on a term.
+Other possible facets include numeric and date ranges.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="facets"><a class="anchor" href="#facets"></a>Facets</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Map&lt;String, SearchFacet&gt; facets = new HashMap&lt;&gt;();
+facets.put("categories", SearchFacet.term("category", 5));
+
+SearchResult result = cluster.searchQuery(
+  "index",
+  SearchQuery.queryString("query"),
+  searchOptions().facets(facets)
+);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fields"><a class="anchor" href="#fields"></a>Fields</h3>
+<div class="paragraph">
+<p>You can tell the search engine to include the full content of a certain number of indexed fields in the response.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SearchResult result = cluster.searchQuery(
+  "index",
+  SearchQuery.queryString("query"),
+  searchOptions().fields("field1", "field2")
+);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="custom-json-serializer"><a class="anchor" href="#custom-json-serializer"></a>Custom JSON Serializer</h3>
+<div class="paragraph">
+<p>As with all JSON APIs, it is possible to customize the JSON serializer.
+You can plug in your own library (like GSON) or custom configure mappings on your own Jackson serializer.
+This in turn makes it possible to serialize rows into POJOs or other structures that your application defines, and which the SDK has no idea about.</p>
+</div>
+<div class="paragraph">
+<p>Please see the documentation on transcoding and serialization for more information.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reactive-and-async-apis"><a class="anchor" href="#reactive-and-async-apis"></a>Reactive And Async APIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to the blocking API on <code>Cluster</code>, the SDK provides reactive and async APIs on <code>ReactiveCluster</code> or <code>AsyncCluster</code> respectively.
+If you are in doubt of which API to use, we recommend looking at the reactive first:
+it builds on top of reactor, a powerful library that allows you to compose reactive computations and deal with error handling and other related concerns (like retry) in an elegant manner.
+The async API on the other hand exposes a <code>CompletableFuture</code> and is more meant for lower level integration into other libraries or if you need the last drop of performance.</p>
+</div>
+<div class="paragraph">
+<p>There is another reason for using the reactive API here: streaming large results with backpressure from the application side.
+Both the blocking and async APIs have no means of signalling backpressure in a good way, so if you need it the reactive API is your best option.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Advanced Reactive Concepts Ahead</div>
+<div class="paragraph">
+<p>Please see recent guides to reactive programming for more information on the basics&#8201;&#8212;&#8201;this guide dives straight into their impact on querying search.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A simple reactive query is similar to the blocking one:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Mono&lt;ReactiveSearchResult&gt; result = cluster
+  .reactive()
+  .searchQuery("index", SearchQuery.queryString("query"));
+
+result
+  .flatMapMany(ReactiveSearchResult::rows)
+  .subscribe(row -&gt; System.out.println("Found row: " + row));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This search query will stream all rows as they become available form the server.
+If you want to manually control the data flow (which is important if you are streaming a lot of rows which could cause a potential out of memory situation) you can do this by using explicit <code>request()</code> calls.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Mono&lt;ReactiveSearchResult&gt; result = cluster
+  .reactive()
+  .searchQuery("index", SearchQuery.queryString("query"));
+
+result
+  .flatMapMany(ReactiveSearchResult::rows)
+  .subscribe(new BaseSubscriber&lt;SearchRow&gt;() {
+    // Number of outstanding requests
+    final AtomicInteger oustanding = new AtomicInteger(0);
+
+    @Override
+    protected void hookOnSubscribe(Subscription subscription) {
+      request(10); // initially request to rows
+      oustanding.set(10);
+    }
+
+    @Override
+    protected void hookOnNext(SearchRow row) {
+      process(row);
+      if (oustanding.decrementAndGet() == 0) {
+        request(10);
+      }
+    }
+  });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example we initially request a batch size of 10 rows (so streaming can begin).
+Then as each row gets streamed it is written to a <code>process()</code> method which does whatever it needs to do to process.
+Then a counter is decremented, and once all of the 10 outstanding rows are processed another batch is loaded.
+Please note that with reactive code, if your <code>process()</code> method equivalent is blocking, you <strong>must</strong> move it onto another scheduler so that the I/O threads are not stalled.
+We always recommend not blocking in the first place in reactive code.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
