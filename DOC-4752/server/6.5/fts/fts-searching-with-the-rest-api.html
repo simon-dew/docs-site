@@ -3574,6 +3574,11 @@
     <a class="nav-link" href="../rest-api/rest-fts-advanced.html">Advanced</a>
     </span>
   </li>
+  <li class="nav-item" data-depth="4">
+    <span class="nav-line">
+    <a class="nav-link" href="../rest-api/rest-fts-statistics.html">Getting Search Statistics</a>
+    </span>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="3">
@@ -3995,6 +4000,64 @@ http://localhost:18094/api/index/travel-sample-index/query \
 </div>
 <div class="paragraph">
 <p>For additional information on secure communication with Couchbase Server, see <a href="../manage/manage-security/manage-connections-and-disks.html" class="page">Manage Connections and Disks</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="searching-specifically"><a class="anchor" href="#searching-specifically"></a>Searching Specifically</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Searches should always be as specific as possible: this helps to avoid excessive resource-consumption, and the retrieval of unnecessarily large amounts of data.
+To facilitate this, the number of <em>clauses</em> that can be returned by a Search Service query is deliberately capped at <em>1024</em>: if a larger number of clauses is to be returned by a query, an error is thrown.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following query attempts to use the wildcard <code>*</code>, to return all data from documents' <code>reviews.content</code> field.
+The output is piped to the <a href="http://stedolan.github.io/jq">jq</a> program, to enhance readability:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -u Administrator:password -X POST \
+-H "Content-Type: application/json" \
+http://localhost:8094/api/index/travel-sample-index/query \
+-d '{
+  "explain": true,
+  "fields": [
+    "*"
+  ],
+  "highlight": {},
+  "query": {
+    "wildcard": "*",
+    "field": "reviews.content"
+  }
+}' | jq '.'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Due to the excessive number of clauses that this query would return, an error is thrown.
+The initial part of the error-output is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+  "status": {
+    "total": 6,
+    "failed": 6,
+    "successful": 0,
+    "errors": {
+      "travel-sample-index_666185f510578977_13aa53f3": "TooManyClauses[8550 &gt; maxClauseCount, which is set to 1024]",
+      "travel-sample-index_666185f510578977_18572d87": "TooManyClauses[8731 &gt; maxClauseCount, which is set to 1024]",
+      "travel-sample-index_666185f510578977_54820232": "TooManyClauses[8130 &gt; maxClauseCount, which is set to 1024]",
+      "travel-sample-index_666185f510578977_6ddbfb54": "TooManyClauses[8694 &gt; maxClauseCount, which is set to 1024]",
+      "travel-sample-index_666185f510578977_aa574717": "TooManyClauses[8731 &gt; maxClauseCount, which is set to 1024]",
+      "travel-sample-index_666185f510578977_f4e0a48a": "TooManyClauses[8450 &gt; maxClauseCount, which is set to 1024]"
+    }
+      .
+      .
+      .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Therefore, to fix the problem, the wildcard match should be more precisely specified, and the query re-attempted.</p>
 </div>
 </div>
 </div>
