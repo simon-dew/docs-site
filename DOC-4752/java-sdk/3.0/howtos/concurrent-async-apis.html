@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Choosing an API | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4752/java-sdk/3.0/howtos/concurrent-async-apis.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="3.0">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4752">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../hello-world/start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">3.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li class="current"><a class="navbar-item" href="concurrent-async-apis.html">Java SDK 3.0</a></li>
+                  <li><a class="navbar-item" href="../../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="#">c-sdk</a></li>
+                  <li><a class="navbar-item" href="#">dotnet-sdk</a></li>
+                  <li><a class="navbar-item" href="#">go-sdk</a></li>
+                  <li><a class="navbar-item" href="#">nodejs-sdk</a></li>
+                  <li><a class="navbar-item" href="#">php-sdk</a></li>
+                  <li><a class="navbar-item" href="#">python-sdk</a></li>
+                  <li><a class="navbar-item" href="#">scala-sdk</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Getting Started</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/start-using-sdk.html">Start Using the Java SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/sample-application.html">Sample Application</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="kv-operations.html">Key Value Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Full Text Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Data Operations</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-async-apis.html">Async &amp; Reactive APIs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="distributed-acid-transactions-from-the-sdk.html">Distributed ACID Transactions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="transcoders-nonjson.html">Transcoders &amp; Non-JSON</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="working-with-collections.html">Working with Collections DP</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Managing Couchbase</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Errors &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Logging</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Learn</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/concepts.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/buckets-and-clusters.html">Buckets &amp; Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/collections.html">Collections &amp; Scope</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/compression.html">Compression</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-model.html">Data Model</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/documents.html">Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/nonjson.html">Non-json Docs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/subdocument-operations.html">Sub-Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/xattr.html">XATTR &amp; Virtual XATTR</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/errors.html">Errors and Diagnostics</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/health-check.html">Health Check</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/response-time-observability.html">Tracing</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/durability-replication-failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/encryption.html">Field Level Encryption</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-services.html">Service Selection</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/analytics-for-sdk-users.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/understanding-views.html">Map Reduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/n1ql-query.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/full-text-search-overview.html">Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">References</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/sdk-api/couchbase-java-client">API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../ref/client-settings.html">Client Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-release-notes.html">SDK Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/distributed-transactions-java-release-notes.html">Transactions Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/compatibility.html">Compatibility</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../hello-world/start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Advanced Data Operations</li>
+    <li class="crumb"><a href="concurrent-async-apis.html">Async &amp; Reactive APIs</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/howtos/pages/concurrent-async-apis.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Choosing an API</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+The Java SDK offers efficient, non-blocking alternatives to the regular blocking API. This page outlines the different options with their drawbacks and benefits.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reactive-programming-with-reactor"><a class="anchor" href="#reactive-programming-with-reactor"></a>Reactive Programming with Reactor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You want to consider an asynchronous, reactive API if the blocking API does not suit your needs anymore. There are plenty of reasons why this might be the case, like more effective resource utilization, non-blocking error handling or batching together various operations. We recommend using the reactive API over the <code>CompletableFuture</code> counterpart because it provides all the bells and whistles you need to build scalable asynchronous stacks.</p>
+</div>
+<div class="paragraph">
+<p>Each blocking API provides access to its reactive counterpart through the <code>reactive()</code> accessor methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = Cluster.connect("127.0.0.1", "Administrator", "password");
+ReactiveCluster reactiveCluster = cluster.reactive();
+
+Bucket bucket = cluster.bucket("travel-sample");
+ReactiveBucket reactiveBucket = bucket.reactive();
+
+Collection collection = bucket.defaultCollection();
+ReactiveCollection reactiveCollection = collection.reactive();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The reactive API uses the <a href="https://projectreactor.io/">Project Reactor</a> library as the underlying implementation, so it exposes its <code>Mono</code> and <code>Flux</code> types accordingly. As a rule of thumb, if the blocking API returns a type <code>T</code> the reactive counterpart returns <code>Mono&lt;T&gt;</code> if one (or no) results is expected or in some cases <code>Flux&lt;T&gt;</code> if there are more than one expected. We <strong>highly</strong> recommend that you make yourself familar with the <a href="https://projectreactor.io/docs/core/release/reference/">reactor documentation</a> to understand its fundamentals and also unlock its full potential.</p>
+</div>
+<div class="paragraph">
+<p>The following example fetches a document and prints out the <code>GetResult</code> once it has been loaded (or the exception if failed):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">reactiveCollection
+  .get("my-doc")
+  .subscribe(System.out::println, System.err::println);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is important to understand that reactive types are lazy, which means that they are only executed when a consumer subscribes to them. So a code like this won&#8217;t even be executed at all:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">reactiveCollection.upsert("my-doc", JsonObject.create());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Modern IDEs like IntelliJ even warn you about that:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/ij_unassigned.png" alt="IntelliJ Unassigned Warning">
+</div>
+</div>
+<div class="paragraph">
+<p>You will come across the <code>Flux</code> type in APIs like query where there is one or more row expected.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">reactiveCluster
+  .query("select * from `travel-sample`")
+  .flux()
+  .flatMap(result -&gt; {
+    Flux&lt;JsonObject&gt; rows = result.rowsAs(JsonObject.class);
+    return rows;
+  }).subscribe(row -&gt; {
+    System.out.println("Found row: " + row);
+  });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>QueryResult</code> itself is wrapped in a <code>Mono</code>, but the class itself carries a <code>Flux&lt;T&gt;</code> of rows where <code>T</code> is a type of choice you can convert it to (in this example we simply convert it into <code>JsonObject</code>). The <code>flatMap</code> operator allows to map the stream or rows into the previous stream of the original result. If you have more question on how this works, check out the documentation <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMap-java.util.function.Function-">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="low-level-asynchronous-api-with-completablefutures"><a class="anchor" href="#low-level-asynchronous-api-with-completablefutures"></a>Low Level Asynchronous API with CompletableFutures</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Both the blocking API and the reactive one are built on a lower level foundation using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a> type. It is built into the JDK starting from version 1.8 and while it is not as powerful as its reactive counterpart it does provide even better performance. In simplified terms, the <code>core-io</code> layer is responsible for mapping a <code>Request</code> to a <code>CompletableFuture&lt;Response&gt;</code>. The blocking API waits until the future completes on the caller thread while the reactive API wraps it into a <code>Mono</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can access this API by using the <code>async()</code> accessor methods both on the blocking and reactive counterparts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">AsyncCluster asyncCluster = cluster.async();
+AsyncBucket asyncBucket = bucket.async();
+AsyncCollection asyncCollection = collection.async();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We recommend using this API only if you are either writing integration code for higher level concurrency mechanisms or you really need the last drop of performance. In all other cases, the blocking API (for simplicity) or the reactive API (for richness in operators) is likely the better choice.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="batching"><a class="anchor" href="#batching"></a>Batching</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The SDK itself does not provide explicit APIs for batching, because using the reactive mechanisms it allows you to build batching code applied to your use case much better than a generic implementation could in the first place.</p>
+</div>
+<div class="paragraph">
+<p>While it can be done with the async API as well, we recommend using the reactive API so you can use async retry and fallback mechanisms that are supplied out of the box. The most simplistic bulk fetch (without error handling or anything) looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;String&gt; docsToFetch = Arrays.asList("key1", "key2", "key3");
+List&lt;GetResult&gt; results = Flux
+  .fromIterable(docsToFetch)
+  .flatMap(reactiveCollection::get)
+  .collectList()
+  .block();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This code grabs a list of keys to fetch and passes them to <code>ReactiveCollection#get(String)</code>. Since this is happening asynchronously, the results will return in whatever order they come back from the server cluster. The <code>block()</code> at the end waits until all results have been collected. Of course the blocking part at the end is optional, but it shows that you can mix and match reactive and blocking code to on the one hand benefit from simplicity, but always go one layer below for the more powerful concepts if needed.</p>
+</div>
+<div class="paragraph">
+<p>While being simple, the code as shown has one big downside: individual errors for each document will fail the whole stream (this is how the <code>Flux</code> semantics are specified). In some cases this might be what you want, but most of the time you either want to ignore individual failures or mark them as failed.</p>
+</div>
+<div class="paragraph">
+<p>Here is how you can ignore individual errors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;String&gt; docsToFetch = Arrays.asList("key1", "key2", "key3");
+List&lt;GetResult&gt; results = Flux
+  .fromIterable(docsToFetch)
+  .flatMap(key -&gt; reactiveCollection.get(key).onErrorResume(e -&gt; Mono.empty()))
+  .collectList()
+  .block();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>.onErrorResume(e &#8594; Mono.empty()))</code> returns an empty <code>Mono</code> regardless of the error. Since you have the exception in scope, you can also decide based on the actual error if you want to ignore it or propagate/fallback to a different reactive computation.</p>
+</div>
+<div class="paragraph">
+<p>If you want to separate out failures from completions, one way would be to use side effects. This is not as clean as with pure functional programming but does the job as well. Make sure to use concurrent data structures for proper thread safety:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;String&gt; docsToFetch = Arrays.asList("key1", "key2", "key3");
+
+List&lt;GetResult&gt; successfulResults =
+  Collections.synchronizedList(new ArrayList&lt;&gt;());
+Map&lt;String, Throwable&gt; erroredResults =
+  new ConcurrentHashMap&lt;&gt;();
+
+Flux
+  .fromIterable(docsToFetch)
+  .flatMap(key -&gt; reactiveCollection.get(key).onErrorResume(e -&gt; {
+    erroredResults.put(key, e);
+    return Mono.empty();
+  }))
+  .doOnNext(successfulResults::add)
+  .last()
+  .block();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the result succeeds the side-effect method <code>doOnNext</code> is used to store it into the <code>successfulResults</code> and if the operation fails we are utilizing the same operator as before (<code>onErrorResume</code>) to store it in the <code>erroredResults</code> map&#8201;&#8212;&#8201;but then also to ignore it for the overall sequence.</p>
+</div>
+<div class="paragraph">
+<p>Finally, it is also possible to retry individual failures before giving up. The built-in retry mechanisms help with this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;String&gt; docsToFetch = Arrays.asList("key1", "key2", "key3");
+
+List&lt;GetResult&gt; results = Flux
+  .fromIterable(docsToFetch)
+  .flatMap(key -&gt; reactiveCollection
+    .get(key)
+    .retryBackoff(10, Duration.ofMillis(10)))
+  .collectList()
+  .block();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is recommended to check out the <code>retry</code> and <code>retryBackoff</code> methods for their configuration options and overloads. Of course, all the operators shown here can be combined to achieve exactly the semantics you need. Finally, for even advanced retry policies you can utilize the retry functionality in the <a href="https://projectreactor.io/docs/extra/release/api/reactor/retry/Retry.html">reactor-extra</a> package.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reactive-streams-integration"><a class="anchor" href="#reactive-streams-integration"></a>Reactive Streams Integration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://www.reactive-streams.org/">Reactive Streams</a> is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure. The reactor library the SDK depends on has out-of-the-box support for this interoperability specification, so with minimal hurdles you can combine it with other reactive libraries. This is especially helpful if your application stack is built on <a href="https://github.com/ReactiveX/RxJava">RxJava</a>.</p>
+</div>
+<div class="paragraph">
+<p>The easiest way you can do this is by including the <a href="https://projectreactor.io/docs/adapter/release/api/">Reactor Adapter</a> library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.projectreactor.addons&lt;/groupId&gt;
+    &lt;artifactId&gt;reactor-adapter&lt;/artifactId&gt;
+    &lt;version&gt;3.2.3.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.reactivex.rxjava2&lt;/groupId&gt;
+    &lt;artifactId&gt;rxjava&lt;/artifactId&gt;
+    &lt;version&gt;2.1.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, you can use the various conversion methods to convert back and forth between the rx and reactor types. The following snippet takes a <code>Mono&lt;GetResult&gt;</code> from the SDK and converts it into the RxJava <code>Single&lt;GetResult&gt;</code> equivalent.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Single&lt;GetResult&gt; rxSingleResult = monoToSingle(reactiveCollection.get("my-doc"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The same strategy can be used to convert to <a href="https://akka.io/">Akka</a>, but if you are working in the scala world we recommend using our first-class Scala SDK directly instead!</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

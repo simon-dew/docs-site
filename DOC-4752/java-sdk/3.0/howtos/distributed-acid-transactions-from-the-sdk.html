@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Distributed Transactions from the Java SDK | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-4752/java-sdk/3.0/howtos/distributed-acid-transactions-from-the-sdk.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="3.0">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-4752">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../hello-world/start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">3.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li class="current"><a class="navbar-item" href="distributed-acid-transactions-from-the-sdk.html">Java SDK 3.0</a></li>
+                  <li><a class="navbar-item" href="../../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="#">c-sdk</a></li>
+                  <li><a class="navbar-item" href="#">dotnet-sdk</a></li>
+                  <li><a class="navbar-item" href="#">go-sdk</a></li>
+                  <li><a class="navbar-item" href="#">nodejs-sdk</a></li>
+                  <li><a class="navbar-item" href="#">php-sdk</a></li>
+                  <li><a class="navbar-item" href="#">python-sdk</a></li>
+                  <li><a class="navbar-item" href="#">scala-sdk</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Getting Started</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/start-using-sdk.html">Start Using the Java SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/sample-application.html">Sample Application</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="kv-operations.html">Key Value Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="n1ql-queries-with-sdk.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="analytics-using-sdk.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="full-text-searching-with-sdk.html">Full Text Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Data Operations</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="concurrent-async-apis.html">Async &amp; Reactive APIs</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="distributed-acid-transactions-from-the-sdk.html">Distributed ACID Transactions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="transcoders-nonjson.html">Transcoders &amp; Non-JSON</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="working-with-collections.html">Working with Collections DP</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Managing Couchbase</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Errors &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="collecting-information-and-logging.html">Logging</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Learn</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/concepts.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/buckets-and-clusters.html">Buckets &amp; Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/collections.html">Collections &amp; Scope</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/compression.html">Compression</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-model.html">Data Model</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/documents.html">Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/nonjson.html">Non-json Docs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/subdocument-operations.html">Sub-Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/xattr.html">XATTR &amp; Virtual XATTR</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/errors.html">Errors and Diagnostics</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/health-check.html">Health Check</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/response-time-observability.html">Tracing</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/durability-replication-failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/encryption.html">Field Level Encryption</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-services.html">Service Selection</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/analytics-for-sdk-users.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/understanding-views.html">Map Reduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/n1ql-query.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/full-text-search-overview.html">Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">References</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/sdk-api/couchbase-java-client">API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../ref/client-settings.html">Client Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-release-notes.html">SDK Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/distributed-transactions-java-release-notes.html">Transactions Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/compatibility.html">Compatibility</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../project-docs/sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../project-docs/get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../hello-world/start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Advanced Data Operations</li>
+    <li class="crumb"><a href="distributed-acid-transactions-from-the-sdk.html">Distributed ACID Transactions</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/howtos/pages/distributed-acid-transactions-from-the-sdk.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Distributed Transactions from the Java SDK</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+A practical guide to using Couchbase’s distributed ACID transactions, via the Java API.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Distributed Transactions for Couchbase provide these semantics and features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Insertion, mutation, and removal of multiple documents can be staged inside a transaction.</p>
+</li>
+<li>
+<p>Until the transaction is committed, these changes will not be visible to other transactions, or any other part of the Couchbase Data Platform.</p>
+</li>
+<li>
+<p>An isolation level of Read Committed, to support high performance and scalability.</p>
+</li>
+<li>
+<p>A high-level and easy-to-use API that allows the developer to express what they want the transaction to do as a block of logic, while the library takes care of the nuts and bolts of handling any temporary conflicts with other transactions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Please see <a href="../../../server/6.5/learn/data/transactions.html" class="page">our introduction to ACID Transactions</a> for a guide to the benefits and trade-offs of multi-document transactions.</p>
+</div>
+<div class="paragraph">
+<p>Below we show you how to create Transactions, step-by-step.
+You may also want to start with our <a href="https://github.com/couchbaselabs/couchbase-transactions-java-examples">GitHub transactions examples page</a>,
+which features useful downloadable examples of using Distributed Transactions.</p>
+</div>
+<div class="paragraph">
+<p>Javadocs are available <a href="https://docs.couchbase.com/sdk-api/couchbase-transactions-java/1.0.0/">online</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="requirements"><a class="anchor" href="#requirements"></a>Requirements</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Couchbase Server 6.5 or above.</p>
+</li>
+<li>
+<p>Couchbase Java client 3.0.0 or above.  It is recommended to follow the transitive dependency for the transactions library from maven.</p>
+</li>
+<li>
+<p>NTP should be configured so nodes of the Couchbase cluster are in sync with time. The time being out of sync will not cause incorrect behavior, but can impact metadata cleanup.</p>
+</li>
+<li>
+<p>The application, if it is using <a href="../concept-docs/xattr.html" class="page">extended attributes (XATTRs)</a>, must avoid using the XATTR field <code>txn</code>, which is now reserved for Couchbase use.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The default number of replicas for a new bucket is 1.
+Make sure to change this
+(see <a href="../../../server/6.5/manage/manage-buckets/create-bucket.html#couchbase-bucket-settings" class="page">GUI</a> or <a href="../../../server/6.5/cli/cbcli/couchbase-cli-bucket-create.html#options" class="page">command line</a> bucket options)
+to the correct 0 for a single node cluster (for example, during local development),
+else all transactions will fail due to the default durability setting of <code>Majority</code> being impossible to achieve.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started"><a class="anchor" href="#getting-started"></a>Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase transactions require no additional components or services to be configured.
+Simply add the transactions library into your project.
+With gradle this can be accomplished by modifying these sections of your build.gradle file like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-gradle hljs" data-lang="gradle">dependencies {
+    compile group: 'com.couchbase.client', name: 'couchbase-transactions', version: '1.0.0'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use of this maven repository from other tools is similar.
+Use the same group, artifact, and version in your maven-compatible tool of choice.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="initializing-transactions"><a class="anchor" href="#initializing-transactions"></a>Initializing Transactions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here are all imports used by the following examples:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.Collection;
+import com.couchbase.client.java.ReactiveCollection;
+import com.couchbase.client.java.json.JsonObject;
+import com.couchbase.transactions.TransactionGetResult;
+import com.couchbase.transactions.TransactionResult;
+import com.couchbase.transactions.Transactions;
+import com.couchbase.transactions.config.TransactionConfigBuilder;
+import com.couchbase.transactions.deferred.TransactionSerializedContext;
+import com.couchbase.transactions.error.TransactionFailed;
+import com.couchbase.transactions.log.IllegalDocumentState;
+import com.couchbase.transactions.log.LogDefer;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The starting point is the <code>Transactions</code> object.
+It is very important that the application ensures that only one of these is created, as it performs automated background processes that should not be duplicated.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Initialize the Couchbase cluster
+Cluster cluster = Cluster.connect("localhost", "transactor", "mypass");
+Bucket bucket = cluster.bucket("transact");
+Collection collection = bucket.defaultCollection();
+
+// Create the single Transactions object
+Transactions transactions = Transactions.create(cluster, TransactionConfigBuilder.create()
+        // The configuration can be altered here, but in most cases the defaults are fine.
+        .build());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default configuration will perform all writes with the durability setting Majority, ensuring that each write is available in-memory on the majority of replicas before the transaction continues.
+The application is free to adjust this to the level of None for performance at the cost of some data safety and possible loss of atomicity in the advent of node failures, or to a higher durability level for even greater safety
+(of course, at some loss in performance).
+Majority has been selected as the best default durability for most use-cases.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="creating-a-transaction"><a class="anchor" href="#creating-a-transaction"></a>Creating a Transaction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A core idea of the library is that you provide your transactional logic inside a callback,
+and the transactions library takes care of getting the transaction committed,
+retrying the logic as often as required (e.g. in the event of a temporary conflict with another transaction).</p>
+</div>
+<div class="paragraph">
+<p>Each run of the callback is called an <code>attempt</code>, inside an overall <code>transaction</code>.</p>
+</div>
+<div class="paragraph">
+<p>As with the Couchbase Java Client, you can use the library in either synchronous mode:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">try {
+    transactions.run((ctx) -&gt; {
+        // 'ctx' is an AttemptContext, which permits getting, inserting,
+        // removing and replacing documents, along with committing and
+        // rolling back the transaction.
+
+        // ... Your transaction logic here ...
+
+        // This call is optional - if you leave it off, the transaction
+        // will be committed anyway.
+        ctx.commit();
+    });
+} catch (TransactionFailed e) {
+    // System.err is used for example, log failures to your own logging system
+    System.err.println("Transaction " + e.result().transactionId() + " failed");
+
+    for (LogDefer err : e.result().log().logs()) {
+        System.err.println(err.toString());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or asynchronous modes, using the Project Reactor reactive library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Mono&lt;TransactionResult&gt; result = transactions.reactive().run((ctx) -&gt; {
+    // 'ctx' is an AttemptContextReactive, providing asynchronous versions of the AttemptContext methods
+
+    return
+
+            // Your transaction logic here: as an example, get and remove a doc
+            ctx.get(collection.reactive(), "document-id")
+                    .flatMap(doc -&gt; ctx.remove(doc))
+
+                    // The commit call is optional - if you leave it off,
+                    // the transaction will be committed anyway.
+                    .then(ctx.commit());
+
+}).doOnError(err -&gt; {
+    if (err instanceof TransactionFailed) {
+        for (LogDefer e : ((TransactionFailed) err).result().log().logs()) {
+            // System.err is used for example, log failures to your own logging system
+            System.err.println(err.toString());
+        }
+    }
+});
+
+// Normally you will chain this result further and ultimately subscribe.  For simplicity, here we just block
+// on the result.
+TransactionResult finalResult = result.block();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The blocking mode is the easiest to write and understand and expects that you are running within a framework, such as a servlet container, that manages concurrency for you.
+The asynchronous API allows you to build your application in a reactive style, without large thread pools, which can help you scale with excellent efficiency.
+Those new to reactive programming may want to check out <a href="https://projectreactor.io/">the Project Reactor site</a> for more details on this powerful paradigm.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Some <code>AttemptContextReactive</code> methods, notably <code>remove</code>, return <code>Mono&lt;Void&gt;</code>.
+Be careful to use <code>then</code> rather than <code>flatMap</code> or similar on these,
+as <code>Mono&lt;Void&gt;</code> will only trigger a completion event, and not the next event,
+so many methods including flatMap will not work as expected.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is a quick summary of the main transaction operations.
+They are described in more detail below.</p>
+</div>
+<div class="listingblock">
+<div class="title">With the synchronous API</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">try {
+    transactions.run((ctx) -&gt; {
+        // Inserting a doc:
+        String docId = "aDocument";
+        ctx.insert(collection, docId, JsonObject.create());
+
+        // Getting documents:
+        // Use ctx.getOptional if the document may or may not exist
+        Optional&lt;TransactionGetResult&gt; docOpt = ctx.getOptional(collection, docId);
+
+        // Use ctx.get if the document should exist, and the transaction will fail if not
+        TransactionGetResult doc = ctx.get(collection, docId);
+
+        // Replacing a doc:
+        TransactionGetResult anotherDoc = ctx.get(collection, "anotherDoc");
+        // TransactionGetResult is immutable, so get its content as a mutable JsonObject
+        JsonObject content = anotherDoc.contentAs(JsonObject.class);
+        content.put("transactions", "are awesome");
+        ctx.replace(anotherDoc, content);
+
+        // Removing a doc:
+        TransactionGetResult yetAnotherDoc = ctx.get(collection, "yetAnotherDoc");
+        ctx.remove(yetAnotherDoc);
+
+        ctx.commit();
+    });
+} catch (TransactionFailed e) {
+    // System.err is used for example, log failures to your own logging system
+    System.err.println("Transaction " + e.result().transactionId() + " failed");
+
+    for (LogDefer err : e.result().log().logs()) {
+        System.err.println(err.toString());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">With the asynchronous API</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Mono&lt;TransactionResult&gt; result = transactions.reactive().run((ctx) -&gt; {
+    return
+            // Inserting a doc:
+            ctx.insert(collection.reactive(), "aDoc", JsonObject.create())
+
+                    // Getting and replacing a doc:
+                    .then(ctx.get(collection.reactive(), "anotherDoc"))
+                    .flatMap(doc -&gt; {
+                        JsonObject content = doc.contentAs(JsonObject.class);
+                        content.put("transactions", "are awesome");
+                        return ctx.replace(doc, content);
+                    })
+
+                    // Getting and removing a doc:
+                    .then(ctx.get(collection.reactive(), "yetAnotherDoc"))
+                    .flatMap(doc -&gt; ctx.remove(doc))
+
+                    // Committing:
+                    .then(ctx.commit());
+
+}).doOnError(err -&gt; {
+    if (err instanceof TransactionFailed) {
+        for (LogDefer e : ((TransactionFailed) err).result().log().logs()) {
+            // System.err is used for example, log failures to your own logging system
+            System.err.println(err.toString());
+        }
+    }
+});
+
+// Normally you will chain this result further and ultimately subscribe.
+// For simplicity, here we just block on the result.
+result.block();</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="inserting-documents"><a class="anchor" href="#inserting-documents"></a>Inserting documents</h3>
+<div class="listingblock">
+<div class="title">With the asynchronous API:</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.reactive().run((ctx) -&gt; {
+    return ctx.insert(collection.reactive(), "docId", JsonObject.create()).then();
+}).block();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the synchronous API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>transactions.run((ctx) -&gt; {
+    String docId = "docId";
+
+    ctx.insert(collection, docId, JsonObject.create());
+
+});</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-documents"><a class="anchor" href="#getting-documents"></a>Getting Documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are two ways to get a document, <code>get</code> and <code>getOrError</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((ctx) -&gt; {
+    String docId = "a-doc";
+
+    Optional&lt;TransactionGetResult&gt; docOpt = ctx.getOptional(collection, docId);
+    TransactionGetResult doc = ctx.get(collection, docId);
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>getOrError</code> will throw <code>KeyNotFoundException</code> if the document doesn&#8217;t exist, fast failing the transaction,  and is provided as a convenience method so the developer does not have to check the <code>Optional</code> if the document must exist for the transaction to succeed.</p>
+</div>
+<div class="paragraph">
+<p>Gets will 'read your own writes', e.g. this will succeed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((ctx) -&gt; {
+    String docId = "docId";
+
+    ctx.insert(collection, docId, JsonObject.create());
+
+    Optional&lt;TransactionGetResult&gt; doc = ctx.getOptional(collection, docId);
+
+    assert (doc.isPresent());
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Other transactions will not see the inserted document until this transaction commits.
+Non-transactional reads will see an empty document, where they would have otherwise seen a document not existing.</p>
+</div>
+<div class="sect2">
+<h3 id="replacing-documents"><a class="anchor" href="#replacing-documents"></a>Replacing Documents</h3>
+<div class="listingblock">
+<div class="title">With the asynchronous API:</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((ctx) -&gt; {
+    TransactionGetResult anotherDoc = ctx.get(collection, "anotherDoc");
+    JsonObject content = anotherDoc.contentAs(JsonObject.class);
+    content.put("transactions", "are awesome");
+    ctx.replace(anotherDoc, content);
+});</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Synchronous API:</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.reactive().run((ctx) -&gt; {
+    return ctx.get(collection.reactive(), "anotherDoc")
+            .flatMap(doc -&gt; {
+                JsonObject content = doc.contentAs(JsonObject.class);
+                content.put("transactions", "are awesome");
+                return ctx.replace(doc, content);
+            })
+            .then(ctx.commit());
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These changes are staged until commit:
+other transactions, and regular gets, will see the original unmodified doc.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="removing-documents"><a class="anchor" href="#removing-documents"></a>Removing Documents</h3>
+<div class="listingblock">
+<div class="title">With the asynchronous API:</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.reactive().run((ctx) -&gt; {
+    return ctx.get(collection.reactive(), "anotherDoc")
+            .flatMap(doc -&gt; ctx.remove(doc));
+});</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Synchronous API:</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((ctx) -&gt; {
+    TransactionGetResult anotherDoc = ctx.get(collection, "anotherDoc");
+    ctx.remove(anotherDoc);
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As with inserted and replaced docs, these changes are staged until commit:
+both other transactions, and regular gets, will see the unremoved doc.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="committing"><a class="anchor" href="#committing"></a>Committing</h3>
+<div class="paragraph">
+<p>Committing is automatic: if there is no explicit call to <code>ctx.commit()</code> at the end of the transaction logic callback, and no exception is thrown, it will be committed.</p>
+</div>
+<div class="paragraph">
+<p>With the asynchronous API, if you leave off the explicit call to <code>commit</code> then you may need to call <code>.then()</code> on the result of the chain to convert it to the required <code>Mono&lt;Void&gt;</code> return type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Mono&lt;TransactionResult&gt; result = transactions.reactive().run((ctx) -&gt; {
+    return ctx.get(collection.reactive(), "anotherDoc")
+            .flatMap(doc -&gt; {
+                JsonObject content = doc.contentAs(JsonObject.class);
+                content.put("transactions", "are awesome");
+                return ctx.replace(doc, content);
+            })
+            .then();
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As soon as the transaction is committed, the changes will be atomically visible to other transactions.
+This is achieved by having each transaction have a single point of truth regarding its commit status,
+which is checked whenever a transaction discovers a document that&#8217;s mid-transaction.</p>
+</div>
+<div class="paragraph">
+<p>Commit is final: after the transaction is committed, it cannot be rolled back.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="a-full-transaction-example"><a class="anchor" href="#a-full-transaction-example"></a>A Full Transaction Example</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s pull together everything so far into a more real-world example of a transaction.</p>
+</div>
+<div class="paragraph">
+<p>This example is based on the Game Simulation sample bucket, which can be installed in the <em>Couchbase Admin UI</em> through <strong>Settings &#8594; Sample Buckets</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The sample data simulates that of a simple Massively Multiplayer Online game, and includes documents representing:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Players, with experience points and levels;</p>
+</li>
+<li>
+<p>Monsters, with hitpoints, and the number of experience points a player earns from their death.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this example, the player is dealing damage to the monster.
+The player’s client has sent this instruction to a central server, where we’re going to record that action.
+We’re going to do this in a transaction,
+as we don’t want a situation where the monster is killed, but we fail to update the player’s document with the earned experience.  (Though this is just a demo - in reality, the game would likely live with the small risk and limited impact of this, rather than pay the cost for using a transaction.)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public void playerHitsMonster(int damage, String playerId, String monsterId) {
+    Transactions transactions = getTransactions();
+
+    try {
+        transactions.run((ctx) -&gt; {
+            TransactionGetResult monsterDoc = ctx.get(collection, monsterId);
+            TransactionGetResult playerDoc = ctx.get(collection, playerId);
+
+            int monsterHitpoints = monsterDoc.contentAs(JsonObject.class).getInt("hitpoints");
+            int monsterNewHitpoints = monsterHitpoints - damage;
+
+            if (monsterNewHitpoints &lt;= 0) {
+                // Monster is killed.  The remove is just for demoing, and a more realistic example would set a
+                // "dead" flag or similar.
+                ctx.remove(monsterDoc);
+
+                // The player earns experience for killing the monster
+                int experienceForKillingMonster = monsterDoc.contentAs(JsonObject.class).getInt(
+                        "experienceWhenKilled");
+                int playerExperience = playerDoc.contentAs(JsonObject.class).getInt("experience");
+                int playerNewExperience = playerExperience + experienceForKillingMonster;
+                int playerNewLevel = calculateLevelForExperience(playerNewExperience);
+
+                JsonObject playerContent = playerDoc.contentAs(JsonObject.class);
+
+                playerContent.put("experience", playerNewExperience);
+                playerContent.put("level", playerNewLevel);
+
+                ctx.replace(playerDoc, playerContent);
+            } else {
+                // Monster is damaged but still alive
+                JsonObject monsterContent = monsterDoc.contentAs(JsonObject.class);
+                monsterContent.put("hitpoints", monsterNewHitpoints);
+
+                ctx.replace(monsterDoc, monsterContent);
+            }
+        });
+    } catch (TransactionFailed e) {
+        // The operation failed.   Both the monster and the player will be untouched.
+
+        // Situations that can cause this would include either the monster
+        // or player not existing (as get is used), or a persistent
+        // failure to be able to commit the transaction, for example on
+        // prolonged node failure.
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="concurrency-with-non-transactional-writes"><a class="anchor" href="#concurrency-with-non-transactional-writes"></a>Concurrency with Non-Transactional Writes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This release of transactions for Couchbase requires a degree of co-operation from the application.
+Specifically, the application should ensure that transactional and non-transactional writes (such as the SDK API using the data service or issuing N1QL UPDATES) are never done concurrently with documents involved in a transaction.
+It is recommended that if your app is using transactions, all transacted-upon document access for mutation is through the transactions API.
+In many applications, this means you will have a mix of use of the traditional API for documents not involved in transactions,
+and the transactions API for documents used from transactions, even if some sections of that logic do not require multi-document atomicity.
+Queries and read access from other APIs are perfectly fine, and are at a Read Committed isolation level.
+We may change this in a future release.</p>
+</div>
+<div class="paragraph">
+<p>To help detect that this requirement is fulfilled, the application can subscribe to the client&#8217;s event logger and check for any <code>IllegalDocumentState</code> events, like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">cluster.environment().eventBus().subscribe(event -&gt; {
+    if (event instanceof IllegalDocumentState) {
+        // log this event for review
+    }
+});</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rollback"><a class="anchor" href="#rollback"></a>Rollback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Rollback is handled automatically:
+if an exception is thrown, either by the transactional logic, or within the transactions library,
+then that attempt is rolled back.
+The transaction logic  may or may not be retried, depending on the exception.
+If the transaction is not retried then it will throw a <code>TransactionFailed</code> exception, and its <code>getCause</code> method can be used for more details on the failure.</p>
+</div>
+<div class="paragraph">
+<p>The transaction can also be explicitly rolled back:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((ctx) -&gt; {
+    ctx.insert(collection, "docId", JsonObject.create());
+
+    Optional&lt;TransactionGetResult&gt; docOpt = ctx.getOptional(collection, "requiredDoc");
+    if (docOpt.isPresent()) {
+        ctx.remove(docOpt.get());
+        ctx.commit();
+    } else {
+        ctx.rollback();
+    }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, the transaction will be regarded as successful, e.g. no TransactionFailed is thrown.</p>
+</div>
+<div class="paragraph">
+<p>After a transaction is rolled back, it cannot be committed,
+and the library will not try to automatically commit it at the end of the code block.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-handling"><a class="anchor" href="#error-handling"></a>Error Handling</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Error handling differs depending on whether a transaction is pre or post the point of commit (or rollback).</p>
+</div>
+<div class="sect2">
+<h3 id="before-the-commit-or-rollback-point"><a class="anchor" href="#before-the-commit-or-rollback-point"></a>Before the Commit (or Rollback) Point:</h3>
+<div class="paragraph">
+<p>In the advent of transient errors, your transaction logic will be retried multiple times if necessary until the transaction expires, commits, or rollbacks.
+Each retry is called an attempt, and each failed attempt will be automatically rolled back before a new attempt is started.
+This is expected behavior in the situation that multiple concurrent actors are trying to perform a transaction on the same document.
+In general, it should just cause higher latency.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="after-the-commit-or-rollback-point"><a class="anchor" href="#after-the-commit-or-rollback-point"></a>After the Commit (or Rollback) Point:</h3>
+<div class="paragraph">
+<p>This is the 'point of no return'.
+The transaction must complete commit (or rollback) at this stage.
+The library will keep trying to commit (or rollback), until the transaction expires.</p>
+</div>
+<div class="paragraph">
+<p>If the transaction expires, then a <code>TransactionFailed</code> exception will be thrown.
+There is a background cleanup process run by each client whose responsibility is to find any 'lost' half-completed transactions,
+and continue trying to push forwards the commit or rollback stage until they succeed.
+If the background cleanup job fails in process, another cleanup job will identify this and complete the commit or rollback.</p>
+</div>
+<div class="paragraph">
+<p>The transaction will expire at the end of the configured expiry period.
+The default is 15 seconds, and it can be set with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">TransactionConfigBuilder.create().expirationTime(Duration.of(15, ChronoUnit.SECONDS)).build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See the documentation for the <code>expirationTime</code> method for a discussion of the trade-offs of changing this.</p>
+</div>
+<div class="paragraph">
+<p>Only transient errors will cause your transaction logic to be retried.
+The most common causes will be:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A write-write conflict with another transaction, e.g. two transactions trying to write the same document.  One transaction will abort and retry.</p>
+</li>
+<li>
+<p>A temporary failure error from the server, e.g. if it is temporarily overloaded.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All other errors will cause the transaction to fail immediately.</p>
+</div>
+<div class="paragraph">
+<p>These errors include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Any exception thrown by your transaction logic, either deliberately or through an application logic bug.</p>
+</li>
+<li>
+<p>Attempting to insert a document that already exists.</p>
+</li>
+<li>
+<p>Attempting to remove or replace a document that does not exist.</p>
+</li>
+<li>
+<p>Calling <code>getOrError</code> on a document id that does not exist.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the transaction does fail, it will throw <code>TransactionFailed</code>, or an exception derived from it.
+How to handle it is app-dependent.
+In the majority of cases, logging it for human review may be the best solution.
+See <a href="#logging">Logging</a> for how to also log useful information related to the transaction.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="logging"><a class="anchor" href="#logging"></a>Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To aid troubleshooting, each transaction maintains a list of log entries, which can be logged on failure like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">} catch (TransactionFailed e) {
+    yourLogger.warning("Transaction " + e.result().transactionId() + " failed:");
+    for (LogDefer err : e.result().log().logs()) {
+        yourLogger.info(err.toString());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or for the asynchronous API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">.doOnError(err -&gt; {
+    if (error instanceof TransactionFailed) {
+        TransactionFailed err = (TransactionFailed) error;
+        yourLogger.warning("Transaction " + err.result().transactionId() + " failed:");
+        for (LogDefer e : err.result().log().logs()) {
+            yourLogger.info(err.toString());
+        }
+    }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For convenience there is also a config option that will automatically write this programmatic log to the standard Couchbase Java logging configuration inherited from the SDK if a transaction fails.
+This will log all lines of any failed transactions, to <code>WARN</code> level:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">TransactionConfigBuilder.create().logOnFailure(true, Event.Severity.WARN).build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default the Couchbase Java logging event-bus is setup to look for and use SLF4J/logback, log4j1, and log4j2 on the classpath, and to fallback to java.util.Logging.</p>
+</div>
+<div class="paragraph">
+<p>Please see the <a href="collecting-information-and-logging.html" class="page">Java SDK logging documentation</a> for details.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="concurrent-operations-with-the-async-api"><a class="anchor" href="#concurrent-operations-with-the-async-api"></a>Concurrent Operations with the Async API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The async API allows operations to be performed concurrently inside a transaction, which can assist performance.
+There are two rules the application needs to follow:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The first mutation must be performed alone, in serial.
+This is because the first mutation also triggers the creation of metadata for the transaction.</p>
+</li>
+<li>
+<p>All concurrent operations must be allowed to complete fully, so the transaction library can track which operations need to be rolled back in the event of failure.
+This means the application must 'swallow' the error, but record that an error occurred, and then at the end of the concurrent operations, if an error occurred, throw an error to cause the transaction to retry.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These rules are demonstrated here:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;String&gt; docIds = Arrays.asList("doc1", "doc2", "doc3", "doc4", "doc5");
+
+ReactiveCollection coll = collection.reactive();
+
+TransactionResult result = transactions.reactive((ctx) -&gt; {
+
+    // Tracks whether all operations were successful
+    AtomicBoolean allOpsSucceeded = new AtomicBoolean(true);
+
+    // The first mutation must be done in serial, as it also creates a metadata entry
+    return ctx.get(coll, docIds.get(0))
+            .flatMap(doc -&gt; {
+                JsonObject content = doc.contentAsObject();
+                content.put("value", "updated");
+                return ctx.replace(doc, content);
+            })
+
+            // Do all other docs in parallel
+            .thenMany(Flux.fromIterable(docIds.subList(1, docIds.size()))
+                    .flatMap(docId -&gt; ctx.get(coll, docId)
+                                    .flatMap(doc -&gt; {
+                                        JsonObject content = doc.contentAsObject();
+                                        content.put("value", "updated");
+                                        return ctx.replace(doc, content);
+                                    })
+                                    .onErrorResume(err -&gt; {
+                                        allOpsSucceeded.set(false);
+                                        // App should replace this with logging
+                                        err.printStackTrace();
+
+                                        // Allow other ops to finish
+                                        return Mono.empty();
+                                    }),
+
+                            // Run these in parallel
+                            docIds.size())
+
+            // The commit or rollback must also be done in serial
+            ).then(Mono.defer(() -&gt; {
+                // Commit iff all ops succeeded
+                if (allOpsSucceeded.get()) {
+                    return ctx.commit();
+                } else {
+                    throw new RuntimeException("Retry the transaction");
+                }
+            }));
+}).block();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deferred-commits"><a class="anchor" href="#deferred-commits"></a>Deferred Commits</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The deferred commit feature is currently in alpha, and the API may change.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Deferred commits allow a transaction to be paused just before the commit point.
+Optionally, everything required to finish the transaction can then be bundled up into a context that may be serialized into a String or byte array, and deserialized elsewhere (for example, in another process).
+The transaction can then be committed, or rolled back.</p>
+</div>
+<div class="paragraph">
+<p>The intention behind this feature is to allow multiple transactions, potentially spanning multiple databases, to be brought to just before the commit point, and then all committed together.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s an example of deferring the initial commit and serializing the transaction:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">try {
+    TransactionResult result = transactions.run((ctx) -&gt; {
+        JsonObject initial = JsonObject.create().put("val", 1);
+        ctx.insert(collection, "a-doc-id", initial);
+
+        // Defer means don't do a commit right now.  `serialized` in the result will be present.
+        ctx.defer();
+    });
+
+    // Available because ctx.defer() was called
+    assert (result.serialized().isPresent());
+
+    TransactionSerializedContext serialized = result.serialized().get();
+
+    // This is going to store a serialized form of the transaction to pass around
+    byte[] encoded = serialized.encodeAsBytes();
+
+} catch (TransactionFailed e) {
+    // System.err is used for example, log failures to your own logging system
+    System.err.println("Transaction " + e.result().transactionId() + " failed");
+
+    for (LogDefer err : e.result().log().logs()) {
+        System.err.println(err.toString());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then committing the transaction later:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">TransactionSerializedContext serialized = TransactionSerializedContext.createFrom(encoded);
+
+try {
+    TransactionResult result = transactions.commit(serialized);
+
+} catch (TransactionFailed e) {
+    // System.err is used for example, log failures to your own logging system
+    System.err.println("Transaction " + e.result().transactionId() + " failed");
+
+    for (LogDefer err : e.result().log().logs()) {
+        System.err.println(err.toString());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively the transaction can be rolled back:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">TransactionSerializedContext serialized = TransactionSerializedContext.createFrom(encoded);
+
+try {
+    TransactionResult result = transactions.rollback(serialized);
+
+} catch (TransactionFailed e) {
+    // System.err is used for example, log failures to your own logging system
+    System.err.println("Transaction " + e.result().transactionId() + " failed");
+
+    for (LogDefer err : e.result().log().logs()) {
+        System.err.println(err.toString());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As usual, once committed, the transactions library will make every effort to commit the transaction.
+Even if it expires (which throws <code>TransactionExpired</code> as usual), a background cleanup process will continue trying to commit.
+The same applies for rollback.</p>
+</div>
+<div class="paragraph">
+<p>The transaction expiry timer (which is configurable) will begin ticking once the transaction starts, and is not paused while the transaction is in a deferred state.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="further-reading"><a class="anchor" href="#further-reading"></a>Further Reading</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>There’s plenty of explanation about how Transactions work in Couchbase in our <a href="../../../server/6.5/learn/data/transactions.html" class="page">Transactions documentation</a>.</p>
+</li>
+<li>
+<p>You can find further code examples on our <a href="https://github.com/couchbaselabs/couchbase-transactions-java-examples">GitHub transactions examples page</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
