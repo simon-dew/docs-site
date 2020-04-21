@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Bulk operations | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6236/java-sdk/3.0/hello-world/start-using-sdk.html">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="2.1">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-6236">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../server/6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../3.0/hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="java-intro.html"><span class="title">Java SDK</span> <span class="version">2.1</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../3.0/hello-world/start-using-sdk.html">Java SDK 3.0</a></li>
+                  <li><a class="navbar-item" href="../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../2.2/documents-bulk.html">Java SDK 2.2</a></li>
+                  <li class="current"><a class="navbar-item" href="documents-bulk.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="#">c-sdk</a></li>
+                  <li><a class="navbar-item" href="#">dotnet-sdk</a></li>
+                  <li><a class="navbar-item" href="#">go-sdk</a></li>
+                  <li><a class="navbar-item" href="#">nodejs-sdk</a></li>
+                  <li><a class="navbar-item" href="#">php-sdk</a></li>
+                  <li><a class="navbar-item" href="#">python-sdk</a></li>
+                  <li><a class="navbar-item" href="#">scala-sdk</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="java-intro.html">Java SDK 2.1</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="overview.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="download-links.html">Download and API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="migrate.html">Migrating from Java SDK 1.4.x to 2.x</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="getting-started.html">Getting started with the Java SDK</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="hello-couchbase.html">Hello Couchbase Example</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="tutorial.html">Java SDK tutorial</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="managing-connections.html">Managing connections</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="env-config.html">Configuring the environment</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="documents.html">Working with documents</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-basics.html">Document basics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-creating.html">Creating documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-updating.html">Updating documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-retrieving.html">Retrieving documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-deleting.html">Deleting documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-atomic.html">Atomic operations</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-page is-active" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="documents-bulk.html">Bulk operations</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="querying.html">Querying buckets</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="querying-views.html">Working with views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="querying-n1ql.html">Working with N1QL</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="observables.html">Mastering observables</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="logging.html">Setting up logging</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="release-notes.html">Release notes</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../3.0/hello-world/start-using-sdk.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="java-intro.html">Java SDK</a></li>
+    <li class="crumb"><a href="java-intro.html">Java SDK 2.1</a></li>
+    <li class="crumb"><a href="documents.html">Working with documents</a></li>
+    <li class="crumb"><a href="documents-bulk.html">Bulk operations</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/2.1/modules/ROOT/pages/documents-bulk.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Bulk operations</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Bulk operations allow you to operate on more than one document at the same time.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To get better resource utilization, you need to perform all types of operations in batches.
+Because of the asynchronous nature of the underlying core package, you can utilize RxJava&#8217;s operations to provide implicit batching facilities combined with the asynchronous operations of the SDK.</p>
+</div>
+<div class="paragraph">
+<p>If you understand the general approach to batching, you can apply it to any operation against the SDK, not just with <code>get()</code> calls like in the 1.x series SDK.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="batching-with-rxjava"><a class="anchor" href="#batching-with-rxjava"></a>Batching with RxJava</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Implicit batching is performed by utilizing a few operators:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Observable.just()</code> or <code>Observable.from()</code> to generate an <code>Observable</code> that contains the data you want to batch on.</p>
+</li>
+<li>
+<p><code>flatMap()</code> to send those events against the Couchbase Java SDK and merge the results asynchronously.</p>
+</li>
+<li>
+<p><code>last()</code> if you want to wait until the last element of the batch is received.</p>
+</li>
+<li>
+<p><code>toList()</code> if you care about the responses and want to aggregate them easily.</p>
+</li>
+<li>
+<p>If you have more than one subscriber, using <code>cache()</code> to prevent accessing the network over and over again with every subscribe.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example creates an observable stream of 5 keys to load in a batch, asynchronously fires off <code>get()</code> requests against the SDK, waits until the last result has arrived, and then converts the result into a list and blocks at the very end:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = CouchbaseCluster.create();
+Bucket bucket = cluster.openBucket();
+
+List&lt;JsonDocument&gt; foundDocs = Observable
+    .just("key1", "key2", "key3", "key4", "key5")
+    .flatMap(new Func1&lt;String, Observable&lt;JsonDocument&gt;&gt;() {
+        @Override
+        public Observable&lt;JsonDocument&gt; call(String id) {
+            return bucket.async().get(id);
+        }
+    })
+    .toList()
+    .toBlocking()
+    .single();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that this always returns a list, but it may contain 0 to 5 documents, depending on how many are actually found.
+Also, at the very end the observable is converted into a blocking one, but everything before that, including the network calls and the aggregation, is happening completely asynchronously.</p>
+</div>
+<div class="paragraph">
+<p>Inside the SDK, this provides much more efficient resource utilization because the requests are very quickly stored in the internal <code>Request RingBuffer</code> and the I/O threads are able to pick batches as large as they can.
+Afterward, whatever server returns a result first it is stored in the list, so there is no serialization of responses going on.</p>
+</div>
+<div class="paragraph">
+<p>If you wrap the code in a helper method, you can provide very nice encapsulated batching semantics:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public List&lt;JsonDocument&gt; bulkGet(final Collection&lt;String&gt; ids) {
+    return Observable
+        .from(ids)
+        .flatMap(new Func1&lt;String, Observable&lt;JsonDocument&gt;&gt;() {
+            @Override
+            public Observable&lt;JsonDocument&gt; call(String id) {
+                return bucket.async().get(id);
+            }
+        })
+        .toList()
+        .toBlocking()
+        .single();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="batching-mutations"><a class="anchor" href="#batching-mutations"></a>Batching mutations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The previous Java SDK only provided bulk operations for <code>get()</code>.
+With the techniques shown above, you can perform any kind of operation as a batch operation.</p>
+</div>
+<div class="paragraph">
+<p>The following code generates a number of fake documents and inserts them in one batch.
+Note that you can decide to either collect the results with <code>toList()</code> as shown above or just use <code>last()</code> as shown here to wait until the last document is properly inserted.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Generate a number of dummy JSON documents
+int docsToCreate = 100;
+List&lt;JsonDocument&gt; documents = new ArrayList&lt;JsonDocument&gt;();
+for (int i = 0; i &lt; docsToCreate; i++) {
+    JsonObject content = JsonObject.create()
+        .put("counter", i)
+        .put("name", "Foo Bar");
+    documents.add(JsonDocument.create("doc-"+i, content));
+}
+
+// Insert them in one batch, waiting until the last one is done.
+Observable
+    .from(documents)
+    .flatMap(new Func1&lt;JsonDocument, Observable&lt;JsonDocument&gt;&gt;() {
+        @Override
+        public Observable&lt;JsonDocument&gt; call(final JsonDocument docToInsert) {
+            return bucket.async().insert(docToInsert);
+        }
+    })
+    .last()
+    .toBlocking()
+    .single();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="performance"><a class="anchor" href="#performance"></a>Performance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here are two code samples, both synchronous, that showcase serialized and batched loading of documents.
+Note that more important than the absolute operations per second is the relative improvement with the same workload.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Serialized workload of loading documents
+while(true) {
+    List&lt;JsonDocument&gt; loaded = new ArrayList&lt;JsonDocument&gt;();
+    int docsToLoad = 10;
+    for (int i = 0; i &lt; docsToLoad; i++) {
+        JsonDocument doc = bucket.get("doc-" + i);
+        if (doc != null) {
+            loaded.add(doc);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/batching-single.png" alt="batching single">
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Same workload, utilizing batching effects
+while(true) {
+    int docsToLoad = 10;
+    Observable
+        .range(0, docsToLoad)
+        .flatMap(new Func1&lt;Integer, Observable&lt;JsonDocument&gt;&gt;() {
+            @Override
+            public Observable&lt;JsonDocument&gt; call(Integer i) {
+                return bucket.async().get("doc-"+i);
+            }
+        })
+        .toList()
+        .toBlocking()
+        .single();
+
+}</code></pre>
+</div>
+</div>
+<div id="image_batch_bulk" class="imageblock">
+<div class="content">
+<img src="_images/batching-bulk.png" alt="batching bulk">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-handling-recovery"><a class="anchor" href="#error-handling-recovery"></a>Error Handling &amp; Recovery</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Technically speaking, error handling in bulk operations is similar to generic <code>Observable</code> error handling, but because the topic is strongly related the most important concepts are covered here as well.</p>
+</div>
+<div class="paragraph">
+<p>In general, the following questions come up:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How can I implement best effort loading and just return the values that were successful?</p>
+</li>
+<li>
+<p>What are <code>BackpressureExceptions</code> and how can I handle them?</p>
+</li>
+<li>
+<p>How can I retry individual operations in the batch when they fail?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When handling these situations, an important fact to remember is that as soon as an error happens inside an <code>Observable</code>, the whole thing is terminated.
+If you want the whole stream to complete, error handling needs to be as close as possible to the original source.
+Let&#8217;s take the bulk loading of documents as an example which we are going to modify to be more resilient:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable
+    .from(docIds)
+    .flatMap(id -&gt; {
+        return bucket
+            .async()
+            .get(id);
+    })
+    .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To implement the best effort use case, you can ignore all errors on each <code>get()</code> result before it gets merged and flattened into the original stream.
+It is strongly recommended to log the error, because otherwise you&#8217;ll never know what went wrong in the first place for each failing operation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable
+    .from(docIds)
+    .flatMap(id -&gt; {
+        return bucket
+            .async()
+            .get(id)
+            .doOnError(System.err::println) // print the error, log,...
+            .onErrorResumeNext(Observable.empty()); // on error resume with an empty sequence
+    })
+    .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is a slight variation to that which you can use instead.
+RxJava provides a <a href="http://reactivex.io/documentation/operators/merge.html" target="_blank" rel="noopener">mergeDelayError</a> operator that merges individual observables, emits all items and then at the very end fails the observable with a <code>CompositeException</code>.
+This composite exception contains all errors that have happened so you can do something with them at a later point.</p>
+</div>
+<div class="paragraph">
+<p>Very often you want a complete result and therefore you need to retry individual operations if an error happened.
+It is recommended to retry based on a defined strategy for specific exception types and propagate the error for unknown exceptions or those types which are known to be permanent.
+For a full list of errors that can happen and their implications, see the Javadoc API reference for the <code>Bucket</code> methods you are using.</p>
+</div>
+<div class="paragraph">
+<p>Since the <code>BackpressureException</code> has been frequently referenced in the past, we are going to use that one as an example.
+The same logic of course applies to all other types as well.</p>
+</div>
+<div class="paragraph">
+<p>The <code>BackpressureException</code> is used to shed load on the request side and fails your observable quickly if the underlying system is in an overload condition.
+The reason for this is that somehow requests are produced more quickly than responses can be generated (because that includes the actual network round trip).
+This is common in bulk scenarios since it could be that you are requesting a very large set of documents at the same time which puts temporary pressure on the client.</p>
+</div>
+<div class="paragraph">
+<p>To solve that, we can apply a delayed retry algorithm onto the observable so it is retried at a later point.
+We are making use of the <code>Delay</code> construct shipped with the 2.1 SDK which provides a very convenient way to generated increasing delays.
+You also want to stop retrying at some point so the operation is not retried forever.</p>
+</div>
+<div class="paragraph">
+<p>Since 2.1.2, the <code>RetryBuilder</code> API has been introduced to help you build retry scenarios.
+The following code retries with an exponential backoff (with a 100 millisecond ceiling), but stops after 10 attempts and propagates the error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Observable
+    .from(docIds)
+    .flatMap(id -&gt; {
+        return bucket
+            .async()
+            .get(id)
+            .retryWhen(RetryBuilder
+                .anyOf(BackpressureException.class)
+                .delay(Delay.exponential(TimeUnit.MILLISECONDS, 100))
+                .max(10)
+                .build()
+            );
+    })
+    .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For reference, this is how you would have written the retry feature prior to 2.1.2:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">final Delay delay = Delay.exponential(TimeUnit.MILLISECONDS, 100);
+
+Observable
+    .from(docIds)
+    .flatMap(id -&gt; {
+        return bucket
+            .async()
+            .get(id)
+            .retryWhen(notification -&gt;
+                notification
+                    .zipWith(Observable.range(1, 11), Tuple::create)
+                    .flatMap(att -&gt;
+                        att.value2() == 9 || !(att.value1() instanceof BackpressureException)
+                            ? Observable.error(att.value1())
+                            : Observable.timer(delay.calculate(att.value2()), delay.unit())
+                    )
+            );
+    })
+    .subscribe();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This code zips the error with a range that indicates the number of attempts we want to retry.
+If this is over 10 attempts or the error is not a backpressure exception, the error will be propagated.</p>
+</div>
+<div class="paragraph">
+<p>Finally, you always want to chain in <code>timeout()</code> calls so you have a last resort error and you can be sure that the code you&#8217;re relying on isn&#8217;t stuck forever.
+You can also use methods like <code>onErrorReturn()</code> to return a stubbed object or a fixed entity that you know will never fail (so in the worst case you can provide a reduced user experience instead of failing completely).</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

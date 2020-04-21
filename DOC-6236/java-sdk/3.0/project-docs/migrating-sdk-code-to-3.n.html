@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Migrating from SDK2 to SDK3 API | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6236/java-sdk/3.0/project-docs/migrating-sdk-code-to-3.n.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="java-sdk">
+    <meta name="dcterms.identifier" content="3.0">
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link" href="https://simon-dew.github.io/docs-site/DOC-6236">Docs</a>
+            <div class="navbar-dropdown explore">
+              <div class="title">Couchbase Documentation Overview</div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="#">Autonomous Operator</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="../hello-world/start-using-sdk.html">Java</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/hadoop-1.2/hadoop.html">Hadoop</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link component" href="../hello-world/start-using-sdk.html"><span class="title">Java SDK</span> <span class="version">3.0</span></a>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li class="current"><a class="navbar-item" href="migrating-sdk-code-to-3.n.html">Java SDK 3.0</a></li>
+                  <li><a class="navbar-item" href="../../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
+                  <li><a class="navbar-item" href="../../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
+                  <li><a class="navbar-item" href="../../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
+                  <li><a class="navbar-item" href="../../2.4/start-using-sdk.html">Java SDK 2.4</a></li>
+                  <li><a class="navbar-item" href="../../2.3/start-using-sdk.html">Java SDK 2.3</a></li>
+                  <li><a class="navbar-item" href="../../2.2/java-intro.html">Java SDK 2.2</a></li>
+                  <li><a class="navbar-item" href="../../2.1/java-intro.html">Java SDK 2.1</a></li>
+                </ul>
+                <ul class="related">
+                  <li><a class="navbar-item" href="#">c-sdk</a></li>
+                  <li><a class="navbar-item" href="#">dotnet-sdk</a></li>
+                  <li><a class="navbar-item" href="#">go-sdk</a></li>
+                  <li><a class="navbar-item" href="#">nodejs-sdk</a></li>
+                  <li><a class="navbar-item" href="#">php-sdk</a></li>
+                  <li><a class="navbar-item" href="#">python-sdk</a></li>
+                  <li><a class="navbar-item" href="#">scala-sdk</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="nav-menu">
+<ul class="nav-list">
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Getting Started</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/start-using-sdk.html">Start Using the Java SDK</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../hello-world/sample-application.html">Sample Application</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Working with Data</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/kv-operations.html">Key Value Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/subdocument-operations.html">Sub-Document Operations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/n1ql-queries-with-sdk.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/analytics-using-sdk.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/full-text-searching-with-sdk.html">Full Text Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Data Operations</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/concurrent-async-apis.html">Async &amp; Reactive APIs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/distributed-acid-transactions-from-the-sdk.html">Distributed ACID Transactions</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/transcoders-nonjson.html">Transcoders &amp; Non-JSON</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/working-with-collections.html">Working with Collections DP</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Managing Couchbase</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/managing-connections.html">Managing Connections</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Errors &amp; Diagnostics</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../howtos/collecting-information-and-logging.html">Logging</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Learn</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/concepts.html">Overview</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/buckets-and-clusters.html">Buckets &amp; Clusters</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/collections.html">Collections &amp; Scope</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/compression.html">Compression</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-model.html">Data Model</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/documents.html">Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/nonjson.html">Non-json Docs</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/subdocument-operations.html">Sub-Documents</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/xattr.html">XATTR &amp; Virtual XATTR</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/errors.html">Errors and Diagnostics</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/health-check.html">Health Check</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/response-time-observability.html">Tracing</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/durability-replication-failure-considerations.html">Failure Considerations</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/encryption.html">Field Level Encryption</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="../concept-docs/data-services.html">Service Selection</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/analytics-for-sdk-users.html">Analytics</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/understanding-views.html">Map Reduce Views</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/n1ql-query.html">Query</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="../concept-docs/full-text-search-overview.html">Search</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">References</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/sdk-api/couchbase-java-client">API Reference</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="../ref/client-settings.html">Client Settings</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="0">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Project Docs</span>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-release-notes.html">SDK Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="distributed-transactions-java-release-notes.html">Transactions Release Notes</a>
+    </span>
+  </li>
+  <li class="nav-item is-current-path is-active" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="compatibility.html">Compatibility</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page is-active" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a>
+    </span>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <a class="nav-link" href="sdk-licenses.html">Licenses</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <span class="nav-line">
+    <button class="nav-toggle"></button>
+    <a class="nav-link" href="get-involved.html">Get involved</a>
+    </span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <span class="nav-line">
+    <a class="nav-link" href="https://docs.couchbase.com/home/contribute/index.html">Improve the Docs</a>
+    </span>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+</div>
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../hello-world/start-using-sdk.html">Java SDK</a></li>
+    <li class="crumb">Project Docs</li>
+    <li class="crumb"><a href="compatibility.html">Compatibility</a></li>
+    <li class="crumb"><a href="migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a></li>
+  </ul>
+</nav>
+<div class="tools" role="navigation">
+  <ul>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/project-docs/pages/migrating-sdk-code-to-3.n.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+  </ul>
+</div>
+  </div>
+<article class="doc">
+<h1 class="page">Migrating from SDK2 to SDK3 API</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+The 3.0 API breaks the existing 2.0 APIs in order to provide a number of improvements.
+Collections and Scopes are introduced.
+The Document class and structure has been completely removed from the API, and the returned value is now <code>Result</code>.
+Retry behaviour is more proactive, and lazy bootstrapping moves all error handling to a single place.
+Individual behaviour changes across services are explained here.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fundamentals"><a class="anchor" href="#fundamentals"></a>Fundamentals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Couchbase SDK team takes <a href="https://semver.org/">semantic versioning</a> seriously, which means that API should not be broken in incompatible ways while staying on a certain major release.
+This has the benefit that most of the time upgrading the SDK should not cause much trouble, even when switching between minor versions (not just bugfix releases).
+The downside though is that significant improvements to the APIs are very often not possible, save as pure additions&#8201;&#8212;&#8201;which eventually lead to overloaded methods.</p>
+</div>
+<div class="paragraph">
+<p>To support new server releases and prepare the SDK for years to come, we have decided to increase the major version of each SDK and as a result take the opportunity to break APIs where we had to.
+As a result, migration from the previous major version to the new major version will take some time and effort&#8201;&#8212;&#8201;an effort to be counterbalanced by improvements to coding time, through the simpler API, and performance.
+The new API is built on years of hands-on experience with the current SDK as well as with a focus on simplicity, correctness, and performance.</p>
+</div>
+<div class="paragraph">
+<p>Before this guide dives into the language-specific technical component of the migration, it is important to understand the high level changes first.
+As a migration guide, this document assumes you are familiar with the previous generation of the SDK and does not re-introducing SDK 2.0 concepts.
+We recommend familiarizing yourself with the new SDK first by reading at least the <a href="../hello-world/start-using-sdk.html" class="page">getting started guide</a>, and browsing through the other chapters a little.</p>
+</div>
+<div class="sect2">
+<h3 id="terminology"><a class="anchor" href="#terminology"></a>Terminology</h3>
+<div class="paragraph">
+<p>The concept of a <code>Cluster</code> and a <code>Bucket</code> remain the same, but a fundamental new layer is introduced into the API: <code>Collections</code> and their <code>Scopes</code>.
+Collections are logical data containers inside a Couchbase bucket that let you group similar data just like a <em>Table</em> does in a relational database&#8201;&#8212;&#8201;although documents inside a collection do not need to have the same structure.
+Scopes allow the grouping of collections into a namespace, which is very usfeul when you have multilpe tenants acessing the same bucket.
+Couchbase Server is including support for collections as a <a href="../../../server/6.5/developer-preview/preview-mode.html" class="page">developer preview</a> in version 6.5&#8201;&#8212;&#8201;in a future release, it is hoped that collections will become a first class concept of the programming model.
+To prepare for this, the SDKs include the feature from SDK 3.0.</p>
+</div>
+<div class="paragraph">
+<p>In the previous SDK generation, particularly with the <code>KeyValue</code> API, the focus has been on the codified concept of a <code>Document</code>.
+Documents were read and written and had a certain structure, including the <code>id</code>/<code>key</code>, content, expiry (<code>ttl</code>), and so forth.
+While the server still operates on the logical concept of documents, we found that this model in practice didn&#8217;t work so well for client code in certain edge cases.
+As a result we have removed the <code>Document</code> class/structure completely from the API.
+The new API follows a clear scheme: each command takes required arguments explicitly, and an option block for all optional values.
+The returned value is always of type <code>Result</code>.
+This avoids method overloading bloat in certain languages, and has the added benefit of making it easy to grasp APIs evenly across services.</p>
+</div>
+<div class="paragraph">
+<p>As an example here is a KeyValue document fetch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">GetResult getResult = collection.get("key", getOptions().timeout(Duration.ofSeconds(3));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compare this to a N1QL query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">QueryResult queryResult = cluster.query("select 1=1", queryOptions().timeout(Duration.ofSeconds(3));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since documents also fundamentally handled the serialization aspects of content, two new concepts are introduced: the <code>Serializer</code> and the <code>Transcoder</code>.
+Out of the box the SDKs ship with a JSON serializer which handles the encoding and decoding of JSON.
+You&#8217;ll find the serializer exposes the options for methods like N1QL queries and KeyValue subdocument operations,.</p>
+</div>
+<div class="paragraph">
+<p>The KV API extends the concept of the serializer to the <code>Transcoder</code>.
+Since you can also store non-JSON data inside a document, the <code>Transcoder</code> allows the writing of binary data as well.
+It handles the object/entity encoding and decoding, and if it happens to deal with JSON makes uses of the configured <code>Serializer</code> internally.
+See the <em>Serialization and Transcoding</em> section below for details.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="what-to-look-out-for"><a class="anchor" href="#what-to-look-out-for"></a>What to look out for</h3>
+<div class="paragraph">
+<p>The SDKs are more proactive in retrying with certain errors and in certain situations, within the timeout budget given by the user&#8201;&#8212;&#8201;as an example, temporary failures or locked documents are now being retried by default&#8201;&#8212;&#8201;making it even easier to program against certain error cases.
+This behavior is customizable in a <code>RetryStrategy</code>, which can be overridden on a per operation basis for maximum flexibility if you need it.</p>
+</div>
+<div class="paragraph">
+<p>Note, most of the bootstrap sequence is now lazy (happening behind the scenes).
+For example, opening a bucket is not raising an error anymore, but it will only show up once you perform an actual operation.
+The reason behind this is to spare the application developer the work of having to do error handling in more places than needed.
+A bucket can go down 2ms after you opened it, so you have to handle request failures anyway.
+By delaying the error into the operation result itself, there is only one place to do the error handling.
+There will still be situations why you want to check if the resource you are accessing is available before continuing the bootstrap;
+for this, we have the diagnostics and ping commands at each level which allow you to perform those checks eagerly.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="language-specifics"><a class="anchor" href="#language-specifics"></a>Language Specifics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that you are familiar with the general theme of the migration, the next sections dive deep into the specifics.
+First, installation and configuration are covered, then we talk about exception handling, and then each service (i.e. Key/Value, Query,&#8230;&#8203;) is covered separately.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installation-and-configuration"><a class="anchor" href="#installation-and-configuration"></a>Installation and Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Java SDK 3.x is available for download from the same resources as the previous generation. Builds can be found on maven central, pre-releases are available from our own maven repository.
+In addition, a <code>zip</code> file is available with the required jars.
+Please see the <a href="sdk-release-notes.html" class="page">Release Notes</a> for up-to-date information.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Java SDK 3.x has a minimum required Java version of 8, although we recommend running the latest LTS version (i.e. at the time of writing JDK 11) with the highest patch version available.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that the transitive dependency list has changed.
+As a refresher, Java SDK 2 depended on the following artifacts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>com.couchbase.client:<strong>core-io</strong></p>
+</li>
+<li>
+<p>io.reactivex:<strong>rxjava</strong></p>
+</li>
+<li>
+<p>io.opentracing:<strong>opentracing-api</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>SDK 3 depends on the following ones instead:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>com.couchbase.client:<strong>core-io</strong></p>
+</li>
+<li>
+<p>io.projectreactor:<strong>reactor-core</strong></p>
+</li>
+<li>
+<p>org.reactivestreams:<strong>reactive-streams</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that the SDK now uses <code>Reactor</code> instead of <code>RxJava</code> and the explicit dependency on <code>OpenTracing</code> is gone.
+We are now providing support for different tracing backends with additional dependencies that can be pulled in as needed.
+<code>ReactiveStreams</code> is a transitive dependency of <code>Reactor</code> and provides interoperability code so you can use other reactive streams implementations as well.</p>
+</div>
+<div class="paragraph">
+<p>If you are pulling in the SDK through a package manager (recommended), all dependencies will be resolved for you automatically.
+Otherwise please download the zip file and adjust your jar files accordingly.</p>
+</div>
+<div class="sect2">
+<h3 id="configuring-the-environment"><a class="anchor" href="#configuring-the-environment"></a>Configuring the Environment</h3>
+<div class="paragraph">
+<p>The fundamental semantics of the <code>CouchbaseEnvironment</code> from SDK 2 remain the same, although somewhat more flexible, with its configuration cleaned up to be more easily discoverable.
+The <code>CouchbaseEnvironment</code> has been renamed to <code>ClusterEnvironment</code> and can be customized through a builder:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 custom KV timeout
+CouchbaseEnvironment env = DefaultCouchbaseEnvironment
+  .builder()
+  .kvTimeout(TimeUnit.SECONDS.toMillis(5))
+  .build();</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 equivalent
+ClusterEnvironment env = ClusterEnvironment
+  .builder()
+  .timeoutConfig(TimeoutConfig.kvTimeout(Duration.ofSeconds(5)))
+  .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similar to SDK 2, if you create your own <code>ClusterEnvironment</code> the SDK will not shut it down for you&#8201;&#8212;&#8201;you need to do this manually at the end of the program lifetime:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">ClusterEnvironment env = ClusterEnvironment.create();
+Cluster cluster = Cluster.connect(
+  "127.0.0.1",
+  // pass the custom environment through the cluster options
+  clusterOptions("user", "pass").environment(env)
+);
+
+// first disconnect, then shutdown the environment
+cluster.disconnect();
+env.shutdown();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If no custom environment is passed in, the default settings can still be customized through either the connection string or <a href="../ref/client-settings.html" class="page">system properties</a>.
+The SDK has elaborate reflection logic in place to parse "flat" string values and apply them to the builder, which means that you can now configure more properties than in SDK 2.
+Note that the property paths have changed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Will set the max http connections to 23
+System.setProperty("com.couchbase.env.io.maxHttpConnections", "23");
+Cluster.connect("127.0.0.1", "user", "pass");
+
+// This is equivalent to
+ClusterEnvironment env = ClusterEnvironment
+  .builder()
+  .ioConfig(IoConfig.maxHttpConnections(23))
+  .build();</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// Will set the max http connections to 23
+Cluster.connect(
+  "127.0.0.1?com.couchbase.env.io.maxHttpConnections=23",
+  "user",
+  "pass"
+);
+
+// This is equivalent to
+ClusterEnvironment env = ClusterEnvironment
+  .builder()
+  .ioConfig(IoConfig.maxHttpConnections(23))
+  .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The paths for each config start with the pattern <code>com.couchbase.env.</code> followed by either a toplevel or nested config. <code>IoConfig</code> is under the <code>io</code> path, similar to <code>TimeoutConfig</code> under <code>timeout</code>.
+So, if you want to modify a KV timeout you can use the <code>com.couchbase.env.timeout.kvTimeout</code> path.
+See the <a href="../ref/client-settings.html" class="page">configuration section</a> for full specifics.</p>
+</div>
+<div class="paragraph">
+<p>At the end of this guide you&#8217;ll find a <a href="#configurations-options-reference">reference</a> that describes the SDK 2 environment options and their SDK 3 equivalents where applicable.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="authentication"><a class="anchor" href="#authentication"></a>Authentication</h3>
+<div class="paragraph">
+<p>Since SDK 2 supports Couchbase Server clusters older than 5.0, it had to support both Role-Based access control as well as bucket-level passwords.
+The minimum cluster version supported by SDK 3 is Server 5.0, which means that only RBAC is supported.
+This is why you can set the username and password when directly connecting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster.connect("127.0.0.1", "username", "password");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is just a shorthand for:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster.connect(
+  "127.0.0.1",
+  clusterOptions(PasswordAuthenticator.create("username", "password"))
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The reason why you can pass in a specific authenticator is that you can also use the same approach to configure certificate-based authentication:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">KeyManagerFactory keyManagerFactory = null;  // configure certificates per documentation
+Cluster.connect("127.0.0.1", clusterOptions(
+  CertificateAuthenticator.fromKeyManagerFactory(() -&gt; keyManagerFactory)
+));</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connection-lifecycle"><a class="anchor" href="#connection-lifecycle"></a>Connection Lifecycle</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From a high-level perspective, bootstrapping and shutdown is very similar to SDK 2.
+One notable difference is that the <code>Collection</code> is introduced and that the individual methods like <code>bucket</code> immediately return, and do not throw an exception.
+Compare SDK 2: the <code>openBucket</code> method would not work if it could not open the bucket.</p>
+</div>
+<div class="paragraph">
+<p>The reason behind this change is that even if a bucket can be opened, a millisecond later it may not be available any more.
+All this state has been moved into the actual operation so there is only a single place where the error handling needs to take place.
+This simplifies error handling and retry logic for an application.</p>
+</div>
+<div class="paragraph">
+<p>In SDK 2, you connected, opened a bucket, performed a KV op, and disconnected like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = CouchbaseCluster.create("127.0.0.1");
+cluster.authenticate("user", "pass");
+Bucket bucket = cluster.openBucket("travel-sample");
+
+JsonDocument getResult = bucket.get("airline_10");
+
+cluster.disconnect();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is the SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Cluster cluster = Cluster.connect("127.0.0.1", "user", "pass");
+Bucket bucket = cluster.bucket("travel-sample");
+Collection collection = bucket.defaultCollection();
+
+GetResult getResult = collection.get("airline_10");
+
+cluster.disconnect();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Collections</code> will be generally available with an upcoming Couchbase Server release, but the SDK already encodes it in its API to be future-proof.
+If you are using a Couchbase Server version which does not support <code>Collections</code>, always use the <code>defaultCollection()</code> method to access the KV API; it will map to the full bucket.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You&#8217;ll notice that <code>bucket(String)</code> returns immediately, even if the bucket resources are not completely opened.
+This means that the subsequent <code>get</code> operation may be dispatched even before the socket is open in the background.
+The SDK will handle this case transparently, and reschedule the operation until the bucket is opened properly.
+This also means that if a bucket could not be opened (say, because no server was reachable) the operation will time out.
+Please check the logs to see the cause of the timeout (in this case, you&#8217;ll see socket connect rejections).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Also note, you will now find Query, Search, and Analytics at the <code>Cluster</code> level.
+This is where they logically belong.
+If you are using Couchbase Server 6.5 or later, you will be able to perform cluster-level queries even if no bucket is open.
+If you are using an earlier version of the cluster you must open at least one bucket, otherwise cluster-level queries will fail.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="serialization-and-transcoding"><a class="anchor" href="#serialization-and-transcoding"></a>Serialization and Transcoding</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In SDK 2 the main method to control transcoding was through providing different <code>Document</code> instances (which in turn had their own transcoder associated), such as the <code>JsonDocument</code>.
+This only worked for the KV APIs though&#8201;&#8212;&#8201;Query, Search, Views, and other services exposed their JSON rows/hits in different ways.
+All of this has been unified in SDK 3 under a single concept: serializers and transcoders.</p>
+</div>
+<div class="paragraph">
+<p>By default, all KV APIs transcode to and from JSON&#8201;&#8212;&#8201;you can also provide java POJOs which you couldn&#8217;t in the past.
+<code>JsonObject</code> and <code>JsonArray</code> are still available, like in SDK 2:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 upsert and get
+JsonDocument upsertResult = bucket.upsert(
+  JsonDocument.create("mydoc-id", JsonObject.empty())
+);
+JsonDocument getResult = bucket.get("mydoc-id");</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MutationResult upsertResult = collection.upsert("mydoc-id", JsonObject.create());
+GetResult getResult = collection.get("mydoc-id");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to write already-encoded JSON, instead of using the <code>RawJsonDocument</code> you now need to use the <code>RawJsonTranscoder.INSTANCE</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">byte[] content = "{}".getBytes(StandardCharsets.UTF_8);
+MutationResult upsertResult = collection.upsert(
+  "mydoc-id",
+  content,
+  upsertOptions().transcoder(RawJsonTranscoder.INSTANCE)
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is a mapping table from the SDK 2 <code>Document</code> types to the new transcoder types:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. SDK 2.x Document vs. SDK 3.x Transcoder</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonArrayDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonBooleanDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonLongDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonStringDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonDoubleDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>LegacyDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawJsonDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawJsonTranscoder</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SerializableDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>StringDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawStringTranscoder</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ByteArrayDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawBinaryTranscoder</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BinaryDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawBinaryTranscoder</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EntityDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The <code>LegacyDocument</code> in SDK 2 was in place to support SDK 1, so it has been removed.
+Serializers and transcoders can also be customized and overwritten on a per-operation basis, please see the appropriate documentation section for details.</p>
+</div>
+<div class="paragraph">
+<p>The JSON <code>Transcoders</code> use a <code>Serializer</code> underneath.
+While a transcoder can handle many different storage types, the serializer is specialized for JSON encoding and decoding.
+On all JSON-only APIs (i.e. Sub-doc, Query, Search,&#8230;&#8203;) you&#8217;ll only find a <code>Serializer</code>, not a <code>Transcoder</code>, in the operation options.
+Usually there is no need to override it unless you want to provide your own implementation (i.e. if you have your own POJO mapping json logic in place, and want to reuse it).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="exception-handling"><a class="anchor" href="#exception-handling"></a>Exception Handling</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>How to <em>handle</em> exceptions is unchanged from SDK 2.
+You should still use <code>try/catch</code> on the blocking APIs and the corresponding reactive/async methods on the other APIs.
+There have been changes made in the following areas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Exception hierachy and naming.</p>
+</li>
+<li>
+<p>Proactive retry where possible.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="exception-hierachy"><a class="anchor" href="#exception-hierachy"></a>Exception hierachy</h3>
+<div class="paragraph">
+<p>The exception hierachy is now flat and unified under a <code>CouchbaseException</code>.
+Each <code>CouchbaseException</code> has an associated <code>ErrorContext</code> which is populated with as much info as possible and then dumped alongside the stack trace if an error happens.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example of the error context if a N1QL query is performed with an invalid syntax (i.e. <code>select 1= from</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>Exception in thread "main" com.couchbase.client.core.error.ParsingFailedException: Parsing of the input failed {"completed":true,"coreId":1,"errors":[{"code":3000,"message":"syntax error - at from"}],"idempotent":false,"lastDispatchedFrom":"127.0.0.1:62253","lastDispatchedTo":"127.0.0.1:8093","requestId":3,"requestType":"QueryRequest","retried":11,"retryReasons":["ENDPOINT_TEMPORARILY_NOT_AVAILABLE","BUCKET_OPEN_IN_PROGRESS"],"service":{"operationId":"9111b961-e585-42f2-9cab-e1501da7a40b","statement":"select 1= from","type":"query"},"timeoutMs":75000,"timings":{"dispatchMicros":15599,"totalMicros":1641134}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The expectation is that the application catches the <code>CouchbaseException</code> and deals with it as an unexpected error
+(e.g. logging with subsequent bubbling up of the exception or failing).
+In addition to that, each method exposes exceptions that can be caught separately if needed.
+As an example, consider the javadoc for the <code>Collection.get</code> API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>...
+   * @throws DocumentNotFoundException the given document id is not found in the collection.
+   * @throws TimeoutException if the operation times out before getting a result.
+   * @throws CouchbaseException for all other error reasons (acts as a base type and catch-all).
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These exceptions extend <code>CouchbaseException</code>, but both the <code>TimeoutException</code> and the <code>DocumentNotFoundException</code> can be caught individually if specific logic should be executed to handle them.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="proactive-retry"><a class="anchor" href="#proactive-retry"></a>Proactive Retry</h3>
+<div class="paragraph">
+<p>One reason why the APIs do not expose a long list of exceptions is that the SDK now retries as many operations as it can if it can do so safely.
+This depends on the type of operation (idempotent or not), in which state of processing it is (already dispatched or not), and what the actual response code is if it arrived already.
+As a result, many transient cases&#8201;&#8212;&#8201;such as locked documents, or temporary failure&#8201;&#8212;&#8201;are now retried by default and should less often impact applications.
+It also means, when migrating to the new SDK API, you may observe a longer period of time until an error is returned by default.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Operations are retried by default as described above with the default <code>BestEffortRetryStrategy</code>.
+Like in SDK 2 you can configure fail-fast retry strategies to not retry certain or all operations.
+The <code>RetryStrategy</code> interface has been extended heavily in SDK 3&#8201;&#8212;&#8201;please see the <a href="../howtos/error-handling.html" class="page">error handling documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When migrating your SDK 2 exception handling code to SDK 3, make sure to wrap every call with a catch for <code>CouchbaseException</code> (or let it bubble up immediately).
+You can likely remove your user-level retry code for temporary failures, backpressure exception, and so on.
+One notable exception from this is the <code>CasMismatchException</code>, which is still thrown since it requires more app-level code to handle (most likely identical to SDK 2).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="logging-and-events"><a class="anchor" href="#logging-and-events"></a>Logging and Events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configuring and consuming logs has not greatly changed.
+The SDK still uses <em>SLF4J</em>, if found on the classpath, and if not reverts back to the JDK logger (it can also be configured to log to <code>stderr</code> instead).
+The big difference is that the <code>EventBus</code> (also present in SDK 2) has been made much more powerful&#8201;&#8212;&#8201;and all logs are sent as events through it.
+The <code>LoggingEventConsumer</code> being one of the potential consumers, and turning events into log lines.</p>
+</div>
+<div class="paragraph">
+<p>The biggest impact you&#8217;ll see from it is that the log messages now look very structured and contain contextual information where possible.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>13:36:46 INFO  [com.couchbase.node:470] [com.couchbase.node][NodeConnectedEvent] Node connected {"coreId":1,"managerPort":"8091","remote":"127.0.0.1"}
+13:36:46 INFO  [com.couchbase.core:470] [com.couchbase.core][BucketOpenedEvent][393161µs] Opened bucket "travel-sample" {"coreId":1}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice the package path (which you can also filter on if needed), the event name, an optional time that it took to perform the operation, the message and surrounding context.
+This makes it easier to debug potential problems but also allows consuming all the events and feeding them in other monitoring systems without having to round-trip a file log.
+Please see <a href="../howtos/collecting-information-and-logging.html" class="page">the logging documentation</a> for further information.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="migrating-services"><a class="anchor" href="#migrating-services"></a>Migrating Services</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following section discusses each service in detail and covers specific bits that have not been covered by the more generic sections above.</p>
+</div>
+<div class="sect2">
+<h3 id="key-value"><a class="anchor" href="#key-value"></a>Key Value</h3>
+<div class="paragraph">
+<p>The Key/Value (KV) API is now located under the <code>Collection</code> interface, so even if you do not use collections, the <code>defaultCollection()</code> needs to be opened in order to access it.</p>
+</div>
+<div class="paragraph">
+<p>The following table describes the SDK 2 KV APIs and where they are now located in SDK 3:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. SDK 2.x KV API vs. SDK 3.x KV API</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.upsert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.upsert</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.get</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.get</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.exists</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.exists</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.getFromReplica</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.getAnyReplica</code> and <code>Collection.getAllReplicas</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.getAndLock</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.getAndLock</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.getAndTouch</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.getAndTouch</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.insert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.insert</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.upsert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.upsert</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.replace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.replace</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.remove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.remove</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.unlock</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.unlock</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.touch</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.touch</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.lookupIn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.lookupIn</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mutateIn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.mutateIn</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.counter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BinaryCollection.increment</code> and <code>BinaryCollection.decrement</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.append</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BinaryCollection.append</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.prepend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BinaryCollection.prepend</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>In addition, the datastructure APIs have been renamed and moved:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Datastructure API Changes</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapAdd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.map</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapGet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.map</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapRemove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.map</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.map</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listGet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.list</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listAppend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.list</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listRemove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.list</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listPrepend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.list</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listSet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.list</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.list</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setAdd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.set</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setContains</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.set</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setRemove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.set</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.set</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.queuePush</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.queue</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.queuePop</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.queue</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>There are two important API changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On the request side, overloads have been reduced and moved under a <code>Options</code> block</p>
+</li>
+<li>
+<p>On the response side, the return types have been unified.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The signatures now look very similar.
+The concept of the <code>Document</code> as a type is gone in SDK 3 and instead you need to pass in the properties explicitly.
+This makes it very clear what is returned, especially on the response side.</p>
+</div>
+<div class="paragraph">
+<p>Thus, the <code>get</code> method does not return a <code>Document</code> but a <code>GetResult</code> instead, and the <code>upsert</code> does not return a <code>Document</code> but a <code>MutationResult</code>.
+Each of those results only contains the field that the specific method can actually return, making it impossible to accidentally try to access the <code>expiry</code> on the <code>Document</code> after a mutation, for example.</p>
+</div>
+<div class="paragraph">
+<p>Instead of having many overloads, all optional params are now part of the <code>Option</code> block.
+All required params are still part of the method signature, making it clear what is required and what is not (or has default values applied if not overridden).</p>
+</div>
+<div class="paragraph">
+<p>The timeout can be overridden on every operation and now takes a <code>Duration</code> from java 8.
+Compare SDK 2 and SDK 3 custom timeout setting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 custom timeout
+bucket.get("mydoc-id", 5, TimeUnit.SECONDS);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 custom timeout
+GetResult getResult = collection.get(
+  "mydoc-id",
+  getOptions().timeout(Duration.ofSeconds(5))
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In SDK 2, the <code>getFromReplica</code> method had a <code>ReplicaMode</code> argument which allowed to customize its behavior on how many replicas should be reached.
+We have identified this as a potential source of confusion and as a result split it up in two methods that simplify usage significantly.
+There is now a <code>getAllReplicas</code> method and a <code>getAnyReplica</code> method.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>getAllReplicas</code> asks the active node and all available replicas and returns the results as a stream.</p>
+</li>
+<li>
+<p><code>getAnyReplica</code> uses <code>getAllReplicas</code>, and returns the first result obtained.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Unless you want to build some kind of consensus between the different replica responses, we recommend <code>getAnyReplica</code> for a fallback to a regular <code>get</code> when the active node times out.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Operations which cannot be performed on JSON documents have been moved to the <code>BinaryCollection</code>, accessible through <code>Collection.binary()</code>.
+These operations include <code>append</code>, <code>prepend</code>, <code>increment</code>, and <code>decrement</code> (previously called <code>counter</code> in SDK 2).
+These operations should only be used against non-json data.
+Similar functionality is available through <code>mutateIn</code> on JSON documents.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="query"><a class="anchor" href="#query"></a>Query</h3>
+<div class="paragraph">
+<p>N1QL querying is now available at the <code>Cluster</code> level instead of the bucket level, because you can also write N1QL queries that span multiple buckets. Compare a simple N1QL query from SDK 2 with its SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 simple query
+N1qlQueryResult queryResult = bucket.query(N1qlQuery.simple("select * from `travel-sample` limit 10"));
+for (N1qlQueryRow row : queryResult) {
+  JsonObject value = row.value();
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 simple query
+QueryResult queryResult = cluster.query("select * from `travel-sample` limit 10");
+for (JsonObject value : queryResult.rowsAsObject()) {
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that there is no <code>N1qlQuery.simple</code> any more&#8201;&#8212;&#8201;parameter option have been moved to the <code>queryOptions()</code> for consistency reasons.
+The following shows how to do named and positional parameters in SDK 2, and their SDK 3 counterparts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 named parameters
+bucket.query(N1qlQuery.parameterized(
+  "select * from bucket where type = $type",
+  JsonObject.create().put("type", "airport")
+));
+
+// SDK 2 positional parameters
+bucket.query(N1qlQuery.parameterized(
+  "select * from bucket where type = $1",
+  JsonArray.from("airport")
+));</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 named parameters
+cluster.query(
+  "select * from bucket where type = $type",
+  queryOptions().parameters(JsonObject.create().put("type", "airport"))
+);
+
+// SDK 3 positional parameters
+cluster.query(
+  "select * from bucket where type = $1",
+  queryOptions().parameters(JsonArray.from("airport"))
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to use prepared statements, the <code>adhoc()</code> method is still available on the <code>QueryOptions</code>, alongside every other option that used to be exposed on the SDK 2 Query options.</p>
+</div>
+<div class="paragraph">
+<p>Much of the non-row metadata has been moved into a specific <code>QueryMetaData</code> section:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Query Metadata Changes</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.signature</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.metaData.signature</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.info</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.metaData.metrics</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.profileInfo</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.metaData.profile</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.parseSuccess</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.finalSuccess</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.status</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.metaData.status</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.errors</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">throws an Exception on <code>QueryResult</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.requestId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.metaData.requestId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>N1qlQueryResult.clientContextId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.metaData.clientContextId</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>It is no longer necessary to check for a specific error in the stream: if an error happened during processing it will throw an exception at the top level of the query.
+The reactive streaming API will terminate the rows' <code>Flux</code> with an exception as well as soon as it is discovered.
+This makes error handling much easier in both the blocking and non-blocking cases.</p>
+</div>
+<div class="paragraph">
+<p>While in SDK 2 you had to manually check for errors (otherwise you&#8217;d get an empty row collection):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">N1qlQueryResult queryResult = bucket.query(N1qlQuery.simple("select 1="));
+if (!queryResult.errors().isEmpty()) {
+  // errors contain [{"msg":"syntax error - at end of input","code":3000}]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In SDK 3 the top level <code>query</code> method will throw an exception:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>Exception in thread "main" com.couchbase.client.core.error.ParsingFailedException: Parsing of the input failed {"completed":true,"coreId":1,"errors":[{"code":3000,"message":"syntax error - at end of input"}],"idempotent":false,"lastDispatchedFrom":"127.0.0.1:51703","lastDispatchedTo":"127.0.0.1:8093","requestId":5,"requestType":"QueryRequest","retried":0,"service":{"operationId":"1c623a77-196a-4890-96cd-9d4f3f596477","statement":"select 1=","type":"query"},"timeoutMs":75000,"timings":{"dispatchMicros":13798,"totalMicros":70789}}
+	at com.couchbase.client.java.AsyncUtils.block(AsyncUtils.java:51)
+	at com.couchbase.client.java.Cluster.query(Cluster.java:225)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Not only does it throw a <code>CouchbaseException</code>, it also tries to map it to a specific exception type and include extensive contextual information for a better troubleshooting experience.</p>
+</div>
+<div class="sect3">
+<h4 id="dsl-deprecation"><a class="anchor" href="#dsl-deprecation"></a>DSL Deprecation</h4>
+<div class="paragraph">
+<p>The fluent API feature in SDK 2 was found not to scale well for larger queries, nor for SQL++.
+For these reasons it is not amongst the features carried over to SDK 3.0.</p>
+</div>
+<div class="paragraph">
+<p>In most cases, a simple string statement is the best replacement.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="analytics"><a class="anchor" href="#analytics"></a>Analytics</h3>
+<div class="paragraph">
+<p>Analytics querying, like N1QL, is also moved to the <code>Cluster</code> level: it is now accessible through the <code>Cluster.analyticsQuery</code> method.
+As with the Query service, parameters for the Analytics queries have moved into the <code>AnalyticsOptions</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 simple analytics query
+AnalyticsResult analyticsResult = cluster.analyticsQuery("select * from dataset");
+for (JsonObject value : analyticsResult.rowsAsObject()) {
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 named parameters for analytics
+cluster.analyticsQuery(
+  "select * from dataset where type = $type",
+  analyticsOptions().parameters(JsonObject.create().put("type", "airport"))
+);
+
+// SDK 3 positional parameters for analytics
+cluster.analyticsQuery(
+  "select * from dataset where type = $1",
+  analyticsOptions().parameters(JsonArray.from("airport"))
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also, errors will now be thrown as top level exceptions and it is no longer necessary to explicitly check for errors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 error check
+AnalyticsQueryResult analyticsQueryResult = b1.query(AnalyticsQuery.simple("select * from foo"));
+if (!analyticsQueryResult.errors().isEmpty()) {
+  // errors contain [{"msg":"Cannot find dataset foo in dataverse Default nor an alias with name foo! (in line 1, at column 15)","code":24045}]
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>// SDK 3 top level exception
+com.couchbase.client.core.error.DatasetNotFoundException: The analytics dataset is not found {"completed":true,"coreId":1,"errors":[{"code":24045,"message":"Cannot find dataset foo in dataverse Default nor an alias with name foo! (in line 1, at column 15)"}],"idempotent":false,"lastDispatchedFrom":"127.0.0.1:51942","lastDispatchedTo":"127.0.0.1:8095","requestId":5,"requestType":"AnalyticsRequest","retried":0,"service":{"operationId":"80265061-62e0-4c35-860f-a07a97e1a5ee","priority":0,"statement":"select * from foo","type":"analytics"},"timeoutMs":75000,"timings":{"dispatchMicros":27005,"totalMicros":89888}}
+	at com.couchbase.client.java.AsyncUtils.block(AsyncUtils.java:51)
+	at com.couchbase.client.java.Cluster.analyticsQuery(Cluster.java:250)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="search"><a class="anchor" href="#search"></a>Search</h3>
+<div class="paragraph">
+<p>The Search API has changed a bit in SDK 3 so that it aligns with the other query APIs.
+The type of queries have stayed the same, but all optional parameters moved into <code>SearchOptions</code>.
+Also, similar to the other query APIs, it is now available at the <code>Cluster</code> level.</p>
+</div>
+<div class="paragraph">
+<p>Here is a SDK 2 Search query with some options, and its SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//  SDK 2 search query
+SearchQueryResult searchResult = bucket.query(new SearchQuery(
+  "indexname",
+  SearchQuery.queryString("airports")).limit(5).fields("a", "b", "c"),
+  2,
+  TimeUnit.SECONDS
+);
+for (SearchQueryRow row : searchResult.hits()) {
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 search query
+SearchResult searchResult = cluster.searchQuery(
+  "indexname",
+  SearchQuery.queryString("airports"),
+  searchOptions()
+    .timeout(Duration.ofSeconds(2))
+    .limit(5)
+    .fields("a", "b", "c")
+);
+for (SearchRow row : searchResult.rows()) {
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Error handling for streaming is handled differently.
+While fatal errors will still raise top-level exceptions, any errors that happend during streaming (for example if one node is down, and only partial results are returned) they will not terminate the result.
+The reasoning behind this is that usually with search results, having partial results is better than none.</p>
+</div>
+<div class="paragraph">
+<p>Here is a top level exception, for <em>the index does not exist</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>com.couchbase.client.core.error.SearchIndexNotFoundException: The search index is not found on the server {"completed":true,"coreId":1,"httpStatus":400,"idempotent":true,"lastDispatchedFrom":"127.0.0.1:53280","lastDispatchedTo":"127.0.0.1:8094","requestId":5,"requestType":"SearchRequest","retried":0,"service":{"indexName":"myindex","type":"search"},"status":"INVALID_ARGS","timeoutMs":75000,"timings":{"dispatchMicros":12741,"totalMicros":66262}}
+	at com.couchbase.client.java.AsyncUtils.block(AsyncUtils.java:51)
+	at com.couchbase.client.java.Cluster.searchQuery(Cluster.java:275)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to be absolutely sure that you didn&#8217;t get only partial data, you can check the error map:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SearchResult searchResult = cluster.searchQuery(
+  "myindex",
+  SearchQuery.queryString("searchstring")
+);
+if (searchResult.metaData().errors().isEmpty()) {
+  // no errors present, so full data got returned
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="views"><a class="anchor" href="#views"></a>Views</h3>
+<div class="paragraph">
+<p>Views have stayed at the <code>Bucket</code> level, because it does not have the concept of collections and is scoped at the bucket level on the server as well.
+The API has stayed mostly the same, the most important change is that <code>staleness</code> is unified under the <code>ViewConsistency</code> enum.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. View Staleness Mapping</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.TRUE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewScanConsistency.NOT_BOUNDED</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.FALSE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewScanConsistency.REQUEST_PLUS</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.UPDATE_AFTER</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewScanConsistency.UPDATE_AFTER</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Compare this SDK 2 view query with its SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 2 view query
+ViewResult query = bucket.query(
+  ViewQuery.from("design", "view").limit(5).skip(2),
+  10,
+  TimeUnit.SECONDS
+);
+for (ViewRow row : query) {
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">// SDK 3 view query
+ViewResult viewResult = bucket.viewQuery(
+  "design",
+  "view",
+  viewOptions().limit(5).skip(2).timeout(Duration.ofSeconds(10))
+);
+for (ViewRow row : viewResult.rows()) {
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exceptions are exclusively raised at the top level: for example, if the design document is not found:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>com.couchbase.client.core.error.ViewNotFoundException: The queried view is not found on the server {"completed":true,"coreId":1,"httpStatus":404,"idempotent":true,"lastDispatchedFrom":"127.0.0.1:53474","lastDispatchedTo":"127.0.0.1:8092","requestId":5,"requestType":"ViewRequest","retried":0,"service":{"bucket":"travel-sample","designDoc":"foo","development":false,"type":"views","viewName":"bar"},"status":"NOT_FOUND","timeoutMs":75000,"timings":{"dispatchMicros":77572,"totalMicros":189389},"viewError":"not_found","viewErrorReason":"Design document _design/foo not found"}
+	at com.couchbase.client.java.AsyncUtils.block(AsyncUtils.java:51)
+	at com.couchbase.client.java.Bucket.viewQuery(Bucket.java:182)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="management-apis"><a class="anchor" href="#management-apis"></a>Management APIs</h3>
+<div class="paragraph">
+<p>In SDK 2, the management APIs were centralized in the <code>ClusterManager</code> at the cluster level and the <code>BucketManager</code> at the bucket level.
+Since SDK 3 provides more management APIs, they have been split up in their respective domains.
+So for example when in SDK 2 you needed to remove a bucket you would call <code>ClusterManager.removeBucket</code> you will now find it under <code>BucketManager.dropBucket</code>.
+Also, creating a N1QL index now lives in the <code>QueryIndexManager</code>, which is accessible through the <code>Cluster</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following table provides a mapping from the SDK 2 management APIs to those of SDK 3:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. SDK 2.x vs SDK 3.x ClusterManager</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.info</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.getBuckets</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.getAllBuckets</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.getBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.getBucket</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.hasBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.insertBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.createBucket</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.updateBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.updateBucket</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.removeBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.dropBucket</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.upsertUser</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.upsertUser</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.removeUser</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.dropUser</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.getUsers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.getAllUsers</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.getUser</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.getUser</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.apiClient</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. SDK 2.x vs SDK 3.x BucketManager</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.info</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.flush</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.flushBucket</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.getDesignDocuments</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.getAllDesignDocuments</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.getDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.getDesignDocument</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.insertDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.upsertDesignDocument</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.upsertDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.upsertDesignDocument</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.removeDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.dropDesignDocument</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.publishDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.publishDesignDocument</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.listN1qlIndexes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.getAllIndexes</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.createN1qlIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.createIndex</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.createN1qlPrimaryIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.createPrimaryIndex</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.dropN1qlIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.dropIndex</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.dropN1qlPrimaryIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.dropPrimaryIndex</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.buildN1qlDeferredIndexes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.buildDeferredIndexes</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.watchN1qlIndexes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.watchIndexes</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reactive-and-async-apis"><a class="anchor" href="#reactive-and-async-apis"></a>Reactive and Async APIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The move to Java 8 as a baseline has opened the door to expose <code>CompletableFuture</code> in addition to a reactive API.
+You can now find it under the <code>async()</code> namespace of each level (for example, <code>Cluster.async()</code> &#8594; <code>AsyncCluster</code>).
+We also moved from <code>RxJava</code> to <code>Reactor</code> because it provides native Java 8 support and better performance out of the box.
+<code>Reactor</code> has a growing community, and integrates very well into the Spring ecosystem.
+The reactive API can now be found under the <code>reactive()</code> namespace (for example, <code>Collection.reactive()</code> &#8594; <code>ReactiveCollection</code>).</p>
+</div>
+<div class="paragraph">
+<p>Like in SDK 2, the async and reactive APIs provide the same functionality as their blocking counterpart.
+There are only a couple places in the SDK where it does not make sense (such as the blocking datastructure APIs, which at the collection level implement the Java interfaces which do not have async or reactive counterparts).</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+if you need to use non-blocking APIs, we recommend using the reactive one.
+The async API based on <code>CompletableFuture</code> should only be used as a building block for higher level abstractions, or if you absolutely need the last drop of performance.
+The <code>Flux</code> and <code>Mono</code> types of reactor are very powerful and allow you to build efficient and flexible domain logic without blocking.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Since <code>Reactor</code> implements the reactive stream specification, you can still use <code>RxJava</code> through the interoperability interfaces.
+This is out of scope for the migration guide&#8201;&#8212;&#8201;please consult the reactor and rxjava documentations for further information.</p>
+</div>
+<div class="paragraph">
+<p>As a starting point, the following types are comparable:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. SDK Reactor vs RxJava</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2 RxJava</th>
+<th class="tableblock halign-left valign-top">SDK 3 Reactor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Observable&lt;T&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Flux&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Single&lt;T&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Mono&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Completable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Mono&lt;Void&gt;</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuration-options-reference"><a class="anchor" href="#configuration-options-reference"></a>Configuration Options Reference</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following table provides commonly used configuration options in SDK 2 and where they can be now applied in SDK 3.
+Note that some options have been removed, and others have different ways to configure them.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 9. SDK 2.x vs SDK 3.x Environment Configs</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SecurityConfig.enableTls</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslKeystoreFile</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">on <code>CertificateAuthenticator</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslKeystorePassword</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">on <code>CertificateAuthenticator</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslKeystore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">on <code>CertificateAuthenticator</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslTruststoreFile</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SecurityConfig.trustCertificate</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslTruststorePassword</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SecurityConfig.trustCertificate</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sslTruststore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SecurityConfig.trustManagerFactory</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bootstrapCarrierEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bootstrapHttpDirectPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>SeedNode</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bootstrapHttpSslPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>SeedNode</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bootstrapCarrierDirectPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>SeedNode</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bootstrapCarrierSslPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>SeedNode</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ioPoolSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>computationPoolSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>requestBufferSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>responseBufferSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kvEndpoints</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.numKvConnections</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewEndpoints</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.maxHttpConnections</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>queryEndpoints</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.maxHttpConnections</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>searchEndpoints</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.maxHttpConnections</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userAgent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>packageNameAndVersion</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>observeIntervalDelay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>reconnectDelay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>retryDelay</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ioPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kvIoPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewIoPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>queryIoPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>searchIoPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>analyticsIoPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">via custom <code>IoEnvironment</code> pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>scheduler</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>scheduler</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>retryStrategy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>retryStrategy</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>maxRequestLifetime</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>keepAliveInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>autoreleaseAfter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>eventBus</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>eventBus</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bufferPoolingEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tcpNodelayEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.enableTcpKeepAlives</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mutationTokensEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.enableMutationTokens</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>runtimeMetricsCollectorConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>networkLatencyMetricsCollectorConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>defaultMetricsLoggingConsumer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>socketConnectTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>callbacksOnIoPool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>requestBufferWaitStrategy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>memcachedHashingStrategy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>keyValueServiceConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewServiceConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>queryServiceConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>searchServiceConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>analyticsServiceConfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>configPollInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>configPollFloorInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>certAuthEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">on <code>CertificateAuthenticator</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>continuousKeepAliveEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>keepAliveErrorThreshold</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>keepAliveTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>couchbaseCoreSendHook</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>forceSaslPlain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">on <code>PasswordAuthenticator.allowedSaslMechanisms</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>operationTracingEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>operationTracingServerDurationEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tracer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>requestTracer</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>compressionMinSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CompressionConfig.minSize</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>compressionMinRatio</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CompressionConfig.minRatio</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>compressionEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CompressionConfig.enable</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>orphanResponseReportingEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>orphanResponseReporter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>networkResolution</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.networkResolution</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>managementTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.managementTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>queryTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.queryTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kvTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.kvTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>viewTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.viewTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>searchTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.searchTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>analyticsTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.analyticsTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>connectTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.connectTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>disconnectTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TimeoutConfig.disconnectTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dnsSrvEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IoConfig.enableDnsSrv</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cryptoManager</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>propagateParentSpan</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+        <div class="contact">
+          <p class="address">3250 Olcott Street
+Santa Clara, CA 95054
+United States</p>
+          <a href="https://www.couchbase.com/contact" class="btn white-btn">Contact Us</a>
+          <a class="tel" href="tel:1-650-417-7500">1-650-417-7500</a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Company</span></li>
+          <li><a href="https://www.couchbase.com/about">About</a></li>
+          <li><a href="https://www.couchbase.com/leadership">Leadership</a></li>
+          <li><a href="https://www.couchbase.com/news-and-press-releases">News &amp; Press</a></li>
+          <li><a href="https://www.couchbase.com/careers">Careers</a></li>
+          <li><a href="https://www.couchbase.com/resources/events">Events</a></li>
+          <li><a href="https://www.couchbase.com/contact">Contact Us</a></li>
+          <li><a href="https://www.couchbase.com/request-pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Support</span></li>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://www.couchbase.com/services">Professional Services</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support Login</a></li>
+          <li><a href="https://learn.couchbase.com/store" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><span class="heading">Quicklinks</span></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Online Training</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+          <li><a href="https://www.couchbase.com/nosql-resources/why-nosql">Why NoSQL</a></li>
+          <li><a href="https://www.couchbase.com/resources/security">Security</a></li>
+          <li><a href="https://www.couchbase.com/resources/gdpr">GDPR</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2019 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
