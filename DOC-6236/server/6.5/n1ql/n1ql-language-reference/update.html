@@ -3881,9 +3881,8 @@ UPDATE replaces a document that already exists with updated values.
 <div class="sect1">
 <h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p><strong>RBAC Privileges</strong></p>
-</div>
+<div class="sect2">
+<h3 id="rbac-privileges"><a class="anchor" href="#rbac-privileges"></a>RBAC Privileges</h3>
 <div class="paragraph">
 <p>User executing the UPDATE statement must have the <em>Query Update</em> privilege on the target keyspace.
 If the statement has any clauses that needs data read, such as SELECT clause, or RETURNING clause, then <em>Query Select</em> privilege is also required on the keyspaces referred in the respective clauses.
@@ -3899,7 +3898,7 @@ For more details about user roles, see
 <p>To execute the following statement, user must have the <em>Query Update</em> privilege on <code>`travel-sample`</code>.</p>
 <div class="listingblock">
 <div class="content">
-<pre>UPDATE `travel-sample` SET foo = 5</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample` SET foo = 5</code></pre>
 </div>
 </div>
 </li>
@@ -3907,9 +3906,9 @@ For more details about user roles, see
 <p>To execute the following statement, user must have the <em>Query Update</em> privilege on the <code>`travel-sample`</code> and <em>Query Select</em> privilege on <code>`beer-sample`</code>.</p>
 <div class="listingblock">
 <div class="content">
-<pre>UPDATE `travel-sample`
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample`
 SET foo = 9
-WHERE city IN (SELECT RAW city FROM `beer-sample` WHERE type = "brewery")</pre>
+WHERE city IN (SELECT RAW city FROM `beer-sample` WHERE type = "brewery")</code></pre>
 </div>
 </div>
 </li>
@@ -3917,14 +3916,26 @@ WHERE city IN (SELECT RAW city FROM `beer-sample` WHERE type = "brewery")</pre>
 <p>To execute the following statement, user must have the <em>Query Update</em> privilege on <code>`travel-sample`</code> and <em>Query Select</em> privilege on <code>`travel-sample`</code>.</p>
 <div class="listingblock">
 <div class="content">
-<pre>UPDATE `travel-sample`
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample`
 SET city = "San Francisco"
 WHERE lower(city) = "sanfrancisco"
-RETURNING *</pre>
+RETURNING *</code></pre>
 </div>
 </div>
 </li>
 </ul>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, a user with the <em>Data Writer</em> privilege may set documents to expire.
+When the document expires, the data service deletes the document, even though the user may not have the <em>Query Delete</em> privilege.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -3960,7 +3971,7 @@ RETURNING *</pre>
 <h4 id="keyspace-ref"><a class="anchor" href="#keyspace-ref"></a>Keyspace Reference</h4>
 <div class="listingblock">
 <div class="content">
-<pre>keyspace-ref ::= [ <a href="identifiers.html" class="page">namespace</a> ':' ] <a href="identifiers.html" class="page">keyspace</a></pre>
+<pre>keyspace-ref ::= [ <em>namespace</em> ':' ] <em>keyspace</em></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4016,7 +4027,7 @@ For details, refer to <a href="hints.html#use-keys-clause" class="page">USE KEYS
 <h3 id="set-clause"><a class="anchor" href="#set-clause"></a>SET Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>set-clause ::= SET <a href="#path">path</a> '=' expr [ <a href="#update-for">update-for</a> ] [ ',' <a href="#path">path</a> '=' expr [ <a href="#update-for">update-for</a> ] ]*</pre>
+<pre>set-clause ::= SET <em>path</em> '=' <em>expr</em> [ <a href="#update-for">update-for</a> ] [ ',' <em>path</em> '=' <em>expr</em> [ <a href="#update-for">update-for</a> ] ]*</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4025,15 +4036,61 @@ For details, refer to <a href="hints.html#use-keys-clause" class="page">USE KEYS
 </div>
 </div>
 <div class="paragraph">
-<p>Specifies the value for an attribute to be changed.
-The value may be a generic expression term, a subquery, or an expression that resolves to nested array elements.</p>
+<p>Specifies the value for an attribute to be changed.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">path</dt>
+<dd>
+<p>A <a href="#path">path</a> specifying the attribute to be changed.</p>
+</dd>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>The value may be a generic expression term, a subquery, or an expression that resolves to nested array elements.</p>
+</dd>
+</dl>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, the SET clause also supports alternative arguments which enable you to set the expiration of the document.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>set-clause ::= SET ( <em>meta</em> '=' <em>expiration</em> | <em>path</em> '=' <em>expr</em> [ <a href="#update-for">update-for</a> ] ) [ ',' ( <em>meta</em> '=' <em>expiration</em> | <em>path</em> '=' <em>expr</em> [ <a href="#update-for">update-for</a> ] ) ]*</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/set-clause-651.png" alt="'SET' ( meta '=' expiration | path '=' expr update-for? ) ( ',' ( meta '=' expiration | path '=' expr update-for? ) )*">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">meta</dt>
+<dd>
+<p>A <a href="metafun.html#meta" class="page">META().expiration</a> expression specifying the expiration property of the document being updated.</p>
+</dd>
+<dt class="hdlist1">expiration</dt>
+<dd>
+<p>An integer, or an expression resolving to an integer, representing the <a href="../../../../java-sdk/3.0/howtos/kv-operations.html#document-expiration" class="page">document expiration</a> in seconds.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If these options are not specified, the document expiration defaults to <code>0</code>, meaning no expiration.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="unset-clause"><a class="anchor" href="#unset-clause"></a>UNSET Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>unset-clause ::= UNSET <a href="#path">path</a> [ <a href="#update-for">update-for</a> ] [ ',' <a href="#path">path</a> [ <a href="#update-for">update-for</a> ] ]*</pre>
+<pre>unset-clause ::= UNSET <em>path</em> [ <a href="#update-for">update-for</a> ] [ ',' <em>path</em> [ <a href="#update-for">update-for</a> ] ]*</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4044,12 +4101,20 @@ The value may be a generic expression term, a subquery, or an expression that re
 <div class="paragraph">
 <p>Removes the specified attribute from the document.</p>
 </div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">path</dt>
+<dd>
+<p>A <a href="#path">path</a> specifying the attribute to be removed.</p>
+</dd>
+</dl>
+</div>
 </div>
 <div class="sect2">
 <h3 id="update-for"><a class="anchor" href="#update-for"></a>FOR Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>update-for ::= ( FOR [ name-var ':' ] var ( IN | WITHIN ) <a href="#path">path</a> [ ',' [ name-var ':' ] var ( IN | WITHIN ) <a href="#path">path</a> ]* )+ [ WHEN cond ] END</pre>
+<pre>update-for ::= ( FOR [ <em>name-var</em> ':' ] <em>var</em> ( IN | WITHIN ) <a href="#path">path</a> [ ',' [ <em>name-var</em> ':' ] <em>var</em> ( IN | WITHIN ) <a href="#path">path</a> ]* )+ [ WHEN <em>cond</em> ] END</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4059,7 +4124,7 @@ The value may be a generic expression term, a subquery, or an expression that re
 </div>
 <div id="path" class="listingblock">
 <div class="content">
-<pre>path::= identifier [ '[' expr ']' ]* [ '.' <a href="#path">path</a> ]</pre>
+<pre>path ::= <em>identifier</em> [ '[' <em>expr</em> ']' ]* [ '.' <a href="#path">path</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4077,7 +4142,7 @@ Additional array levels are supported by chaining the FOR clauses.</p>
 <h3 id="where-clause"><a class="anchor" href="#where-clause"></a>WHERE Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>where-clause ::= WHERE cond</pre>
+<pre>where-clause ::= WHERE <em>cond</em></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4094,7 +4159,7 @@ Optional.</p>
 <h3 id="limit-clause"><a class="anchor" href="#limit-clause"></a>LIMIT Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>limit-clause ::= LIMIT expr</pre>
+<pre>limit-clause ::= LIMIT <em>expr</em></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4112,7 +4177,7 @@ Optional.</p>
 <h3 id="returning-clause"><a class="anchor" href="#returning-clause"></a>RETURNING Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>returning-clause ::= RETURNING ( result-expr [ ',' result-expr ]* | ( RAW | ELEMENT | VALUE ) expr )</pre>
+<pre>returning-clause ::= RETURNING ( <em>result-expr</em> [ ',' <em>result-expr</em> ]* | ( RAW | ELEMENT | VALUE ) <em>expr</em> )</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4137,8 +4202,8 @@ For more details, refer to <a href="insert.html#returning-clause" class="page">R
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The Query Workbench may warn you that the query has no WHERE clause and will update all documents.
-You can ignore this warning: the USE KEYS hint ensures that the query updates only one document.
+For some of these examples, the Query Workbench may warn you that the query has no WHERE clause and will update all documents.
+In this case, you can ignore the warning: the USE KEYS hint in these examples ensures that the query updates only one document.
 </td>
 </tr>
 </table>
@@ -4368,6 +4433,41 @@ RETURNING a;</code></pre>
     }
   }
 ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-7" class="exampleblock">
+<div class="title">Example 7. Update a document and set expiration</div>
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>Update a document and set the expiration to 1 week.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample` t USE KEYS "route_10003"
+SET meta(t).expiration = 7*24*60*60,
+s.codeshare = NULL FOR s IN schedule END;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-8" class="exampleblock">
+<div class="title">Example 8. Update a document and preserve expiration</div>
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample` t USE KEYS "route_10003"
+SET meta(t).expiration = meta(t).expiration,
+s.codeshare = NULL FOR s IN schedule END;</code></pre>
 </div>
 </div>
 </div>

@@ -3900,8 +3900,8 @@ For more details about user roles, see
 <p>To execute the following statement, user must have the <em>Query Update</em> and <em>Query Insert</em> privileges on <code>`travel-sample`</code>.</p>
 <div class="listingblock">
 <div class="content">
-<pre>UPSERT INTO `travel-sample` (KEY, VALUE)
-VALUES ("key1", { "type" : "hotel", "name" : "new hotel" })</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPSERT INTO `travel-sample` (KEY, VALUE)
+VALUES ("key1", { "type" : "hotel", "name" : "new hotel" })</code></pre>
 </div>
 </div>
 </li>
@@ -3909,9 +3909,9 @@ VALUES ("key1", { "type" : "hotel", "name" : "new hotel" })</pre>
 <p>To execute the following statement, user must have the <em>Query Update</em> and <em>Query Insert</em> privileges on the <code>`travel-sample`</code> bucket and <em>Query Select</em> privilege on <code>`travel-sample`</code> (for RETURNING clause).</p>
 <div class="listingblock">
 <div class="content">
-<pre>UPSERT INTO `travel-sample` (KEY, VALUE)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPSERT INTO `travel-sample` (KEY, VALUE)
 VALUES ("key1", { "type" : "hotel", "name" : "new hotel" })
-RETURNING *</pre>
+RETURNING *</code></pre>
 </div>
 </div>
 </li>
@@ -3919,12 +3919,23 @@ RETURNING *</pre>
 <p>To execute the following statement, user must have the <em>Query Update</em> and <em>Query Insert</em> privileges on the <code>`travel-sample`</code> bucket and <em>Query Select</em> privilege on <code>`beer-sample`</code>.</p>
 <div class="listingblock">
 <div class="content">
-<pre>UPSERT INTO `travel-sample` (KEY foo, VALUE bar)
-SELECT foo, bar FROM `beer-sample`</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPSERT INTO `travel-sample` (KEY foo, VALUE bar)
+SELECT foo, bar FROM `beer-sample`</code></pre>
 </div>
 </div>
 </li>
 </ul>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, a user with the <em>Data Writer</em> privilege may set documents to expire.
+When the document expires, the data service deletes the document, even though the user may not have the <em>Query Delete</em> privilege.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -3961,7 +3972,7 @@ SELECT foo, bar FROM `beer-sample`</pre>
 <h4 id="insert-target-ref"><a class="anchor" href="#insert-target-ref"></a>Keyspace Reference</h4>
 <div class="listingblock">
 <div class="content">
-<pre>keyspace-ref ::= [ <a href="identifiers.html" class="page">namespace</a> ':' ] <a href="identifiers.html" class="page">keyspace</a></pre>
+<pre>keyspace-ref ::= [ <em>namespace</em> ':' ] <em>keyspace</em></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4015,7 +4026,7 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 <h3 id="insert-values"><a class="anchor" href="#insert-values"></a>Insert Values</h3>
 <div class="listingblock">
 <div class="content">
-<pre>insert-values::= [ "(" [ PRIMARY ] KEY , VALUE ")" ] <a href="#values-clause">values-clause</a></pre>
+<pre>insert-values ::= [ "(" [ PRIMARY ] KEY , VALUE ")" ] <a href="#values-clause">values-clause</a></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4027,21 +4038,69 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 <p>Specifies one or more documents to be upserted.
 For details, refer to <a href="insert.html#insert-values" class="page">Insert Values</a>.</p>
 </div>
-<div class="sect3">
-<h4 id="values-clause"><a class="anchor" href="#values-clause"></a>VALUES Clause</h4>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, the Insert Values syntax supports an optional third keyword <code>OPTIONS</code>.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>values-clause ::= VALUES "(" expr "," expr ")" [ "," [ VALUES ] "(" expr "," expr ")" ]*</pre>
+<pre>insert-values ::= [ "(" [ PRIMARY ] KEY "," VALUE [ "," OPTIONS ] ")" ] <a href="#values-clause">values-clause</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/values-clause.png" alt="'VALUES' '(' expr ',' expr ')' ( ',' 'VALUES'? '(' expr ',' expr ')' )*">
+<img src="../_images/n1ql-language-reference/insert-values-651.png" alt="( '(' 'PRIMARY'? 'KEY' ',' 'VALUE' ( ',' 'OPTIONS' )? ')' )? values-clause">
+</div>
+</div>
+<div class="paragraph">
+<p>Indicates that you are setting metadata for the upserted document.
+For details, refer to <a href="insert.html#insert-values" class="page">Insert Values</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="values-clause"><a class="anchor" href="#values-clause"></a>VALUES Clause</h4>
+<div class="listingblock">
+<div class="content">
+<pre>values-clause ::= VALUES "(" <em>key</em> "," <em>value</em> ")" [ "," [ VALUES ] "(" <em>key</em> "," <em>value</em> ")" ]*</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/values-clause.png" alt="'VALUES' '(' key ',' value ')' ( ',' 'VALUES'? '(' key ',' value ')' )*">
 </div>
 </div>
 <div class="paragraph">
 <p>Specify the values as well-formed JSON.
 For details, refer to <a href="insert.html#values-clause" class="page">VALUES Clause</a>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, the VALUES clause supports an optional third argument, <code><em>options</em></code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>values-clause ::= VALUES "(" <em>key</em> "," <em>value</em> [ "," <em>options</em> ] ")" [ "," [ VALUES ] "(" <em>key</em> "," <em>value</em> [ "," <em>options</em> ] ")" ]*</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/values-clause-651.png" alt="'VALUES' '(' key ',' value ( ',' options )? ')' ( ',' 'VALUES'? '(' key ',' value ( ',' options )? ')' )*">
+</div>
+</div>
+<div class="paragraph">
+<p>This enables you to specify an object setting the expiration of the upserted document.
+For details, refer to <a href="insert.html#values-clause" class="page">VALUES Clause</a>.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4049,17 +4108,41 @@ For details, refer to <a href="insert.html#values-clause" class="page">VALUES Cl
 <h3 id="insert-select"><a class="anchor" href="#insert-select"></a>Insert Select</h3>
 <div class="listingblock">
 <div class="content">
-<pre>insert-select::= "(" [ PRIMARY ] KEY expr [ "," VALUE expr ] ")" <a href="#select-statement">select</a></pre>
+<pre>insert-select ::= "(" [ PRIMARY ] KEY <em>key</em> [ "," VALUE <em>value</em> ] ")" <a href="#select-statement">select</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/insert-select.png" alt="'(' 'PRIMARY'? 'KEY' expr ( ',' 'VALUE' expr )? ')' select">
+<img src="../_images/n1ql-language-reference/insert-select.png" alt="'(' 'PRIMARY'? 'KEY' key ( ',' 'VALUE' value )? ')' select">
 </div>
 </div>
 <div class="paragraph">
 <p>Specifies the documents to be upserted as a SELECT statement.
 For details, refer to <a href="insert.html#insert-select" class="page">Insert Select</a>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, the Insert Select syntax supports an optional third keyword <code>OPTIONS</code> and an associated argument <code><em>options</em></code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>insert-select ::= "(" [ PRIMARY ] KEY <em>key</em> [ "," VALUE <em>value</em> ] [ "," OPTIONS <em>options</em> ] ")" <a href="#select-statement">select</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/insert-select-651.png" alt="'(' 'PRIMARY'? 'KEY' key ( ',' 'VALUE' value )? ( ',' 'OPTIONS' options )? ')' select">
+</div>
+</div>
+<div class="paragraph">
+<p>This enables you to specify an object setting the expiration of the upserted document.
+For details, refer to <a href="insert.html#insert-select" class="page">Insert Select</a>.</p>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="select-statement"><a class="anchor" href="#select-statement"></a>SELECT Statement</h4>
@@ -4073,7 +4156,7 @@ For details, refer to <a href="select-syntax.html" class="page">SELECT Syntax</a
 <h3 id="returning-clause"><a class="anchor" href="#returning-clause"></a>RETURNING Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>returning-clause::= RETURNING ( <a href="#result-expr">result-expr</a> [ "," <a href="#result-expr">result-expr</a> ]* | ( RAW | ELEMENT | VALUE ) expr )</pre>
+<pre>returning-clause ::= RETURNING ( <a href="#result-expr">result-expr</a> [ "," <a href="#result-expr">result-expr</a> ]* | ( RAW | ELEMENT | VALUE ) <em>expr</em> )</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4088,7 +4171,7 @@ For details, refer to <a href="select-syntax.html" class="page">SELECT Syntax</a
 <h4 id="result-expr"><a class="anchor" href="#result-expr"></a>Result Expression</h4>
 <div class="listingblock">
 <div class="content">
-<pre>result-expr::= ( [ <a href="../n1ql-intro/queriesandresults.html#paths" class="page">path</a> "." ] "*" | expr [ [ AS ] alias ] )</pre>
+<pre>result-expr ::= ( [ <a href="../n1ql-intro/queriesandresults.html#paths" class="page">path</a> "." ] "*" | <em>expr</em> [ [ AS ] <em>alias</em> ] )</pre>
 </div>
 </div>
 <div class="imageblock">

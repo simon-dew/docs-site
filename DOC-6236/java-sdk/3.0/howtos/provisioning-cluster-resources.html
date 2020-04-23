@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Authenticating against Couchbase Server | Couchbase Docs (Staging)</title>
-    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6236/java-sdk/3.0/howtos/sdk-authentication.html">
+    <title>Provisioning Cluster Resources | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6236/java-sdk/3.0/howtos/provisioning-cluster-resources.html">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="java-sdk">
@@ -71,7 +71,7 @@
             <div class="navbar-dropdown versions">
               <div class="cols">
                 <ul>
-                  <li class="current"><a class="navbar-item" href="sdk-authentication.html">Java SDK 3.0</a></li>
+                  <li class="current"><a class="navbar-item" href="provisioning-cluster-resources.html">Java SDK 3.0</a></li>
                   <li><a class="navbar-item" href="../../2.7/start-using-sdk.html">Java SDK 2.7</a></li>
                   <li><a class="navbar-item" href="../../2.6/start-using-sdk.html">Java SDK 2.6</a></li>
                   <li><a class="navbar-item" href="../../2.5/start-using-sdk.html">Java SDK 2.5</a></li>
@@ -402,109 +402,135 @@
 <nav class="crumbs" aria-label="breadcrumbs">
   <ul>
     <li class="crumb"><a href="../hello-world/start-using-sdk.html">Java SDK</a></li>
-    <li class="crumb"><a href="sdk-authentication.html">Authenticating against Couchbase Server</a></li>
+    <li class="crumb"><a href="provisioning-cluster-resources.html">Provisioning Cluster Resources</a></li>
   </ul>
 </nav>
 <div class="tools" role="navigation">
   <ul>
-    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/howtos/pages/sdk-authentication.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
+    <li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-java/edit/release/3.0/modules/howtos/pages/provisioning-cluster-resources.adoc" title="Edit Page" target="_blank" rel="noopener">Edit</a></li>
   </ul>
 </div>
   </div>
 <article class="doc">
-<h1 class="page">Authenticating against Couchbase Server</h1>
-<div class="labels">
-  <ul>
-    <li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
-  </ul>
-</div>
+<h1 class="page">Provisioning Cluster Resources</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-As well as Role-Based Access Control (RBAC), Couchbase offers connection with Certificate Authentication, and works transparently with LDAP.
+Provisioning cluster resources is managed at the collection or bucket level, depending upon the service affected.
+Common use cases are outlined here, more recherché use cases are covered in the <a href="https://pkg.go.dev/github.com/couchbase/gocb/v2?tab=doc">API docs</a>.
 </blockquote>
 </div>
 <div class="paragraph">
-<p>Our <a href="../hello-world/start-using-sdk.html" class="page">Getting Started</a> guide covered the basics for authorizing against a Couchbase cluster, but you may need to use alternative authentication methods such as Certification.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="rbac"><a class="anchor" href="#rbac"></a>RBAC</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Our <a href="../hello-world/start-using-sdk.html" class="page">Getting Started</a> guide introduced basic authentication against a Couchbase cluster:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">Unresolved include directive in modules/howtos/pages/sdk-authentication.adoc - include::example$Auth.scala[]</code></pre>
-</div>
+<p>The primary means for managing clusters is through the Couchbase Web UI which provides an easy to use interface for adding, removing, monitoring and modifying buckets.
+In some instances you may wish to have a programmatic interface.
+For example, if you wish to manage a cluster from a setup script, or if you are setting up buckets in test scaffolding.</p>
 </div>
 <div class="paragraph">
-<p>Couchbase uses Role Base Access Control (RBAC), and has since Server 5.0 was released.
-For a general overview of Couchbase-Server authorization, see <a href="../../../server/6.5/learn/security/authorization-overview.html" class="page">Authorization</a>.
-For a list of available roles and corresponding privileges, see <a href="../../../server/6.5/learn/security/roles.html" class="page">Roles</a>.</p>
+<p>The Java SDK also comes with some convenience functionality for common Couchbase management requests.</p>
 </div>
 <div class="paragraph">
-<p>In the SDK docs, many examples will use the full <em>Administrator</em> role for convenience, but this is rarely a good idea on a production machine, so reference the above links to find best practice for the needs of your application.
-RBAC is also implemented by the Community Edition of Couchbase Server, but with fewer roles&#8201;&#8212;&#8201;see the <a href="../../../server/6.5/learn/security/roles.html" class="page">Roles overview</a>.</p>
+<p>Management operations in the SDK may be performed through several interfaces depending on the object:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>BucketManager&#8201;&#8212;&#8201;<code>Cluster.Buckets()</code></p>
+</li>
+<li>
+<p>UserManager&#8201;&#8212;&#8201;<code>Cluster.Users()</code> // see xref</p>
+</li>
+<li>
+<p>QueryIndexManager&#8201;&#8212;&#8201;<code>Cluster.QueryIndexes()</code></p>
+</li>
+<li>
+<p>AnalyticsIndexManager&#8201;&#8212;&#8201;<code>Cluster.AnalyticsIndexes()</code></p>
+</li>
+<li>
+<p>SearchIndexManager&#8201;&#8212;&#8201;<code>Cluster.SearchIndexes()</code></p>
+</li>
+<li>
+<p>CollectionManager&#8201;&#8212;&#8201;<code>Bucket.Collections()</code></p>
+</li>
+<li>
+<p>ViewIndexManager&#8201;&#8212;&#8201;<code>Bucket.ViewIndexes()</code>.</p>
+</li>
+</ul>
 </div>
-</div>
-<div class="sect1">
-<h2 id="certificate-authentication"><a class="anchor" href="#certificate-authentication"></a>Certificate Authentication</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Couchbase Server supports the use of X.509 certificates to authenticate clients (only available in the Enterprise Edition, not the Community Edition).
-This allows authenticated users to access specific resources by means of the data service, in Couchbase Server 5.1 and up, and all other services in more recent releases of Couchbase Data Platform.</p>
-</div>
-<div class="paragraph">
-<p>The process relies on a certificate authority, for the issuing of certificates that validate identities.
-A certificate includes information such as the name of the entity it identifies, an expiration date, the name of the authority that issued the certificate, and the digital signature of the authority.
-A client attempting to access Couchbase Server can present a certificate to the server, allowing the server to check the validity of the certificate.
-If the certificate is valid, the user under whose identity the client is running, and the roles assigned that user, are verified.
-If the assigned roles are appropriate for the level of access requested to the specified resource, access is granted.</p>
-</div>
-<div class="paragraph">
-<p>For a more detailed conceptual description of using certificates, see <a href="../../../server/6.5/learn/security/certificates.html" class="page">Certificates</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="authenticating-a-scala-client-by-certificate"><a class="anchor" href="#authenticating-a-scala-client-by-certificate"></a>Authenticating a Scala Client by Certificate</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>For sample procedures whereby certificates can be generated and deployed, see <a href="../../../server/6.5/manage/manage-security/manage-certificates.html" class="page">Manage Certificates</a>.
-The rest of this document assumes that the processes there, or something similar, have been followed.
-That is, a cluster certificate has been created and installed on the server, a client certificate has been created, and it is stored in a JVM keystore along with the cluster&#8217;s certificate.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-scala hljs" data-lang="scala">Unresolved include directive in modules/howtos/pages/sdk-authentication.adoc - include::example$Auth.scala[]</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="ldap"><a class="anchor" href="#ldap"></a>LDAP</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you are on a network where access is controlled by LDAP, the SDK will work transparently with it.
-Please pay attention to the following important note on secure connection.</p>
-</div>
-<div class="admonitionblock important">
+<div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-important" title="Important"></i>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If <a href="../../../server/6.5/manage/manage-security/configure-ldap.html#understanding-ldap-authentication" class="page">LDAP</a> is enabled, Couchbase Server will only allow PLAIN sasl authentication which by default, for good security, the SDK will not allow.
-Although this can be overridden in a development environment, by explicitly enabling PLAIN in the password authenticator, <em>the secure solution</em> is <a href="managing-connections.html#ssl" class="page">to use TLS</a>.
+When using a Couchbase version earlier than 6.5, you must create a valid Bucket connection using <code>cluster.Bucket(name)</code> before you can use cluster level managers.
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="creating-and-removing-buckets"><a class="anchor" href="#creating-and-removing-buckets"></a>Creating and Removing Buckets</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>ClusterManager</code> interface may be used to create and delete buckets from the Couchbase cluster.
+It is instantiated through the <code>Cluster.Buckets()</code> method.</p>
+</div>
+<div class="paragraph">
+<p>The <code>CreateBucketSettings</code> and <code>BucketSettings</code> structs are used for creating and updating buckets, <code>BucketSettings</code> is also used for exposing information about existing buckets.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Note that any property that is not explicitly set when building the <code class="api">BucketSettings</code> will use the default value.
+In the case of the update, this is not necessarily the currently configured value, so you should be careful to set all properties to their correct expected values when updating an existing bucket configuration.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="go-flushing"><a class="anchor" href="#go-flushing"></a>Flushing Buckets</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When a bucket is flushed, all content is removed.
+Because this operation is potentially dangerous it is disabled by default for each bucket.
+Bucket flushing may be useful in test environments where it becomes a simpler alternative to removing and creating a test bucket.
+You may enable bucket flushing on a per-bucket basis using the Couchbase Web Console or when creating a bucket.</p>
+</div>
+<div class="paragraph">
+<p>You can flush a bucket in the SDK by using the <code>Flush</code> method:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="collection-management"><a class="anchor" href="#collection-management"></a>Collection Management</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is a <a href="../../../server/6.5/developer-preview/collections/collections-overview.html" class="page">Developer Preview feature</a>, see the <a href="https://pkg.go.dev/github.com/couchbase/gocb/v2?tab=doc#Bucket.Collections">API doc</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-management"><a class="anchor" href="#view-management"></a>View Management</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Views are stored in design documents.
+The SDK provides convenient methods to create, retrieve, and remove design documents.
+To set up views, you create design documents that contain one or more view definitions, and then insert the design documents into a bucket.
+Each view in a design document is represented by a name and a set of MapReduce functions.
+The mandatory map function describes how to select and transform the data from the bucket, and the optional reduce function describes how to aggregate the results.</p>
+</div>
+<div class="paragraph">
+<p>In the SDK, design documents are represented by the <code>DesignDocument</code> and <code>View</code> structs.
+All operations on design documents are performed on the <code>ViewIndexManager</code> instance:</p>
 </div>
 </div>
 </div>

@@ -3886,27 +3886,38 @@ Geospatial queries return documents that contain location-data.
 A location is represented by means of <em>longitude</em>-<em>latitude</em> coordinate pairs.</p>
 </div>
 <div class="paragraph">
-<p>This allows an application, based on the user&#8217;s input of a particular coordinate, address, or property name, to derive a list of <em>points of interest</em> that lie within a specified distance of the user-referenced location; and display these for the user&#8217;s benefit.</p>
-</div>
-<div class="paragraph">
-<p>The location-data provided by a geospatial query can be either of the following:</p>
+<p>A geospatial query can specify an area by means of:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A location, specified as a longitude-latitude coordinate pair; and a distance, in miles.
-The location determines the center of a circle whose radius-length is the specified distance.
-Documents are returned if they reference a location within the circle.</p>
+<p>A location, expressed as a latitude-longitude coordinate pair; and a distance.
+The location determines the center of a <em>circle</em> whose radius-length is the specified distance.
+Documents are returned if they reference a location within the area of the circle.
+See <a href="#specifying-distances">Specifying Distances</a>, below, for details of the units and formats in which distances can be specified.</p>
 </li>
 <li>
-<p>Two longitude-latitude coordinate pairs.
-These are respectively taken to indicate the top left and bottom right corners of a bounding box.
-Documents are returned if they reference a location within the box.</p>
+<p>Two latitude-longitude coordinate pairs.
+These are respectively taken to indicate the top left and bottom right corners of a <em>rectangle</em>.
+Documents are returned if they reference a location within the area of the rectangle.</p>
+</li>
+<li>
+<p>An array of three or more latitude-longitude coordinate pairs.
+Each of the pairs is taken to indicate one corner of a <em>polygon</em>.
+Documents are returned if they reference a location within the area of the polygon.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>To be successful, a geospatial query must reference an index within which the <em>geopoint</em> type mapping has been applied to the field containing the target longitude-latitude coordinate pair.</p>
+<p>To be successful, a geospatial query must reference an index within which the <em>geopoint</em> type mapping has been applied to the field containing the target latitude-longitude coordinate pair.</p>
+</div>
+<div class="paragraph">
+<p>Geospatial queries return <em>all</em> documents whose locations are within the query-specified area.
+To specify <em>holes</em> within the area, so that one or more subsets of returned documents can be omitted from the final results, boolean queries should be applied to the set of documents returned by the geospatial query.
+See <a href="fts-query-types.html" class="page">Query Types</a>.</p>
+</div>
+<div class="paragraph">
+<p>Latitude-longitude coordinate pairs can be specified in multiple ways, including as <em>geohashes</em>; as demonstrated in <a href="#specifying-coordinates">Specifying Coordinates</a>, below.</p>
 </div>
 </div>
 </div>
@@ -3947,11 +3958,200 @@ Moreover, any other child-field, such as <code>alt</code>, is ignored.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="specifying-coordinates"><a class="anchor" href="#specifying-coordinates"></a>Specifying Coordinates</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Each latitude-longitude coordinate can be expressed by means of any of the following.</p>
+</div>
+<div class="sect2">
+<h3 id="two-key-value-pairs"><a class="anchor" href="#two-key-value-pairs"></a>Two Key-Value Pairs</h3>
+<div class="paragraph">
+<p>An individual latitude-longitude coordinate can be expressed by means of an object containing two key-value pairs.
+For example, the central location for a radius-based area can be expressed as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"location": {
+       "lon": -2.235143,
+       "lat": 53.482358
+     }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where multiple coordinates are required, for the specifying of a polygon, an array of such objects can be specified, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"polygon_points": [
+  { “lat”: 37.79393211306212, “lon”: -122.44234633404847 },
+  { “lat”: 37.77995881733997, “lon”: -122.43977141339417 },
+  { “lat”: 37.788031092020155, “lon”: -122.4292571540557 },
+  { “lat”: 37.79026946582319, “lon”: -122.41149020154114 },
+  { “lat”: 37.79571192027403, “lon”: -122.40735054016113 },
+  { “lat”: 37.79393211306212, “lon”: -122.44234633404847 }
+]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="a-string-containing-two-floating-point-numbers"><a class="anchor" href="#a-string-containing-two-floating-point-numbers"></a>A String, Containing Two Floating-Point Numbers</h3>
+<div class="paragraph">
+<p>An individual latitude-longitude coordinate can be expressed as a string, containing two floating-point numbers &#8212; the first signifying latitude, the second longitude.
+For example, the center of a circle can be specified as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"location": "53.482358,-2.235143"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where multiple coordinates are required, for the specifying of a polygon, an array of such strings can be specified, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"polygon_points": [
+  "37.79393211306212,-122.44234633404847",
+  "37.77995881733997,-122.43977141339417",
+  "37.788031092020155,-122.42925715405579",
+  "37.79026946582319,-122.41149020154114",
+  "37.79571192027403,-122.40735054016113",
+  "37.79393211306212,-122.44234633404847"
+]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="an-array-of-floating-point-numbers"><a class="anchor" href="#an-array-of-floating-point-numbers"></a>An Array of Two Floating-Point Numbers</h3>
+<div class="paragraph">
+<p>An individual latitude-longitude coordinate can be expressed as an array of two floating-point numbers &#8212; the first signifying longitude, the second latitude.
+For example, the top left corner of a rectangle can be specified as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"top_left": [ -2.235143, 53.482358 ]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where multiple coordinates are required, for the specifying of a polygon, an array of such arrays can be specified, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"polygon_points": [
+  [ -122.44234633404847, 37.79393211306212 ],
+  [ -122.43977141339417, 37.77995881733997 ],
+  [ -122.42925715405579, 37.78803109202015 ],
+  [ -122.41149020154114, 37.79026946582319 ],
+  [ -122.40735054016113, 37.79571192027403 ],
+  [ -122.44234633404847, 37.79393211306212 ]
+]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="a-geohash"><a class="anchor" href="#a-geohash"></a>A Geohash</h3>
+<div class="paragraph">
+<p>A latitude-longitude coordinate can be expressed by means of a single <a href="https://en.wikipedia.org/wiki/Geohash">Geohash</a> encoding.
+For example, the bottom right corner of a rectangle can be specified as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"bottom_right": "gcw2m0hmm6hs"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where multiple coordinates are required, for the specifying of a polygon, an array of geohashes can be specified, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">"polygon_points": [
+  “9q8zjbkp”,
+  “9q8yvvdh”,
+  “9q8yyp1e”,
+  “9q8yyrw8”,
+  “9q8zn83x”,
+  “9q8zjb0j”
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Means of latitude-longitude conversion to and from this format are provided at <a href="http://geohash.co/">Geohash Converter</a>.
+Additional information, including on the <em>precision</em> of values specified in this format, is provided at <a href="https://www.movable-type.co.uk/scripts/geohash.html">Movable Type Scripts &#8212; Geohashes</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-distances"><a class="anchor" href="#specifying-distances"></a>Specifying Distance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Multiple unit-types can be used to express distance.
+These are listed in the table below, with the strings that specify them in REST queries.</p>
+</div>
+<table id="geospatial-distance-units" class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Units</th>
+<th class="tableblock halign-left valign-top">Specify with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inches</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>in</code> or <code>inch</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">feet</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ft</code> or <code>feet</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yards</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>yd</code> or <code>yards</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">miles</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mi</code> or <code>miles</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nautical miles</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nm</code> or <code>nauticalmiles</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">millimeters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mm</code> or <code>millimeters</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">centimeters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cm</code> or <code>centimeters</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">meters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>m</code> or <code>meters</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kilometers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>km</code> or <code>kilometers</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The integer used to specify the number of units must precede the unit-name, with no space left in-between.
+For example, <em>five inches</em> can be specified either by the string <code>"5in"</code>, or by the string <code>"5inches"</code>; while <em>thirteen nautical miles</em> can be specified as either <code>"13nm"</code> or <code>"13nauticalmiles"</code>.</p>
+</div>
+<div class="paragraph">
+<p>If the unit cannot be determined, the entire string is parsed, and the distance is assumed to be in <em>meters</em>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="creating_a_geospatial_index"><a class="anchor" href="#creating_a_geospatial_index"></a>Creating a Geospatial Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To be successful, a geospatial query must reference an index that applies the <em>geopoint</em> type mapping to the field containing the longitude-latitude coordinate pair.
-This can be achieved by means of the Couchbase Web Console.
+<p>To be successful, a geospatial query must reference an index that applies the <em>geopoint</em> type mapping to the field containing the latitude-longitude coordinate pair.
+This can be achieved with Couchbase Web Console, or with the REST endpoints provided for managing <a href="../rest-api/rest-fts-indexing.html" class="page">Indexes</a>.
 Detailed instructions for setting up indexes, and specifying type mappings, are provided in <a href="fts-creating-indexes.html" class="page">Creating Indexes</a>.
 For initial experimentation with geospatial querying, the <code>geo</code> field of documents within the <code>travel-sample</code> bucket can be specified as a child field of the <code>default</code> type mapping, as follows:</p>
 </div>
@@ -4059,15 +4259,8 @@ The target-field <code>geo</code> is specified, as is a <code>distance</code> of
 <h2 id="creating_geospatial_rest_query_bounding_box_based"><a class="anchor" href="#creating_geospatial_rest_query_bounding_box_based"></a>Creating a Query: Box-Based</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The following query body forms the <code>top_left</code> corner of a <em>bounding box</em>, specifying a longitude of <code>-2.235143</code> and a latitude of <code>53.482358</code>.
-This demonstrates use of an <em>array</em> to specify the coordinate pair: this option can be used interchangeably with that of using key-value pairs, whenever longitude and latitude are to be specified.
-Note that in the array, the <code>lon</code> value must precede the <code>lat</code>.</p>
-</div>
-<div class="paragraph">
-<p>The <code>bottom_right</code> of the bounding box is formed by means of key-value pairs; specifying a longitude of <code>28.955043</code> and a latitude of <code>40.991862</code>.</p>
-</div>
-<div class="paragraph">
-<p>If a target data-location falls within the box, its document is returned.
+<p>In the following query-body, the <code>top_left</code> of a rectangle is expressed by means of an array of two floating-point numbers; specifying a longitude of <code>-2.235143</code> and a latitude of <code>53.482358</code>.
+The <code>bottom_right</code> is expressed by means of key-value pairs; specifying a longitude of <code>28.955043</code>, and a latitude of <code>40.991862</code>.
 The results are specified to be sorted on <code>name</code> alone.</p>
 </div>
 <div class="listingblock">
@@ -4138,62 +4331,78 @@ The results are specified to be sorted on <code>name</code> alone.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="specifying-distances"><a class="anchor" href="#specifying-distances"></a>Specifying Distance</h2>
+<h2 id="creating_geospatial_rest_query_polygon_based"><a class="anchor" href="#creating_geospatial_rest_query_polygon_based"></a>Creating a Query: Polygon-Based</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Multiple unit-types can be used to express distance.
-These are listed in the table below, with the strings that specify them in REST queries.</p>
+<p>The following query-body uses an array, each of whose elements is a string, containing two floating-point numbers; to specify the latitude and longitude of each of the corners of a polygon &#8212; known as <em>polygon points</em>.
+In each string, the <code>lat</code> floating-point value precedes the <code>lon</code>.</p>
 </div>
-<table id="geospatial-distance-units" class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Units</th>
-<th class="tableblock halign-left valign-top">Specify with</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">inches</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>in</code> or <code>inch</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">yards</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>yd</code> or <code>yards</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">feet</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ft</code> or <code>feet</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">kilometers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>km</code> or <code>kilometers</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">nautical miles</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nm</code> or <code>nauticalmiles</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">millimeters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mm</code> or <code>millimeters</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">centimeters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cm</code> or <code>centimeters</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">miles</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mi</code> or <code>miles</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">meters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>m</code> or <code>meters</code></p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Here, the last-specified string in the array is identical to the initial string, thus explicitly closing the box.
+However, specifying an explicit closure in this way is optional: closure will be inferred by Couchbase Server, if not explicitly specified.</p>
+</div>
+<div class="paragraph">
+<p>If a target data-location falls within the box, its document is returned.
+The results are specified to be sorted on <code>name</code> alone.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">{
+  "query": {
+    "field": "geo",
+    "polygon_points": [
+      "37.79393211306212,-122.44234633404847",
+      "37.77995881733997,-122.43977141339417",
+      "37.788031092020155,-122.42925715405579",
+      "37.79026946582319,-122.41149020154114",
+      "37.79571192027403,-122.40735054016113",
+      "37.79393211306212,-122.44234633404847"
+    ]
+  },
+  "sort": [
+    "name"
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A subset of formatted output might appear as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">    .
+    .
+    .
+    "hits": [
+      {
+        "index": "geoIndex_661ef3af66ee41b5_54820232",
+        "id": "landmark_25944",
+        "score": 0.3214575420492102,
+        "sort": [
+          "4"
+        ]
+      },
+      {
+        "index": "geoIndex_661ef3af66ee41b5_aa574717",
+        "id": "landmark_25681",
+        "score": 0.05294915340807584,
+        "sort": [
+          "alta"
+        ]
+      },
+      {
+        "index": "geoIndex_661ef3af66ee41b5_13aa53f3",
+        "id": "landmark_25686",
+        "score": 0.28955510851484045,
+        "sort": [
+          "atherton"
+        ]
+      },
+        .
+        .
+        .</code></pre>
+</div>
+</div>
 </div>
 </div>
 </article>

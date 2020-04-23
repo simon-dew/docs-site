@@ -3895,7 +3895,7 @@ Use the <a href="upsert.html" class="page">UPSERT</a> statement if you want to o
 </div>
 <div class="paragraph">
 <p>Install the sample bucket <code>travel-sample</code> before proceeding to run the examples in this topic.
-See <a href="../../manage/manage-settings/install-sample-buckets.html" class="page">Sample Buckets</a> for information on how to install the sample buckets and <a href="#">java-sdk::sample-application.adoc#datamodel</a> for details about the travel-sample data model.</p>
+See <a href="../../manage/manage-settings/install-sample-buckets.html" class="page">Sample Buckets</a> for information on how to install the sample buckets and <a href="../../../../java-sdk/2.7/sample-application.html#datamodel" class="page">Travel App Data Model</a> for details about the travel-sample data model.</p>
 </div>
 </div>
 </div>
@@ -4031,7 +4031,7 @@ Ensure that the keyspace exists before trying to insert a document.</p>
 <h4 id="insert-target-ref"><a class="anchor" href="#insert-target-ref"></a>Keyspace Reference</h4>
 <div class="listingblock">
 <div class="content">
-<pre>keyspace-ref ::= [ <a href="identifiers.html" class="page">namespace</a> ':' ] <a href="identifiers.html" class="page">keyspace</a></pre>
+<pre>keyspace-ref ::= [ <em>namespace</em> ':' ] <em>keyspace</em></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4085,7 +4085,7 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 <h3 id="insert-values"><a class="anchor" href="#insert-values"></a>Insert Values</h3>
 <div class="listingblock">
 <div class="content">
-<pre>insert-values::= [ "(" [ PRIMARY ] KEY , VALUE ")" ] <a href="#values-clause">values-clause</a></pre>
+<pre>insert-values ::= [ "(" [ PRIMARY ] KEY , VALUE ")" ] <a href="#values-clause">values-clause</a></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4094,33 +4094,114 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 </div>
 </div>
 <div class="paragraph">
-<p>Specifies one or more documents to be inserted using the keyspace (PRIMARY KEY, VALUE) clause.
+<p>Specifies one or more documents to be inserted using the VALUES clause.
 Each document requires a unique key and the values must be specified as a well-formed JSON document.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The keyword PRIMARY is optional.
-There is no syntactic difference between PRIMARY KEY and KEY.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>The bracketed KEY and VALUE keywords are purely a visual mnemonic to indicate that you are setting the key and value for the inserted document.
+There is no syntactic requirement to include these keywords when using the Insert Values syntax.
+Also note that there is no syntactic difference between PRIMARY KEY and KEY.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
 </div>
 <div class="paragraph">
-<p>The document key should be unique within the Couchbase bucket.
+<p>In Couchbase Server 6.5.1, the Insert Values syntax supports an optional third keyword <code>OPTIONS</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>insert-values ::= [ "(" [ PRIMARY ] KEY "," VALUE [ "," OPTIONS ] ")" ] <a href="#values-clause">values-clause</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/insert-values-651.png" alt="( '(' 'PRIMARY'? 'KEY' ',' 'VALUE' ( ',' 'OPTIONS' )? ')' )? values-clause">
+</div>
+</div>
+<div class="paragraph">
+<p>Again, the <code>OPTIONS</code> keyword is purely a visual mnemonic to indicate that you are setting metadata for the inserted document.
+There is no syntactic requirement to include the <code>OPTIONS</code> keyword when setting metadata for the inserted document.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="values-clause"><a class="anchor" href="#values-clause"></a>VALUES Clause</h4>
+<div class="listingblock">
+<div class="content">
+<pre>values-clause ::= VALUES "(" <em>key</em> "," <em>value</em> ")" [ "," [ VALUES ] "(" <em>key</em> "," <em>value</em> ")" ]*</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/values-clause.png" alt="'VALUES' '(' key ',' value ')' ( ',' 'VALUES'? '(' key ',' value ')' )*">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">key</dt>
+<dd>
+<p>A string, or an expression resolving to a string, representing the ID of the document to be inserted.
+The KEY cannot be MISSING or NULL, and must be unique within the Couchbase bucket.
 It can be a string or an expression that produces a string.</p>
+</dd>
+<dt class="hdlist1">value</dt>
+<dd>
+<p>A well-formed JSON object, or an expression resolving to a well-formed JSON object, representing the body of the document to be inserted.
+(See <a href="http://json.org/example.html" class="bare" target="_blank" rel="noopener">http://json.org/example.html</a> for examples of well-formed JSON.)
+You can insert NULL, empty, or MISSING values.</p>
+</dd>
+</dl>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
 </div>
 <div class="paragraph">
-<p>You can specify a key using an expression, as shown here:</p>
+<p>In Couchbase Server 6.5.1, the VALUES clause supports an optional third argument, <code><em>options</em></code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>values-clause ::= VALUES "(" <em>key</em> "," <em>value</em> [ "," <em>options</em> ] ")" [ "," [ VALUES ] "(" <em>key</em> "," <em>value</em> [ "," <em>options</em> ] ")" ]*</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/values-clause-651.png" alt="'VALUES' '(' key ',' value ( ',' options )? ')' ( ',' 'VALUES'? '(' key ',' value ( ',' options )? ')' )*">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">options</dt>
+<dd>
+<p>[Optional] An object representing the metadata to be set for the inserted document.
+This object may only contain the <code>expiration</code> attribute.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expiration</dt>
+<dd>
+<p>An integer, or an expression resolving to an integer, representing the <a href="../../../../java-sdk/3.0/howtos/kv-operations.html#document-expiration" class="page">document expiration</a> in seconds.</p>
+</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the options are not specified, the document expiration defaults to <code>0</code>, meaning no expiration.</p>
+</div>
+</div>
 </div>
 <div id="example-2" class="exampleblock">
 <div class="title">Example 1. Specify a key using an expression</div>
 <div class="content">
+<div class="paragraph">
+<p>You can specify a key using an expression, as shown here.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` ( KEY, VALUE )
                     VALUES ( "airline" || TOSTRING(1234),
@@ -4130,16 +4211,14 @@ It can be a string or an expression that produces a string.</p>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p>The KEY cannot be MISSING or NULL, and it cannot duplicate an existing key.</p>
-</div>
-<div class="paragraph">
-<p>If you don’t require the document key to be in a specific format, you can use the function <a href="metafun.html" class="page">UUID()</a> to generate a unique key as shown here:</p>
-</div>
 <div id="example-3" class="exampleblock">
 <div class="title">Example 2. Generate a unique key</div>
 <div class="content">
+<div class="paragraph">
+<p>If you don’t require the document key to be in a specific format, you can use the function <a href="metafun.html#uuid" class="page">UUID()</a> to generate a unique key, as shown here.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` ( KEY, VALUE )
             VALUES ( UUID(),
@@ -4147,38 +4226,10 @@ It can be a string or an expression that produces a string.</p>
 RETURNING META().id;</code></pre>
 </div>
 </div>
-</div>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Since the document key is auto-generated, you can find the value of the key by specifying META().id in the returning clause.
-</td>
-</tr>
-</table>
-</div>
-<div class="sect3">
-<h4 id="values-clause"><a class="anchor" href="#values-clause"></a>VALUES Clause</h4>
-<div class="listingblock">
-<div class="content">
-<pre>values-clause ::= VALUES "(" expr "," expr ")" [ "," [ VALUES ] "(" expr "," expr ")" ]*</pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/n1ql-language-reference/values-clause.png" alt="'VALUES' '(' expr ',' expr ')' ( ',' 'VALUES'? '(' expr ',' expr ')' )*">
-</div>
-</div>
 <div class="paragraph">
-<p>Specify the values as a well-formed JSON.
-(See <a href="http://json.org/example.html" class="bare" target="_blank" rel="noopener">http://json.org/example.html</a> for examples of a well-formed JSON.)</p>
+<p>Since the document key is auto-generated, you can find the value of the key by specifying META().id in the returning clause.</p>
 </div>
-<div class="paragraph">
-<p>You can insert NULL or empty or MISSING values.</p>
+</div>
 </div>
 <div id="example-4" class="exampleblock">
 <div class="title">Example 3. Insert an empty value</div>
@@ -4283,11 +4334,34 @@ RETURNING *;</code></pre>
 <div class="title">Example 6. Insert a NULL JSON document</div>
 <div class="content">
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY, VALUE)
     VALUES ( "1021",
               { } )
               RETURNING *;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-7a" class="exampleblock">
+<div class="title">Example 7. Insert a document with expiration</div>
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>Insert a document into the <code>travel-sample</code> bucket using an expiration of 5 days.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY, VALUE, OPTIONS)
+    VALUES ( "airline::ttl",
+             { "callsign": "Temporary",
+               "country" : "USA",
+               "type" : "airline" },
+             { "expiration": 5*24*60*60 } );</code></pre>
 </div>
 </div>
 </div>
@@ -4301,19 +4375,71 @@ RETURNING *;</code></pre>
 <h3 id="insert-select"><a class="anchor" href="#insert-select"></a>Insert Select</h3>
 <div class="listingblock">
 <div class="content">
-<pre>insert-select::= "(" [ PRIMARY ] KEY expr [ "," VALUE expr ] ")" <a href="#select-statement">select</a></pre>
+<pre>insert-select ::= "(" [ PRIMARY ] KEY <em>key</em> [ "," VALUE <em>value</em> ] ")" <a href="#select-statement">select</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/insert-select.png" alt="'(' 'PRIMARY'? 'KEY' expr ( ',' 'VALUE' expr )? ')' select">
+<img src="../_images/n1ql-language-reference/insert-select.png" alt="'(' 'PRIMARY'? 'KEY' key ( ',' 'VALUE' value )? ')' select">
 </div>
 </div>
 <div class="paragraph">
 <p>Use the projection of a SELECT statement which generates a well-formed JSON to insert.</p>
 </div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">key</dt>
+<dd>
+<p>A string, or an expression resolving to a string, representing the ID of the document to be inserted.
+If the project of a SELECT statement generates multiple JSON documents, then your INSERT statement must handle the generation of unique keys for each of the documents.</p>
+</dd>
+<dt class="hdlist1">value</dt>
+<dd>
+<p>[Optional] An object, or an expression resolving to an object, representing the body of the document to be inserted.
+This may be an alias assigned by the SELECT statement.
+If the VALUE is omitted, the entire JSON document generated by the SELECT statement is inserted.</p>
+</dd>
+</dl>
+</div>
+<div class="sidebarblock">
+<div class="content">
 <div class="paragraph">
-<p>If the project of a SELECT statement generates multiple JSON documents, then your INSERT statement must handle the generation of unique keys for each of the documents.</p>
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, the Insert Select syntax supports an optional third keyword <code>OPTIONS</code> and an associated argument <code><em>options</em></code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>insert-select ::= "(" [ PRIMARY ] KEY <em>key</em> [ "," VALUE <em>value</em> ] [ "," OPTIONS <em>options</em> ] ")" <a href="#select-statement">select</a></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/insert-select-651.png" alt="'(' 'PRIMARY'? 'KEY' key ( ',' 'VALUE' value )? ( ',' 'OPTIONS' options )? ')' select">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">options</dt>
+<dd>
+<p>[Optional] An object representing the metadata to be set for the inserted document.
+This object may only contain the <code>expiration</code> attribute.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expiration</dt>
+<dd>
+<p>An integer, or an expression resolving to an integer, representing the <a href="../../../../java-sdk/3.0/howtos/kv-operations.html#document-expiration" class="page">document expiration</a> in seconds.</p>
+</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If the options are not specified, the document expiration defaults to <code>0</code>, meaning no expiration.</p>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="select-statement"><a class="anchor" href="#select-statement"></a>SELECT Statement</h4>
@@ -4322,16 +4448,16 @@ RETURNING *;</code></pre>
 For details, see <a href="select-syntax.html" class="page">SELECT Syntax</a>.</p>
 </div>
 <div id="example-8" class="exampleblock">
-<div class="title">Example 7. Insert with SELECT</div>
+<div class="title">Example 8. Insert with SELECT</div>
 <div class="content">
 <div class="paragraph">
-<p>Query the <code>travel-sample</code> bucket for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection (2 documents) into the <code>travel-sample</code> bucket using unique keys generated using <code>UUID()</code>.</p>
+<p>Query the <code>travel-sample</code> bucket for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection (1 document) into the <code>travel-sample</code> bucket using a unique key generated using <code>UUID()</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY UUID(), VALUE _country)
-    SELECT _country FROM `travel-sample` _country
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY UUID(), VALUE _airport)
+    SELECT _airport FROM `travel-sample` _airport
       WHERE type = "airport" AND airportname = "Heathrow"
 RETURNING *;</code></pre>
 </div>
@@ -4339,22 +4465,69 @@ RETURNING *;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "results": [],
-  "metrics": {
-    "elapsedTime": "24.777636ms",
-    "executionTime": "24.739281ms",
-    "resultCount": 0,
-    "resultSize": 0,
-    "mutationCount": 2
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "travel-sample": {
+      "airportname": "Heathrow",
+      "city": "London",
+      "country": "United Kingdom",
+      "faa": "LHR",
+      "geo": {
+        "alt": 83,
+        "lat": 51.4775,
+        "lon": -0.461389
+      },
+      "icao": "EGLL",
+      "id": 507,
+      "type": "airport",
+      "tz": "Europe/London"
+    }
   }
-}</code></pre>
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-8a" class="exampleblock">
+<div class="title">Example 9. Insert with SELECT and set expiration</div>
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>Query the <code>travel-sample</code> bucket for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection into the <code>travel-sample</code> bucket using a unique key and an expiration of 2 hours.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY UUID(), VALUE doc, OPTIONS {"expiration": 2*60*60})
+    SELECT a AS doc FROM `travel-sample` a
+      WHERE type = "airport" AND airportname = "Heathrow";</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-8b" class="exampleblock">
+<div class="title">Example 10. Insert with SELECT and preserve expiration</div>
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>If you want to copy the expiration of an existing document to the inserted document, you can use a <a href="metafun.html#meta" class="page">META().expiration</a> expression in the SELECT statement, as shown here.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY UUID(), VALUE doc, OPTIONS {"expiration": ttl})
+    SELECT META(a).expiration AS ttl, a AS doc FROM `travel-sample` a
+      WHERE type = "airport" AND airportname = "Heathrow";</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>See <a href="#Example_15_copy_bucket">Example 15</a> to use the INSERT statement to copy one bucket&#8217;s data to another bucket.</p>
+<p>See <a href="#Example_15_copy_bucket">Example 18</a> to use the INSERT statement to copy one bucket&#8217;s data to another bucket.</p>
 </div>
 </div>
 </div>
@@ -4362,7 +4535,7 @@ RETURNING *;</code></pre>
 <h3 id="returning-clause"><a class="anchor" href="#returning-clause"></a>RETURNING Clause</h3>
 <div class="listingblock">
 <div class="content">
-<pre>returning-clause::= RETURNING ( <a href="#result-expr">result-expr</a> [ "," <a href="#result-expr">result-expr</a> ]* | ( RAW | ELEMENT | VALUE ) expr )</pre>
+<pre>returning-clause ::= RETURNING ( <a href="#result-expr">result-expr</a> [ "," <a href="#result-expr">result-expr</a> ]* | ( RAW | ELEMENT | VALUE ) expr )</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4377,7 +4550,7 @@ RETURNING *;</code></pre>
 <h4 id="result-expr"><a class="anchor" href="#result-expr"></a>Result Expression</h4>
 <div class="listingblock">
 <div class="content">
-<pre>result-expr::= ( [ <a href="../n1ql-intro/queriesandresults.html#paths" class="page">path</a> "." ] "*" | expr [ [ AS ] alias ] )</pre>
+<pre>result-expr ::= ( [ <a href="../n1ql-intro/queriesandresults.html#paths" class="page">path</a> "." ] "*" | expr [ [ AS ] alias ] )</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4390,7 +4563,7 @@ RETURNING *;</code></pre>
 Use <code>*</code> to return all the fields in all the documents that were inserted.</p>
 </div>
 <div id="example-9" class="exampleblock">
-<div class="title">Example 8. Return the document ID and country</div>
+<div class="title">Example 11. Return the document ID and country</div>
 <div class="content">
 <div class="listingblock">
 <div class="title">Query</div>
@@ -4417,7 +4590,7 @@ RETURNING META().id as docid, country;</code></pre>
 </div>
 </div>
 <div id="example-10" class="exampleblock">
-<div class="title">Example 9. Return the document ID and an expression</div>
+<div class="title">Example 12. Return the document ID and an expression</div>
 <div class="content">
 <div class="paragraph">
 <p>Use the <code>UUID()</code> function to generate the key and show the usage of the <code>RETURNING</code> clause to retrieve the generated document key and the last element of the <code>callsign</code> array with an expression.</p>
@@ -4618,13 +4791,14 @@ When a large number of documents are inserted, this may affect the performance o
 <h2 id="insert-examples"><a class="anchor" href="#insert-examples"></a>Examples</h2>
 <div class="sectionbody">
 <div id="example-1" class="exampleblock">
-<div class="title">Example 10. Overview</div>
+<div class="title">Example 13. Overview</div>
 <div class="content">
 <div class="paragraph">
 <p>The following statement inserts a single JSON document into the <code>travel-sample</code> bucket with key "k001".
 The returning clause specifies the function <code>META().id</code> to return the key of the inserted document (metadata), and the wildcard (*) to return the inserted document.</p>
 </div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` ( KEY, VALUE )
   VALUES
@@ -4635,10 +4809,8 @@ The returning clause specifies the function <code>META().id</code> to return the
 RETURNING META().id as docid, *;</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>This results in:</p>
-</div>
 <div class="listingblock">
+<div class="title">Results</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "requestID": "06c5acc1-69d3-4aad-9c11-b90a9bc895d8",
@@ -4672,7 +4844,7 @@ RETURNING META().id as docid, *;</code></pre>
 <p>The simplest use case of an INSERT statement is to insert a single document into the keyspace.</p>
 </div>
 <div id="example-11" class="exampleblock">
-<div class="title">Example 11. Inserting a Single Document</div>
+<div class="title">Example 14. Inserting a Single Document</div>
 <div class="content">
 <div class="paragraph">
 <p>Insert a new document with <code>key</code> "1025" and <code>type</code> "airline" into the <code>travel-sample</code> bucket.</p>
@@ -4732,7 +4904,7 @@ RETURNING *;</code></pre>
 The VALUES keyword itself is optional in the second and later iterations of the clause.</p>
 </div>
 <div id="example-12" class="exampleblock">
-<div class="title">Example 12. Performing Bulk Inserts</div>
+<div class="title">Example 15. Performing Bulk Inserts</div>
 <div class="content">
 <div class="paragraph">
 <p>Insert two documents with <code>key</code> "airline_4444" and "airline_4445" of <code>type</code> "airline" into the <code>travel-sample</code> bucket:</p>
@@ -4808,17 +4980,17 @@ RETURNING *;</code></pre>
 <p>Instead of providing actual values, you can specify the data to be inserted using the SELECT statement which selects the data from an existing bucket.</p>
 </div>
 <div id="example-13" class="exampleblock">
-<div class="title">Example 13. Inserting Values using SELECT</div>
+<div class="title">Example 16. Inserting Values using SELECT</div>
 <div class="content">
 <div class="paragraph">
-<p>Query the <code>travel-sample</code> bucket for the field <code>_country</code> where the <code>airportname</code> is "Heathrow" and <code>type</code> is "airport".
+<p>Query the <code>travel-sample</code> bucket for documents where the <code>airportname</code> is "Heathrow" and <code>type</code> is "airport".
 Then insert the result of the select statement (a well-formed JSON document) into the <code>travel-sample</code> bucket with a key generated using the <code>UUID()</code> function.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (key UUID(), value _country)
-    SELECT _country FROM `travel-sample` _country
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` (KEY UUID(), VALUE _airport)
+    SELECT _airport FROM `travel-sample` _airport
       WHERE type = "airport" AND airportname = "Heathrow";</code></pre>
 </div>
 </div>
@@ -4840,7 +5012,7 @@ Then insert the result of the select statement (a well-formed JSON document) int
 </div>
 </div>
 <div id="example-14" class="exampleblock">
-<div class="title">Example 14. Inserting Values Using a Combination Key, Generated Using the Project and Functions/Operators</div>
+<div class="title">Example 17. Inserting Values Using a Combination Key, Generated Using the Project and Functions/Operators</div>
 <div class="content">
 <div class="paragraph">
 <p>Generate a document key as a combination of the projection and some function, such as <code>&lt;countryname&gt;::&lt;system-clock&gt;</code>.
@@ -4905,12 +5077,13 @@ RETURNING META().id as docid, *;</code></pre>
 </div>
 </div>
 <div id="Example_15_copy_bucket" class="exampleblock">
-<div class="title">Example 15. Using Insert to Copy Bucket Data to Another Bucket</div>
+<div class="title">Example 18. Using Insert to Copy Bucket Data to Another Bucket</div>
 <div class="content">
 <div class="paragraph">
 <p>Use the INSERT statement to create a copy of <code>bucket_1</code> under the new name <code>bucket_2</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO bucket_2(key _k, value _v)
     SELECT META().id _k, _v
@@ -4924,7 +5097,7 @@ RETURNING META().id as docid, *;</code></pre>
 The <code>SELECT</code> part can be any sophisticated query in itself.</p>
 </div>
 <div id="example-16" class="exampleblock">
-<div class="title">Example 16. Inserting Values Using Subqueries</div>
+<div class="title">Example 19. Inserting Values Using Subqueries</div>
 <div class="content">
 <div class="paragraph">
 <p>Insert a new <code>type</code> in documents from all hotels in the cities that have landmarks.</p>
@@ -4999,8 +5172,11 @@ For brevity, we <code>SELECT</code> only 4 documents.</td>
 </div>
 </div>
 <div id="example-17" class="exampleblock">
-<div class="title">Example 17. Inserting Values Using Functions</div>
+<div class="title">Example 20. Inserting Values Using Functions</div>
 <div class="content">
+<div class="paragraph">
+<p>Set the parameter <code>$faa_code</code> using the cbq prompt, or the <a href="../../tools/query-workbench.html#query-preferences" class="page">Run-Time Preferences</a> in the Query Workbench.</p>
+</div>
 <div class="listingblock">
 <div class="title">Parameters</div>
 <div class="content">
@@ -5070,7 +5246,7 @@ RETURNING *;</code></pre>
 </div>
 </div>
 <div id="example-18" class="exampleblock">
-<div class="title">Example 18. Inserting Values Using Prepared Statements</div>
+<div class="title">Example 21. Inserting Values Using Prepared Statements</div>
 <div class="content">
 <div class="paragraph">
 <p>Prepare an <code>INSERT</code> statement and execute it by passing parameters.
@@ -5103,6 +5279,7 @@ To execute using the REST API, skip to <a href="#step-3">Step 3</a>.</p>
 <p>Set the parameters <code>$key</code> and <code>$faa_code</code> using the cbq prompt, or the <a href="../../tools/query-workbench.html#query-preferences" class="page">Run-Time Preferences</a> in the Query Workbench.
 These values will be passed as parameters when executing the prepared statement <code>ins_india</code>.</p>
 <div class="listingblock">
+<div class="title">Parameters</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">cbq&gt; \set -$key "airport_10001" ;
 cbq&gt; \set -$faa_code "DEL" ;</code></pre>
@@ -5212,7 +5389,7 @@ For example, the following REST API call throws an error because of spaces befor
 For detailed explanation about the EXPLAIN plan, see the <a href="explain.html#topic_11_4" class="page">EXPLAIN</a> statement.</p>
 </div>
 <div id="example-19" class="exampleblock">
-<div class="title">Example 19. Simple INSERT Statement Using KEY VALUE Pairs to Insert Two Documents</div>
+<div class="title">Example 22. Simple INSERT Statement Using KEY VALUE Pairs to Insert Two Documents</div>
 <div class="content">
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5296,13 +5473,13 @@ RETURNING *;</code></pre>
 </div>
 </div>
 <div id="example-20" class="exampleblock">
-<div class="title">Example 20. INSERT Statement Using the Projection of a Select Statement to Generate Values</div>
+<div class="title">Example 23. INSERT Statement Using the Projection of a Select Statement to Generate Values</div>
 <div class="content">
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN INSERT INTO `travel-sample` (key UUID(), value _country)
-    SELECT _country FROM `travel-sample` _country
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN INSERT INTO `travel-sample` (key UUID(), value _airport)
+    SELECT _airport FROM `travel-sample` _airport
       WHERE type = "airport" AND airportname = "Heathrow";</code></pre>
 </div>
 </div>
@@ -5321,43 +5498,49 @@ RETURNING *;</code></pre>
               "#operator": "IntersectScan", <i class="conum" data-value="3"></i><b>(3)</b>
               "scans": [
                 {
-                  "#operator": "IndexScan", <i class="conum" data-value="1"></i><b>(1)</b>
-                  "index": "def_type",
-                  "index_id": "aea49ebaf37e4015",
+                  "#operator": "IndexScan3", <i class="conum" data-value="2"></i><b>(2)</b>
+                  "as": "_airport",
+                  "index": "def_airportname",
+                  "index_id": "af738c1d1aa1f107",
+                  "index_projection": {
+                    "primary_key": true
+                  },
                   "keyspace": "travel-sample",
                   "namespace": "default",
                   "spans": [
                     {
-                      "Range": {
-                        "High": [
-                          "\"airport\""
-                        ],
-                        "Inclusion": 3,
-                        "Low": [
-                          "\"airport\""
-                        ]
-                      }
+                      "exact": true,
+                      "range": [
+                        {
+                          "high": "\"Heathrow\"",
+                          "inclusion": 3,
+                          "low": "\"Heathrow\""
+                        }
+                      ]
                     }
                   ],
                   "using": "gsi"
                 },
                 {
-                  "#operator": "IndexScan", <i class="conum" data-value="2"></i><b>(2)</b>
-                  "index": "def_airportname",
-                  "index_id": "1e6e52dd512a354f",
+                  "#operator": "IndexScan3", <i class="conum" data-value="1"></i><b>(1)</b>
+                  "as": "_airport",
+                  "index": "def_type",
+                  "index_id": "4877ed06167c9af8",
+                  "index_projection": {
+                    "primary_key": true
+                  },
                   "keyspace": "travel-sample",
                   "namespace": "default",
                   "spans": [
                     {
-                      "Range": {
-                        "High": [
-                          "\"Heathrow\""
-                        ],
-                        "Inclusion": 3,
-                        "Low": [
-                          "\"Heathrow\""
-                        ]
-                      }
+                      "exact": true,
+                      "range": [
+                        {
+                          "high": "\"airport\"",
+                          "inclusion": 3,
+                          "low": "\"airport\""
+                        }
+                      ]
                     }
                   ],
                   "using": "gsi"
@@ -5365,25 +5548,25 @@ RETURNING *;</code></pre>
               ]
             },
             {
+              "#operator": "Fetch", <i class="conum" data-value="4"></i><b>(4)</b>
+              "as": "_airport",
+              "keyspace": "travel-sample",
+              "namespace": "default"
+            },
+            {
               "#operator": "Parallel",
               "~child": {
                 "#operator": "Sequence",
                 "~children": [
                   {
-                    "#operator": "Fetch", <i class="conum" data-value="4"></i><b>(4)</b>
-                    "as": "_country",
-                    "keyspace": "travel-sample",
-                    "namespace": "default"
-                  },
-                  {
                     "#operator": "Filter",
-                    "condition": "(((`_country`.`type`) = \"airport\") and ((`_country`.`airportname`) = \"Heathrow\"))"
+                    "condition": "(((`_airport`.`type`) = \"airport\") and ((`_airport`.`airportname`) = \"Heathrow\"))"
                   },
                   {
                     "#operator": "InitialProject",
                     "result_terms": [
                       {
-                        "expr": "`_country`"
+                        "expr": "`_airport`"
                       }
                     ]
                   },
@@ -5405,9 +5588,8 @@ RETURNING *;</code></pre>
                 "alias": "travel-sample",
                 "key": "uuid()",
                 "keyspace": "travel-sample",
-                "limit": null,
                 "namespace": "default",
-                "value": "`_country`"
+                "value": "`_airport`"
               },
               {
                 "#operator": "Discard"
@@ -5417,7 +5599,7 @@ RETURNING *;</code></pre>
         }
       ]
     },
-    "text": "INSERT INTO `travel-sample` (key UUID(), value _country) SELECT _country from `travel-sample` _country WHERE type = \"airport\" and airportname = \"Heathrow\";"
+    "text": "INSERT INTO `travel-sample` (KEY UUID(), VALUE _airport)\n    SELECT _airport FROM `travel-sample` _airport\n      WHERE type = \"airport\" AND airportname = \"Heathrow\";"
   }
 ]</code></pre>
 </div>
@@ -5441,7 +5623,7 @@ RETURNING *;</code></pre>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>A <code>Fetch</code> for the value on the field <code>_country</code>.</td>
+<td>A <code>Fetch</code> for the value on the document <code>_airport</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>

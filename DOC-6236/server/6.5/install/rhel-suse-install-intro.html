@@ -4112,67 +4112,170 @@ Refer to <a href="startup-shutdown.html" class="page">Couchbase Server Startup a
 </div>
 </div>
 <div class="sect1">
-<h2 id="rh-nonroot-nonsudo-"><a class="anchor" href="#rh-nonroot-nonsudo-"></a>Installing as non-root, non-sudo</h2>
+<h2 id="rh-nonroot-nonsudo-"><a class="anchor" href="#rh-nonroot-nonsudo-"></a>Installing as Non-Root/Non-Sudo</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Installing as a non-root, non-sudo user on a single machine.</p>
+<p>Couchbase Server can be installed on Red Hat Enterprise and CentOS without use of <code>sudo</code> or <code>root</code>.</p>
 </div>
 <div class="paragraph">
-<p>A non-sudo, non-root installation still runs Couchbase Server and all Couchbase command-line tools.</p>
+<p>Before proceeding, ensure that <em>Python 2</em> is installed on the current node, and that the current node has all Couchbase-Server dependencies installed, as follows.</p>
 </div>
+<div class="sect2">
+<h3 id="verify-that-python-2-is-installed"><a class="anchor" href="#verify-that-python-2-is-installed"></a>Verify that Python 2 is Installed</h3>
 <div class="paragraph">
-<p>Before you begin, ensure that your system has all the dependencies installed. To see the list of packages that our package depends on, use the command:</p>
+<p>To verify the presence of <em>Python 2</em>, enter the following command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">rpm -qp couchbase-server.rpm --requires</code></pre>
+<pre>python -V</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>If <code>python</code> is installed, the version number is displayed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Python 2.7.16</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Provided that the leftmost number in the displayed version-number is <code>2</code>, non-root installation <em>can</em> be performed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="check-couchbase-server-dependencies"><a class="anchor" href="#check-couchbase-server-dependencies"></a>Check Couchbase-Server Dependencies</h3>
+<div class="paragraph">
+<p>To ensure that the current node has all Couchbase-Server dependencies installed, enter the following command, in order to list the dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">rpm -qp &lt;couchbase-server-rpm&gt;.rpm --requires</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ensure that all listed dependencies have been installed.
+Then, proceed as follows.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="perform-non-sudonon-root-installation"><a class="anchor" href="#perform-non-sudonon-root-installation"></a>Perform Non-Sudo/Non-Root Installation</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the Couchbase Server RPM, using <code>wget</code> or <code>curl</code>.</p>
+</li>
+<li>
+<p>Download the <a href="https://packages.couchbase.com/cb-non-package-installer/cb-non-package-installer">cb-non-package-installer</a> script; using <code>wget</code> or <code>curl</code>.
+For example:</p>
+<div class="listingblock">
+<div class="content">
+<pre>wget https://packages.couchbase.com/cb-non-package-installer/cb-non-package-installer</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the <code>cb-non-package-installer</code> script, to install Couchbase Server.
+The following example assumes that the RPM is located in the current working directory, and that the intended install-location is a directory named <code>couchbase-home</code>, which is in the current working directory.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cb-non-package-installer --install --install-location couchbase-home \
+--package couchbase-server-enterprise-6.5.0-3290-centos7.x86_64.rpm</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>When installation is complete, the following notification is displayed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Successfully installed</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Couchbase Server can now be started and stopped, and its status can be checked, by means of commands located in the <code>/opt/couchbase/bin</code> directory, located under the specified install-location (which in this case, is <code>couchbase-home</code>).
+Therefore, assuming that the current working directory is <code>./couchbase-home/opt/couchbase/bin</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To run the server, use:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./couchbase-server \-- -noinput -detached</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To determine whether the server is running, use:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./couchbase-server --status</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This displays either the notification <code>Couchbase Server is running</code>; or the notification <code>Couchbase Server is not running</code>.</p>
+</div>
+</li>
+<li>
+<p>To stop the server, use:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./couchbase-server -k</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rh-nonroot-nonsudo-upgrade"><a class="anchor" href="#rh-nonroot-nonsudo-upgrade"></a>Upgrading as Non-Root/Non-Sudo</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To perform a non-root/non-sudo upgrade of Couchbase Server on Red Hat Enterprise or CentOS, proceed as follows:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>After downloading the Couchbase Server RPM, go to the directory where it is located and extract it:</p>
+<p>Ensure that <em>Python 2</em> is installed on the current node.</p>
+</li>
+<li>
+<p>Download the Couchbase Server RPM, using <code>wget</code> or <code>curl</code>.</p>
+</li>
+<li>
+<p>If necessary, download the <code>cb-non-package-installer</code> script, using <code>wget</code> or <code>curl</code>.</p>
+</li>
+<li>
+<p>Ensure that the previous version of Couchbase Server was <em>configured</em>, as well as installed (since the upgrade process will now make use of the directory structure that the previous configuration provided).</p>
+</li>
+<li>
+<p>Shut down Couchbase Server, using the instruction provided above, in <a href="#rh-nonroot-nonsudo-">Installing as Non-Root/Non-Sudo</a>.</p>
+</li>
+<li>
+<p>Run the <code>cb-non-package-installer</code> script, to upgrade Couchbase Server.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">rpm2cpio couchbase-server-enterprise_version.rpm | cpio --extract --make-directories --no-absolute-filenames</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cb-non-package-installer --upgrade --install-location couchbase-home \
+--package couchbase-server-enterprise-6.5.0-centos7.x86_64.rpm</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the directory where the files were extracted, the <code>opt</code> and <code>etc</code> sub-directories are available.</p>
+<p>During the upgrade, the following notification may be displayed:</p>
 </div>
-</li>
-<li>
-<p>After you extract the Couchbase Server installation files, go to the sub-directory:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd opt/couchbase</code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>Run the following script to relocate the Couchbase Server installation to the present working directory (PWD):</p>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./bin/install/reloc.sh `pwd`</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Running cbupgrade this could take some time</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This enables you to continue the installation as a non-root, non-sudo user.</p>
+<p>When upgrade has completed, the following notification is displayed:</p>
 </div>
-</li>
-<li>
-<p>To run the server, use</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./bin/couchbase-server \-- -noinput -detached</code></pre>
-</div>
-</div>
-</li>
-<li>
-<p>To stop the server, use</p>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./bin/couchbase-server -k</code></pre>
+<pre>Upgrade has completed successfully</pre>
 </div>
 </div>
 </li>
