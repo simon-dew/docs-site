@@ -4081,7 +4081,7 @@ For details, refer to <a href="hints.html#use-keys-clause" class="page">USE KEYS
 </dl>
 </div>
 <div class="paragraph">
-<p>If these options are not specified, the document expiration defaults to <code>0</code>, meaning no expiration.</p>
+<p>If the document expiration is not specified, it defaults to <code>0</code>, meaning the document expiration is the same as the <a href="../../learn/buckets-memory-and-storage/expiration.html" class="page">bucket expiration</a>.</p>
 </div>
 </div>
 </div>
@@ -4108,6 +4108,17 @@ For details, refer to <a href="hints.html#use-keys-clause" class="page">USE KEYS
 <p>A <a href="#path">path</a> specifying the attribute to be removed.</p>
 </dd>
 </dl>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.5.1, you cannot use the UNSET clause to unset the document expiration.
+To unset the document expiration, you can either set the document expiration to <code>0</code>, or simply update the document without specifying the document expiration.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -4468,6 +4479,36 @@ s.codeshare = NULL FOR s IN schedule END;</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample` t USE KEYS "route_10003"
 SET meta(t).expiration = meta(t).expiration,
 s.codeshare = NULL FOR s IN schedule END;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-9" class="exampleblock">
+<div class="title">Example 9. Update a document and unset expiration</div>
+<div class="content">
+<div class="paragraph">
+<p><span class="status">Couchbase Server 6.5.1</span></p>
+</div>
+<div class="paragraph">
+<p>Set the document expiration to 0 to unset the document expiration.
+(In this case, the document expiration defaults to be the same as the bucket expiration.)</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample` t USE KEYS "route_10003"
+SET meta(t).expiration = 0,
+s.codeshare = NULL FOR s IN schedule END;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, if you update the document without specifying the document expiration, the document expiration defaults to 0.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">UPDATE `travel-sample` t USE KEYS "route_10003"
+SET s.codeshare = NULL FOR s IN schedule END;</code></pre>
 </div>
 </div>
 </div>
