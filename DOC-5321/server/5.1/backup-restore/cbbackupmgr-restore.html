@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>cbbackupmgr restore | Couchbase Docs (Staging)</title>
+    <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-5321/server/6.5/backup-restore/cbbackupmgr-restore.html">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.subject" content="server">
+    <meta name="dcterms.identifier" content="5.1">
+    <meta name="generator" content="Antora 2.3.0">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <script>
+    document.addEventListener("click", function(e) {
+      // Hide any popped-up dropdown menus.
+      var droppers = document.getElementsByClassName("navbar-dropper");
+      for (var i = 0; i < droppers.length; i++) {
+        if (droppers[i] != e.target) {
+          droppers[i].checked = false;
+        }
+      }
+    });
+  </script>
+  <nav class="navbar" id="topbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="https://www.couchbase.com"><img src="../../../_/img/logo.svg" alt="Couchbase"></a>
+        <button class="navbar-burger" data-target="topbar-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <div id="topbar-menu" class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item has-dropdown-click">
+            <label for="docs" class="navbar-dropper">Docs</label>
+            <input id="docs" class="navbar-dropper" type="checkbox"/>
+            <div class="navbar-dropdown explore">
+              <div class="title">
+                <a href="https://simon-dew.github.io/docs-site/DOC-5321">Couchbase Docs Home</a>
+              </div>
+              <div class="cols">
+                <ul>
+                  <li class="heading"><a href="../../6.5/introduction/intro.html">Server</a></li>
+                  <li><a href="../../../server/6.5/n1ql/n1ql-language-reference/index.html">N1QL</a></li>
+                  <li><a href="../../../server/6.5/fts/full-text-intro.html">Full Text Search</a></li>
+                  <li><a href="../../../server/6.5/eventing/eventing-overview.html">Eventing</a></li>
+                  <li><a href="../../../server/6.5/analytics/introduction.html">Analytics</a></li>
+                  <li><a href="#">Kubernetes</a></li>
+                </ul>
+                <ul>
+                  <li class="heading">Mobile</li>
+                  <li><a href="#">Lite</a></li>
+                  <li><a href="#">Sync Gateway</a></li>
+                </ul>
+                <ul class="two-cols">
+
+                  <li class="heading"><a href="../../../server/6.5/sdk/overview.html">SDKs</a></li>
+                  <li><a href="#">Java</a></li>
+                  <li><a href="#">.NET</a></li>
+                  <li><a href="#">Node.js</a></li>
+                  <li><a href="#">Python</a></li>
+                  <li><a href="#">PHP</a></li>
+                  <li><a href="#">Go</a></li>
+                  <li><a href="#">C</a></li>
+                  <li><a href="#">Scala</a></li>
+                </ul>
+                <ul>
+                  <li class="heading"><a href="../../../server/6.5/connectors/intro.html">Connectors</a></li>
+                  <li><a href="#">Kafka</a></li>
+                  <li><a href="#">Spark</a></li>
+                  <li><a href="#">Elasticsearch</a></li>
+                  <li><a href="../../../server/6.5/connectors/odbc-jdbc-drivers.html">ODBC/JDBC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown-click">
+            <label for="menu-versions" class="navbar-dropper"><span class="title">Couchbase Server</span> <span class="version">5.1</span></label>
+            <input id="menu-versions" class="navbar-dropper" type="checkbox"/>
+            <div class="navbar-dropdown versions">
+              <div class="cols">
+                <ul>
+                  <li><a class="navbar-item" href="../../6.5/backup-restore/cbbackupmgr-restore.html">Couchbase Server 6.5</a></li>
+                  <li><a class="navbar-item" href="../../6.0/backup-restore/cbbackupmgr-restore.html">Couchbase Server 6.0</a></li>
+                  <li><a class="navbar-item" href="../../5.5/backup-restore/cbbackupmgr-restore.html">Couchbase Server 5.5</a></li>
+                  <li class="current"><a class="navbar-item" href="cbbackupmgr-restore.html">Couchbase Server 5.1</a></li>
+                  <li><a class="navbar-item" href="../../5.0/backup-restore/cbbackupmgr-restore.html">Couchbase Server 5.0</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a class="btn red-btn" href="https://www.couchbase.com/downloads">Downloads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="toc-menu"></div>
+</aside>
+<main class="article" data-ceiling="topbar">
+  <div class="article-banner">
+    <p>A newer version of this documentation is available.</p>
+    <a class="btn" href="../../6.5/backup-restore/cbbackupmgr-restore.html">View Latest</a>
+  </div>
+  <div class="article-header">
+<button class="nav-control"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="../index.html">Couchbase Server</a></li>
+  </ul>
+</nav>
+  </div>
+<article class="doc">
+<h1 class="page">cbbackupmgr restore</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Restores data from the backup archive to a Couchbase cluster</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="synopsis"><a class="anchor" href="#synopsis"></a>SYNOPSIS</h2>
+<div class="sectionbody">
+<div class="verseblock">
+<pre class="content">cbbackupmgr restore [--archive &lt;archive_dir&gt;] [--repo &lt;repo_name&gt;]
+                    [--cluster &lt;host&gt;] [--username &lt;username&gt;]
+                    [--password &lt;password&gt;] [--start &lt;backup&gt;] [--end &lt;backup&gt;]
+                    [--exclude-buckets &lt;bucket_list&gt;]
+                    [--include-buckets &lt;bucket_list&gt;]
+                    [--map-buckets &lt;list&gt;] [--disable-bucket-config]
+                    [--disable-views] [--disable-gsi-indexes]
+                    [--disable-ft-indexes] [--disable-data]
+                    [--force-updates][--threads &lt;integer&gt;]
+                    [--no-progress-bar]
+== DESCRIPTION</pre>
+</div>
+<div class="paragraph">
+<p>Restores data from the backup archive to a target Couchbase cluster. By default
+all data, index definitions, view definitions, full-text index definitions and
+bucket configuration data are restored to the cluster unless specified otherwise
+in the repos backup config or though command line parameters when running the
+restore command. For example, if you changed bucket configuration settings since
+your last backup then restoring a previous backup will by default overwrite
+these settings unless you explicitly tell cbbackupmgr not to restore the bucket
+settings using the --disable-bucket-config flag.</p>
+</div>
+<div class="paragraph">
+<p>The restore command is capable of restoring a single backup or a range of
+backups. When restoring a single backup, all data from that backup is restored.
+If a range of backups is restored, then cbbackupmgr will take into account
+any failovers that may have occurred in between the time that the backups were
+originally taken. If a failover did occur in between the backups, and the backup
+archive contains data that no longer exists in the cluster, then the data that
+no longer exists will be skipped during the restore. If no failovers occurred in
+between backups then restoring a range of backups will restore all data from
+each backup. If all data must be restored regardless of whether a failover
+occurred in between the original backups, then data should be restored one
+backup at a time.</p>
+</div>
+<div class="paragraph">
+<p>The restore command is guaranteed to work during rebalances and failovers. If a
+rebalance is taking place, cbbackupmgr will track the movement of vbuckets
+around a Couchbase cluster and ensure that data is restored to the appropriate
+node. If a failover occurs during the restore then the client will wait 180
+seconds for the failed node to be removed from the cluster. If the failed node
+is not removed in 180 seconds then the restore will fail, but if the failed node
+is removed before the timeout then data will continue to be restored.</p>
+</div>
+<div class="paragraph">
+<p>Note that if you are restoring indexes then it is highly likely that you will
+need to take some manual steps in order to properly restore them. This is
+because by default indexes will only be built if they are restored to the exact
+same index node that they were backed up from. If the index node they were
+backed up from does not exist then the indexes will be restored in round-robin
+fashion among the current indexer nodes. These indexes will be created, but not
+built and will required the administrator to manually build them. We do this
+because we cannot know the optimal index topology ahead of time. By not building
+the indexes the administrator can move each index between nodes and build them
+when they deem that the index topology is optimal.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="options"><a class="anchor" href="#options"></a>OPTIONS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Below is a list of required and optional parameters for the restore command.</p>
+</div>
+<div class="sect2">
+<h3 id="required"><a class="anchor" href="#required"></a>Required</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">-a,--archive &lt;archive_dir&gt;</dt>
+<dd>
+<p>The directory containing the backup repository to restore data from.</p>
+</dd>
+<dt class="hdlist1">-r,--repo &lt;repo_name&gt;</dt>
+<dd>
+<p>The name of the backup repository to restore data from.</p>
+</dd>
+<dt class="hdlist1">-c,--cluster &lt;hostname&gt;</dt>
+<dd>
+<p>The hostname of one of the nodes in the cluster to restore data to. See the
+Host Formats section below for hostname specification details.</p>
+</dd>
+<dt class="hdlist1">-u,--username &lt;username&gt;</dt>
+<dd>
+<p>The username for cluster authentication. The user must have the appropriate
+privileges to take a backup.</p>
+</dd>
+<dt class="hdlist1">-p,--password &lt;password&gt;</dt>
+<dd>
+<p>The password for cluster authentication. The user must have the appropriate
+privileges to take a backup. If not password is supplied to this option then
+you will be prompted to enter your password.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="optional"><a class="anchor" href="#optional"></a>Optional</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">--start &lt;backup&gt;</dt>
+<dd>
+<p>The name of the  first backup in  the backup repository to restore or an index
+value which references an incremental backup. Valid index values are any
+positive integer, "oldest", and "latest". If a positive integer is used then
+it should reference the index of the incremental backup starting from the
+oldest to the most recent backup. For example, "1" corresponds to the oldest
+backup, "2" corresponds to the second oldest backup, and so on. Specifying
+"oldest" means that the index of the oldest backup should be used and
+specifying "latest" means the index of the most recent backup should be
+used. If this flag is not specified then the restore will start with the
+oldest backup in the backup repository.</p>
+</dd>
+<dt class="hdlist1">--end &lt;backup&gt;</dt>
+<dd>
+<p>The name of the last backup in the backup repository to restore or an index
+value which references an incremental backup. Valid index values are any
+positive integer, "oldest", and "latest". If a positive integer is used then
+it should reference the index of the incremental backup starting from the
+oldest to the most recent backup. For example, "1" corresponds to the oldest
+backup, "2" corresponds to the second oldest backup, and so on. Specifying
+"oldest" means that the index of the oldest backup should be used and
+specifying "latest" means the index of the most recent backup should be
+used. If this flag is not specified then the restore will end with the most
+recent backup in the backup repository.</p>
+</dd>
+<dt class="hdlist1">--exclude-buckets &lt;bucket_list&gt;</dt>
+<dd>
+<p>Restores all buckets in a backup that are not specified in &lt;bucket_list&gt;.
+This flag cannot be specified at the same time as the --include-buckets
+flag. Takes a comma separated list of bucket names.</p>
+</dd>
+<dt class="hdlist1">--include-buckets &lt;bucket_list&gt;</dt>
+<dd>
+<p>Restores only buckets in a backup that are specified in &lt;bucket-list&gt;. This
+flag cannot be specified at the same time as the --exclude-buckets flag.
+Takes a comma separated list of bucket names.</p>
+</dd>
+<dt class="hdlist1">--filter-keys</dt>
+<dd>
+<p>Only restore data where the key matches a particular regular expression.</p>
+</dd>
+<dt class="hdlist1">--filter-values</dt>
+<dd>
+<p>Only restore data where the value matches a particular regular expression.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>--enable-bucket-config:
+  Enables restoring the bucket configuration.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">--disable-views</dt>
+<dd>
+<p>Skips restoring view definitions for all buckets.</p>
+</dd>
+<dt class="hdlist1">--disable-gsi-indexes</dt>
+<dd>
+<p>Skips restoring gsi index definitions for all buckets.</p>
+</dd>
+<dt class="hdlist1">--disable-ft-indexes</dt>
+<dd>
+<p>Skips restoring full-text index definitions for all buckets.</p>
+</dd>
+<dt class="hdlist1">--disable-data</dt>
+<dd>
+<p>Skips restoring all key-value data for all buckets.</p>
+</dd>
+<dt class="hdlist1">--force-updates</dt>
+<dd>
+<p>Forces data in the Couchbase cluster to be overwritten even if the data in
+the cluster is newer. By default updates are not forced and all updates use
+Couchbase&#8217;s conflict resolution mechanism to ensure that if newer data
+exists on the cluster that is not overwritten by older restore data.</p>
+</dd>
+<dt class="hdlist1">--map-buckets &lt;bucket_mapping&gt;</dt>
+<dd>
+<p>Specified when you want to restore a backup to a destination bucket that has
+a different name than the bucket that was originally backed up. This
+parameter takes a list of mappings since multiple buckets may be restored at
+the same time. Each bucket mapping is separated by an "=" and if multiple
+bucket mappings are specified then they should be comma separated. If we
+have two buckets, bucket-1 and bucket-2, and we want to restore them to
+renamed-1 and renamed-2 then we would denote the mapping as
+"bucket-1=renamed-1,bucket-2=renamed-2".</p>
+</dd>
+<dt class="hdlist1">--no-ssl-verify</dt>
+<dd>
+<p>Skips the SSL verification phase. Specifying this flag will allow a
+connection using SSL encryption, but will not verify the identity of the
+server you connect to. You are vulnerable to a man-in-the-middle attack if
+you use this flag. Either this flag or the --cacert flag must be specified
+when using an SSL encrypted connection.</p>
+</dd>
+<dt class="hdlist1">--cacert &lt;cert_path&gt;</dt>
+<dd>
+<p>Specifies a CA certificate that will be used to verify the identity of the
+server being connecting to. Either this flag or the --no-ssl-verify flag
+must be specified when using an SSL encrypted connection.</p>
+</dd>
+<dt class="hdlist1">-t,--threads &lt;num&gt;</dt>
+<dd>
+<p>Specifies the number of concurrent clients to use when restoring data. Fewer
+clients means restores will take longer, but there will be less cluster
+resources used to complete the restore. More clients means faster restores,
+but at the cost of more cluster resource usage. This parameter defaults to 1
+if it is not specified and it is recommended that this parameter is not set
+to be higher than the number of CPUs on the machine where the restore is
+taking place.</p>
+</dd>
+<dt class="hdlist1">--no-progress-bar</dt>
+<dd>
+<p>By default, a progress bar is printed to stdout so that the user can see how
+long the restore is expected to take, the amount of data that is being
+transferred per second, and the amount of data that has been restored.
+Specifying this flag disables the progress bar and is useful when running
+automated jobs.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="host-formats"><a class="anchor" href="#host-formats"></a>HOST FORMATS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When specifying a host for the couchbase-cli command the following formats are expected:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>couchbase://&lt;addr&gt;</code></p>
+</li>
+<li>
+<p><code>&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+<li>
+<p><code>http://&lt;addr&gt;:&lt;port&gt;</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It is recommended to use the couchbase://&lt;addr&gt; format for standard
+installations. The other two formats allow an option to take a port number which
+is needed for non-default installations where the admin port has been set up on
+a port other that 8091.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The restore command can be used to restore a single backup or range of backups
+in a backup repository. In the examples below, we will look a few different ways
+to restore data from a backup repository. All examples will assume that the
+backup archive is located at /data/backups and that all backups are located in
+the "example" backup repository.</p>
+</div>
+<div class="paragraph">
+<p>The first thing to do when getting ready to restore data is to decide which
+backups to restore. The easiest way to do this is to use the list command to see
+which backups are available to restore.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbbackupmgr list --archive /data/backups --repo example</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Size      Items          Name
+2.24GB    -              + example
+1.11GB    -                  + 2016-03-08T14_41_10.757145596-08_00
+1.11GB    -                      + default
+295B      0                          bucket-config.json
+1.11GB    983797                     + data
+1.11GB    983797                         shard_0.fdb
+2B        0                          full-text.json
+128B      0                          gsi.json
+2B        0                          views.json
+430.52MB  -                  + 2016-03-09T14_42_24.024494032-08_00
+430.52MB  -                      + default
+295B      0                          bucket-config.json
+430.52MB  334400                     + data
+430.52MB  334400                         shard_0.fdb
+2B        0                          full-text.json
+128B      0                          gsi.json
+2B        0                          views.json
+728.72MB  -                  + 2016-03-10T14_42_58.743250296-08_00
+728.72MB  -                      + default
+295B      0                          bucket-config.json
+728.72MB  607500                     + data
+728.72MB  607500                         shard_0.fdb
+2B        0                          full-text.json
+128B      0                          gsi.json
+2B        0                          views.json</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From listing the backup repository we can see we have three backups that we can
+restore in the "examples" backup repository. If we just want to restore one of
+them we set the --start and --end flags in the restore command to the same
+backup name and specify the cluster that we want to restore the data to. In the
+example below we will restore only the oldest backup.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbbackupmgr restore -a /data/backups -r example \
+ -c couchbase://127.0.0.1 -u Administrator -p password \
+ --start 2016-03-08T14_41_10.757145596-08_00 \
+ --end 2016-03-08T14_41_10.757145596-08_00</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we want to restore only the two most recent backups then we specify the
+--start and --end flags with different backup names in order to specify the
+range we want to restore.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbbackupmgr restore -a /data/backups -r example \
+ -c couchbase://127.0.0.1 -u Administrator -p password \
+ --start 2016-03-09T14_42_24.024494032-08_00 \
+ --end 2016-03-10T14_42_58.743250296-08_00</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we want to restore all of the backups in the "examples" directory then we can
+omit the --start and --end flags since their default values are the oldest and
+most recent backup in the backup repository.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbbackupmgr restore -a /data/backups -r example \
+ -c couchbase://127.0.0.1 -u Administrator -p password</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="discussion"><a class="anchor" href="#discussion"></a>DISCUSSION</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The restore command works by replaying the data recorded in backup files. During
+a restore each key-value pair backed up by cbbackupmgr will be sent to the
+cluster as either a "set" or "delete" operation. The restore command replays
+data from each file in order of backup time to guarantee that older backup data
+does not overwrite newer backup data. The restore command uses Couchbase&#8217;s
+conflict resolution mechanism by default to ensure this behavior. The conflict
+resolution mechanism can be disable by specifying the --force-updates flag when
+executing a restore.</p>
+</div>
+<div class="paragraph">
+<p>Starting in Couchbase 4.6 each bucket can have different conflict resolution
+mechanisms. cbbackupmgr will backup all meta data used for conflict resolution,
+but since each conflict resolution mechanism is different cbbackupmgr will
+prevent restores to a bucket when the source and destination conflict resolution
+methods differ. This is done because by default cbbackupmgr will use the
+conflict resolution mechanism of the destination bucket to ensure an older value
+does not overwrite a newer value. If you want to restore a backup to a bucket
+with a different conflict resolution type you can do by using the
+--force-updates flag. This is allowed because forcing updates means that
+cbbackupmgr will skip doing conflict resolution on the destination bucket.</p>
+</div>
+<div class="paragraph">
+<p>Also keep in mind that unlike backups, restores cannot be resumed if they fail.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="environment-and-configuration-variables"><a class="anchor" href="#environment-and-configuration-variables"></a>ENVIRONMENT AND CONFIGURATION VARIABLES</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">CB_CLUSTER</dt>
+<dd>
+<p>Specifies the hostname of the Couchbase cluster to connect to. If the
+hostname is supplied as a command line argument then this value is
+overridden.</p>
+</dd>
+<dt class="hdlist1">CB_USERNAME</dt>
+<dd>
+<p>Specifies the username for authentication to a Couchbase cluster. If the
+username is supplied as a command line argument then this value is
+overridden.</p>
+</dd>
+<dt class="hdlist1">CB_PASSWORD</dt>
+<dd>
+<p>Specifies the password for authentication to a Couchbase cluster. If the
+password is supplied as a command line argument then this value is
+overridden.</p>
+</dd>
+<dt class="hdlist1">CB_ARCHIVE_PATH</dt>
+<dd>
+<p>Specifies the path to the backup archive. If the archive path is supplied as
+a command line argument then this value is overridden.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>SEE ALSO</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="cbbackupmgr-backup.html" class="page">cbbackupmgr-backup</a>,
+<a href="cbbackupmgr-list.html" class="page">cbbackupmgr-list</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cbbackupmgr"><a class="anchor" href="#cbbackupmgr"></a>CBBACKUPMGR</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Part of the <a href="cbbackupmgr.html" class="page">cbbackupmgr</a> suite</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+	</ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/couchbase" class="icon">
+              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <span>2020 COUCHBASE All rights reserved.</span>
+      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+      <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
