@@ -1635,6 +1635,11 @@
   </li>
   <li class="nav-item" data-depth="5">
     <span class="nav-line">
+    <a class="nav-link" href="../../n1ql/n1ql-language-reference/flex-indexes.html">Full Text Search Indexes in N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
     <a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
     </span>
   </li>
@@ -3293,7 +3298,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-node-failover.html">Failing over Nodes</a>
+    <a class="nav-link" href="../../rest-api/rest-node-failover.html">Performing Hard Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3303,7 +3308,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Setting Graceful Failover</a>
+    <a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Performing Graceful Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -4055,8 +4060,32 @@ Left-click on the <strong>FAILOVER</strong> tab to perform hard failover on one 
 Since hard failover removes nodes immediately it may also result in failure of in-flight operations.</em></p>
 </div>
 <div class="paragraph">
-<p>Select one or more nodes from the checkboxes, then left-click on the <strong>Failover Nodes</strong> button, to start hard failover.
-When failover has complete, a rebalance will, as usual, be required.</p>
+<p>If you wish to perform a hard failover on multiple nodes, select those nodes from the checkboxes, then left-click on the <strong>Failover Nodes</strong> button, to start hard failover.
+When this has completed, a rebalance will, as usual, be required.</p>
+</div>
+<div class="sect3">
+<h4 id="hard-failover-with-unresponsive-nodes"><a class="anchor" href="#hard-failover-with-unresponsive-nodes"></a>Hard Failover of Multiple Unresponsive Nodes</h4>
+<div class="paragraph">
+<p>When hard failover is required due to multiple nodes being unresponsive, the <strong>Failover Multiple Nodes</strong> dialog appears as follows:</p>
+</div>
+<div class="imageblock text-middle">
+<div class="content">
+<img src="../_images/manage-nodes/hardFailoverMultipleNodesUnresponsiveDialog.png" alt="hardFailoverMultipleNodesUnresponsiveDialog" width="520">
+</div>
+</div>
+<div class="paragraph">
+<p>The three unresponsive nodes are those marked, at the left, with a red bar.
+If the checkbox for each of these nodes is selected, and the <strong>Failover Nodes</strong> button is left-clicked, the following dialog appears:</p>
+</div>
+<div class="imageblock text-middle">
+<div class="content">
+<img src="../_images/manage-nodes/hardFailoverDangerDialog.png" alt="hardFailoverDangerDialog" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>This indicates that hard failover of these nodes will be <em>unsafe</em>.
+For information on unsafe hard failover, see <a href="../../learn/clusters-and-availability/hard-failover.html#default-and-unsafe" class="page">Hard Failover in Default and Unsafe Modes</a>.</p>
+</div>
 </div>
 </div>
 </div>
@@ -4065,18 +4094,15 @@ When failover has complete, a rebalance will, as usual, be required.</p>
 <h2 id="hard-failover-with-the-cli"><a class="anchor" href="#hard-failover-with-the-cli"></a>Hard Failover with the CLI</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To perform hard failover on a node, use the <code>failover</code> command with the <code>--force</code> flag, as follows:</p>
+<p>To perform a hard failover on a node, use the <code>failover</code> command with the <code>--hard</code> flag.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>couchbase-cli failover -c 10.142.181.102:8091 \
 --username Administrator \
 --password password \
---server-failover 10.142.181.102:8091 --force</pre>
+--server-failover 10.142.181.102:8091 --hard</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>The <code>--force</code> flag specifies that failover be hard.</p>
 </div>
 <div class="paragraph">
 <p>When the progress completes successfully, the following output is displayed:</p>
@@ -4105,10 +4131,14 @@ When failover has complete, a rebalance will, as usual, be required.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>For more information on <code>failover</code>, see
-<a href="../../cli/cbcli/couchbase-cli-failover.html" class="page">failover</a>. For
-more information on <code>rebalance</code>, see
-<a href="../../cli/cbcli/couchbase-cli-rebalance.html" class="page">rebalance</a>.</p>
+<p>In certain circumstances, an attempted hard failover will not be executed by Couchbase Server: for information, see <a href="../../learn/clusters-and-availability/hard-failover.html#default-and-unsafe" class="page">Hard Failover in Default and Unsafe Modes</a>.
+Such an attempt therefore fails, with an <code>ERROR: Received unexpected status 504</code> notification.
+If hard failover must nevertheless be performed, the <code>failover</code> CLI expression should be re-entered: this time, with the <code>--force</code> flag used, in addition to the <code>--hard</code> flag.
+This produces an <em>unsafe</em> hard failover.</p>
+</div>
+<div class="paragraph">
+<p>For more information on <code>failover</code> with the CLI, see <a href="../../cli/cbcli/couchbase-cli-failover.html" class="page">failover</a>.
+For more information on <code>rebalance</code> with the CLI, see <a href="../../cli/cbcli/couchbase-cli-rebalance.html" class="page">rebalance</a>.</p>
 </div>
 </div>
 </div>
@@ -4116,7 +4146,7 @@ more information on <code>rebalance</code>, see
 <h2 id="hard-failover-with-the-rest-api"><a class="anchor" href="#hard-failover-with-the-rest-api"></a>Hard Failover with the REST API</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To perform hard failover on a node with the REST API, use the <code>/controller/failover</code> URI, specifying the node to be failed over, as follows:</p>
+<p>To perform a hard failover on a node, by means of the REST API, use the <code>/controller/failover</code> URI, specifying the node to be failed over, as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4139,6 +4169,12 @@ http://10.142.181.101:8091/controller/rebalance \
 <div class="paragraph">
 <p>For more information on <code>/controller/failover</code>, see <a href="../../rest-api/rest-node-failover.html" class="page">Failing Over Nodes</a>.
 For more information on <code>/controller/rebalance</code>, see <a href="../../rest-api/rest-cluster-rebalance.html" class="page">Rebalancing Nodes</a>.</p>
+</div>
+<div class="paragraph">
+<p>In certain circumstances, an attempted hard failover will not be executed by Couchbase Server: for information, see <a href="../../learn/clusters-and-availability/hard-failover.html#default-and-unsafe" class="page">Hard Failover in Default and Unsafe Modes</a>.
+Such an attempt therefore fails, with a <code>Cannot safely perform a failover at the moment</code> notification.
+If hard failover must nevertheless be performed, the <code>POST /controller/rebalance</code> expression should be re-entered, with the same parameters as before; but this time, with the addition of the <code>-d allowUnsafe=true</code> parameter.
+This produces an <em>unsafe</em> hard failover.</p>
 </div>
 </div>
 </div>

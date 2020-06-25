@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Failing over Nodes | Couchbase Docs (Staging)</title>
+    <title>Performing Hard Failover | Couchbase Docs (Staging)</title>
     <link rel="stylesheet" href="../../../_/css/site.css">
     <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
     <meta name="dcterms.subject" content="server">
@@ -1631,6 +1631,11 @@
   <li class="nav-item" data-depth="5">
     <span class="nav-line">
     <a class="nav-link" href="../n1ql/n1ql-language-reference/index-partitioning.html">Index Partitioning</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
+    <a class="nav-link" href="../n1ql/n1ql-language-reference/flex-indexes.html">Full Text Search Indexes in N1QL</a>
     </span>
   </li>
   <li class="nav-item" data-depth="5">
@@ -3293,7 +3298,7 @@
   </li>
   <li class="nav-item is-current-page is-active" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-node-failover.html">Failing over Nodes</a>
+    <a class="nav-link" href="rest-node-failover.html">Performing Hard Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3303,7 +3308,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="rest-failover-graceful.html">Setting Graceful Failover</a>
+    <a class="nav-link" href="rest-failover-graceful.html">Performing Graceful Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3880,7 +3885,7 @@
     <li class="crumb"><a href="rest-intro.html">REST API Reference</a></li>
     <li class="crumb"><a href="rest-endpoints-all.html">REST API endpoint list</a></li>
     <li class="crumb"><a href="rest-server-nodes.html">Server Nodes API</a></li>
-    <li class="crumb"><a href="rest-node-failover.html">Failing over Nodes</a></li>
+    <li class="crumb"><a href="rest-node-failover.html">Performing Hard Failover</a></li>
   </ul>
 </nav>
 <div class="tools" role="navigation">
@@ -3890,50 +3895,80 @@
 </div>
   </div>
 <article class="doc">
-<h1 class="page">Failing over Nodes</h1>
+<h1 class="page">Performing Hard Failover</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Nodes are failed over via hard failover via the <code>POST /controller/failOver</code> HTTP method and URI.
+<em>Hard</em> failover can be used to take a node out of a cluster, when the node has become unresponsive.
 </blockquote>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="http-method-and-uri"><a class="anchor" href="#http-method-and-uri"></a>HTTP method and URI</h2>
+<h2 id="http-method-and-uri"><a class="anchor" href="#http-method-and-uri"></a>HTTP Method and URI</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Failing over a node indicates that the node is no longer available in a cluster and replicated data on another node should be made available to clients.
-This endpoint along with the <code>otpNode</code> parameter (internal node name) fails over a specific node.</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">POST /controller/failOver</code></pre>
+<pre>POST /controller/failOver</pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>HTTP request syntax:</p>
+<p>When a node has become unresponsive, and active vBuckets have thereby become unavailable for the serving of data, hard failover should be used to take the unresponsive node out of the cluster.</p>
 </div>
+<div class="paragraph">
+<p>During hard failover, the Cluster Manager promotes replica vBuckets to active status on the remaining cluster-nodes.
+A revised cluster-map is then communicated to all clients.
+When hard failover is complete, no further attempts are made to access vBuckets on the failed-over node, but the node has not yet been fully taken out of the cluster.
+The cluster is at this point considered to be in a <em>degraded state</em>, in terms of availability; as it now contains a reduced number of replica vBuckets, and may lack resources for handling a further node-outage.
+Rebalance should therefore be performed.</p>
+</div>
+<div class="paragraph">
+<p>Hard failover should <em>not</em> be used as part of regular, planned maintenance activities that can be conducted with all cluster-nodes available.
+For information, see <a href="../learn/clusters-and-availability/failover.html" class="page">Failover</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="curl-syntax"><a class="anchor" href="#curl-syntax"></a>Curl Syntax</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">POST /controller/failOver HTTP/1.1
-Authorization: Basic</code></pre>
+<pre>curl -v -X POST -u &lt;username&gt;:&lt;password&gt;
+  http://&lt;ip-address-or-hostname&gt;:&lt;port&gt;/controller/failOver
+  -d [otpNode=node_1@&lt;hostname&gt;]
+  -d allowUnsafe=&lt; true | false &gt;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Curl request syntax:</p>
+<p>The value of each specified <code>otpNode</code> parameter must be the name of a node that will be hard-failed over.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">curl -v -X POST
--u admin:password http://localhost:port/controller/failOver -d otpNode=[node@hostname]</code></pre>
+<div class="paragraph">
+<p>The value of <code>allowUnsafe</code> must be either <code>true</code> or <code>false</code> (which is the default); indicating whether or not hard failover should be attempted in <em>unsafe</em> mode.
+For information, see <a href="../learn/clusters-and-availability/hard-failover.html#default-and-unsafe" class="page">Hard Failover in Default and Unsafe Modes</a>.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="responses"><a class="anchor" href="#responses"></a>Responses</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Success returns <code>200 OK</code>.</p>
+</div>
+<div class="paragraph">
+<p>Incorrectly specifying the target cluster returns <code>Failed to connect</code>.
+Incorrectly specifying the URI returns a <code>404 Object Not Found</code> error, and a <code>Requested resource not found</code> notification.</p>
+</div>
+<div class="paragraph">
+<p>Specifying an unknown server to be failed over returns a <code>400 Bad Request</code> notification, and an error message such as the following: <code>Unknown server given: ["ns_1@10.143.201.106"]</code>.</p>
+</div>
+<div class="paragraph">
+<p>Failure to authenticate returns a <code>401 Unauthorized</code> notification.</p>
 </div>
 </div>
 </div>
@@ -3941,70 +3976,48 @@ Authorization: Basic</code></pre>
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The following curl statement performs a hard failover of server node 10.142.180.102 from a cluster with localhost 10.142.180.1.</p>
+<p>The following curl statement performs a hard failover of node <code>10.142.180.102</code> from a cluster identified as <code>10.142.180.1</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">curl -v -X POST -u Administrator:password http://10.142.180.1:8091/controller/failOver \
+<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">curl -v -X POST -u Administrator:password \
+http://10.142.180.1:8091/controller/failOver \
 -d 'otpNode=ns_1@10.142.180.102'</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The following curl statement performs a hard failover of server nodes 10.142.180.102 and 10.142.180.103 from a cluster with localhost 10.142.180.1.
+<p>The following performs a hard failover of nodes <code>10.142.180.102</code> and <code>10.142.180.103</code> from a cluster identified as <code>10.142.180.1</code>.
 Note that multi-node failover is always <em>hard</em> failover.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">curl -v -X POST -u Administrator:password http://10.142.180.1:8091/controller/failOver \
--d 'otpNode=ns_1@10.142.180.102' -d 'otpNode=ns_1@10.142.180.103'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">curl -v -X POST -u Administrator:password \
+http://10.142.180.1:8091/controller/failOver \
+-d 'otpNode=ns_1@10.142.180.102' \
+-d 'otpNode=ns_1@10.142.180.103'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following performs an <em>unsafe</em>, hard failover of nodes <code>10.142.180.102</code> and <code>10.142.180.103</code> from a cluster identified as <code>10.142.180.1</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">curl -v -X POST -u Administrator:password \
+http://10.142.180.1:8091/controller/failOver \
+-d otpNode=ns_1%4010.142.180.102\&amp;otpNode=ns_1%4010.142.180.103 \
+-d allowUnsafe=true</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="response-codes"><a class="anchor" href="#response-codes"></a>Response codes</h2>
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
 <div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 17.5131%;">
-<col style="width: 82.4869%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Response codes</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">200</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">OK</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">400</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bad Request JSON: The RAM Quota value is too small.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">401</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unauthorized</p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
-<p>The following example is a successful response:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">HTTP/1.1 200 OK</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The following example is an unsuccessful response, for example, if the node does not exist in the cluster.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bourne hljs" data-lang="bourne">HTTP/1.1 400</code></pre>
-</div>
+<p>For a general introduction to failover, see <a href="../learn/clusters-and-availability/failover.html" class="page">Failover</a>.
+For specifics related to hard failover, including <em>safe</em> and <em>unsafe</em> modes, see <a href="../learn/clusters-and-availability/hard-failover.html" class="page">Hard Failover</a>.
+For information on managing different kinds of failover with UI, CLI, and the REST API, see <a href="../manage/manage-nodes/fail-nodes-over.html" class="page">Fail a Node Over and Rebalance</a>.
+For information on <em>unsafe</em> hard failover, see <a href="../learn/clusters-and-availability/hard-failover.html#default-and-unsafe" class="page">Hard Failover in Default and Unsafe Modes</a>.</p>
 </div>
 </div>
 </div>

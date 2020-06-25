@@ -1635,6 +1635,11 @@
   </li>
   <li class="nav-item" data-depth="5">
     <span class="nav-line">
+    <a class="nav-link" href="../../n1ql/n1ql-language-reference/flex-indexes.html">Full Text Search Indexes in N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
     <a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
     </span>
   </li>
@@ -3293,7 +3298,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-node-failover.html">Failing over Nodes</a>
+    <a class="nav-link" href="../../rest-api/rest-node-failover.html">Performing Hard Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3303,7 +3308,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Setting Graceful Failover</a>
+    <a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Performing Graceful Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3909,7 +3914,7 @@ Couchbase Web Console provides a graphical interface for the importing of data, 
 <p>The <strong>cbimport json</strong> command-line utility, which imports JSON documents.</p>
 </li>
 <li>
-<p>The <strong>cbimport csv</strong> command-line utility, which imports data in CSV, TSV, and other <em>separated values</em> formats.</p>
+<p>The <strong>cbimport csv</strong> command-line utility, which imports data in CSV, TSV, and other <em>delimited</em> formats.</p>
 </li>
 <li>
 <p>The interactive controls provided in the Couchbase Web Console <strong>Import Documents</strong> panel, itself located on the <strong>Documents</strong> screen; allowing import of JSON files, and also of CSV and TSV files.</p>
@@ -3990,9 +3995,12 @@ This allows the user to select a single file that contains the data to be import
 </li>
 <li>
 <p><strong>Parse File As</strong>.
-This field displays the <em>type</em> of the imported file.
-Before any file has been selected, the default value, <strong>CSV</strong>, is displayed.
+This field displays the <em>type</em> of the imported file: Couchbase Server will parse the data within the file, thereby creating one or more JSON documents; which will be stored in the <a href="#destination-bucket">Destination Bucket</a>.
+The <a href="#file-contents">File Contents</a> panel can be reviewed, to verify that Couchbase Server performs the conversion correctly.</p>
+<div class="paragraph">
+<p>Before any file has been selected, the default value, <strong>CSV</strong>, is displayed in the <strong>Parse File As</strong> field.
 However, when the user left-clicks on the <strong>Select File to Import</strong> button, Couchbase Server automatically determines the type of the selected file; displays the file-type in this field; and additionally displays, to the right of the field, the number of <em>records</em> that the file contains.</p>
+</div>
 <div class="paragraph">
 <p>Should automatic file-type recognition ever result in the display of an incorrect file-type, the control at the right-hand side of the field can be used, to display a pulldown menu; which allows user-selection of the correct file-type.
 The menu appears as follows:</p>
@@ -4006,10 +4014,14 @@ The menu appears as follows:</p>
 <p>The options <a href="#importing-csv-and-tsv-files">CSV</a>, <a href="#importing-csv-and-tsv-files">TSV</a>, <a href="#import-a-json-list">JSON List</a>, and <a href="#importing-json-lines">JSON Lines</a>, are described in the subsections below.</p>
 </div>
 </li>
+</ul>
+</div>
+<div id="destination-bucket" class="ulist">
+<ul>
 <li>
 <p><strong>Destination Bucket</strong>.
 A pulldown menu, which displays all buckets available on the cluster.
-The selected bucket is the one into which import of the selected file is to occur.
+The selected bucket is the one into which data will be imported.
 For example:</p>
 <div class="imageblock text-left">
 <div class="content">
@@ -4019,12 +4031,13 @@ For example:</p>
 </li>
 <li>
 <p><strong>Import With Document ID</strong>.
-Two radio-buttons, which allow specification of how the <em>id</em> of the newly imported document is to be determined.</p>
+Two radio-buttons, which allow specification of how the <em>id</em> of the newly imported document is to be determined.
+Note that each document within a bucket is identified with a unique id.</p>
 <div class="paragraph">
 <p>The <strong>UUID</strong> option specifies that a <em>Universal Unique Identifier</em> be generated automatically, and used as the document&#8217;s id.</p>
 </div>
 <div class="paragraph">
-<p>The <strong>Value of Field</strong> option specifies that the <em>value</em> that corresponds to a particular <em>field</em> within each document should be used as the document&#8217;s <em>id</em>: this option is only activated <em>after</em> a document has been selected for import.
+<p>The <strong>Value of Field</strong> option specifies that the <em>value</em> that corresponds to a particular <em>field</em> within each document should be used as the document&#8217;s <em>id</em>: this option is only activated <em>after</em> a file has been selected for import.
 Selecting this option displays a pulldown menu, which lists those fields that are common to each document: this is demonstrated below, in <a href="#import-a-json-list">Importing a JSON List</a>.
 For any document to be imported, when the selected field contains a value that is unique across the selected bucket, the document will be imported into the bucket as a new document, with the unique value as its id.
 Conversely, when the selected field contains a value that is <em>not</em> unique across the bucket, the document will be imported into the bucket as an <em>update</em> to a document that is already resident within the bucket, and shares the id specified by the value.</p>
@@ -4032,8 +4045,12 @@ Conversely, when the selected field contains a value that is <em>not</em> unique
 </li>
 <li>
 <p>The <strong>cbimport</strong> command-line display.
-This display changes dynamically, to indicate the status of the underlying command that is being prepared for execution; in correspondence with the user&#8217;s ongoing addition of parameter-values into the UI.</p>
+This display changes dynamically, to indicate the <strong>cbimport</strong> command that could be used as an alternative way of performing the current import, based on the user&#8217;s ongoing addition of parameter-values into the UI.</p>
 </li>
+</ul>
+</div>
+<div id="file-contents" class="ulist">
+<ul>
 <li>
 <p><strong>File Contents</strong>.
 A read-only field that displays the contents of the imported file.
@@ -4058,7 +4075,7 @@ Note that if the operation takes a long time, the button&#8217;s label is change
 Within the file, the documents can be specified in either of two ways: as a <em>list</em>, or as a series of <em>lines</em>.</p>
 </div>
 <div class="paragraph">
-<p>To import a JSON <em>list</em>, proceed as follows.</p>
+<p>The procedure for importing a JSON list can be demonstrated as follows.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -4071,7 +4088,7 @@ Within the file, the documents can be specified in either of two ways: as a <em>
   {"name": "jack", "age": 18, "height": 5.9, "weight": 138},
   {"name": "henry", "age": 47},
   {"name": "susan", "age": 35, "height": 5.1, "weight": 110, "birth": {"dayOfBirth": 17, "monthOfBirth": 4}},
-  {"name": "jack", "age": 43, "height": 5.11, "weight": 195, "birth": {"dayOfBirth": 3, "monthOfBirth": 12}}
+  {"name": "david", "age": 43, "height": 5.11, "weight": 195, "birth": {"dayOfBirth": 3, "monthOfBirth": 12}}
 ]</code></pre>
 </div>
 </div>
@@ -4239,7 +4256,7 @@ The documents can now be inspected and edited, by means of the <strong>Document 
 <div class="sectionbody">
 <div class="paragraph">
 <p>A <em>JSON Lines</em> file is one that contains one or more JSON documents, each on a separate line.
-To import such a file, proceed as follows:</p>
+The following procedure demonstrates how to import such a file.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -4282,7 +4299,7 @@ This appears as follows:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Select <strong>employeeNumber</strong>, as the value to be used for each document&#8217;s id.</p>
+<p>Each <code>employeeNumber</code> field contains a unique value, and can therefore be used as the document id: therefore, select <strong>employeeNumber</strong>, as the value to be used.</p>
 </div>
 </li>
 <li>

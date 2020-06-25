@@ -1635,6 +1635,11 @@
   </li>
   <li class="nav-item" data-depth="5">
     <span class="nav-line">
+    <a class="nav-link" href="flex-indexes.html">Full Text Search Indexes in N1QL</a>
+    </span>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <span class="nav-line">
     <a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
     </span>
   </li>
@@ -3293,7 +3298,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-node-failover.html">Failing over Nodes</a>
+    <a class="nav-link" href="../../rest-api/rest-node-failover.html">Performing Hard Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3303,7 +3308,7 @@
   </li>
   <li class="nav-item" data-depth="4">
     <span class="nav-line">
-    <a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Setting Graceful Failover</a>
+    <a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Performing Graceful Failover</a>
     </span>
   </li>
   <li class="nav-item" data-depth="4">
@@ -3957,18 +3962,14 @@ Only documents having those document keys will be included as inputs to a query.
 <img src="../_images/n1ql-language-reference/use-keys-clause.png" alt="use keys clause">
 </div>
 </div>
-<div id="use-keys-term" class="openblock">
-<div class="content">
-<div class="listingblock">
+<div id="use-keys-term" class="listingblock">
 <div class="content">
 <pre>use-keys-term ::= [ PRIMARY ] KEYS <a href="#use-keys-args">expr</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/use-keys-predicate.png" alt="use keys predicate">
-</div>
-</div>
+<img src="../_images/n1ql-language-reference/use-keys-term.png" alt="use keys term">
 </div>
 </div>
 <div class="dlist">
@@ -4091,8 +4092,12 @@ USE KEYS ["airport_1254","airport_1255"];</code></pre>
 <div class="sect2">
 <h3 id="purpose-3"><a class="anchor" href="#purpose-3"></a>Purpose</h3>
 <div class="paragraph">
-<p>Use the <code>USE INDEX</code> clause to specify which index to use as part of the query execution.
-The query engine attempts to use the specified index if the index is applicable for the query.</p>
+<p>Use the <code>USE INDEX</code> clause to specify the index or indexes to be used as part of the query execution.
+The query engine attempts to use a specified index if the index is applicable for the query.</p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 6.6 and later, you can omit the index name and just specify the index type.
+In this case, the query service considers all the available indexes of the specified type.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4107,32 +4112,24 @@ The query engine attempts to use the specified index if the index is applicable 
 <img src="../_images/n1ql-language-reference/use-index-clause.png" alt="use index clause">
 </div>
 </div>
-<div id="use-index-term" class="openblock">
-<div class="content">
-<div class="listingblock">
+<div id="use-index-term" class="listingblock">
 <div class="content">
 <pre>use-index-term ::= INDEX '(' <a href="#index-ref">index-ref</a> [ ',' <a href="#index-ref">index-ref</a> ]* ')'</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/use-index-predicate.png" alt="use index predicate">
+<img src="../_images/n1ql-language-reference/use-index-term.png" alt="use index term">
 </div>
 </div>
-</div>
-</div>
-<div id="index-ref" class="openblock">
+<div id="index-ref" class="listingblock">
 <div class="content">
-<div class="listingblock">
-<div class="content">
-<pre>index-ref ::= <a href="#use-index-args">index-name</a> [ <a href="#index-using">index-using</a> ]</pre>
+<pre>index-ref ::= ( <a href="#index-type">index-type</a> | <a href="#use-index-args">index-name</a> [ <a href="#index-type">index-type</a> ] )</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="../_images/n1ql-language-reference/index-ref.png" alt="index ref">
-</div>
-</div>
 </div>
 </div>
 <div class="sect3">
@@ -4141,21 +4138,21 @@ The query engine attempts to use the specified index if the index is applicable 
 <dl>
 <dt class="hdlist1">index-name</dt>
 <dd>
-<p>[Required] String or expression representing the index or indexes to be used for the query.</p>
+<p>[Optional] String or expression representing an index to be used for the query.</p>
 </dd>
 </dl>
 </div>
 </div>
 <div class="sect3">
-<h4 id="index-using"><a class="anchor" href="#index-using"></a>USING clause</h4>
+<h4 id="index-type"><a class="anchor" href="#index-type"></a>USING clause</h4>
 <div class="listingblock">
 <div class="content">
-<pre>index-using ::= USING ( GSI | FTS )</pre>
+<pre>index-type ::= USING ( GSI | FTS )</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/select-using.png" alt="'USING' ( 'GSI' | 'FTS' )">
+<img src="../_images/n1ql-language-reference/index-type.png" alt="'USING' ( 'GSI' | 'FTS' )">
 </div>
 </div>
 <div class="paragraph">
@@ -4170,19 +4167,21 @@ The query engine attempts to use the specified index if the index is applicable 
 <dt class="hdlist1"><code>USING FTS</code></dt>
 <dd>
 <p>A Full Text Search index, for use with queries containing <a href="searchfun.html" class="page">Search Functions</a>.
-For more information on Full Text Search indexes, refer to <a href="../../fts/fts-creating-indexes.html" class="page">Creating Indexes</a>.</p>
+In Couchbase Server 6.6 Enterprise Edition and later, you can specify that any N1QL query should attempt to use a Full Text Search index, to take advantage of the Search Service&#8217;s natural-language capabilities.
+For detailed information, see <a href="flex-indexes.html" class="page">Full Text Search Indexes in N1QL</a>.</p>
 </dd>
 </dl>
 </div>
 <div class="paragraph">
-<p>This clause is optional; if omitted, the default is <code>USING GSI</code>.</p>
+<p>When the index name is omitted, this clause is required.
+When the index name is specified, this clause is optional; if this clause omitted, the default is <code>USING GSI</code>.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h3>
 <div class="exampleblock">
-<div class="title">Example 3. Use an existing index with GSI in a query</div>
+<div class="title">Example 3. Use a specified Global Secondary Index</div>
 <div class="content">
 <div class="paragraph">
 <p>Create an index of airlines and destination airports, and then use it in a query for flights originating in San Francisco.</p>
@@ -4200,6 +4199,27 @@ WHERE type="route";</code></pre>
 FROM `travel-sample` USE INDEX (idx_destinations USING GSI)
 WHERE sourceairport = "SFO";</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Use any suitable Full Text Search index</div>
+<div class="content">
+<div class="paragraph">
+<p>Specify that the query service should prefer an FTS index, without specifying the index by name.
+To qualify for this query, there must be an FTS index on state, city, and type, using the keyword analyzer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT META().id
+FROM `travel-sample` USE INDEX (USING FTS)
+WHERE type = "hotel" AND (state = "Corse" OR state = "California");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All FTS indexes are considered.
+If a qualified FTS index is available, it is selected for the query.
+If none of the available FTS indexes are qualified, the available GSI indexes are considered instead.</p>
 </div>
 </div>
 </div>
