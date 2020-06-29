@@ -3912,8 +3912,8 @@ For a N1QL query to be able to use a full-text index, the full-text index and th
 </blockquote>
 </div>
 <div class="paragraph">
-<p>In prior versions of Couchbase Query it was possible to perform an FTS search within a N1QL query using <a href="searchfun.html" class="page">search functions</a>.
-Starting with Couchbase Server 6.6, it is possible to use a full-text index when running a N1QL query, even if the query does not not contain a search function.
+<p>In prior versions of Couchbase Query, it was possible to perform an FTS search within a N1QL query using <a href="searchfun.html" class="page">search functions</a>.
+Starting with Couchbase Server 6.6, it is also possible to use a full-text index within a N1QL query that does not contain a search function.
 A full-text index may offer advantages over a GSI index when performing text-based or language-aware queries.</p>
 </div>
 <div class="paragraph">
@@ -3966,18 +3966,18 @@ This is not possible with a full-text index.</p>
 <div class="sect2">
 <h3 id="restrictions"><a class="anchor" href="#restrictions"></a>Restrictions</h3>
 <div class="paragraph">
-<p>Because of the semantic differences described above, there are several restrictions on the way the query engine can make use of full-text indexes.</p>
+<p>Because of the semantic differences described above, there are several restrictions to the way the query engine can make use of full-text indexes.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A full-text index cannot be used as a covering index.</p>
+<p>A full-text index cannot be used as a <a href="covering-indexes.html" class="page">covering index</a>.</p>
 </li>
 <li>
-<p>LIMIT and OFFSET clauses cannot be pushed down to a full-text index.</p>
+<p>LIMIT and OFFSET clauses may be used with a full-text index, but they cannot be <a href="../../learn/services-and-indexes/indexes/index_pushdowns.html" class="page">pushed down to the indexer</a>.</p>
 </li>
 <li>
-<p>Aggregate functions and Window functions cannot be pushed down to a full-text index.</p>
+<p>Aggregate functions and Window functions may be used with a full-text index, but they cannot be <a href="../../learn/services-and-indexes/indexes/index_pushdowns.html" class="page">pushed down to the indexer</a>.</p>
 </li>
 </ul>
 </div>
@@ -4009,18 +4009,21 @@ For further details, refer to <a href="build-index.html" class="page">BUILD INDE
 <div class="ulist">
 <ul>
 <li>
-<p>Use the <a href="hints.html#index-type" class="page">USE FTS</a> hint in the N1QL query</p>
+<p>Use the <code>USE FTS</code> hint in the N1QL query.
+For full details, refer to <a href="hints.html#index-type" class="page">USE Clause</a>.</p>
 </li>
 <li>
-<p>Set the <code>use_fts</code> <a href="../../settings/query-settings.html" class="page">request-level parameter</a> to <code>true</code></p>
+<p>Set the <code>use_fts</code> request-level parameter to <code>true</code>.
+For full details, refer to <a href="../../settings/query-settings.html" class="page">Settings and Parameters</a>.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>When using an index hint, it is possible to specify mixed index types for a query&#8201;&#8212;&#8201;<code>FTS</code> and <code>GSI</code>.</p>
+<p>When using an index hint, you may specify preferred indexes by name, or simply specify the preferred index type&#8201;&#8212;&#8201;<code>FTS</code> or <code>GSI</code>.
+It is possible to specify mixed index types.</p>
 </div>
 <div id="ex-usage-1" class="exampleblock">
-<div class="title">Example 1. Specifying any FTS index</div>
+<div class="title">Example 1. Use FTS, no index specified</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -4049,7 +4052,7 @@ WHERE d.f1 = "xyz" AND d.f2 = 100;</code></pre>
 </ol>
 </div>
 <div id="ex-usage-2" class="exampleblock">
-<div class="title">Example 2. Specifying any FTS or GSI index</div>
+<div class="title">Example 2. Use FTS or GSI, no index specified</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -4081,7 +4084,7 @@ WHERE d.f1 = "xyz" AND d.f2 = 100;</code></pre>
 </ol>
 </div>
 <div id="ex-usage-3" class="exampleblock">
-<div class="title">Example 3. Specifying named FTS and GSI indexes</div>
+<div class="title">Example 3. Prefer the specified FTS and GSI indexes</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -4115,14 +4118,14 @@ WHERE d.f1 = "xyz" AND d.f2 = 100;</code></pre>
 <div class="paragraph">
 <p>In all cases, if the query meets the requirements to use a full-text index, and a qualified full-text index is selected, the query is transformed into an FTS <a href="../../fts/fts-query-types.html#simple-queries" class="page">simple query</a> (<em>not</em> a query string query), and the simple query is run against the qualified full-text index.</p>
 </div>
-<div class="admonitionblock note">
+<div class="admonitionblock important">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-However, if the query predicate contains a search function, none of this applies&#8201;&#8212;&#8201;instead, an index is selected for the query according to the method described on the <a href="searchfun.html" class="page">Search Functions</a> page.
+If the query predicate contains a search function, none of this applies&#8201;&#8212;&#8201;instead, an index is selected for the query according to the method described on the <a href="searchfun.html" class="page">Search Functions</a> page.
 </td>
 </tr>
 </table>
@@ -4138,7 +4141,7 @@ However, if the query predicate contains a search function, none of this applies
 <div class="sect2">
 <h3 id="analyzer"><a class="anchor" href="#analyzer"></a>Analyzer</h3>
 <div class="paragraph">
-<p>The full-text index <em>must</em> use the keyword analyzer.</p>
+<p>The full-text index <em>must</em> use the <a href="../../fts/fts-using-analyzers.html#pre-constructed-analyzers" class="page">keyword analyzer</a>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4175,12 +4178,24 @@ In case of dynamic mapping or dynamic child mappings, any field within the mappi
 <div class="paragraph">
 <p>Child mappings and fields mapped under top level type mappings can all be used within a query, provided they are enabled.</p>
 </div>
+<div class="paragraph">
+<p>When <a href="../../fts/fts-creating-indexes.html#inserting-a-child-field" class="page">creating a full-text definition in the Couchbase Web Console</a>, the child fields listed by field name or by <strong>searchable as</strong> may be used within a N1QL query.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The type field in a custom type mapped index is <em>not</em> searchable.
+</td>
+</tr>
+</table>
+</div>
 <div id="ex-indexed-fields" class="exampleblock">
 <div class="title">Example 4. Child fields that may be used in a query</div>
 <div class="content">
-<div class="paragraph">
-<p>In the following index definition, the <code>id</code> and <code>reviews.review.author</code> fields may be searched within a query.</p>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
@@ -4196,7 +4211,7 @@ In case of dynamic mapping or dynamic child mappings, any field within the mappi
             "enabled": true,
             "dynamic": false,
             "fields": [{
-                "name": "author",
+                "name": "author", <i class="conum" data-value="1"></i><b>(1)</b>
                 "type": "text",
                 "index": true,
                 "analyzer": "keyword"
@@ -4210,7 +4225,7 @@ In case of dynamic mapping or dynamic child mappings, any field within the mappi
     "enabled": true,
     "dynamic": false,
     "fields": [{
-        "name": "id",
+        "name": "id", <i class="conum" data-value="2"></i><b>(2)</b>
         "type": "number",
         "index": true
       }]
@@ -4218,22 +4233,22 @@ In case of dynamic mapping or dynamic child mappings, any field within the mappi
 }</code></pre>
 </div>
 </div>
-</div>
-</div>
 <div class="paragraph">
-<p>When <a href="../../fts/fts-creating-indexes.html#inserting-a-child-field" class="page">creating a full-text definition in the Couchbase Web Console</a>, the child fields listed by field name or by <strong>searchable as</strong> may be used within a N1QL query.</p>
+<p>In this index definition, the following fields may be searched within a query:</p>
 </div>
-<div class="admonitionblock note">
+<div class="colist arabic">
 <table>
 <tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The "type" field in a custom type mapped index is not searchable.
-</td>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>reviews.review.author</code> field</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>id</code> field</td>
 </tr>
 </table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4242,7 +4257,7 @@ The "type" field in a custom type mapped index is not searchable.
 <h2 id="query-requirements"><a class="anchor" href="#query-requirements"></a>Query Requirements</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In order to use a full-text index with a N1QL query, the query must meet certain requirements.</p>
+<p>In order to use a full-text index with a N1QL query, the query must also meet certain requirements.</p>
 </div>
 <div class="sect2">
 <h3 id="conditional-expression"><a class="anchor" href="#conditional-expression"></a>Conditional Expression for Custom Type Mappings</h3>
@@ -4289,7 +4304,7 @@ AND country = "US";</code></pre>
 <div class="title">Example 6. Conditional expression for a custom type mapping with a complex predicate</div>
 <div class="content">
 <div class="paragraph">
-<p>The following query is ambiguous and cannot be used with the full-text index defined in <a href="#ex-conditional-1">Example 5</a>:</p>
+<p>The following query is ambiguous, and cannot be used with the full-text index defined in <a href="#ex-conditional-1">Example 5</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4299,7 +4314,7 @@ WHERE type = "hotel" AND country = "US" OR country = "CAN";</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The following queries are unambiguous and can be used with the full-text index defined in <a href="#ex-conditional-1">Example 5</a>:</p>
+<p>With brackets setting the priority of the AND and OR operators, the following queries are unambiguous, and can be used with the full-text index defined in <a href="#ex-conditional-1">Example 5</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4342,9 +4357,8 @@ AND (id &gt;= 0 AND id &lt;= 10 OR id &gt;= 20 AND id &lt;= 30);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">type = "xyz"
-
-(type = "xyz" OR type = "abc")</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE type = "xyz"
+WHERE (type = "xyz" OR type = "abc")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4352,7 +4366,7 @@ AND (id &gt;= 0 AND id &lt;= 10 OR id &gt;= 20 AND id &lt;= 30);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">type = "xyz" OR type = "abc"</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE type = "xyz" OR type = "abc"</code></pre>
 </div>
 </div>
 </div>
@@ -4361,10 +4375,10 @@ AND (id &gt;= 0 AND id &lt;= 10 OR id &gt;= 20 AND id &lt;= 30);</code></pre>
 <div class="sect2">
 <h3 id="n1ql-predicates"><a class="anchor" href="#n1ql-predicates"></a>N1QL Predicates</h3>
 <div class="paragraph">
-<p>N1QL predicates can be used with a full-text search query as long as they meet certain requirements, as detailed below,</p>
+<p>N1QL predicates can be used with a full-text search query, as long as they meet certain requirements, as detailed below.</p>
 </div>
 <div class="sect3">
-<h4 id="equality"><a class="anchor" href="#equality"></a>Equality</h4>
+<h4 id="equality"><a class="anchor" href="#equality"></a>Equality Expressions</h4>
 <div class="paragraph">
 <p>You can use an equality expression with a full-text index, as long as the field is either explicitly indexed, or if the indexing is dynamic within the keyword analyzer.</p>
 </div>
@@ -4376,9 +4390,9 @@ AND (id &gt;= 0 AND id &lt;= 10 OR id &gt;= 20 AND id &lt;= 30);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a = "12"
-b = true
-c = 13</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a = "12"
+WHERE b = true
+WHERE c = 13</code></pre>
 </div>
 </div>
 </div>
@@ -4394,8 +4408,8 @@ c = 13</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a = "12"
-b = true</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a = "12"
+WHERE b = true</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4403,8 +4417,8 @@ b = true</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">c = "13" <i class="conum" data-value="1"></i><b>(1)</b>
-d = "N/A" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE c = "13" <i class="conum" data-value="1"></i><b>(1)</b>
+WHERE d = "N/A" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4457,7 +4471,7 @@ Conversely, the right-hand side of an equality expression may not depend on the 
 </div>
 </div>
 <div class="sect3">
-<h4 id="and"><a class="anchor" href="#and"></a>AND</h4>
+<h4 id="and"><a class="anchor" href="#and"></a>AND Expressions</h4>
 <div class="paragraph">
 <p>You can use an <code>AND</code> expression with a full-text index.
 Partial sargability is supported: this means that one or both of the requested child expressions must be indexed for the query to use a full-text index.
@@ -4474,8 +4488,8 @@ If there&#8217;s a possibility of false positives, the query engine filters the 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a = "12" AND b = "34" <i class="conum" data-value="1"></i><b>(1)</b>
-a = "12" AND d = "56" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a = "12" AND b = "34" <i class="conum" data-value="1"></i><b>(1)</b>
+WHERE a = "12" AND d = "56" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4495,7 +4509,7 @@ a = "12" AND d = "56" <i class="conum" data-value="2"></i><b>(2)</b></code></pre
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">d = "56" AND e = "78" <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE d = "56" AND e = "78" <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4510,7 +4524,7 @@ a = "12" AND d = "56" <i class="conum" data-value="2"></i><b>(2)</b></code></pre
 </div>
 </div>
 <div class="sect3">
-<h4 id="or"><a class="anchor" href="#or"></a>OR</h4>
+<h4 id="or"><a class="anchor" href="#or"></a>OR Expressions</h4>
 <div class="paragraph">
 <p>You can use an <code>OR</code> expression with a full-text index.
 Partial sargability is not supported: all the requested child expressions must be indexed.
@@ -4548,7 +4562,7 @@ WHERE a = "12" OR a = "98" <i class="conum" data-value="2"></i><b>(2)</b></code>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a = "12" OR d = "56" <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a = "12" OR d = "56" <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4565,7 +4579,7 @@ WHERE a = "12" OR a = "98" <i class="conum" data-value="2"></i><b>(2)</b></code>
 <div class="sect3">
 <h4 id="compound-expressions"><a class="anchor" href="#compound-expressions"></a>Compound Expressions</h4>
 <div class="paragraph">
-<p>You can use compound expressions with a full-text index, as long as they respect the rules of <a href="#and">AND</a> and <a href="#or">OR</a> expressions described above, and do not return false negatives.</p>
+<p>You can use compound expressions with a full-text index, as long as they respect the rules of <a href="#and">AND Expressions</a> and <a href="#or">OR Expressions</a> expressions described above, and do not return false negatives.</p>
 </div>
 <div id="ex-compound" class="exampleblock">
 <div class="title">Example 13. Compound expressions</div>
@@ -4578,7 +4592,7 @@ WHERE a = "12" OR a = "98" <i class="conum" data-value="2"></i><b>(2)</b></code>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">type = "X" AND name = "abc" AND age = 10 <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE type = "X" AND name = "abc" AND age = 10 <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4594,8 +4608,8 @@ WHERE a = "12" OR a = "98" <i class="conum" data-value="2"></i><b>(2)</b></code>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">type = "X" OR name = "abc" AND age = 10 <i class="conum" data-value="1"></i><b>(1)</b>
-type = "X" AND name = "abc" OR age = 10 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE type = "X" OR name = "abc" AND age = 10 <i class="conum" data-value="1"></i><b>(1)</b>
+WHERE type = "X" AND name = "abc" OR age = 10 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4620,7 +4634,7 @@ Therefore these predicates cannot be used with a full-text index.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">type = "X" AND (name = "abc" OR age = 10) <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE type = "X" AND (name = "abc" OR age = 10) <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4663,13 +4677,13 @@ Therefore these predicates cannot be used with a full-text index.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a &gt;= 10 AND a &lt;= 20
-b &gt;= "hot" AND b &lt;= "hotel"
-c &gt;= "2020-03-01" AND c &lt;= "2020-04-01" <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a &gt;= 10 AND a &lt;= 20
+WHERE b &gt;= "hot" AND b &lt;= "hotel"
+WHERE c &gt;= "2020-03-01" AND c &lt;= "2020-04-01" <i class="conum" data-value="1"></i><b>(1)</b>
 
-type = "xyz" AND a &gt;= 10 AND a &lt;= 20
-a &gt;= 10 AND a &lt;= 20 AND type = "xyz"
-type = "xyz" AND (a &gt;= 10 AND a &lt;= 20) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+WHERE type = "xyz" AND a &gt;= 10 AND a &lt;= 20
+WHERE a &gt;= 10 AND a &lt;= 20 AND type = "xyz"
+WHERE type = "xyz" AND (a &gt;= 10 AND a &lt;= 20) <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4689,17 +4703,17 @@ type = "xyz" AND (a &gt;= 10 AND a &lt;= 20) <i class="conum" data-value="2"></i
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a &gt;= 10
-b &lt; "hotel"
-c &gt; "2020-03-01"
-a &gt;= 10 OR a &lt;= 20 <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a &gt;= 10
+WHERE b &lt; "hotel"
+WHERE c &gt; "2020-03-01"
+WHERE a &gt;= 10 OR a &lt;= 20 <i class="conum" data-value="1"></i><b>(1)</b>
 
-a &lt;= 20 AND a &gt;= 10
-a &gt;= 20 AND a &lt;= 10 <i class="conum" data-value="2"></i><b>(2)</b>
+WHERE a &lt;= 20 AND a &gt;= 10
+WHERE a &gt;= 20 AND a &lt;= 10 <i class="conum" data-value="2"></i><b>(2)</b>
 
-a &gt;= 10 AND a &lt;= "hot" <i class="conum" data-value="3"></i><b>(3)</b>
+WHERE a &gt;= 10 AND a &lt;= "hot" <i class="conum" data-value="3"></i><b>(3)</b>
 
-a &gt;= 10 AND type = "xyz" AND a &lt;= 20 <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+WHERE a &gt;= 10 AND type = "xyz" AND a &lt;= 20 <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4751,8 +4765,8 @@ a &gt;= 10 AND type = "xyz" AND a &lt;= 20 <i class="conum" data-value="4"></i><
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ISSTRING(name) AND name &gt;= "abhi" <i class="conum" data-value="1"></i><b>(1)</b>
-ISNUMBER(age) AND age &gt; 30 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE ISSTRING(name) AND name &gt;= "abhi" <i class="conum" data-value="1"></i><b>(1)</b>
+WHERE ISNUMBER(age) AND age &gt; 30 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4771,12 +4785,12 @@ ISNUMBER(age) AND age &gt; 30 <i class="conum" data-value="2"></i><b>(2)</b></co
 </div>
 </div>
 <div class="sect3">
-<h4 id="like"><a class="anchor" href="#like"></a>LIKE</h4>
+<h4 id="like"><a class="anchor" href="#like"></a>LIKE Expressions</h4>
 <div class="paragraph">
 <p>You can use a <code>LIKE</code> expression with a full-text index, as long as the <code>LIKE</code> expression contains a simple string, or a string followed by the <code>%</code> wildcard.</p>
 </div>
 <div class="paragraph">
-<p>If the <code>LIKE</code> expression contains a simple string, it must respect the rules outlined in the <a href="#equality">Equality</a> section above.
+<p>If the <code>LIKE</code> expression contains a simple string, it must respect the rules outlined in the <a href="#equality">Equality Expressions</a> section above.
 A string followed by the <code>%</code> wildcard, such as <code>a LIKE bc%</code>, will be treated as a range expression.
 Other <code>LIKE</code> expressions cannot be used with a full-text index.</p>
 </div>
@@ -4788,8 +4802,8 @@ Other <code>LIKE</code> expressions cannot be used with a full-text index.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a LIKE "hotel" <i class="conum" data-value="1"></i><b>(1)</b>
-a LIKE "hote%" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a LIKE "hotel" <i class="conum" data-value="1"></i><b>(1)</b>
+WHERE a LIKE "hote%" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4808,7 +4822,7 @@ a LIKE "hote%" <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="between"><a class="anchor" href="#between"></a>BETWEEN</h4>
+<h4 id="between"><a class="anchor" href="#between"></a>BETWEEN Expressions</h4>
 <div class="paragraph">
 <p>You can use a <code>BETWEEN</code> expression with a full-text index.
 The range specified by the <code>BETWEEN</code> expression must respect the rules outlined in the <a href="#ranges">Range Expressions</a> section above.
@@ -4822,7 +4836,7 @@ The range specified by the <code>BETWEEN</code> expression must respect the rule
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">a BETWEEN 10 AND 20 <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WHERE a BETWEEN 10 AND 20 <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4837,7 +4851,7 @@ The range specified by the <code>BETWEEN</code> expression must respect the rule
 </div>
 </div>
 <div class="sect3">
-<h4 id="any-in-satisfies"><a class="anchor" href="#any-in-satisfies"></a>ANY &#8230;&#8203; IN &#8230;&#8203; SATISFIES</h4>
+<h4 id="any-in-satisfies"><a class="anchor" href="#any-in-satisfies"></a>ANY &#8230;&#8203; IN &#8230;&#8203; SATISFIES Expressions</h4>
 <div class="paragraph">
 <p>You can use an <code>ANY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFIES</code> expression with a full-text index.
 The <code>ANY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFIES</code> expression must operate over an array, which may be an array of objects or any supported data types.</p>
@@ -4915,18 +4929,18 @@ The <code>ANY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFI
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">type = "hotel" AND ANY r in reviews SATISFIES r.author = "xyz" END
+<pre>WHERE type = "hotel" AND ANY r in reviews SATISFIES r.author = "xyz" END
 
-type = "hotel" AND ANY r in reviews SATISFIES r.ratings.Cleanliness = 5 OR r.ratings.Overall = 4 END
+WHERE type = "hotel" AND ANY r in reviews SATISFIES r.ratings.Cleanliness = 5 OR r.ratings.Overall = 4 END
 
-type = "hotel" AND ANY r in reviews SATISFIES r.ratings.Cleanliness = 5 OR r.ratings.Overall = 4 END AND ANY p in public_likes SATISFIES p LIKE "xyz" END</code></pre>
+WHERE type = "hotel" AND ANY r in reviews SATISFIES r.ratings.Cleanliness = 5 OR r.ratings.Overall = 4 END AND ANY p in public_likes SATISFIES p LIKE "xyz" END</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="every-in-satisfies"><a class="anchor" href="#every-in-satisfies"></a>EVERY &#8230;&#8203; IN &#8230;&#8203; SATISFIES</h4>
+<h4 id="every-in-satisfies"><a class="anchor" href="#every-in-satisfies"></a>EVERY &#8230;&#8203; IN &#8230;&#8203; SATISFIES Expressions</h4>
 <div class="paragraph">
 <p>You can use an <code>EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFIES</code> expression with a full-text index.
 The <code>EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFIES</code> expression must operate over an array, which may be an array of objects or any supported data types.</p>
@@ -4935,18 +4949,18 @@ The <code>EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATIS
 <div class="title">Example 19. EVERY &#8230;&#8203; IN &#8230;&#8203; SATISFIES expressions</div>
 <div class="content">
 <div class="paragraph">
-<p>The following predicate may be used with the full-text index whose definition is given under <a href="#any-in-satisfies">ANY &#8230;&#8203; IN &#8230;&#8203; SATISFIES</a>:</p>
+<p>The following predicate may be used with the full-text index whose definition is given under <a href="#any-in-satisfies">ANY &#8230;&#8203; IN &#8230;&#8203; SATISFIES Expressions</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EVERY r IN reviews SATISFIES r.ratings.Cleanliness = 5 END</code></pre>
+<pre>WHERE EVERY r IN reviews SATISFIES r.ratings.Cleanliness = 5 END</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="any-and-every-in-satisfies"><a class="anchor" href="#any-and-every-in-satisfies"></a>ANY AND EVERY &#8230;&#8203; IN &#8230;&#8203; SATISFIES</h4>
+<h4 id="any-and-every-in-satisfies"><a class="anchor" href="#any-and-every-in-satisfies"></a>ANY AND EVERY &#8230;&#8203; IN &#8230;&#8203; SATISFIES Expressions</h4>
 <div class="paragraph">
 <p>You can use an <code>ANY AND EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFIES</code> expression with a full-text index.
 The <code>ANY AND EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <code>SATISFIES</code> expression must operate over an array, which may be an array of objects or any supported data types.</p>
@@ -4955,18 +4969,18 @@ The <code>ANY AND EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <co
 <div class="title">Example 20. ANY AND EVERY &#8230;&#8203; IN &#8230;&#8203; SATISFIES expressions</div>
 <div class="content">
 <div class="paragraph">
-<p>The following predicate may be used with the full-text index whose definition is given under <a href="#any-in-satisfies">ANY &#8230;&#8203; IN &#8230;&#8203; SATISFIES</a>:</p>
+<p>The following predicate may be used with the full-text index whose definition is given under <a href="#any-in-satisfies">ANY &#8230;&#8203; IN &#8230;&#8203; SATISFIES Expressions</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ANY AND EVERY r IN reviews SATISFIES r.ratings.Cleanliness = 5 END</code></pre>
+<pre>WHERE ANY AND EVERY r IN reviews SATISFIES r.ratings.Cleanliness = 5 END</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="not"><a class="anchor" href="#not"></a>NOT</h4>
+<h4 id="not"><a class="anchor" href="#not"></a>NOT Expressions</h4>
 <div class="paragraph">
 <p>You cannot use a complex <code>NOT</code> expression with a full-text index.</p>
 </div>
@@ -4975,12 +4989,12 @@ The <code>ANY AND EVERY</code> &#8230;&#8203; <code>IN</code> &#8230;&#8203; <co
 <div class="sect2">
 <h3 id="joins"><a class="anchor" href="#joins"></a>JOINs</h3>
 <div class="paragraph">
-<p>JOINs may be used with a full-text index as long as the JOIN predicate meets the requirements to be used with a full-text index.
+<p>JOINs may be used with a full-text index, as long as the JOIN predicate meets the requirements to be used with a full-text index.
 Refer to <a href="#n1ql-predicates">N1QL Predicates</a> above.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="pagination"><a class="anchor" href="#pagination"></a>ORDER, LIMIT, OFFSET</h3>
+<h3 id="pagination"><a class="anchor" href="#pagination"></a>ORDER, LIMIT, and OFFSET</h3>
 <div class="paragraph">
 <p>The LIMIT, OFFSET, and ORDER clauses can be used with a full-text index when the index uses the default type mapping or a single custom type mapping.</p>
 </div>
