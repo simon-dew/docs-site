@@ -4690,7 +4690,7 @@ server
 </td>
 <td class="content">
 A user must have one of the following RBAC roles to be able
-to execute DDL statements (Admin, Cluster Admin, or Analytics Manager).
+to execute DDL statements: Admin, Cluster Admin, Analytics Admin, or Analytics Manager.
 </td>
 </tr>
 </table>
@@ -4730,11 +4730,16 @@ Because the <code>Default</code> dataverse is always available, creating a datav
 <a href="#Use_statements">Use Statements</a>, and
 <a href="#Drop_statements">Drop Statements</a>.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="Datasets"><a class="anchor" href="#Datasets"></a>Datasets</h3>
+<div class="sect3">
+<h4 id="Datasets"><a class="anchor" href="#Datasets"></a>Datasets</h4>
 <div class="paragraph">
-<p>Datasets contain a shadow of the data of a bucket.
+<p>In Analytics, a dataset is a collection of data within a dataverse.
+By default, a dataset is linked to the Data service of the local Couchbase cluster.
+This type of dataset may be referred to as a local dataset,
+or simply as a dataset without qualification.</p>
+</div>
+<div class="paragraph">
+<p>Local datasets contain a shadow of the data of a bucket.
 A dataset is updated as the bucket that it shadows is updated.
 A dataset can contain the full content of the bucket or a filtered subset.
 Multiple datasets can shadow the same bucket.
@@ -4749,8 +4754,8 @@ in the selected dataverse and <code>IF NOT EXISTS</code> is not specified.</p>
 <a href="#Drop_statements">Drop Statements</a>.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="External_datasets"><a class="anchor" href="#External_datasets"></a>Remotely-Linked Datasets and External Datasets</h3>
+<div class="sect3">
+<h4 id="External_datasets"><a class="anchor" href="#External_datasets"></a>Remotely-Linked Datasets and External Datasets</h4>
 <div class="paragraph">
 <p>In Couchbase 6.6 and later, you can also create datasets on remote links and external links.
 These enable you to query data from outside the local Couchbase cluster.</p>
@@ -4758,10 +4763,10 @@ These enable you to query data from outside the local Couchbase cluster.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A dataset on a remote link shadows the data from a remote cluster to the local dataset.</p>
+<p>A dataset on a remote link shadows the data from a remote cluster to a local dataset.</p>
 </li>
 <li>
-<p>An external dataset queries data directly from an external source, such as Amazon S3, without shadowing it locally.</p>
+<p>An external dataset reads data directly from an external source, such as Amazon S3, without shadowing it locally.</p>
 </li>
 </ul>
 </div>
@@ -4772,27 +4777,34 @@ These enable you to query data from outside the local Couchbase cluster.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Backup and restore only operates on datasets on the local link,
-and excludes datasets on remote links and external links.
+Backup and restore only operates on datasets on the local link.
+Only the dataset definition is backed up or restored, not the actual data.
+Backup and restore excludes datasets on remote links and external links entirely.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Before you can create an external dataset or a dataset on a remote cluster,
+<p>Before you can create an external dataset or a dataset on a remote link,
 you must first create the appropriate link for your dataset to use.</p>
 </div>
 <div class="paragraph">
 <p>Refer to
-<a href="#Creating_and_dropping">Create Statements</a> and
+<a href="#Remote_external_links">Remote Links and External Links</a>,
+<a href="#Creating_and_dropping">Create Statements</a>, and
 <a href="#Drop_statements">Drop Statements</a>.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="Links"><a class="anchor" href="#Links"></a>Links</h3>
 <div class="paragraph">
-<p>A link represents a connection to a Couchbase cluster, specifically to all buckets available to a specific user on a
-Couchbase cluster.
+<p>In Analytics, a link represents a connection to a data source.
+The default type of link is a <code>Local</code> link.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Local</code> link represents a connection to the Data service on the local Couchbase cluster,
+specifically to all buckets available to a specific user on the local cluster.
 Every dataverse implicitly contains a <code>Local</code> link for all buckets in the local cluster that are available to the
 current user.</p>
 </div>
@@ -4818,9 +4830,8 @@ To start ingestion to the new shadow dataset, you must disconnect the <code>Loca
 <a href="#Connecting_and_disconnecting">Connect Statements</a> and
 <a href="#Disconnect_statements">Disconnect Statements</a>.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="Remote_external_links"><a class="anchor" href="#Remote_external_links"></a>Remote Links and External Links</h3>
+<div class="sect3">
+<h4 id="Remote_external_links"><a class="anchor" href="#Remote_external_links"></a>Remote Links and External Links</h4>
 <div class="paragraph">
 <p>In Couchbase 6.6 and later, you can also create remote links and external links.
 These enable you to access data from outside the local Couchbase cluster.</p>
@@ -4842,6 +4853,7 @@ These enable you to access data from outside the local Couchbase cluster.</p>
 <p>To create, edit, or delete a remote or external link, you must use the command-line interface or the REST API.
 Refer to <a href="../cli/cbcli/couchbase-cli-analytics-link-setup.html">couchbase-cli analytics-link-setup</a> or
 <a href="rest-links.html">Analytics Links REST API</a>.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -4896,7 +4908,7 @@ In addition, they are automatically rebalanced when their shadow datasets are re
 <div class="sectionbody">
 <div class="paragraph">
 <p>In addition to queries, N1QL for Analytics (the Couchbase Analytics implementation of SQL&#43;&#43;) supports statements for
-data definition and to connect Couchbase Analytics to Data Service buckets.</p>
+data definition, and to connect Couchbase Analytics to Data Service buckets or external data sources.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -4992,7 +5004,8 @@ or in the dataverse specified by the immediately preceding USE statement.
 If the full name of the dataset is not specified, the bucket name is used as the dataset name.</p>
 </div>
 <div class="paragraph">
-<p>➁ The <code>Identifier</code> in the <code>ON</code> clause is the bucket which this dataset will shadow.
+<p>➁ The <code>Identifier</code> in the <code>ON</code> clause represents the data source for the dataset.
+For a local dataset, this is the bucket which this dataset will shadow.
 For a dataset on a remote link, this is a bucket on the remote Couchbase cluster.
 For an external dataset, this is an external data source, such as an Amazon S3 bucket.</p>
 </div>
@@ -5399,7 +5412,7 @@ An external dataset is available for query as soon as you create it.
 </div>
 </div>
 <div class="paragraph">
-<p>This example connects all local datasets to their Data Service buckets and starts shadowing.</p>
+<p>This example connects all datasets that use the link <code>Local</code> in the current dataverse to their Data Service buckets, and starts shadowing.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -5431,7 +5444,7 @@ It disconnects all datasets in the given dataverse(s).</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This example stops all local datasets shadowing and disconnects their Data Service buckets.</p>
+<p>This example stops shadowing for all datasets that use the link <code>Local</code> in the current dataverse, and disconnects their Data Service buckets.</p>
 </div>
 <div class="literalblock">
 <div class="content">
