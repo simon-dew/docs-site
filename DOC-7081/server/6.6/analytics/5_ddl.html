@@ -32,9 +32,9 @@
           </nav>
       </div>
   </div>
-  <div class="header-bottom-row">
+  <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
-        <nav id="topbar-menu" class="navbar navbar-new-bottom">
+        <nav  class="navbar navbar-new-bottom">
 
               <div class="navbar-collapse collapse" id="navbar2">
                 <ul class="navbar-nav w-100 justify-content-start">
@@ -4711,7 +4711,7 @@ server
 </td>
 <td class="content">
 A user must have one of the following RBAC roles to be able
-to execute DDL statements (Admin, Cluster Admin, or Analytics Manager).
+to execute DDL statements: Admin, Cluster Admin, Analytics Admin, or Analytics Manager.
 </td>
 </tr>
 </table>
@@ -4755,7 +4755,13 @@ Because the <code>Default</code> dataverse is always available, creating a datav
 <div class="sect2">
 <h3 id="Datasets"><a class="anchor" href="#Datasets"></a>Datasets</h3>
 <div class="paragraph">
-<p>Datasets contain a shadow of the data of a bucket.
+<p>In Analytics, a dataset is a collection of data within a dataverse.
+By default, a dataset is linked to the Data service of the local Couchbase cluster.
+This type of dataset may be referred to as a local dataset,
+or simply as a dataset without qualification.</p>
+</div>
+<div class="paragraph">
+<p>Local datasets contain a shadow of the data of a bucket.
 A dataset is updated as the bucket that it shadows is updated.
 A dataset can contain the full content of the bucket or a filtered subset.
 Multiple datasets can shadow the same bucket.
@@ -4769,12 +4775,57 @@ in the selected dataverse and <code>IF NOT EXISTS</code> is not specified.</p>
 <a href="#Creating_and_dropping">Create Statements</a> and
 <a href="#Drop_statements">Drop Statements</a>.</p>
 </div>
+<div class="sect3">
+<h4 id="External_datasets"><a class="anchor" href="#External_datasets"></a>Remotely-Linked Datasets and External Datasets</h4>
+<div class="paragraph">
+<p>In Couchbase 6.6 and later, you can also create datasets on remote links and external links.
+These enable you to query data from outside the local Couchbase cluster.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A dataset on a remote link shadows the data from a remote cluster to a local dataset.</p>
+</li>
+<li>
+<p>An external dataset reads data directly from an external source, such as Amazon S3, without shadowing it locally.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Backup and restore only operates on datasets on the local link.
+Only the dataset definition is backed up or restored, not the actual data.
+Backup and restore excludes datasets on remote links and external links entirely.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Before you can create an external dataset or a dataset on a remote link,
+you must first create the appropriate link for your dataset to use.</p>
+</div>
+<div class="paragraph">
+<p>Refer to
+<a href="#Remote_external_links">Remote Links and External Links</a>,
+<a href="#Creating_and_dropping">Create Statements</a>, and
+<a href="#Drop_statements">Drop Statements</a>.</p>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="Links"><a class="anchor" href="#Links"></a>Links</h3>
 <div class="paragraph">
-<p>A link represents a connection to a Couchbase cluster, specifically to all buckets available to a specific user on a
-Couchbase cluster.
+<p>In Analytics, a link represents a connection to a data source.
+The default type of link is a <code>Local</code> link.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Local</code> link represents a connection to the Data service on the local Couchbase cluster,
+specifically to all buckets available to a specific user on the local cluster.
 Every dataverse implicitly contains a <code>Local</code> link for all buckets in the local cluster that are available to the
 current user.</p>
 </div>
@@ -4800,31 +4851,30 @@ To start ingestion to the new shadow dataset, you must disconnect the <code>Loca
 <a href="#Connecting_and_disconnecting">Connect Statements</a> and
 <a href="#Disconnect_statements">Disconnect Statements</a>.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="Remote_links"><a class="anchor" href="#Remote_links"></a>Remote Links</h3>
+<div class="sect3">
+<h4 id="Remote_external_links"><a class="anchor" href="#Remote_external_links"></a>Remote Links and External Links</h4>
 <div class="paragraph">
-<p>In Couchbase 6.6 and later, you can also create remote links.
-These enable you to access data from outside the local Couchbase cluster.
-You can create two distinct types of remote link:</p>
+<p>In Couchbase 6.6 and later, you can also create remote links and external links.
+These enable you to access data from outside the local Couchbase cluster.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Links to remote Couchbase clusters;</p>
+<p>A remote link is a link to a remote Couchbase cluster.</p>
 </li>
 <li>
-<p>Links to data stored in external sources, such as Amazon S3.</p>
+<p>An external link is a link to an external data source, such as Amazon S3.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>After you have created a remote link, you must create an external dataset on the remote link in order to query the data.</p>
+<p>After you have created a remote link or an external link, you must create a dataset on that link to query the data.</p>
 </div>
 <div class="paragraph">
-<p>To create, edit, or delete a remote link, you must use the command-line interface or the REST API.
+<p>To create, edit, or delete a remote or external link, you must use the command-line interface or the REST API.
 Refer to <a href="../cli/cbcli/couchbase-cli-analytics-link-setup.html">couchbase-cli analytics-link-setup</a> or
 <a href="rest-links.html">Analytics Links REST API</a>.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -4879,7 +4929,7 @@ In addition, they are automatically rebalanced when their shadow datasets are re
 <div class="sectionbody">
 <div class="paragraph">
 <p>In addition to queries, N1QL for Analytics (the Couchbase Analytics implementation of SQL&#43;&#43;) supports statements for
-data definition and to connect Couchbase Analytics to Data Service buckets.</p>
+data definition, and to connect Couchbase Analytics to Data Service buckets or external data sources.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -4901,9 +4951,14 @@ SingleStatement ::= CreateStatement
 <div class="content">
 <pre>CreateStatement     ::= "CREATE" ( DataverseSpecification
                                  | DatasetSpecification
-                                 | IndexSpecification)
-
-DataverseSpecification ::= "DATAVERSE" Identifier ( IfNotExists )?             ➊
+                                 | IndexSpecification )</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="dataverse-specification"><a class="anchor" href="#dataverse-specification"></a>Dataverse Specification</h4>
+<div class="literalblock">
+<div class="content">
+<pre>DataverseSpecification ::= "DATAVERSE" Identifier ( IfNotExists )?             ➊
 
 IfNotExists         ::= "IF" "NOT" "EXISTS"</pre>
 </div>
@@ -4911,18 +4966,55 @@ IfNotExists         ::= "IF" "NOT" "EXISTS"</pre>
 <div class="paragraph">
 <p>➀ For dataverses, the <code>Identifier</code> is the dataverse name.</p>
 </div>
+<div class="sect4">
+<h5 id="examples"><a class="anchor" href="#examples"></a>Examples</h5>
 <div class="literalblock">
 <div class="content">
-<pre>DatasetSpecification ::= "DATASET" ( IfNotExists )? ( QualifiedName )?         ➊
-                         ( "WITH" ObjectValue )?                               ➋
-                         "ON" Identifier ( "WHERE" Expression )?               ➌
+<pre>CREATE DATAVERSE `beer-data`;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creates a dataverse with the name <code>beer-data</code> to be used to manage other metadata entities.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="dataset-specification"><a class="anchor" href="#dataset-specification"></a>Dataset Specification</h4>
+<div class="literalblock">
+<div class="content">
+<pre>DatasetSpecification             ::= ( LocalDatasetSpecification
+                                     | RemoteLinkedDatasetSpecification
+                                     | ExternalDatasetSpecification )
+LocalDatasetSpecification        ::= "DATASET" ( IfNotExists )?
+                                     ( QualifiedName )?                        ➊
+                                     "ON" Identifier                           ➋
+                                     ( "WITH" ObjectValue )?                   ➌
+                                     ( "WHERE" Expression )?
+RemoteLinkedDatasetSpecification ::= "DATASET" ( IfNotExists )?
+                                     ( QualifiedName )?
+                                     "ON" Identifier
+                                     ( "WITH" ObjectValue )?
+                                     ( "AT" Identifier )?                      ➍
+                                     ( "WHERE" Expression )?
+ExternalDatasetSpecification     ::= "EXTERNAL" "DATASET" ( IfNotExists )?
+                                     ( QualifiedName )?
+                                     ( TypeDefinition )?                       ➎
+                                     "ON" Identifier
+                                     ( "WITH" ObjectValue )?
+                                     ( "AT" Identifier
+                                     ( "USING" Expression )? )?                ➏
+                                     ( "WHERE" Expression )?
 
 QualifiedName        ::= Identifier ( "." Identifier )?
 
 ObjectValue          ::= "{" ( Pair ( "," Pair )* )? "}"
 Pair                 ::= StringLiteral ":" ParameterValue
 ParameterValue       ::= ObjectValue | ArrayValue | Literal
-ArrayValue           ::= "[" ( ParameterValue ( "," ParameterValue )* )? "]"</pre>
+ArrayValue           ::= "[" ( ParameterValue ( "," ParameterValue )* )? "]"
+
+TypeDefinition       ::= "(" Field ( "," Field )* ")"
+Field                ::= Identifier DataType ( "NOT" "UNKNOWN" )?
+DataType             ::= ( "BOOLEAN" | "BIGINT" | "INT" | "DOUBLE" | "STRING" )</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4933,18 +5025,231 @@ or in the dataverse specified by the immediately preceding USE statement.
 If the full name of the dataset is not specified, the bucket name is used as the dataset name.</p>
 </div>
 <div class="paragraph">
-<p>➁ Parameters for the dataset can be provided though the <code>ObjectValue</code> object after <code>WITH</code>.
-The <code>ObjectValue</code> contains key-value pairs, one for each parameter.</p>
+<p>➁ The <code>Identifier</code> in the <code>ON</code> clause represents the data source for the dataset.
+For a local dataset, this is the bucket which this dataset will shadow.
+For a dataset on a remote link, this is a bucket on the remote Couchbase cluster.
+For an external dataset, this is an external data source, such as an Amazon S3 bucket.</p>
 </div>
 <div class="paragraph">
-<p>The <code>storage-block-compression</code> parameter determines the storage compression used for this dataset.
-This parameter takes a nested object value&#8201;&#8212;&#8201;<code>scheme</code>.
-Possible values for <code>scheme</code> are <code>snappy</code> or <code>none</code>.
-The default storage compression scheme is <code>none</code>.</p>
+<p>➂ Parameters for the dataset can be provided though the <code>ObjectValue</code> object after <code>WITH</code>.
+The <code>ObjectValue</code> contains key-value pairs, one for each parameter.
+The following parameters are available.
+Note that many of these parameters only apply when creating an external dataset.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>storage-block-compression</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Determines the storage compression used for this dataset. This parameter takes a nested object value&#8201;&#8212;&#8201;<code>scheme</code>.<br>
+<br>
+Possible values for <code>scheme</code> are <code>snappy</code> or <code>none</code>. The default storage compression scheme is <code>snappy</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>format</strong> <br>
+<em>required</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Only used when creating an external dataset.)<br>
+<br>
+Specifies the format of the external data. May be one of the following string values:<br>
+<br>
+<code>json</code>&#8201;&#8212;&#8201;<a href="http://jsonlines.org" target="_blank" rel="noopener">JSON Lines</a><br>
+<code>csv</code>&#8201;&#8212;&#8201;<a href="https://tools.ietf.org/html/rfc4180" target="_blank" rel="noopener">Comma-separated values</a><br>
+<code>tsv</code>&#8201;&#8212;&#8201;<a href="https://www.iana.org/assignments/media-types/text/tab-separated-values" target="_blank" rel="noopener">Tab-separated values</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enum (json,csv,tsv)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>header</strong> <br>
+<em>required</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Only used when creating an external dataset, and only if it has the format CSV or TSV.)<br>
+<br>
+When <code>true</code>, the first row of the file is skipped.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>redact-warnings</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Only used when creating an external dataset, and only if it has the format CSV or TSV.)<br>
+<br>
+When <code>true</code>, sensitive information (such as the file name) is redacted from warning messages.<br>
+<strong>Default</strong> : <code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>null</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Only used when creating an external dataset, and only if it has the format CSV or TSV.)<br>
+<br>
+The string used in the external dataset to represent a <code>null</code> value. You may escape special characters using a backslash <code>\</code>.<br>
+<br>
+(Refer also to the <code>NOT UNKNOWN</code> flag in the type definition, described below.)<br>
+<strong>Example</strong> : <code>"\\N"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>include</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Only used when creating an external dataset. May not be used if the <strong>exclude</strong> parameter is present.)<br>
+<br>
+The names of the files to be included from the external dataset. The file name may include subdirectories of the location specified by the <code>USING</code> clause, described below. Any files that do not match the specification are excluded.<br>
+<br>
+May contain the same wildcard characters as the <strong>exclude</strong> parameter.<br>
+<strong>Example</strong> : <code>["*2018*.json", "*2019*.json"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string, or array of strings</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>exclude</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Only used when creating an external dataset. May not be used if the <strong>include</strong> parameter is present.)<br>
+<br>
+The names of the files to be excluded from the external dataset. The file name may include subdirectories of the location specified by the <code>USING</code> clause, described below. Any files that do not match the specification are included.<br>
+<br>
+May contain the following wildcard characters, in common with the <strong>include</strong> parameter:<br>
+<br>
+<code>*</code>&#8201;&#8212;&#8201;Matches anything<br>
+<code>?</code>&#8201;&#8212;&#8201;Matches any single character<br>
+<code>[</code> <em>sequence</em> <code>]</code>&#8201;&#8212;&#8201;Matches any characters in <em>sequence</em><br>
+<code>[!</code> <em>sequence</em> <code>]</code>&#8201;&#8212;&#8201;Matches any characters not in <em>sequence</em><br>
+<strong>Example</strong> : <code>"*.?sv"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string, or array of strings</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>➃ The <code>AT</code> clause is only used when creating a dataset on a remote link, or an external dataset.
+The <code>Identifier</code> in this clause is the name of the remote or external link on which the dataset is to be created.</p>
 </div>
 <div class="paragraph">
-<p>➂ The <code>Identifier</code> in the <code>ON</code> clause is the bucket which this dataset will shadow.</p>
+<p>➄ The <code>TypeDefinition</code> is only used when creating an external dataset,
+and only if it has the format CSV or TSV.
+It consists of a comma-separated list of field definitions,
+which guides the transformation of each CSV or TSV record into a JSON object.
+Each field definition consists of:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>A name to be assigned to the field.</p>
+</li>
+<li>
+<p>The data type of the field.
+This may be any of the <a href="9_data_type.html#PrimitiveTypes">primitive data types</a>,
+where <code>INT</code> is an alias for <code>BIGINT</code>.
+If this field does not contain a value of this data type, the record is ignored.</p>
+</li>
+<li>
+<p>Optionally, the <code>NOT UNKNOWN</code> flag.
+When this flag is present, if this field is <code>missing</code> or <code>null</code>, the record is ignored.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Every time a record is ignored because it does not match the type definition, a warning is issued.</p>
+</div>
+<div class="paragraph">
+<p>➅ The <code>USING</code> clause is only used when creating an external dataset.
+The expression in this clause must resolve to a string containing a path to the location of the data,
+relative to the external data source.</p>
+</div>
+<div class="sect4">
+<h5 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h5>
+<div class="literalblock">
+<div class="content">
+<pre>CREATE DATASET beers ON `beer-sample` WHERE `type` = "beer";
+
+CREATE DATASET breweries WITH {"storage-block-compression": {"scheme": "snappy"}}
+ON `beer-sample` WHERE `type` = "brewery";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example creates 2 datasets <code>beers</code> and <code>breweries</code> on the <code>beer-sample</code> bucket and filters
+the content for each dataset by the value of the <code>type</code> field of the record.
+For the <code>breweries</code> dataset, the <code>snappy</code> storage compression scheme is specified.
+Note that back-ticks are only necessary for reserved keywords, such as <code>type</code>, or certain operators, such as <code>-</code>.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CREATE DATASET airports ON `travel-sample`
+AT myCbLink WHERE `type` = "airport";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example creates a dataset called <code>airports</code>.
+The dataset uses data from the <code>travel-sample</code> bucket at the remote
+Couchbase cluster which is connected via the remote link called <code>myCbLink</code>.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CREATE EXTERNAL DATASET reviews
+ON BeerFestival
+AT `beer-data`.myAwsLink
+USING "json-data/reviews"
+WITH {
+  "format": "json",
+  "include": ["*2018*.json", "*2019*.json"]
+};</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example creates an external dataset called <code>reviews</code>.
+The dataset uses data from the Amazon S3 bucket called <code>BeerFestival</code>,
+which is connected via the link called <code>myAwsLink</code> in the <code>beer-data</code> dataverse.</p>
+</div>
+<div class="paragraph">
+<p>The files containing the data are located in <code>json-data/reviews</code> and use JSON Lines format.
+The only files included are those with the extension <code>.json</code>, and with <code>2018</code> and <code>2019</code> as part of the file name.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CREATE EXTERNAL DATASET outgoings(
+    id INT NOT UNKNOWN,
+    datetime STRING NOT UNKNOWN,
+    amount DOUBLE NOT UNKNOWN
+    details STRING,
+  ) ON BeerFestival
+AT `beer-data`.myAwsLink
+USING "csv-data/accounts"
+WITH {
+  "format": "csv",
+  "header": true,
+  "include": "201[5-9]/*[!234].csv"
+};</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example creates an external dataset called <code>outgoings</code>.
+The dataset uses data from the Amazon S3 bucket called <code>BeerFestival</code>,
+which is connected on the link called <code>myAwsLink</code> in the <code>beer-data</code> dataverse.</p>
+</div>
+<div class="paragraph">
+<p>The files containing the data are located in <code>csv-data/accounts</code> and have CSV format.
+The only files included are those with the extension <code>.csv</code>, in subdirectories ranging from <code>2015</code> to <code>2019</code>, and whose file name does <em>not</em> end with <code>2</code>, <code>3</code>, or <code>4</code>.</p>
+</div>
+<div class="paragraph">
+<p>Each CSV file is expected to have a header row, which is excluded.
+In each row, the first column is expected to be a bigint which cannot be null,
+the second column is expected to be a string which cannot be null,
+the third column is expected to be a double which cannot be null,
+and the fourth column is expected to be a string.
+If any of the rows do not meet this data model, they will not be included.
+These fields will be given the names <code>id</code>, <code>datetime</code>, <code>amount</code>, and <code>details</code> respectively.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="index-specification"><a class="anchor" href="#index-specification"></a>Index Specification</h4>
 <div class="literalblock">
 <div class="content">
 <pre>IndexSpecification ::= "INDEX" ( IfNotExists )? Identifier                     ➊
@@ -4969,29 +5274,8 @@ or in the dataverse specified by the immediately preceding USE statement.</p>
 <p>➂ The <code>FieldSpecification</code> consists of a <code>NestedField</code> that specifies a field path into the indexed JSON document,
 and a type identifier.</p>
 </div>
-<div class="literalblock">
-<div class="title">Examples</div>
-<div class="content">
-<pre>CREATE DATAVERSE `beer-data`;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Creates a dataverse with the name <code>beer-data</code> to be used to manage other metadata entities.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE DATASET beers ON `beer-sample` WHERE `type` = "beer";
-
-CREATE DATASET breweries WITH {"storage-block-compression": {"scheme": "snappy"}}
-ON `beer-sample` WHERE `type` = "brewery";</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This example creates 2 datasets <code>beers</code> and <code>breweries</code> on the <code>beer-sample</code> bucket and filters
-the content for each dataset by the value of the <code>type</code> field of the record.
-For the <code>breweries</code> dataset, the <code>snappy</code> storage compression scheme is specified.
-Note that back-ticks are only necessary for reserved keywords, such as <code>type</code>, or certain operators, such as <code>-</code>.</p>
-</div>
+<div class="sect4">
+<h5 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h5>
 <div class="literalblock">
 <div class="content">
 <pre>CREATE INDEX beers_name_idx on beers (name: string);
@@ -5001,6 +5285,8 @@ CREATE INDEX breweries_loc_idx on breweries (geo.lon: double, geo.lat: double);<
 </div>
 <div class="paragraph">
 <p>Creates indexes on the identified fields for the specified types.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -5100,13 +5386,15 @@ created.</p>
 <pre>ConnectStatement  ::= "CONNECT" "LINK" LinkSpecification                       ➊
                       ( "WITH" ObjectValue )                                   ➋
 
-LinkSpecification ::= ( Identifier "." )? "Local"
-                      ( "," ( Identifier "." )? "Local" )*</pre>
+LinkSpecification ::= ( Identifier "." )? Identifier
+                      ( "," ( Identifier "." )? Identifier )*</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>➀ For links, the <code>LinkSpecification</code> is the full name of the link.
-It consists of (optionally) the name of the dataverse to connect to, and the name of the link, which is <code>Local</code>.
+It consists of (optionally) the name of the dataverse to connect to, and the name of the link.
+For the local link, the name of the link is <code>Local</code>; for remote links,
+it is the name given to the link when it was created.
 If no dataverse name is given, the link is created in the <code>Default</code> dataverse,
 or in the dataverse specified by the immediately preceding USE statement.</p>
 </div>
@@ -5125,14 +5413,35 @@ i.e. the bucket has been deleted and recreated with the same name.</p>
 If <code>force</code> is true, CONNECT LINK proceeds:
 Analytics deletes all existing data in the dataset and ingests all data from the bucket again.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You do not need to use the CONNECT statement to connect an external dataset.
+An external dataset is available for query as soon as you create it.
+</td>
+</tr>
+</table>
+</div>
 <div class="literalblock">
-<div class="title">Example</div>
+<div class="title">Examples</div>
 <div class="content">
 <pre>CONNECT LINK Local;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example connects all datasets to their Data Service buckets and starts shadowing.</p>
+<p>This example connects all datasets that use the link <code>Local</code> in the current dataverse to their Data Service buckets, and starts shadowing.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>CONNECT LINK myCbLink;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example connects all datasets on the remote link called <code>myCbLink</code> and starts shadowing.</p>
 </div>
 </div>
 <div class="sect2">
@@ -5146,14 +5455,25 @@ It disconnects all datasets in the given dataverse(s).</p>
 <pre>DisconnectStatement ::= "DISCONNECT" "LINK" LinkSpecification</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The DISCONNECT statement is not applicable to external datasets.</p>
+</div>
 <div class="literalblock">
-<div class="title">Example</div>
+<div class="title">Examples</div>
 <div class="content">
 <pre>DISCONNECT LINK Local;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example stops all datasets shadowing and disconnects their Data Service buckets.</p>
+<p>This example stops shadowing for all datasets that use the link <code>Local</code> in the current dataverse, and disconnects their Data Service buckets.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>DISCONNECT LINK myCbLink;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example stops shadowing and disconnects all datasets on the remote link called <code>myCbLink</code>.</p>
 </div>
 </div>
 </div>
@@ -5176,7 +5496,8 @@ WHERE d.DataverseName &lt;&gt; "Metadata"</pre>
 <div class="paragraph">
 <p>Returns the qualified names of all datasets that are not in the <code>Metadata</code> dataverse.
 While dataverses, datasets, and indexes are created and removed by the corresponding CREATE and DROP statements,
-the lifecycle of links is managed by the system&#8201;&#8212;&#8201;they are created and removed as needed.</p>
+and remote links and external links are created and removed by the command-line interface or the REST API,
+the lifecycle of local links is managed by the system&#8201;&#8212;&#8201;they are created and removed as needed.</p>
 </div>
 </div>
 </div>
@@ -5189,7 +5510,7 @@ the lifecycle of links is managed by the system&#8201;&#8212;&#8201;they are cre
       <div class="col">
         <div class="footer-logo">
           <a href="https://www.couchbase.com" class="icon">
-            <img src="../../../_/img/logo.svg" alt="Couchbase">
+            <img src="../../../_/img/couchbase_logo_black.svg" alt="Couchbase">
           </a>
         </div>
       </div>
@@ -5217,30 +5538,37 @@ the lifecycle of links is managed by the system&#8201;&#8212;&#8201;they are cre
       <div class="col">
         <ul class="social-icons">
           <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
             <a href="https://www.facebook.com/Couchbase" class="icon">
-              <svg width="50px" height="50px" viewBox="26.363 116.363 560.215 560.215"><path d="m586.58 209.58c0-48.96-44.252-93.212-93.212-93.212h-373.79c-48.96 0-93.212 44.252-93.212 93.212v373.79c0 48.96 44.252 93.212 93.212 93.212h186.42v-211.85h-68.732v-93.212h68.732v-36.72c0-63.083 47.077-119.58 105.45-119.58h75.323v93.212h-75.323c-8.474 0-17.889 10.357-17.889 25.422v37.662h93.212v93.212h-93.212v211.85h99.803c48.96 0 93.212-44.252 93.212-93.212v-373.79z"/></svg>
+            Facebook
             </a>
           </li>
           <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
             <a href="https://twitter.com/couchbase" class="icon">
-              <svg width="50px" height="50px" viewBox="32.012 176.622 542.326 437.815"><path d="m574.34 227.46c-19.772 8.474-41.428 15.065-64.025 17.889 22.597-14.123 40.486-35.778 48.96-61.2-21.655 13.182-45.194 21.655-70.615 27.305-20.714-21.655-48.96-34.837-80.972-34.837-61.2 0-111.1 49.902-111.1 111.1 0 8.474 0.942 16.948 2.825 25.422-92.271-5.649-174.18-49.902-229.74-117.69-9.415 16.006-15.065 35.778-15.065 55.551 0 38.603 19.772 72.498 49.902 92.271-17.889-0.942-35.778-5.649-50.843-14.123v0.942c0 53.668 38.603 98.862 89.446 109.22-9.415 2.825-18.831 3.766-29.188 3.766-7.532 0-14.123-0.942-20.714-1.883 14.123 44.252 55.551 76.265 103.57 77.206-37.662 30.129-85.68 48.018-138.41 48.018-9.415 0-17.889-0.941-26.363-1.883 48.96 32.012 107.34 49.902 170.42 49.902 204.31 0 316.36-169.48 316.36-316.36v-14.123c21.656-14.125 40.487-33.897 55.551-56.494z"/></svg>
+              Twitter
             </a>
           </li>
           <li>
-            <a href="https://www.linkedin.com/company/couchbase" class="icon">
-              <svg width="50px" height="50px" viewBox="31.071 119.188 539.537 540.443"><path d="m531.97 119.19h-461.35c-21.655 0-39.545 16.948-39.545 38.603v463.24c0 21.655 17.889 38.603 39.545 38.603h460.41c21.655 0 39.545-16.948 39.545-38.603v-463.24c0.942-21.656-16.947-38.603-38.603-38.603zm-337.07 451.94h-81.914v-243.86h81.914v243.86zm-40.486-276.81c-28.246 0-46.135-18.831-46.135-42.369s17.889-42.369 46.135-42.369 45.194 17.889 45.194 42.369c0.942 23.538-16.948 42.369-45.194 42.369zm335.19 276.81h-81.914v-129.93c0-32.954-12.24-55.551-41.428-55.551-22.597 0-35.778 15.065-41.428 30.129-1.883 5.649-2.825 12.24-2.825 19.772v136.52h-81.914s0.942-221.26 0-243.86h81.914v34.837c11.298-16.948 30.129-40.486 73.44-40.486 53.668 0 94.154 34.837 94.154 110.16l1e-3 138.41zm-168.54-208.08s0.941-0.941 0 0z"/></svg>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
             </a>
           </li>
         </ul>
       </div>
     </div>
     <div class="footer-terms">
-      <span>2020 COUCHBASE All rights reserved.</span>
-      <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
-      <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
-      <a href="https://www.couchbase.com/support-policy">Support Policy</a>
-      <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
-      <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      <div class="footer-terms-copyright">
+          <span>© 2020 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
     </div>
   </div>
 </footer>
