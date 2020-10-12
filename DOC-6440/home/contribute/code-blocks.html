@@ -401,14 +401,14 @@ If the <code>source</code> style and a language are assigned to the block, the c
 <div class="listingblock">
 <div class="title">Delimited code block with title</div>
 <div class="content">
-<pre>.Optional title
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Optional title
 [source,java] <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
---<i class="conum" data-value="3"></i><b>(3)</b>
+---- <i class="conum" data-value="3"></i><b>(3)</b>
 KStreamBuilder builder = new KStreamBuilder();
 
 KStream&lt;String, GenericRecord&gt; source = builder
         .stream("streaming-topic-beer-sample");
-----</pre>
+----</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -442,12 +442,12 @@ KStream&lt;String, GenericRecord&gt; source = builder
 <div class="paragraph">
 <p>Commands executed in a CLI are assigned the language <code>console</code> and lines are preceded by the command prompt (<code>$</code>).</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>[source,console]
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,console]
 ----
 $ curl GET -u admin:password http://ip.for.destination.cluster:8091/pools/default/buckets
-----</pre>
+----</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -459,12 +459,15 @@ $ curl GET -u admin:password http://ip.for.destination.cluster:8091/pools/defaul
 </div>
 </div>
 <div class="paragraph">
+<p>Note, using <code>[source,console]</code> ensures that the <code>$</code> prompt is not copied when the user clicks the clipboard icon that appears upon mouseover above the code block.</p>
+</div>
+<div class="paragraph">
 <p>Short code snippets don&#8217;t need delimiters as long as they don&#8217;t contain blank lines or callouts.</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>[source,sql]
-SELECT country FROM `travel-sample` WHERE name = "Excel Airways";</pre>
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,sql]
+SELECT country FROM `travel-sample` WHERE name = "Excel Airways";</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -478,9 +481,9 @@ SELECT country FROM `travel-sample` WHERE name = "Excel Airways";</pre>
 <div class="paragraph">
 <p>Code blocks can be grouped in a parent block element.</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>====
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">====
 [source,n1ql]
 ----
 SELECT CONTAINS("N1QL is awesome", "N1QL") as n1ql,
@@ -498,7 +501,7 @@ SELECT CONTAINS("N1QL is awesome", "N1QL") as n1ql,
     ]
 }
 ----
-====</pre>
+====</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -539,7 +542,7 @@ Multiple callout numbers can be used on a single line.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>[source,javascript]
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,javascript]
 ----
 function OnUpdate(doc, meta) {
   var strong = 70;
@@ -608,6 +611,14 @@ For example, callouts in a YAML example are placed behind the hash symbol (<code
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>The callout list does not have to follow immediately after the code block containing the callouts.
+For example, you can include an introductory sentence or paragraph between the code block and the callout list.</p>
+</div>
+<div class="paragraph">
+<p>Instead of marking up each callout with its own number, such as <code>&lt;1&gt;</code>, <code>&lt;2&gt;</code>, <code>&lt;3&gt;</code>, you can use <code>&lt;.&gt;</code> for each callout.
+When you use this method, the callouts are numbered automatically.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -617,14 +628,51 @@ For example, callouts in a YAML example are placed behind the hash symbol (<code
 <p>The include directive inserts an entire file or tagged region from a file stored in the <em>examples</em> directory of a module into a code block.
 Just specify the <a href="includes.html" class="page">resource ID of the example file in the directive</a>.</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>.Query result
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Query result
 [source,json]
 ----
 include::example$contact.json[]
-----</pre>
+----</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You will find most of the SDK code samples included in <code>$examples</code> directories alongside the <code>pages</code> parent to the <code>.adoc</code> file that is calling them.
+Else you will find thim in a special <code>devguide/examples</code> module in each SDK docs repo.
+Using <code>include::</code> adds a <em>Git hub</em> link on mouseover, which leads to the code file on the repo.</p>
+</div>
+<div class="paragraph">
+<p>For a tagged region of a source file, set the tags around the code sample using the comment characcter appropriate to the source language, such as <code>//</code> or <code>#</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,ruby]
+----
+# tag::read-only[]
+options = Cluster::QueryOptions.new
+options.readonly = true
+cluster.query(
+    'SELECT COUNT(*) AS airport_count FROM `travel-sample` WHERE type = "airport"',
+    options)
+# end::read-only[]
+----</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And add the appropriate <code>[tag=]</code> to the <code>include::</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Read-only Query
+[source,json]
+----
+include::example$query.rb[tag=read-only]
+----</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we aim to keep all code files in the examples directory runnable&#8201;&#8212;&#8201;or at least compilable&#8201;&#8212;&#8201;so if you are adding a snippet of code to an existing file, please test it.</p>
 </div>
 </div>
 </div>
