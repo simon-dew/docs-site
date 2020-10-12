@@ -1773,6 +1773,12 @@ server
 <li class="nav-item " data-depth="4">
 
 <span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../n1ql/n1ql-language-reference/createcollection.html">CREATE COLLECTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
 <a class="nav-link" href="../n1ql/n1ql-language-reference/createfunction.html">CREATE FUNCTION</a>
 </span>
 </li>
@@ -1825,6 +1831,12 @@ server
 
 <span class="nav-line "  data-depth="4">
 <a class="nav-link" href="../n1ql/n1ql-language-reference/delete.html">DELETE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../n1ql/n1ql-language-reference/dropcollection.html">DROP COLLECTION</a>
 </span>
 </li>
 <li class="nav-item " data-depth="4">
@@ -4500,7 +4512,9 @@ The Backup Service REST API allows information to be retrieved on active, import
 <div class="content">
 <pre>GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;
 
-GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;</pre>
+GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;
+
+GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;/info</pre>
 </div>
 </div>
 </div>
@@ -4509,10 +4523,16 @@ GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;re
 <h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <code>GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;</code> http method and URI return an array, each of whose members is an object containing information on a repository.</p>
+<p>The <code>GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;</code> http method and URI return an array, each of whose members is an object containing information on a repository.
+Information includes repository names, file or cluster paths, and plan details.</p>
 </div>
 <div class="paragraph">
-<p>The <code>GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;</code> http method and URI return a single object, containing information on the repository whose name is specified by the <code>repository-id</code> path-parameter.</p>
+<p>The <code>GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;</code> http method and URI return a single object, containing information on the repository whose name is specified by the <code>repository-id</code> path-parameter.
+Information includes repository names, file or cluster paths, and plan details.</p>
+</div>
+<div class="paragraph">
+<p>The <code>GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;/info</code> http method and URI return a single object, containing information on the repository whose name is specified by the <code>repository-id</code> path-parameter.
+Information includes backup names and dates, buckets, items, and mutations.</p>
 </div>
 </div>
 </div>
@@ -4522,11 +4542,15 @@ GET /cluster/self/repository/&lt; "active" | "imported" | "archived" &gt;/&lt;re
 <div class="listingblock">
 <div class="content">
 <pre>curl -X GET &lt;backup-node-ip-address-or-domain-name&gt;:8097/cluster/self/\
-repository/&lt; "active" | "imported" | "archived" &gt; \
+repository/&lt; "active" | "imported" | "archived" &gt;
 -u &lt;username&gt;:&lt;password&gt;
 
 curl -X GET &lt;backup-node-ip-address-or-domain-name&gt;:8097/cluster/self/\
-repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt; \
+repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;
+-u &lt;username&gt;:&lt;password&gt;
+
+curl -X GET &lt;backup-node-ip-address-or-domain-name&gt;:8097/cluster/self/\
+repository/&lt; "active" | "imported" | "archived" &gt;/&lt;repository-id&gt;/info
 -u &lt;username&gt;:&lt;password&gt;</pre>
 </div>
 </div>
@@ -4570,6 +4594,7 @@ http://127.0.0.1:8097/api/v1/api/v1/cluster/self/repository/active \
 </div>
 <div class="paragraph">
 <p>Successful execution returns a JSON array, each of whose members is an object containing information on an active repository.
+Information includes repository names, file or cluster paths, and plan details.
 The initial part of the potentially extensive output might appear as follows:</p>
 </div>
 <div class="listingblock">
@@ -4669,6 +4694,97 @@ http://127.0.0.1:8091/_p/backup/api/v1/cluster/self/repository/active/restRepo \
 </div>
 <div class="paragraph">
 <p>The object thus contains information on the specified repository.</p>
+</div>
+<div class="paragraph">
+<p>The following call returns information including backup names and dates, buckets, items, and mutations; on an imported repository named <code>mergedRepo</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -v -X GET http://127.0.0.1:8097/api/v1/cluster/self/repository/imported/mergedRepo/info \
+-u Administrator:password  | jq</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If successful, the initial part of the potentially extensive output is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+  "name": "7509894b-7138-40fe-917e-9581d298482c",
+  "size": 23859762,
+  "count": 4,
+  "backups": [
+    {
+      "date": "2020-09-16T09_00_29.113465+01_00",
+      "type": "MERGE - FULL",
+      "source": "Merge",
+      "range": [
+        "2020-09-16T08_00_25.672063+01_00",
+        "2020-09-16T08_15_26.560952+01_00",
+        "2020-09-16T08_30_27.458006+01_00",
+        "2020-09-16T08_45_28.32018+01_00",
+        "2020-09-16T09_00_29.113465+01_00"
+      ],
+      "events": 0,
+      "fts_alias": 0,
+      "size": 23806455,
+      "buckets": [
+        {
+          "name": "travel-sample",
+          "size": 23806449,
+          "items": 31592,
+          "mutations": 31592,
+          "tombstones": 0,
+          "views_count": 0,
+          "fts_count": 0,
+          "index_count": 10,
+          "analytics_count": 0,
+          "scopes": {
+            "0": {
+              "uid": 0,
+              "name": "_default",
+              "mutations": 31592,
+              "tombstones": 0,
+              "collections": {
+                "0": {
+                  "id": 0,
+                  "name": "_default",
+                  "mutations": 31592,
+                  "tombstones": 0
+                }
+              }
+            },
+            "8": {
+              "uid": 8,
+              "name": "MyScope",
+              "mutations": 0,
+              "tombstones": 0,
+              "collections": {
+                "8": {
+                  "id": 8,
+                  "name": "MyCollection",
+                  "mutations": 0,
+                  "tombstones": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "complete": true,
+      "source_cluster_uuid": "a7ec688d232620b2a9ea8c28ca68fd9a"
+    },
+    {
+      "date": "2020-09-16T09_15_29.826312+01_00",
+      "type": "INCR",
+      "source": "http://127.0.0.1:8091",
+      "events": 0,
+      "fts_alias": 0,
+      "size": 17769,
+        .
+        .
+        .</pre>
+</div>
 </div>
 </div>
 </div>

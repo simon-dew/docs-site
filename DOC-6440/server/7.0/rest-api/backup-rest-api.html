@@ -1773,6 +1773,12 @@ server
 <li class="nav-item " data-depth="4">
 
 <span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../n1ql/n1ql-language-reference/createcollection.html">CREATE COLLECTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
 <a class="nav-link" href="../n1ql/n1ql-language-reference/createfunction.html">CREATE FUNCTION</a>
 </span>
 </li>
@@ -1825,6 +1831,12 @@ server
 
 <span class="nav-line "  data-depth="4">
 <a class="nav-link" href="../n1ql/n1ql-language-reference/delete.html">DELETE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../n1ql/n1ql-language-reference/dropcollection.html">DROP COLLECTION</a>
 </span>
 </li>
 <li class="nav-item " data-depth="4">
@@ -4608,14 +4620,14 @@ Information includes repository names, file or cluster paths, and plan details.<
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/info</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves information on all active repositories, defined on a cluster.
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/&lt;'active'&#124;'archived'&#124;'imported'&gt;/&lt;repository-id&gt;/info</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves information on an active, archived, or imported repository, defined on a cluster.
 Information includes backup names and dates, buckets, items, and mutations.</p>
-<p class="tableblock">See <a href="#rest-api:backup-get-backup-info.adoc" class="page unresolved">Get Information on Backups</a>.</p></td>
+<p class="tableblock">See <a href="backup-get-repository-info.html" class="page">Get Information on Repositories</a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Creates an active repository on the cluster, specifying an associated <em>plan</em>.</p>
 <p class="tableblock">See <a href="backup-create-repository.html" class="page">Create a Repository</a>.</p></td>
 </tr>
@@ -4675,6 +4687,18 @@ Information includes repository names, file or cluster paths, and plan details.<
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns information on a single archived or imported repository.
 Information includes backup names and dates, buckets, items, and mutations.</p>
 <p class="tableblock">See <a href="backup-get-repository-info.html" class="page">Get Information on Repositories</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;/pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triggers an immediate pause of the specified repository, so that all task-processing ceases.</p>
+<p class="tableblock">See <a href="backup-pause-and-resume-tasks.html" class="page">Pause and Resume Tasks</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;/resume</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triggers an immediate resumption of task-processing, on the specified, <em>paused</em> repository.</p>
+<p class="tableblock">See <a href="backup-pause-and-resume-tasks.html" class="page">Pause and Resume Tasks</a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">DELETE</p></td>
@@ -4762,27 +4786,15 @@ Information includes backup names and dates, buckets, items, and mutations.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;/taskHistory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/&lt;'active'&#124;'archived'&#124;'imported'&gt;/&lt;repository-id&gt;/taskHistory</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns an array, containing the history of all tasks performed for the specified repository.</p>
 <p class="tableblock">See <a href="backup-get-task-info.html" class="page">Get Information on Tasks</a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;/taskHistory?&lt;task-subset-specification-string&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/&lt;'active'&#124;'archived'&#124;'imported'&gt;/&lt;repository-id&gt;/taskHistory?&lt;task-subset-specification-string&gt;</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns an array, containing the history of a specific subset of tasks performed for the specified repository.</p>
 <p class="tableblock">See <a href="backup-get-task-info.html" class="page">Get Information on Tasks</a>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;/pause</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Triggers an immediate pause of the specified repository, so that all task-processing ceases.</p>
-<p class="tableblock">See <a href="backup-pause-and-resume-tasks.html" class="page">Pause and Resume Tasks</a>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cluster/self/repository/active/&lt;repository-id&gt;/resume</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Triggers an immediate resumption of task-processing, on the specified, <em>paused</em> repository.</p>
-<p class="tableblock">See <a href="backup-pause-and-resume-tasks.html" class="page">Pause and Resume Tasks</a>.</p></td>
 </tr>
 </tbody>
 </table>
