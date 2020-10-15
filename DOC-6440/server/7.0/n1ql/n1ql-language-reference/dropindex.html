@@ -4499,57 +4499,204 @@ server
 </div><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The DROP INDEX statement allows you to drop a named primary or secondary index, dropping an index that has replicas will also drop all of the replica indexes too.
+<p>The DROP INDEX statement allows you to drop a named primary index or a secondary index.
+Dropping an index that has replicas will also drop all of the replica indexes too.
 You can drop unnamed primary indexes using the <a href="dropprimaryindex.html" class="page">DROP PRIMARY INDEX</a> statement.</p>
 </div>
 <div class="paragraph">
-<p><em>drop-index:</em></p>
+<p><strong>RBAC Privileges</strong></p>
 </div>
+<div class="paragraph">
+<p>User executing the DROP INDEX statement must have the <em>Query Manage Index</em> privilege granted on the keyspace/bucket.
+For more details about user roles, see
+<a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre> DROP INDEX named_keyspace_ref.index_name
- [USING GSI];</pre>
+<pre>drop-index ::= DROP INDEX ( <a href="#index-identifier">index-identifier</a> | <em>index-name</em> ON <a href="#keyspace-ref">keyspace-ref</a> ) [ <a href="#index-using">index-using</a> ]</pre>
 </div>
 </div>
-<div class="paragraph">
-<p><em>index_name:</em></p>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/drop-index.png" alt="'DROP' 'INDEX' ( index-identifier | index-name 'ON' keyspace-ref ) index-using?">
 </div>
-<div class="paragraph">
-<p>index name is a unique name that is provided to identify the index.</p>
 </div>
-<div class="paragraph">
-<p><em>named-keyspace-ref(expression[,expression]*)</em></p>
-</div>
+<div class="sect2">
+<h3 id="index-identifier"><a class="anchor" href="#index-identifier"></a>Index Identifier</h3>
 <div class="listingblock">
 <div class="content">
-<pre>[ namespace-name :] keyspace-name</pre>
+<pre>index-identifier ::= ( <em>collection</em> | [ <em>namespace</em> ':' ] <em>bucket</em> ) '.' <em>index-name</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/index-identifier.png" alt="( ( collection | ( namespace ':' )? bucket ) '.' index-name">
 </div>
 </div>
 <div class="paragraph">
-<p><em>keyspace-name:</em></p>
+<p>You can use a dotted notation to specify the index and the keyspace on which the index is built.
+This syntax provides compatibility with legacy versions of Couchbase Server, but if the keyspace is a named collection, it does not enable you to specify the full or relative path to the collection.</p>
 </div>
-<div class="paragraph">
-<p>identifier that refers to the bucket name.
-Specifies the bucket as source for which the index needs to be created.
-You can add an optional namespace name to the keyspace name in this way:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the index is built on the default collection in the default scope within a bucket, the index identifier may be just an optional namespace, the bucket name, and the index name.
+For example, <code>default:`travel-sample`.`def-type`</code> indicates the <code>def-type</code> index in the <code>travel-sample</code> keyspace in the <code>default</code> namespace.</p>
+</li>
+<li>
+<p>If the index is built on a named collection, the index identifier may be just the collection name with no path, and the index name.
+When you specify the collection name, you must set the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter to indicate the required namespace, bucket, and scope.
+For example, <code>cities.`idx-name`</code> indicates the <code>idx-name</code> index in the <code>cities</code> collection, assuming that the query context is set.</p>
+</li>
+</ul>
 </div>
-<div class="paragraph">
-<p><em>namespace-name : keyspace-name</em></p>
-</div>
-<div class="paragraph">
-<p>Currently, only the <code>default</code> namespace is available.
-For example, <code>default:`travel-sample`</code> indicates the <code>travel-sample</code> keyspace in the <code>default</code> namespace.
+<div class="dlist">
+<dl>
+<dt class="hdlist1">namespace</dt>
+<dd>
+<p>(Optional if <strong><em>bucket</em></strong> is supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">namespace</a> of the indexed bucket.
+Currently, only the <code>default</code> namespace is available.
 If the namespace name is omitted, the default namespace in the current session is used.</p>
+</dd>
+<dt class="hdlist1">bucket</dt>
+<dd>
+<p>(Required if <strong><em>collection</em></strong> is not supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket name</a>.
+It specifies the bucket as the source for the index to be deleted.</p>
+</dd>
+<dt class="hdlist1">collection</dt>
+<dd>
+<p>(Required if <strong><em>bucket</em></strong> is not supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a>.
+It specifies the collection as the source for the index to be deleted.</p>
+</dd>
+<dt class="hdlist1">index-name</dt>
+<dd>
+<p>(Required) A unique name that identifies the index.</p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If there is a hyphen (-) inside the bucket, collection, or index name, you must wrap it in backticks (` `).
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="keyspace-ref"><a class="anchor" href="#keyspace-ref"></a>Index Name ON Keyspace Reference</h3>
+<div class="paragraph">
+<p><em>(Introduced in Couchbase Server 7.0)</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-ref ::= <em>collection</em> | ( [ <em>namespace</em> ':' ] <em>bucket</em> [ '.' <em>scope</em> '.' <em>collection</em> ] )</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-ref.png" alt="collection | ( ( namespace ':' )? bucket ( '.' scope '.' )? )">
+</div>
 </div>
 <div class="paragraph">
-<p><em>USING GSI</em></p>
+<p>In Couchbase Server 7.0 and later, you can specify the index name with the <code>ON</code> keyword and a keyspace reference to specify the keyspace on which the index is built.
+You can use this syntax when the keyspace is a named collection, and you want to specify the full or relative path to the collection.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the index is built on the default collection in the default scope within a bucket, the keyspace reference may be just an optional namespace and the bucket name.
+For example, <code>`def-type` ON default:`travel-sample`</code> indicates the <code>def-type</code> index in the <code>travel-sample</code> keyspace in the <code>default</code> namespace.</p>
+</li>
+<li>
+<p>If the index is built on a named collection, the keyspace reference may be just the collection name with no path.
+When you specify a collection name without a path, you must set the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter to indicate the required namespace, bucket, and scope.
+For example, <code>`idx-name` ON cities</code> indicates the <code>idx-name</code> index in the <code>cities</code> collection, assuming the query context is set.</p>
+</li>
+<li>
+<p>If the namespace is built on a named collection and the query context is not set, the keyspace reference must consist of an optional namespace, the bucket name, the scope name, and finally the collection name.
+For example, <code>`idx-name` ON default:`travel-sample`.places.cities</code> indicates the <code>idx-name</code> index in the collection whose full path is <code>default:`travel-sample`.places.cities</code>.</p>
+</li>
+</ul>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">namespace</dt>
+<dd>
+<p>(Optional if <strong><em>bucket</em></strong> is supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">namespace</a> of the indexed bucket.
+Currently, only the <code>default</code> namespace is available.
+If the namespace name is omitted, the default namespace in the current session is used.</p>
+</dd>
+<dt class="hdlist1">bucket</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket name</a>.
+It specifies the bucket as the source for the index to be deleted.</p>
+</dd>
+<dt class="hdlist1">scope</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope name</a>.
+It specifies the scope which contains the indexed collection.</p>
+</dd>
+<dt class="hdlist1">collection</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a>.
+It specifies the collection as the source for the index to be deleted.</p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If there is a hyphen (-) inside the bucket name, the scope name, or the collection name, you must wrap that part of the path in backticks (` `).
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="index-using"><a class="anchor" href="#index-using"></a>USING Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>index-using ::= USING GSI</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/index-using.png" alt="'USING' 'GSI'">
+</div>
 </div>
 <div class="paragraph">
 <p>In Couchbase Server 6.5 and later, the index type for a secondary index must be Global Secondary Index (GSI).
 The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="usage"><a class="anchor" href="#usage"></a>Usage</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>When using memory-optimized indexes, DROP INDEX is an expensive operation and may take a few minutes to complete.</p>
+</div>
+<div class="paragraph">
+<p>If you drop an index with replicas while one of the index nodes is failed over, then only the replicas in the active index nodes are dropped.
+If the failed-over index node is recovered, then the orphan replica will be dropped when this failed-over indexer is added back to cluster.</p>
+</div>
+<div class="paragraph">
+<p>If you drop an index with replicas when one of the index nodes is unavailable but not failed over, the drop index operation may fail.</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -4563,36 +4710,92 @@ We recommend that you do not drop (or create) secondary indexes when any node wi
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p><strong>RBAC Privileges</strong></p>
-</div>
-<div class="paragraph">
-<p>User executing the DROP INDEX statement must have the <em>Query Manage Index</em> privilege granted on the keyspace/bucket.
-For more details about user roles, see
-<a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <div class="sectionbody">
+<div id="ex-1" class="exampleblock">
+<div class="title">Example 1. Drop index from the default collection in the default scope</div>
+<div class="content">
 <div class="paragraph">
-<p>Example below creates a secondary index on the beer-sample bucket.
-Once the index creation statement comes back, system:indexes is queried for status of the index.</p>
+<p>This example creates a secondary index on the default collection in the default scope in the travel-sample bucket.
+Once the index creation statement comes back, <code>system:indexes</code> is queried for the status of the index.</p>
 </div>
 <div class="listingblock">
+<div class="title">Create the index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX `beer-sample-type-index` ON `beer-sample`(type) USING GSI;
-SELECT * FROM system:indexes WHERE name="beer-sample-type-index";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX `idx-callsign` ON `travel-sample`(callsign) USING GSI;
+SELECT * FROM system:indexes WHERE name="idx-callsign";</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Subsequently, the index is dropped with the following statement and it no longer is reported in the system:indexes output.</p>
+<p>Subsequently, the index is dropped with the following statement and it no longer is reported in the <code>system:indexes</code> output.</p>
 </div>
 <div class="listingblock">
+<div class="title">Drop the index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `beer-sample`.`beer-sample-type-index` USING GSI;
-SELECT * FROM system:indexes WHERE name="beer-sample-type-index";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `travel-sample`.`idx-callsign` USING GSI;
+SELECT * FROM system:indexes WHERE name="idx-callsign";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following command would drop the index in exactly the same way, but uses alternative syntax.</p>
+</div>
+<div class="listingblock">
+<div class="title">Drop the index&#8201;&#8212;&#8201;alternative syntax</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `idx-callsign` ON `travel-sample` USING GSI;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="ex-2" class="exampleblock">
+<div class="title">Example 2. Drop index from a named collection with query context</div>
+<div class="content">
+<div class="paragraph">
+<p>This statement drops an index called <code>idx-name</code> from the <code>countries</code> collection within the <code>places</code> scope in the <code>travel-sample</code> bucket.
+It is assumed that the scope, collection, and index have already been created.</p>
+</div>
+<div class="listingblock">
+<div class="title">Set the query context</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; \SET -query_context "travel-sample.places";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Drop the index</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; DROP INDEX countries.`idx-name`;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following command would drop the index in exactly the same way, but uses alternative syntax.</p>
+</div>
+<div class="listingblock">
+<div class="title">Drop the index&#8201;&#8212;&#8201;alternative syntax</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; DROP INDEX `idx-name` ON countries;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="ex-3" class="exampleblock">
+<div class="title">Example 3. Drop index from a named collection with path</div>
+<div class="content">
+<div class="paragraph">
+<p>This statement drops an index called <code>idx-name</code> from the <code>countries</code> collection within the <code>places</code> scope in the <code>travel-sample</code> bucket.
+It is assumed that the scope, collection, and index have already been created.</p>
+</div>
+<div class="listingblock">
+<div class="title">Drop the index</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `idx-name` ON `travel-sample`.places.countries;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You must use this syntax if the index was created on a named collection, and you need to specify the full or relative path to the collection.</p>
+</div>
 </div>
 </div>
 </div>
