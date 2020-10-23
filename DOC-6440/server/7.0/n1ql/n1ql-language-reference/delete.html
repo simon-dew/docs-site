@@ -4496,87 +4496,20 @@ server
 <span class="last-commit-date" id="commitdate">    </span>
 <ul id="contributorList"></ul>
 <span  id="otherContributor"> + </span>
-</div><div class="paragraph">
-<p>DELETE immediately removes the specified document from your keyspace.
-DELETE uses the following syntax:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>DELETE FROM keyspace-ref
-[USE KEYS clause]
-[WHERE clause]
-[LIMIT clause]
-[RETURNING clause]</pre>
-</div>
-</div>
+</div><div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p><strong>keyspace-ref</strong></p>
+<p>DELETE immediately removes the specified document from your keyspace.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="rbac-privileges"><a class="anchor" href="#rbac-privileges"></a>RBAC Privileges</h3>
 <div class="paragraph">
-<p>Specifies the data source from which to delete the document.
-You can add an optional namespace name to the keyspace name in this way:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>[ (namespace-name :)] keyspace-name</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Currently, only the <code>default</code> namespace is available.
-For example, <code>default:`travel-sample`</code> indicates the <code>travel-sample</code> keyspace in the <code>default</code> namespace.
-If the namespace name is omitted, the default namespace in the current session is used.</p>
-</div>
-<div class="paragraph">
-<p>*USE KEYS clause*<em>(optional)</em></p>
-</div>
-<div class="paragraph">
-<p>Specifies the keys of the data items to be deleted.
-Keys can be any expression.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>USE [PRIMARY] KEYS expression</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>*WHERE clause*<em>(optional)</em></p>
-</div>
-<div class="paragraph">
-<p>Specifies the condition that needs to be met for data to be deleted.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>WHERE condition</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>*LIMIT clause*<em>(optional)</em></p>
-</div>
-<div class="paragraph">
-<p>Specifies the greatest number of objects that can be deleted.
-This clause must have a non-negative integer as its upper bound.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>LIMIT expression</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>*RETURNING clause*<em>(optional)</em></p>
-</div>
-<div class="paragraph">
-<p>Returns the data you deleted as specified in the <code class="var">result_expression</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>RETURNING (result-expression [, result-expression]* | [RAW | ELEMENT ] expression)</pre>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>RBAC Privileges</strong></p>
-</div>
-<div class="paragraph">
-<p>User executing the DELETE statement must have the <em>Query Delete</em> privilege granted on the target keyspace/bucket.
+<p>User executing the DELETE statement must have the <em>Query Delete</em> privilege granted on the target keyspace.
 If the statement has any RETURNING clauses that need data read, then the <em>Query Select</em> privilege is also required on the keyspaces referred in the respective clauses.
 For more details about user roles, see
 <a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
@@ -4594,79 +4527,236 @@ For more details about user roles, see
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-center valign-top">#</th>
 <th class="tableblock halign-center valign-top">Delete Query Contains</th>
 <th class="tableblock halign-center valign-top">Query Delete Permissions Needed</th>
 <th class="tableblock halign-center valign-top">Query Select Permissions Needed</th>
+<th class="tableblock halign-center valign-top">Example</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Q1</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">WHERE clause</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Yes</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="#Q1">Example 1</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Q2</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">a subquery</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Subquery</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Yes</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="#Q2">Example 2</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Q3</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">RETURNING clause</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Yes</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="#Q3">Example 3</a></p></td>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>DELETE FROM <a href="#delete-target">delete-target</a> [<a href="#delete-hint">delete-hint</a>] [<a href="#where-clause">where-clause</a>] [<a href="#limit-clause">limit-clause</a>] [<a href="#returning-clause">returning-clause</a>]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/delete.png" alt="'DELETE' 'FROM' delete-target delete-hint? where-clause? limit-clause? returning-clause?">
+</div>
+</div>
+<div class="sect2">
+<h3 id="delete-target"><a class="anchor" href="#delete-target"></a>Delete Target</h3>
+<div class="listingblock">
+<div class="content">
+<pre>delete-target ::= <a href="#keyspace-ref">keyspace-ref</a> [ [ AS ] <a href="#delete-alias">alias</a> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge-source-keyspace.png" alt="( namespace ':' )? keyspace ( 'AS'? alias )?">
+</div>
+</div>
 <div class="paragraph">
-<p><strong>Q1 Examples</strong> that require the <em>Query Delete</em> privilege on <code>`travel-sample`</code>.</p>
+<p>Specifies the data source from which to delete the document.</p>
+</div>
+<div class="sect3">
+<h4 id="keyspace-ref"><a class="anchor" href="#keyspace-ref"></a>Keyspace Reference</h4>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-ref ::= <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> | ( [ <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> ':' ] <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket</a> [ '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope</a> '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> ] )</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/full-keyspace-ref.png" alt="collection | ( ( namespace ':' )? bucket ( '.' scope '.' collection )? )">
+</div>
+</div>
+<div class="paragraph">
+<p>Keyspace reference for the delete target.
+For more details, refer to <a href="from.html#from-keyspace-ref" class="page">Keyspace Reference</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="delete-alias"><a class="anchor" href="#delete-alias"></a>AS Alias</h4>
+<div class="paragraph">
+<p>Assigns another name to the keyspace reference.
+For details, refer to <a href="from.html#section_ax5_2nx_1db" class="page">AS Clause</a>.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">alias</dt>
+<dd>
+<p>String to assign an alias.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Assigning an alias to the keyspace reference is optional.
+If you assign an alias to the keyspace reference, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="delete-hint"><a class="anchor" href="#delete-hint"></a>Delete Hint</h3>
+<div class="paragraph">
+<p>You can use a <code>USE KEYS</code> hint on the delete target to specify the keys of the data items to be deleted.
+For details, refer to <a href="hints.html#use-keys-clause" class="page">USE KEYS Clause</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="where-clause"><a class="anchor" href="#where-clause"></a>WHERE Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>where-clause ::= WHERE <em>cond</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/where-clause.png" alt="where clause">
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies the condition that needs to be met for data to be deleted.
+Optional.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="limit-clause"><a class="anchor" href="#limit-clause"></a>LIMIT Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>limit-clause ::= LIMIT <em>expr</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/limit-clause.png" alt="limit clause">
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies the greatest number of objects that can be deleted.
+This clause must have a non-negative integer as its upper bound.
+Optional.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="returning-clause"><a class="anchor" href="#returning-clause"></a>RETURNING Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre>returning-clause ::= RETURNING ( <em>result-expr</em> [ ',' <em>result-expr</em> ]* | ( RAW | ELEMENT | VALUE ) <em>expr</em> )</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/returning-clause.png" alt="'RETURNING' (result-expr (',' result-expr)* | ('RAW' | 'ELEMENT' | 'VALUE') expr)">
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies the information to be returned by the operation as a query result.
+For more details, refer to <a href="insert.html#returning-clause" class="page">RETURNING Clause</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div id="Q1" class="exampleblock">
+<div class="title">Example 1. Delete query containing a WHERE clause</div>
+<div class="content">
+<div class="paragraph">
+<p>This example requires the <em>Query Delete</em> privilege on <code>`travel-sample`</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DELETE FROM `travel-sample` WHERE type = "hotel";
-
-DELETE FROM `travel-sample` WHERE type = "hotel" RETURNING *;</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample` WHERE type = "hotel";</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div id="Q2" class="exampleblock">
+<div class="title">Example 2. Delete queries containing a subquery</div>
+<div class="content">
 <div class="paragraph">
-<p><strong>Q1 Example</strong> that requires the <em>Query Delete</em> privilege on <code>`travel-sample`</code> and on <code>`beer-sample`</code>.</p>
+<p>This example requires the <em>Query Delete</em> privilege on <code>`travel-sample`</code> and the <em>Query Select</em> privilege on <code>`beer-sample`</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DELETE FROM `travel-sample` WHERE city
-IN (SELECT raw city FROM `beer-sample` WHERE city IS NOT MISSING);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample` WHERE city
+IN (SELECT raw city FROM `beer-sample` WHERE city IS NOT MISSING);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Q2 Example</strong> that requires the <em>Query Delete</em> and <em>Query Select</em> privilege on <code>`travel-sample`</code>.</p>
+<p>This example requires the <em>Query Delete</em> and <em>Query Select</em> privileges on <code>`travel-sample`</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DELETE FROM `travel-sample`
-WHERE city =  (SELECT MAX(city) FROM `travel-sample`)</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`
+WHERE city =  (SELECT MAX(city) FROM `travel-sample`)</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div id="Q3" class="exampleblock">
+<div class="title">Example 3. Delete queries containing a RETURNING clause</div>
+<div class="content">
 <div class="paragraph">
-<p><strong>Q3 Example</strong> that requires the <em>Query Delete</em> and <em>Query Select</em> privilege on <code>`travel-sample`</code>.</p>
+<p>These examples require the <em>Query Delete</em> and <em>Query Select</em> privileges on <code>`travel-sample`</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DELETE FROM `travel-sample`
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample` WHERE type = "hotel" RETURNING *;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`
 WHERE city = "San Francisco"
-RETURNING meta().id</pre>
+RETURNING meta().id</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Delete by key</div>
+<div class="content">
 <div class="paragraph">
-<p><strong>Example 4</strong>:  Query that deletes product10.</p>
+<p>This example deletes the document <code>product10</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DELETE FROM product p USE KEYS "product10" RETURNING p
-
-"results": [
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM product p USE KEYS "product10" RETURNING p</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
     {
         "p": {
             "categories": [
@@ -4703,23 +4793,36 @@ RETURNING meta().id</pre>
             "unitPrice": 231.2
         }
     }
-]</pre>
+]</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. Delete by filter</div>
+<div class="content">
 <div class="paragraph">
-<p><strong>Example 5</strong>:  Query that deletes the product that is priced at 5.25.</p>
+<p>This example deletes any product that is priced at 5.25.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DELETE FROM product p
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM product p
 WHERE p.unitPrice = 5.25
-RETURNING p.productId
-
-"results": [
-        {
-            "productId": "product99"
-        }
-    ]</pre>
+RETURNING p.productId</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+    {
+        "productId": "product99"
+    }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </article>

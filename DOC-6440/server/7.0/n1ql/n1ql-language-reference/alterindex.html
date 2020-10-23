@@ -4617,7 +4617,7 @@ It is not possible to move an index or index replica and change the number of in
 <h3 id="index-identifier"><a class="anchor" href="#index-identifier"></a>Index Identifier</h3>
 <div class="listingblock">
 <div class="content">
-<pre>index-identifier ::= ( <em>collection</em> | [ <em>namespace</em> ':' ] <em>bucket</em> ) '.' <em>index-name</em></pre>
+<pre>index-identifier ::= ( <a href="#keyspace-prefix-index">keyspace-prefix</a> | <a href="#keyspace-partial-index">keyspace-partial</a> ) '.' <em>index-name</em></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4629,43 +4629,6 @@ It is not possible to move an index or index replica and change the number of in
 <p>You can use a dotted notation to specify the index and the keyspace on which the index is built.
 This syntax provides compatibility with legacy versions of Couchbase Server, but if the keyspace is a named collection, it does not enable you to specify the full or relative path to the collection.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>If the index is built on the default collection in the default scope within a bucket, the index identifier may be just an optional namespace, the bucket name, and the index name.
-For example, <code>default:`travel-sample`.`def-type`</code> indicates the <code>def-type</code> index in the <code>travel-sample</code> keyspace in the <code>default</code> namespace.</p>
-</li>
-<li>
-<p>If the index is built on a named collection, the index identifier may be just the collection name with no path, and the index name.
-When you specify the collection name, you must set the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter to indicate the required namespace, bucket, and scope.
-For example, <code>cities.`idx-name`</code> indicates the <code>idx-name</code> index in the <code>cities</code> collection, assuming that the query context is set.</p>
-</li>
-</ul>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">namespace</dt>
-<dd>
-<p>(Optional if <strong><em>bucket</em></strong> is supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">namespace</a> of the indexed bucket.
-Currently, only the <code>default</code> namespace is available.
-If the namespace name is omitted, the default namespace in the current session is used.</p>
-</dd>
-<dt class="hdlist1">bucket</dt>
-<dd>
-<p>(Required if <strong><em>collection</em></strong> is not supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket name</a>.
-It specifies the bucket as the source for the index which needs to be altered.</p>
-</dd>
-<dt class="hdlist1">collection</dt>
-<dd>
-<p>(Required if <strong><em>bucket</em></strong> is not supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a>.
-It specifies the collection as the source for the index which needs to be altered.</p>
-</dd>
-<dt class="hdlist1">index-name</dt>
-<dd>
-<p>(Required) A unique name that identifies the index.</p>
-</dd>
-</dl>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -4673,10 +4636,89 @@ It specifies the collection as the source for the index which needs to be altere
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If there is a hyphen (-) inside the bucket, collection, or index name, you must wrap it in backticks (` `).
+If there is a hyphen (-) inside any part of the index identifier, you must wrap that part of the index identifier in backticks (`&#160;`).
+Refer to the examples below.
 </td>
 </tr>
 </table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">index-name</dt>
+<dd>
+<p>(Required) A unique name that identifies the index.</p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="keyspace-prefix-index"><a class="anchor" href="#keyspace-prefix-index"></a>Index Identifier: Keyspace Prefix</h4>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-prefix ::= [ <em>namespace</em> ':' ] <em>bucket</em> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-prefix.png" alt="( namespace ':' )? bucket">
+</div>
+</div>
+<div class="paragraph">
+<p>If the index is built on the default collection in the default scope within a bucket, the index identifier may be just an optional namespace and the bucket name, followed by the index name.
+In this case, the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter should not be set.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">namespace</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> of the keyspace.
+Currently, only the <code>default</code> namespace is available.
+If the namespace name is omitted, the default namespace in the current session is used.</p>
+</dd>
+<dt class="hdlist1">bucket</dt>
+<dd>
+<p>(Required) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket name</a> of the keyspace.</p>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For example, <code>default:`travel-sample`.`def-type`</code> indicates the <code>def-type</code> index in the <code>default:`travel-sample`</code> keyspace.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="keyspace-partial-index"><a class="anchor" href="#keyspace-partial-index"></a>Index Identifier: Keyspace Partial</h4>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-partial ::= <em>collection</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-partial.png" alt="collection">
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, if the keyspace is a named collection, the index identifier may be just the collection name with no path, followed by the index name.
+In this case, you must set the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter to indicate the required namespace, bucket, and scope.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">collection</dt>
+<dd>
+<p>(Required) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a> of the keyspace.</p>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For example, <code>cities.`idx-name`</code> indicates the <code>idx-name</code> index in the <code>cities</code> collection, assuming that the query context is set.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -4686,59 +4728,17 @@ If there is a hyphen (-) inside the bucket, collection, or index name, you must 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>keyspace-ref ::= <em>collection</em> | ( [ <em>namespace</em> ':' ] <em>bucket</em> [ '.' <em>scope</em> '.' <em>collection</em> ] )</pre>
+<pre>keyspace-ref ::= <a href="#keyspace-path">keyspace-path</a> | <a href="#keyspace-partial">keyspace-partial</a></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/keyspace-ref.png" alt="collection | ( ( namespace ':' )? bucket ( '.' scope '.' )? )">
+<img src="../_images/n1ql-language-reference/keyspace-ref.png" alt="keyspace-path | keyspace-partial">
 </div>
 </div>
 <div class="paragraph">
-<p>In Couchbase Server 7.0 and later, you can specify the index name with the <code>ON</code> keyword and a keyspace reference to specify the keyspace on which the index is built.
+<p>In Couchbase Server 7.0 and later, you can use the index name with the <code>ON</code> keyword and a keyspace reference to specify the keyspace on which the index is built.
 You can use this syntax when the keyspace is a named collection, and you want to specify the full or relative path to the collection.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>If the index is built on the default collection in the default scope within a bucket, the keyspace reference may be just an optional namespace and the bucket name.
-For example, <code>`def-type` ON default:`travel-sample`</code> indicates the <code>def-type</code> index in the <code>travel-sample</code> keyspace in the <code>default</code> namespace.</p>
-</li>
-<li>
-<p>If the index is built on a named collection, the keyspace reference may be just the collection name with no path.
-When you specify a collection name without a path, you must set the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter to indicate the required namespace, bucket, and scope.
-For example, <code>`idx-name` ON cities</code> indicates the <code>idx-name</code> index in the <code>cities</code> collection, assuming the query context is set.</p>
-</li>
-<li>
-<p>If the namespace is built on a named collection and the query context is not set, the keyspace reference must consist of an optional namespace, the bucket name, the scope name, and finally the collection name.
-For example, <code>`idx-name` ON default:`travel-sample`.places.cities</code> indicates the <code>idx-name</code> index in the collection whose full path is <code>default:`travel-sample`.places.cities</code>.</p>
-</li>
-</ul>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">namespace</dt>
-<dd>
-<p>(Optional if <strong><em>bucket</em></strong> is supplied) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">namespace</a> of the indexed bucket.
-Currently, only the <code>default</code> namespace is available.
-If the namespace name is omitted, the default namespace in the current session is used.</p>
-</dd>
-<dt class="hdlist1">bucket</dt>
-<dd>
-<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket name</a>.
-It specifies the bucket as the source for the index which needs to be altered.</p>
-</dd>
-<dt class="hdlist1">scope</dt>
-<dd>
-<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope name</a>.
-It specifies the scope which contains the indexed collection.</p>
-</dd>
-<dt class="hdlist1">collection</dt>
-<dd>
-<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a>.
-It specifies the collection as the source for the index which needs to be altered.</p>
-</dd>
-</dl>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4747,10 +4747,98 @@ It specifies the collection as the source for the index which needs to be altere
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If there is a hyphen (-) inside the bucket name, the scope name, or the collection name, you must wrap that part of the path in backticks (` `).
+If there is a hyphen (-) inside the index name or any part of the keyspace reference, you must wrap the index name or that part of the keyspace reference in backticks (`&#160;`).
+Refer to the examples below.
 </td>
 </tr>
 </table>
+</div>
+<div class="sect3">
+<h4 id="keyspace-path"><a class="anchor" href="#keyspace-path"></a>Keyspace Reference: Keyspace Path</h4>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-path ::= [ <em>namespace</em> ':' ] <em>bucket</em> [ '.' <em>scope</em> '.' <em>collection</em> ]</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-path.png" alt="( namespace ':' )? bucket ( '.' scope '.' collection )?">
+</div>
+</div>
+<div class="paragraph">
+<p>If the keyspace is a named collection, or the default collection in the default scope within a bucket, the keyspace reference may be a keyspace path.
+In this case, the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter should not be set.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">namespace</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> of the keyspace.
+Currently, only the <code>default</code> namespace is available.
+If the namespace name is omitted, the default namespace in the current session is used.</p>
+</dd>
+<dt class="hdlist1">bucket</dt>
+<dd>
+<p>(Required) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket name</a> of the keyspace.</p>
+</dd>
+<dt class="hdlist1">scope</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope name</a> of the keyspace.
+If omitted, the bucket&#8217;s default scope is used.</p>
+</dd>
+<dt class="hdlist1">collection</dt>
+<dd>
+<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a> of the keyspace.
+If omitted, the default collection in the bucket&#8217;s default scope is used.</p>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For example, <code>`def-type` ON default:`travel-sample`</code> indicates the <code>def-type</code> index in the <code>default:`travel-sample`</code> keyspace.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Similarly, <code>`idx-name` ON default:`travel-sample`.places.cities</code> indicates the <code>idx-name</code> index in the <code>default:`travel-sample`.places.cities</code> keyspace.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="keyspace-partial"><a class="anchor" href="#keyspace-partial"></a>Keyspace Reference: Keyspace Partial</h4>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-partial ::= <em>collection</em></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-partial.png" alt="collection">
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, if the keyspace is a named collection, the keyspace reference may be just the collection name with no path.
+In this case, you must set the <a href="../../settings/query-settings.html#query_context" class="page">query_context</a> request-level parameter to indicate the required namespace, bucket, and scope.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">collection</dt>
+<dd>
+<p>(Required) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection name</a> of the keyspace.</p>
+</dd>
+</dl>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For example, <code>`idx-name` ON cities</code> indicates the <code>idx-name</code> index in the <code>cities</code> collection, assuming the query context is set.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">

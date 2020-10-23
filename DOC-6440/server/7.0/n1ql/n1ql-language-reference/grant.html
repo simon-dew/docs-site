@@ -4496,7 +4496,9 @@ server
 <span class="last-commit-date" id="commitdate">    </span>
 <ul id="contributorList"></ul>
 <span  id="otherContributor"> + </span>
-</div><div class="quoteblock abstract">
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
 <blockquote>
 The GRANT statement allows granting any RBAC roles to a specific user.
 </blockquote>
@@ -4504,26 +4506,26 @@ The GRANT statement allows granting any RBAC roles to a specific user.
 <div class="paragraph">
 <p>Roles can be of the following two types:</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 12.0048%;">
-<col style="width: 87.9952%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>simple</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Roles which apply generically to all buckets/resources in the cluster.</p>
-<p class="tableblock">For example: <code>ClusterAdmin</code> or <code>BucketAdmin</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>parameterized by a bucket</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Roles which are defined for the scope of the specified bucket only.
-The bucket name is specified after ON.</p>
-<p class="tableblock">For example: <code>BucketReader ON `travel-sample`</code></p>
-<p class="tableblock">or <code>Query_Select ON `travel-sample`</code></p></td>
-</tr>
-</tbody>
-</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">simple</dt>
+<dd>
+<p>Roles which apply generically to all keyspaces or resources in the cluster.</p>
+<div class="paragraph">
+<p>For example: <code>ClusterAdmin</code> or <code>BucketAdmin</code></p>
+</div>
+</dd>
+<dt class="hdlist1">parameterized by a keyspace</dt>
+<dd>
+<p>Roles which are defined for the scope of the specified keyspace only.
+The keyspace name is specified after ON.</p>
+<div class="paragraph">
+<p>For example: <code>DataReader ON `travel-sample`</code><br>
+or <code>Query_Select ON `travel-sample`</code></p>
+</div>
+</dd>
+</dl>
+</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -4537,27 +4539,26 @@ For more details about user roles, see <a href="../../learn/security/authorizati
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p><strong>Syntax</strong></p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>GRANT role1   [, role2, ...]
-   ON bucket1 [, bucket2, ...]
-   TO user1   [, user2, ...];</pre>
+<pre>grant ::= GRANT <em>role</em> [ ',' role ]* [ ON <a href="#keyspace-ref">keyspace-ref</a> [ ',' <a href="#keyspace-ref">keyspace-ref</a> ]* ] TO <em>user</em> [ ',' <em>user</em> ]*</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/grant.png" alt="'GRANT' role ( ',' role )* ( 'ON' keyspace-ref ( ',' keyspace-ref )* )? 'TO' user ( ',' user )*">
 </div>
 </div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1"><strong>role</strong></dt>
+<dt class="hdlist1">role</dt>
 <dd>
-<p><code>RBAC-role[(bucket_name)]</code></p>
-<div class="paragraph">
-<p><code>RBAC-role</code> is one of the <a href="../../learn/security/authorization-overview.html" class="page">RBAC role names predefined</a> by Couchbase Server.</p>
-</div>
-<div class="paragraph">
-<p><code>RBAC-user</code> is the user name created by the Couchbase Server RBAC system.</p>
-</div>
+<p>One of the <a href="../../learn/security/authorization-overview.html" class="page">RBAC role names predefined</a> by Couchbase Server.</p>
 <div class="paragraph">
 <p>The following roles have short forms that can be used as well:</p>
 </div>
@@ -4578,16 +4579,34 @@ For more details about user roles, see <a href="../../learn/security/authorizati
 </ul>
 </div>
 </dd>
-<dt class="hdlist1"><strong>bucket</strong></dt>
+<dt class="hdlist1">user</dt>
 <dd>
-<p>The name of your Couchbase or Memcached bucket or buckets.</p>
-</dd>
-<dt class="hdlist1"><strong>user</strong></dt>
-<dd>
-<p><code>RBAC-user</code> in your bucket.</p>
+<p>A user name created by the Couchbase Server RBAC system.</p>
 </dd>
 </dl>
 </div>
+<div class="sect2">
+<h3 id="keyspace-ref"><a class="anchor" href="#keyspace-ref"></a>Keyspace Reference</h3>
+<div class="listingblock">
+<div class="content">
+<pre>keyspace-ref ::= <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> | ( [ <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> ':' ] <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket</a> [ '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope</a> '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> ] )</pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/n1ql-language-reference/full-keyspace-ref.png" alt="collection | ( ( namespace ':' )? bucket ( '.' scope '.' collection )? )">
+</div>
+</div>
+<div class="paragraph">
+<p>The simple name or fully-qualified name of a keyspace.
+Refer to the <a href="createindex.html#keyspace-ref" class="page">CREATE INDEX</a> statement for details of the syntax.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="usage"><a class="anchor" href="#usage"></a>Usage</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>GRANT statements support legacy systems and have two forms:</p>
 </div>
@@ -4625,20 +4644,31 @@ Mixing of parameterized and unparameterized roles or syntax is not allowed and w
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p><strong>Example 1</strong>:  Grant the role of Cluster Administrator to three people.</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 1. Grant the role of Cluster Administrator to three people</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">GRANT ClusterAdmin TO david, michael, robin;</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><strong>Example 2</strong>: Grant the roles of Cluster Administrator and Bucket Reader in the Travel Sample bucket to Debby.</p>
 </div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Grant the roles of Cluster Administrator and Data Reader in the travel-sample keyspace to Debby</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">GRANT ClusterAdmin, BucketReader ON `travel-sample` TO debby;</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">GRANT ClusterAdmin, DataReader ON `travel-sample` TO debby;</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </article>

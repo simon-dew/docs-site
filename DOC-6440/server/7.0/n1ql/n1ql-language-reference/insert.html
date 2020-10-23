@@ -4502,7 +4502,7 @@ server
 <blockquote>
 Use the INSERT statement to insert one or more new documents into an existing keyspace.
 Each INSERT statement requires a unique document key and well-formed JSON as values.
-In Couchbase, documents in a single bucket must have a unique key.
+In Couchbase, documents in a single keyspace must have a unique key.
 </blockquote>
 </div>
 <div class="paragraph">
@@ -4552,9 +4552,9 @@ See and for details.</p>
 <div class="sect2">
 <h3 id="security-requirements"><a class="anchor" href="#security-requirements"></a>Security Requirements</h3>
 <div class="paragraph">
-<p>You should have read-write permission to the bucket, to be able to insert documents into a bucket.
-Any user who has the bucket credentials or any Couchbase administrator should be able to insert documents into a bucket.
-This includes the bucket administrator for the specified bucket, the cluster administrator, and the full administrator roles.
+<p>You should have read-write permission to the keyspace, to be able to insert documents into a keyspace.
+Any user who has the keyspace credentials or any Couchbase administrator should be able to insert documents into a keyspace.
+This includes the keyspace administrator for the specified keyspace, the cluster administrator, and the full administrator roles.
 See <a href="../../learn/security/roles.html" class="page">Roles</a> for details about access privileges for various administrators.</p>
 </div>
 <div class="admonitionblock warning">
@@ -4573,7 +4573,7 @@ You cannot insert documents into a SASL bucket if you have a read-only role for 
 <div class="sect2">
 <h3 id="rbac-privileges"><a class="anchor" href="#rbac-privileges"></a>RBAC Privileges</h3>
 <div class="paragraph">
-<p>User executing the INSERT statement must have the <em>Query Insert</em> privilege on the target keyspace/bucket.</p>
+<p>User executing the INSERT statement must have the <em>Query Insert</em> privilege on the target keyspace.</p>
 </div>
 <div class="paragraph">
 <p>If the statement has any SELECT or RETURNING data-read clauses, then the <em>Query Select</em> privilege is also required on the keyspaces referred in the respective clauses.
@@ -4658,34 +4658,17 @@ Ensure that the keyspace exists before trying to insert a document.</p>
 <h4 id="insert-target-ref"><a class="anchor" href="#insert-target-ref"></a>Keyspace Reference</h4>
 <div class="listingblock">
 <div class="content">
-<pre>keyspace-ref ::= [ <em>namespace</em> ':' ] <em>keyspace</em></pre>
+<pre>keyspace-ref ::= <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> | ( [ <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> ':' ] <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket</a> [ '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope</a> '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> ] )</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/from-keyspace-ref.png" alt="( namespace ':' )? keyspace">
+<img src="../_images/n1ql-language-reference/full-keyspace-ref.png" alt="collection | ( ( namespace ':' )? bucket ( '.' scope '.' collection )? )">
 </div>
 </div>
 <div class="paragraph">
 <p>Keyspace reference for the insert target.
 For more details, refer to <a href="from.html#from-keyspace-ref" class="page">Keyspace Reference</a>.</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">namespace</dt>
-<dd>
-<p>(Optional) An <a href="identifiers.html" class="page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-heirarchy" class="page">namespace</a> of the insert target.
-Currently, only the <code>default</code> namespace is available.
-If the namespace name is omitted, the default namespace in the current session is used.</p>
-</dd>
-<dt class="hdlist1">keyspace</dt>
-<dd>
-<p>(Required) An <a href="identifiers.html" class="page">identifier</a> that refers to the bucket name or <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">keyspace</a> of the insert target.</p>
-</dd>
-</dl>
-</div>
-<div class="paragraph">
-<p>For example, <code>default:`travel-sample`</code> indicates the <code>travel-sample</code> keyspace in the <code>default</code> namespace.</p>
 </div>
 </div>
 <div class="sect3">
@@ -4750,7 +4733,7 @@ There is no syntactic requirement to include the OPTIONS keyword when setting me
 <dt class="hdlist1">key</dt>
 <dd>
 <p>A string, or an expression resolving to a string, representing the ID of the document to be inserted.
-The KEY cannot be MISSING or NULL, and must be unique within the Couchbase bucket.
+The KEY cannot be MISSING or NULL, and must be unique within the Couchbase keyspace.
 It can be a string or an expression that produces a string.</p>
 </dd>
 <dt class="hdlist1">value</dt>
@@ -4931,7 +4914,7 @@ RETURNING *;</code></pre>
 <div class="title">Example 7. Insert a document with expiration</div>
 <div class="content">
 <div class="paragraph">
-<p>Insert a document into the <code>travel-sample</code> bucket using an expiration of 5 days.</p>
+<p>Insert a document into the <code>travel-sample</code> keyspace using an expiration of 5 days.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5007,7 +4990,7 @@ For details, see <a href="select-syntax.html" class="page">SELECT Syntax</a>.</p
 <div class="title">Example 8. Insert with SELECT</div>
 <div class="content">
 <div class="paragraph">
-<p>Query the <code>travel-sample</code> bucket for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection (1 document) into the <code>travel-sample</code> bucket using a unique key generated using <code>UUID()</code>.</p>
+<p>Query the <code>travel-sample</code> keyspace for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection (1 document) into the <code>travel-sample</code> keyspace using a unique key generated using <code>UUID()</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5048,7 +5031,7 @@ RETURNING *;</code></pre>
 <div class="title">Example 9. Insert with SELECT and set expiration</div>
 <div class="content">
 <div class="paragraph">
-<p>Query the <code>travel-sample</code> bucket for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection into the <code>travel-sample</code> bucket using a unique key and an expiration of 2 hours.</p>
+<p>Query the <code>travel-sample</code> keyspace for documents of <code>type</code> "airport" and <code>airportname</code> "Heathrow", and then insert the projection into the <code>travel-sample</code> keyspace using a unique key and an expiration of 2 hours.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5077,7 +5060,7 @@ RETURNING *;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>See <a href="#Example_15_copy_bucket">Example 18</a> to use the INSERT statement to copy one bucket&#8217;s data to another bucket.</p>
+<p>See <a href="#Example_15_copy_bucket">Example 18</a> to use the INSERT statement to copy one keyspace&#8217;s data to another keyspace.</p>
 </div>
 </div>
 </div>
@@ -5241,7 +5224,7 @@ Check <code class="api">system:active_requests</code> catalog for more informati
 For more information, see <a href="../../tools/query-monitoring.html" class="page">Query Monitoring</a>.</p>
 </div>
 <div class="paragraph">
-<p>You can also take a look at the bucket metrics from the Web Console.
+<p>You can also take a look at the keyspace metrics from the Web Console.
 To do so, go to the Data Buckets tab and click the bucket that you want to monitor.
 In the General Bucket Analytics screen, scroll to the Query section to gather information such as requests/sec, selects/sec and so on.</p>
 </div>
@@ -5344,7 +5327,7 @@ When a large number of documents are inserted, this may affect the performance o
 <div class="title">Example 13. Overview</div>
 <div class="content">
 <div class="paragraph">
-<p>The following statement inserts a single JSON document into the <code>travel-sample</code> bucket with key "k001".
+<p>The following statement inserts a single JSON document into the <code>travel-sample</code> keyspace with key "k001".
 The returning clause specifies the function <code>META().id</code> to return the key of the inserted document (metadata), and the wildcard (*) to return the inserted document.</p>
 </div>
 <div class="listingblock">
@@ -5397,7 +5380,7 @@ RETURNING META().id as docid, *;</code></pre>
 <div class="title">Example 14. Inserting a Single Document</div>
 <div class="content">
 <div class="paragraph">
-<p>Insert a new document with <code>key</code> "1025" and <code>type</code> "airline" into the <code>travel-sample</code> bucket.</p>
+<p>Insert a new document with <code>key</code> "1025" and <code>type</code> "airline" into the <code>travel-sample</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5457,7 +5440,7 @@ The VALUES keyword itself is optional in the second and later iterations of the 
 <div class="title">Example 15. Performing Bulk Inserts</div>
 <div class="content">
 <div class="paragraph">
-<p>Insert two documents with <code>key</code> "airline_4444" and "airline_4445" of <code>type</code> "airline" into the <code>travel-sample</code> bucket:</p>
+<p>Insert two documents with <code>key</code> "airline_4444" and "airline_4445" of <code>type</code> "airline" into the <code>travel-sample</code> keyspace:</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5528,14 +5511,14 @@ RETURNING *;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Instead of providing actual values, you can specify the data to be inserted using the SELECT statement which selects the data from an existing bucket.</p>
+<p>Instead of providing actual values, you can specify the data to be inserted using the SELECT statement which selects the data from an existing keyspace.</p>
 </div>
 <div id="example-13" class="exampleblock">
 <div class="title">Example 16. Inserting Values using SELECT</div>
 <div class="content">
 <div class="paragraph">
-<p>Query the <code>travel-sample</code> bucket for documents where the <code>airportname</code> is "Heathrow" and <code>type</code> is "airport".
-Then insert the result of the select statement (a well-formed JSON document) into the <code>travel-sample</code> bucket with a key generated using the <code>UUID()</code> function.</p>
+<p>Query the <code>travel-sample</code> keyspace for documents where the <code>airportname</code> is "Heathrow" and <code>type</code> is "airport".
+Then insert the result of the select statement (a well-formed JSON document) into the <code>travel-sample</code> keyspace with a key generated using the <code>UUID()</code> function.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5628,17 +5611,17 @@ RETURNING META().id as docid, *;</code></pre>
 </div>
 </div>
 <div id="Example_15_copy_bucket" class="exampleblock">
-<div class="title">Example 18. Using Insert to Copy Bucket Data to Another Bucket</div>
+<div class="title">Example 18. Using Insert to Copy Keyspace Data to Another Keyspace</div>
 <div class="content">
 <div class="paragraph">
-<p>Use the INSERT statement to create a copy of <code>bucket_1</code> under the new name <code>bucket_2</code>.</p>
+<p>Use the INSERT statement to create a copy of <code>keyspace_1</code> under the new name <code>keyspace_2</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO bucket_2(key _k, value _v)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO keyspace_2(key _k, value _v)
     SELECT META().id _k, _v
-      FROM bucket_1 _v;</code></pre>
+      FROM keyspace_1 _v;</code></pre>
 </div>
 </div>
 </div>
@@ -5937,7 +5920,7 @@ For example, the following REST API call throws an error because of spaces befor
 <div class="sectionbody">
 <div class="paragraph">
 <p>To understand how the INSERT statement is executed by N1QL, let us take a look at two examples.
-For detailed explanation about the EXPLAIN plan, see the <a href="explain.html#topic_11_4" class="page">EXPLAIN</a> statement.</p>
+For detailed explanation about the EXPLAIN plan, see the <a href="explain.html" class="page">EXPLAIN</a> statement.</p>
 </div>
 <div id="example-19" class="exampleblock">
 <div class="title">Example 22. Simple INSERT Statement Using KEY VALUE Pairs to Insert Two Documents</div>
@@ -6156,7 +6139,7 @@ RETURNING *;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The Query Engine first executes the <code>SELECT</code> statement and then uses the projection to insert into the <code>travel-sample</code> bucket, performing the operations in the order listed:</p>
+<p>The Query Engine first executes the <code>SELECT</code> statement and then uses the projection to insert into the <code>travel-sample</code> keyspace, performing the operations in the order listed:</p>
 </div>
 <div class="colist arabic">
 <table>
@@ -6178,7 +6161,7 @@ RETURNING *;</code></pre>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>An <code>Insert</code> of the value along with the auto-generated key into the <code>travel-sample</code> bucket.</td>
+<td>An <code>Insert</code> of the value along with the auto-generated key into the <code>travel-sample</code> keyspace.</td>
 </tr>
 </table>
 </div>

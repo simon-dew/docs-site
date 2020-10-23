@@ -4500,8 +4500,8 @@ server
 <div class="sectionbody">
 <div class="paragraph">
 <p>The INFER statement enables you to infer the metadata of documents in a keyspace, for example the structure of documents, data types of various attributes, sample values, and so on.
-Since a keyspace or bucket can contain documents with varying structures, the INFER statement is statistical in nature rather than deterministic.
-You can specify the sample size that must be used to analyze and identify the structure of documents in a keyspace or bucket.</p>
+Since a keyspace can contain documents with varying structures, the INFER statement is statistical in nature rather than deterministic.
+You can specify the sample size that must be used to analyze and identify the structure of documents in a keyspace.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4516,7 +4516,28 @@ The <code class="cmd">describe</code> statement introduced in the Couchbase Serv
 </table>
 </div>
 <div class="paragraph">
-<p>The Query Workbench in the Couchbase Web console (available under the <strong class="ui">Query</strong> tab) uses the INFER statement to display the structure of documents in the <strong class="ui">Bucket Analysis</strong> area when you expand the keyspace or bucket name.</p>
+<p>The Query Workbench in the Couchbase Web console (available under the <strong class="ui">Query</strong> tab) uses the INFER statement to display the structure of documents in the <strong class="ui">Bucket Analysis</strong> area when you expand the keyspace name.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rbac-privileges"><a class="anchor" href="#rbac-privileges"></a>RBAC Privileges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To execute the INFER statement, you must have the <em>Query Select</em> privilege granted on the target keyspace.
+For more details about user roles, see
+<a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
+</div>
+<div class="paragraph">
+<p>For example,</p>
+</div>
+<div class="paragraph">
+<p>To execute the following statement, you must have the <em>Query Select</em> privilege on <code>`travel-sample`</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INFER `travel-sample`</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -4525,7 +4546,7 @@ The <code class="cmd">describe</code> statement introduced in the Couchbase Serv
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>infer-clause ::= INFER keyspace-ref [ WITH '{' <a href="#infer-parameters">parameter</a> ':' value ( ',' <a href="#infer-parameters">parameter</a> ':' value )* '}' ]</pre>
+<pre>infer-clause ::= INFER <a href="#keyspace-ref">keyspace-ref</a> [ WITH <a href="#infer-parameters">parameters</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4533,36 +4554,35 @@ The <code class="cmd">describe</code> statement introduced in the Couchbase Serv
 <img src="../_images/n1ql-language-reference/infer-clause.png" alt="'INFER' keyspace-ref ( 'WITH' '{' parameter ':' value ( ',' parameter ':' value )* '}' )?">
 </div>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><code class="var">keyspace_ref</code></dt>
-<dd>
-<p>Specifies a simple or fully-qualified keyspace name.</p>
-</dd>
-</dl>
-</div>
 <div class="sect2">
-<h3 id="infer-parameters"><a class="anchor" href="#infer-parameters"></a>Parameters</h3>
+<h3 id="keyspace-ref"><a class="anchor" href="#keyspace-ref"></a>Keyspace Reference</h3>
 <div class="listingblock">
 <div class="content">
-<pre>parameter ::= '"' ( 'sample_size' | 'num_sample_values' | 'similarity_metric' | 'dictionary_threshold' ) '"'</pre>
+<pre>keyspace-ref ::= <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> | ( [ <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">namespace</a> ':' ] <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">bucket</a> [ '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">scope</a> '.' <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">collection</a> ] )</pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/infer-parameters.png" alt="'&amp;quot' ( 'sample_size' | 'num_sample_values' | 'similarity_metric' | 'dictionary_threshold' ) '&quot;'">
+<img src="../_images/n1ql-language-reference/full-keyspace-ref.png" alt="collection | ( ( namespace ':' )? bucket ( '.' scope '.' collection )? )">
 </div>
 </div>
 <div class="paragraph">
-<p>You may specify one or more of the following comma-separated parameters to guide the INFER statement.</p>
+<p>The simple name or fully-qualified name of a keyspace.
+Refer to the <a href="createindex.html#keyspace-ref" class="page">CREATE INDEX</a> statement for details of the syntax.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="infer-parameters"><a class="anchor" href="#infer-parameters"></a>Parameters</h3>
+<div class="paragraph">
+<p>An object with one or more of the following properties to guide the INFER statement.</p>
 </div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><code class="var">sample_size</code></dt>
 <dd>
-<p>Specifies the number of documents to randomly sample in the keyspace or bucket when inferring the schema.
+<p>Specifies the number of documents to randomly sample in the keyspace when inferring the schema.
 The default sample size is 1000 documents.
-If a bucket contains fewer documents than the specified <code class="var">sample_size</code>, then all the documents in the bucket will be used.</p>
+If a keyspace contains fewer documents than the specified <code class="var">sample_size</code>, then all the documents in the keyspace will be used.</p>
 </dd>
 <dt class="hdlist1"><code class="var">num_sample_values</code></dt>
 <dd>
@@ -4699,27 +4719,6 @@ For each identified attribute, the schema may contain the following details:</p>
 </div>
 </dd>
 </dl>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="rbac-privileges"><a class="anchor" href="#rbac-privileges"></a>RBAC Privileges</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To execute the INFER statement, you must have the <em>Query Select</em> privilege granted on the target keyspace/bucket.
-For more details about user roles, see
-<a href="../../learn/security/authorization-overview.html" class="page">Authorization</a>.</p>
-</div>
-<div class="paragraph">
-<p>For example,</p>
-</div>
-<div class="paragraph">
-<p>To execute the following statement, you must have the <em>Query Select</em> privilege on <code>`travel-sample`</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INFER `travel-sample`</code></pre>
-</div>
 </div>
 </div>
 </div>

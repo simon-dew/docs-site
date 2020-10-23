@@ -4890,7 +4890,7 @@ That means, they cannot include any references to names, aliases of documents, a
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT CURL(b.url, { "data" : "address="||b.data })
-FROM bucket b;</code></pre>
+FROM keyspace b;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4914,7 +4914,7 @@ In the second argument, the string concatenation operator (||) cannot be evaluat
 <p><a href="#Ex2">Use Google Maps API to extract geometry (address and geographic location bounds) of a given street address</a></p>
 </li>
 <li>
-<p><a href="#Ex3">Join two buckets on different Couchbase clusters</a></p>
+<p><a href="#Ex3">Join two keyspaces on different Couchbase clusters</a></p>
 </li>
 <li>
 <p><a href="#Ex4">Full text search (FTS) in a N1QL query</a></p>
@@ -5169,26 +5169,26 @@ The <code>data</code> option represents the HTTP POST data.</p>
 </div>
 </div>
 <div id="Ex3" class="exampleblock">
-<div class="title">Example 3. Join two buckets on different Couchbase clusters</div>
+<div class="title">Example 3. Join two keyspaces on different Couchbase clusters</div>
 <div class="content">
 <div class="paragraph">
-<p>This N1QL query shows how to JOIN two buckets on different Couchbase clusters.
-It is same as explained in the <a href="join.html" class="page">JOIN Clause</a> example, but with the left and right side buckets for the JOIN are in two different Couchbase clusters.</p>
+<p>This N1QL query shows how to JOIN two keyspaces on different Couchbase clusters.
+It is same as explained in the <a href="join.html" class="page">JOIN Clause</a> example, but with the left and right side keyspaces for the JOIN are in two different Couchbase clusters.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The left side bucket <code>route</code> is the <code>`travel-sample`</code> route documents from cluster running on <code>hostname</code>.
+<p>The left side keyspace <code>route</code> is the <code>`travel-sample`</code> route documents from cluster running on <code>hostname</code>.
 If you don&#8217;t have a second cluster running, you should substitute the <code>hostname</code> with 127.0.0.1 or the IP-address of the local cluster.</p>
 </li>
 <li>
-<p>The right side bucket <code>airline</code> is the <code>`travel-sample`</code> airline documents in the local cluster.</p>
+<p>The right side keyspace <code>airline</code> is the <code>`travel-sample`</code> airline documents in the local cluster.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Note that the results from the <code>CURL()</code> output are embedded in the <code>results[]</code> array under the bucket alias <code>t</code> used in the remote query.
-So, we extract the result documents appropriately with the expression <code>CURL(...).results[*].t</code> and alias it to <code>route</code> as the left side bucket for the <code>JOIN</code>.</p>
+<p>Note that the results from the <code>CURL()</code> output are embedded in the <code>results[]</code> array under the keyspace alias <code>t</code> used in the remote query.
+So, we extract the result documents appropriately with the expression <code>CURL(...).results[*].t</code> and alias it to <code>route</code> as the left side keyspace for the <code>JOIN</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
@@ -5263,7 +5263,7 @@ LIMIT 4;</code></pre>
 <div class="content">
 <div class="paragraph">
 <p>The following example shows how to use the <code>CURL()</code> function to include a full text search from the <a href="../../fts/full-text-intro.html" class="page">Search service</a> in a N1QL query.
-Assuming the FTS index <code>fts_travel</code> is created on the bucket <code>`travel-sample`</code>, running the following N1QL query finds all documents that have "sanfrancisco" anywhere in the document.</p>
+Assuming the FTS index <code>fts_travel</code> is created on the keyspace <code>`travel-sample`</code>, running the following N1QL query finds all documents that have "sanfrancisco" anywhere in the document.</p>
 </div>
 <div class="paragraph">
 <p>Note that in Couchbase Server 6.5 and later, you can use <a href="searchfun.html" class="page">search functions</a> to use a full text search in a N1QL query, as long as the Search service is available on the cluster.
@@ -5308,10 +5308,10 @@ FROM CURL("http://Administrator:password@127.0.0.1:8094/api/index/fts_index/quer
 <div class="content">
 <div class="paragraph">
 <p>The following example uses the <code>CURL()</code> function with a WHERE clause.
-It uses the Yahoo finance API to find the day&#8217;s low value (i.e <code>DaysLow</code>) of HDP stock and finds all the documents in the <code>default</code> bucket that have <code>min_threshold</code> attribute value greater than the DaysLow stock value.</p>
+It uses the Yahoo finance API to find the day&#8217;s low value (i.e <code>DaysLow</code>) of HDP stock and finds all the documents in the <code>travel-sample</code> keyspace that have <code>min_threshold</code> attribute value greater than the DaysLow stock value.</p>
 </div>
 <div class="paragraph">
-<p>Insert the following documents into the <code>default</code> bucket, representing customers and their minimum thresholds, and then run the <code>SELECT</code> query:</p>
+<p>Insert the following documents into the <code>travel-sample</code> keyspace, representing customers and their minimum thresholds, and then run the <code>SELECT</code> query:</p>
 </div>
 <div class="listingblock">
 <div class="title">Data</div>
@@ -5480,7 +5480,7 @@ WHERE to_number(hdp_low) &lt; min_threshold;</code></pre>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT CURL(b.url, $params) FROM bucket b WHERE b.username = "joe";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT CURL(b.url, $params) FROM keyspace b WHERE b.username = "joe";</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5488,7 +5488,7 @@ WHERE to_number(hdp_low) &lt; min_threshold;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">bucket.query(SELECT CURL(b.url, $params) FROM bucket b WHERE b.username = "joe", { params: { data: "..." } },
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">keyspace.query(SELECT CURL(b.url, $params) FROM keyspace b WHERE b.username = "joe", { params: { data: "..." } },
  (error, result) =&gt; {} );</code></pre>
 </div>
 </div>
