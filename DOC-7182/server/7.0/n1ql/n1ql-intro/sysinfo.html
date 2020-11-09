@@ -1064,6 +1064,12 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/replicate-using-scopes-and-collections.html">Replicate Using Scopes and Collections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
 <a class="nav-link" href="../../manage/manage-xdcr/recover-data-with-xdcr.html">Recover Data with XDCR</a>
 </span>
 </li>
@@ -4500,49 +4506,64 @@ The keyspace names are plural in order to avoid conflicting with N1QL keywords.<
 <div class="paragraph">
 <p>N1QL has the following artifacts:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Datastores</strong></p>
-<div class="paragraph">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Datastores</dt>
+<dd>
 <p>Datastores are similar to sites.
 A datastore is a database deployment, for example, a server cluster, cloud service, or mobile installation.
 It is analogous to a relation database instance.</p>
-</div>
-</li>
-<li>
-<p><strong>Namespaces</strong></p>
-<div class="paragraph">
+</dd>
+<dt class="hdlist1">Namespaces</dt>
+<dd>
 <p>Namespaces are similar to pools.
 A namespace is a unit of authorization, resource allocation, and tenancy.
 It is analogous to a relational database or schema.</p>
-</div>
-</li>
-<li>
-<p><strong>Keyspaces</strong></p>
-<div class="paragraph">
-<p>Keyspaces map to buckets in Couchbase Server.
-A keyspace is a set of documents that may vary in structure.
+</dd>
+<dt class="hdlist1">Buckets</dt>
+<dd>
+<p>A bucket is the fundamental space for storing data in Couchbase Server.
+Each bucket contains at least one scope by default, and you can create more scopes as required.
+It is analogous to a relational database table space or file group.</p>
+</dd>
+<dt class="hdlist1">Scopes</dt>
+<dd>
+<p>A scope is a set of one or more collections.
+Each scope contains at least one collection by default, and you can create more collections as required.
+It is analogous to a group of relational database tables.</p>
+</dd>
+<dt class="hdlist1">Collections</dt>
+<dd>
+<p>A collection is a set of documents that may vary in structure.
 It is a unit of authorization and resource allocation.
 It is analogous to a relational database table.</p>
-</div>
-</li>
-<li>
-<p><strong>Indexes</strong></p>
+</dd>
+<dt class="hdlist1">Keyspaces</dt>
+<dd>
+<p>Keyspaces map to collections in Couchbase Server.
+A keyspace may be referred to in full using a keyspace path.
+For example, <code>default:`travel-sample`.modes.train</code> refers to the <code>train</code> collection in the <code>modes</code> scope in the <code>travel-sample</code> bucket.
+The keyspace may also be referred to briefly using just the collection name, for example when the namespace, bucket, and scope are implied by the current query context.</p>
 <div class="paragraph">
+<p>For compatibility with legacy versions of Couchbase Server, the name of the scope and collection may be omitted when referring to the default collection in the default scope within a bucket.
+So for example, we may refer to the <code>travel-sample</code> keyspace, meaning the default collection in the default scope in the <code>travel-sample</code> bucket.</p>
+</div>
+<div class="paragraph">
+<p>The term is also used to refer to any of the keyspaces in the <code>system</code> namespace.</p>
+</div>
+</dd>
+<dt class="hdlist1">Indexes</dt>
+<dd>
 <p>An index on a keyspace.
 It is analogous to a relational database index.
 Types of indexes include b-tree (ForestDB or MOI) and view indexes.</p>
-</div>
-</li>
-<li>
-<p><strong>Dual</strong></p>
-<div class="paragraph">
+</dd>
+<dt class="hdlist1">Dual</dt>
+<dd>
 <p>The dual keyspace has been added for evaluating constant expressions.
 It contains a single entry with no attributes.</p>
-</div>
-</li>
-</ul>
+</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -4550,25 +4571,35 @@ It contains a single entry with no attributes.</p>
 <h2 id="querying-datastores"><a class="anchor" href="#querying-datastores"></a>Querying Datastores</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can query datastores using the <code>SELECT</code> statement as follows:</p>
+<p>You can query datastores using the <code>system:datastores</code> keyspace as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT * FROM system:datastores</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:datastores</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The query returns the following attributes:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code class="out">id</code>: string (id for the datastore)</p>
-</li>
-<li>
-<p><code class="out">url</code>: string (URL for the datastore instance)</p>
-</li>
-</ul>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>url</code>
+</td>
+<td class="hdlist2">
+<p>(string) URL of the datastore instance</p>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -4576,60 +4607,336 @@ It contains a single entry with no attributes.</p>
 <h2 id="querying-namespaces"><a class="anchor" href="#querying-namespaces"></a>Querying Namespaces</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can query namespaces using the <code>SELECT</code> statement as follows:</p>
+<p>You can query namespaces using the <code>system:namespaces</code> keyspace as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT * FROM system:namespaces</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:namespaces</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The query returns the following attributes:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code class="out">id</code>: string (id for the namespace)</p>
-</li>
-<li>
-<p><code class="out">name</code>: string (name for the namespace)</p>
-</li>
-<li>
-<p><code class="out">datastore_id</code>: string (id for the datastore to which the namespace belongs)</p>
-</li>
-</ul>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Name of the namespace</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the namespace belongs</p>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="querying-keyspaces"><a class="anchor" href="#querying-keyspaces"></a>Querying Keyspaces</h2>
+<h2 id="querying-buckets"><a class="anchor" href="#querying-buckets"></a>Querying Buckets</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can query keyspaces using the <code>SELECT</code> statement as follows:</p>
+<p>You can query buckets using the <code>system:buckets</code> keyspace as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT * FROM system:keyspaces</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:buckets</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The query returns the following attributes:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code class="out">id</code>: string (id for the keyspace)</p>
-</li>
-<li>
-<p><code class="out">name</code>: string (name for the keyspace)</p>
-</li>
-<li>
-<p><code class="out">namespace_id</code>: string (id for the namespace to which the keyspace belongs)</p>
-</li>
-<li>
-<p><code class="out">datastore_id</code>: string (id for the datastore to which the keyspace belongs)</p>
-</li>
-</ul>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the bucket belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Name of the bucket</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace</code>
+</td>
+<td class="hdlist2">
+<p>(string) Namespace to which the bucket belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace to which the bucket belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>path</code>
+</td>
+<td class="hdlist2">
+<p>(string) Path of the bucket</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-scopes"><a class="anchor" href="#querying-scopes"></a>Querying Scopes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can query scopes using the <code>system:scopes</code> keyspace as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:scopes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The query returns the following attributes:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>bucket</code>
+</td>
+<td class="hdlist2">
+<p>(string) Bucket to which the scope belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the scope belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Name of the scope</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace</code>
+</td>
+<td class="hdlist2">
+<p>(string) Namespace to which the scope belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace to which the scope belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>path</code>
+</td>
+<td class="hdlist2">
+<p>(string) Path of the scope</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Querying <code>system:scopes</code> only returns named scopes&#8201;&#8212;&#8201;that is, non-default scopes.
+To return all scopes, including the default scopes, you can query <code>system:all_scopes</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying-keyspaces"><a class="anchor" href="#querying-keyspaces"></a>Querying Collections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can query collections using the <code>system:keyspaces</code> keyspace as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:keyspaces</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the default collection in the default scope, the query returns the following attributes:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the bucket to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Bucket to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace</code>
+</td>
+<td class="hdlist2">
+<p>(string) Namespace to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>path</code>
+</td>
+<td class="hdlist2">
+<p>(string) Path of the keyspace</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For a named, non-default collection, the query returns the following attributes:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>bucket</code>
+</td>
+<td class="hdlist2">
+<p>(string) Bucket to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the keyspace</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Name of the keyspace</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace</code>
+</td>
+<td class="hdlist2">
+<p>(string) Namespace to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace to which the keyspace belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>path</code>
+</td>
+<td class="hdlist2">
+<p>(string) Path of the keyspace</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>scope</code>
+</td>
+<td class="hdlist2">
+<p>(string) Scope to which the keyspace belongs</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Querying <code>system:keyspaces</code> only returns non-system keyspaces.
+To return all keyspaces, including the system keyspaces, you can query <code>system:all_keyspaces</code>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -4637,43 +4944,207 @@ It contains a single entry with no attributes.</p>
 <h2 id="querying-indexes"><a class="anchor" href="#querying-indexes"></a>Querying Indexes</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can query indexes using the <code>SELECT</code> statement as follows:</p>
+<p>You can query indexes using the <code>system:indexes</code> keyspace as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT * FROM system:indexes</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:indexes</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The query returns the following attributes:</p>
+<p>For an index on the default collection in the default scope, the query returns the following attributes:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code class="out">id</code>: string (id for the index)</p>
-</li>
-<li>
-<p><code class="out">name</code>: string (name for the index)</p>
-</li>
-<li>
-<p><code class="out">index_key</code>: array of strings (list of index keys)</p>
-</li>
-<li>
-<p><code class="out">using</code>: string (type of index, for example, gsi)</p>
-</li>
-<li>
-<p><code class="out">state</code>: string (state of index, for example, online)</p>
-</li>
-<li>
-<p><code class="out">keyspace_id</code>: string (id for the keyspace to which the index belongs)</p>
-</li>
-<li>
-<p><code class="out">namespace_id</code>: string (id for the namespace to which the index belongs)</p>
-</li>
-<li>
-<p><code class="out">datastore_id</code>: string (id for the datastore to which the index belongs)</p>
-</li>
-</ul>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>condition</code>
+</td>
+<td class="hdlist2">
+<p>(string) Index filter, if present</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the index</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>index_key</code>
+</td>
+<td class="hdlist2">
+<p>(array of strings) List of index keys</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>is_primary</code>
+</td>
+<td class="hdlist2">
+<p>(boolean) True if the index is a primary index</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>keyspace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the bucket to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Name of the index</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>state</code>
+</td>
+<td class="hdlist2">
+<p>(string) State of index, for example, online</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>using</code>
+</td>
+<td class="hdlist2">
+<p>(string) Type of index, for example, gsi</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For an index on a named, non-default collection, the query returns the following attributes:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+<code>bucket_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the bucket to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>condition</code>
+</td>
+<td class="hdlist2">
+<p>(string) Index filter, if present</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>datastore_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the datastore to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the index</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>index_key</code>
+</td>
+<td class="hdlist2">
+<p>(array of strings) List of index keys</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>is_primary</code>
+</td>
+<td class="hdlist2">
+<p>(boolean) True if the index is a primary index</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>keyspace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the keyspace to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>name</code>
+</td>
+<td class="hdlist2">
+<p>(string) Name of the index</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>namespace_id</code>
+</td>
+<td class="hdlist2">
+<p>(string) ID of the namespace to which the index belongs</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>state</code>
+</td>
+<td class="hdlist2">
+<p>(string) State of index, for example, online</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<code>using</code>
+</td>
+<td class="hdlist2">
+<p>(string) Type of index, for example, gsi</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Querying <code>system:indexes</code> only returns indexes on non-system keyspaces.
+To return all indexes, including indexes on system keyspaces, you can query <code>system:all_indexes</code>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -4685,11 +5156,11 @@ It contains a single entry with no attributes.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT 2+5 FROM system:dual</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT 2+5 FROM system:dual</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The query returns the result of the  expression, 7 in this case.</p>
+<p>The query returns the result of the expression, 7 in this case.</p>
 </div>
 </div>
 </div>

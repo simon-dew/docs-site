@@ -1064,6 +1064,12 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../manage/manage-xdcr/replicate-using-scopes-and-collections.html">Replicate Using Scopes and Collections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
 <a class="nav-link" href="../manage/manage-xdcr/recover-data-with-xdcr.html">Recover Data with XDCR</a>
 </span>
 </li>
@@ -4890,14 +4896,437 @@ You can also set all of the cluster-level query settings, except for the CURL() 
 <div class="paragraph">
 <p>The table below contains details of all cluster-level query settings.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. Cluster-Level Query Settings</caption>
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryCompletedLimit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryCompletedLimit" class="paragraph">
+<p>Sets the number of requests to be logged in the completed requests catalog.
+As new completed requests are added, old ones are removed.</p>
+</div>
 <div class="paragraph">
-<div class="title">Cluster-Level Query Settings</div>
-<p>Unresolved include directive in modules/settings/pages/query-settings.adoc - include::rest-api:partial$query-settings/definitions.adoc[]</p>
+<p>Increase this when the completed request keyspace is not big enough to track the slow requests, such as when you want a larger sample of slow requests.</p>
 </div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-config" class="page">Configure the Completed Requests</a> for more information and examples.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#completed-limit">node-level</a> <code>completed-limit</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>4000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryCompletedThreshold</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryCompletedThreshold" class="paragraph">
+<p>A duration in milliseconds.
+All completed queries lasting longer than this threshold are logged in the completed requests catalog.</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> to track all requests, independent of duration.
+Specify any negative number to track none.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-config" class="page">Configure the Completed Requests</a> for more information and examples.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#completed-threshold">node-level</a> <code>completed-threshold</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>1000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryLogLevel</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryLogLevel" class="paragraph">
+<p>Log level used in the logger.</p>
+</div>
+<div class="paragraph">
+<p>All values, in descending order of data:</p>
+</div>
+<div class="paragraph">
+<p><code>DEBUG</code>&#8201;&#8212;&#8201;For developers.
+Writes everything.</p>
+</div>
+<div class="paragraph">
+<p><code>TRACE</code>&#8201;&#8212;&#8201;For developers.
+Less info than <code>DEBUG</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>INFO</code>&#8201;&#8212;&#8201;For admin &amp; customers.
+Lists warnings &amp; errors.</p>
+</div>
+<div class="paragraph">
+<p><code>WARN</code>&#8201;&#8212;&#8201;For admin.
+Only abnormal items.</p>
+</div>
+<div class="paragraph">
+<p><code>ERROR</code>&#8201;&#8212;&#8201;For admin.
+Only errors to be fixed.</p>
+</div>
+<div class="paragraph">
+<p><code>SEVERE</code>&#8201;&#8212;&#8201;For admin.
+Major items, like crashes.</p>
+</div>
+<div class="paragraph">
+<p><code>NONE</code>&#8201;&#8212;&#8201;Doesn’t write anything.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#loglevel">node-level</a> <code>loglevel</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>"INFO"</code><br>
+<strong>Example</strong> : <code>"DEBUG"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (DEBUG, TRACE, INFO, WARN, ERROR, SEVERE, NONE)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryMaxParallelism</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryMaxParallelism" class="paragraph">
+<p>Specifies the maximum parallelism for queries on all Query nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>If the value is zero or negative, the maximum parallelism is restricted to the number of allowed cores.
+Similarly, if the value is greater than the number of allowed cores, the maximum parallelism is restricted to the number of allowed cores.</p>
+</div>
+<div class="paragraph">
+<p>(The number of allowed cores is the same as the number of logical CPUs.
+In Community Edition, the number of allowed cores cannot be greater than 4.
+In Enterprise Edition, there is no limit to the number of allowed cores.)</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#max-parallelism-srv">node-level</a> <code>max_parallelism</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, there is a <a href="#max_parallelism_req">request-level</a> <code>max_parallelism</code> parameter.
+If a request includes this parameter, it will be capped by the node-level <code>max-parallelism</code> setting.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To enable queries to run in parallel, you must specify the cluster-level <code>queryMaxParallelism</code> parameter, or specify the node-level <code>max-parallelism</code> parameter on all Query nodes.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../n1ql/n1ql-language-reference/index-partitioning.html#max-parallelism" class="page">Max Parallelism</a> for more information.<br>
+<strong>Default</strong> : <code>1</code><br>
+<strong>Example</strong> : <code>0</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryN1qlFeatCtrl</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryN1qlFeatCtrl" class="paragraph">
+<p>N1QL feature control.
+This setting is provided for technical support only.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#n1ql-feat-ctrl">node-level</a> <code>n1ql-feat-ctrl</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryPipelineBatch</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryPipelineBatch" class="paragraph">
+<p>Controls the number of items execution operators can batch for Fetch from the KV.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#pipeline-batch-srv">node-level</a> <code>pipeline-batch</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#pipeline_batch_req">request-level</a> <code>pipeline_batch</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>pipeline-batch</code> setting is applied.<br>
+<strong>Default</strong> : <code>16</code><br>
+<strong>Example</strong> : <code>64</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryPipelineCap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryPipelineCap" class="paragraph">
+<p>Maximum number of items each execution operator can buffer between various operators.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#pipeline-cap-srv">node-level</a> <code>pipeline-cap</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#pipeline_cap_req">request-level</a> <code>pipeline_cap</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>pipeline-cap</code> setting is applied.<br>
+<strong>Default</strong> : <code>512</code><br>
+<strong>Example</strong> : <code>1024</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryPreparedLimit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryPreparedLimit" class="paragraph">
+<p>Maximum number of prepared statements in the cache.
+When this cache reaches the limit, the least recently used prepared statements will be discarded as new prepared statements are created.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#prepared-limit">node-level</a> <code>prepared-limit</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>16384</code><br>
+<strong>Example</strong> : <code>65536</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryScanCap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryScanCap" class="paragraph">
+<p>Maximum buffered channel size between the indexer client and the query service for index scans.
+This parameter controls when to use scan backfill.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>0</code> or a negative number to disable.
+Smaller values reduce GC, while larger values reduce indexer backfill.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#scan-cap-srv">node-level</a> <code>scan-cap</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#scan_cap_req">request-level</a> <code>scan_cap</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>scan-cap</code> setting is applied.<br>
+<strong>Default</strong> : <code>512</code><br>
+<strong>Example</strong> : <code>1024</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryTimeout</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryTimeout" class="paragraph">
+<p>Maximum time to spend on the request before timing out (ns).</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> (the default value) or a negative integer to disable.
+When disabled, no timeout is applied and the request runs for however long it takes.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#timeout-srv">node-level</a> <code>timeout</code> setting specifies this property for a single node.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#timeout_req">request-level</a> <code>timeout</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>timeout</code> setting is applied.</p>
+</div>
+<div class="paragraph">
+<p>The cluster-level <code>queryTimeout</code> setting is an integer, representing a duration in nanoseconds.
+It must not be delimited by quotes, and must not include a unit.<br>
+<strong>Default</strong> : <code>0</code><br>
+<strong>Example</strong> : <code>500000000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int64)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryTmpSpaceDir</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryTmpSpaceDir" class="paragraph">
+<p>The path to which the indexer writes temporary backfill files, to store any transient data during query processing.</p>
+</div>
+<div class="paragraph">
+<p>The specified path must already exist.
+Only absolute paths are allowed.</p>
+</div>
+<div class="paragraph">
+<p>The default path is <code class="file">var/lib/couchbase/tmp</code> within the Couchbase Server installation directory.<br>
+<strong>Example</strong> : <code>"/opt/couchbase/var/lib/couchbase/tmp"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryTmpSpaceSize</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryTmpSpaceSize" class="paragraph">
+<p>The maximum size of temporary backfill files (MB).</p>
+</div>
+<div class="paragraph">
+<p>Setting the size to <code>0</code> disables backfill.
+Setting the size to <code>-1</code> means the size is unlimited.</p>
+</div>
+<div class="paragraph">
+<p>The maximum size is limited only by the available disk space.<br>
+<strong>Default</strong> : <code>5120</code><br>
+<strong>Example</strong> : <code>2048</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>queryCurlWhitelist</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="queryCurlWhitelist" class="paragraph">
+<p>An object which determines which URLs may be accessed by the <code>CURL()</code> function.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><a href="#_access">Access</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 <div id="_access" class="paragraph">
-<p><strong>Access</strong>
-Unresolved include directive in modules/settings/pages/query-settings.adoc - include::rest-api:partial$query-settings/definitions.adoc[]</p>
+<p><strong>Access</strong></p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>all_access</strong><br>
+<em>required</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Defines whether the user has access to all URLs, or only URLs specified by the access list.</p>
+</div>
+<div class="paragraph">
+<p>This field set must be set to <code>false</code> to enable the <code class="param">allowed_urls</code> and <code class="param">disallowed_urls</code> fields.</p>
+</div>
+<div class="paragraph">
+<p>Setting this field to <code>true</code> enables access to all endpoints.<br>
+<strong>Default</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>allowed_urls</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>An array of strings, each of which is a URL to which you wish to grant access.
+Each URL is a prefix match.
+The CURL() function will allow any URL that starts with this value.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you wish to allow access to all Google APIs, add the URL <code>https://maps.googleapis.com</code> to the array.
+To allow complete access to <code>localhost</code>, use <code>http://localhost</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that each URL must include the port, protocol, and all other components of the URL.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>&lt; string &gt; array</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>disallowed_urls</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>An array of strings, each of which is a URL that will be restricted for all roles.
+Each URL is a prefix match.
+The CURL() function will disallow any URL that starts with this value.</p>
+</div>
+<div class="paragraph">
+<p>If both <code class="param">allowed_urls</code> and <code class="param">disallowed_urls</code> fields are populated, the <code class="param">disallowed_urls</code> field takes precedence over <code class="param">allowed_urls</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that each URL must include the port, protocol, and all other components of the URL.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>&lt; string &gt; array</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -4950,10 +5379,731 @@ For example:</p>
 <div class="paragraph">
 <p>The table below contains details of all node-level query settings.</p>
 </div>
-<div id="_settings" class="paragraph">
-<div class="title">Node-Level Query Settings</div>
-<p>Unresolved include directive in modules/settings/pages/query-settings.adoc - include::n1ql:partial$n1ql-rest-api/admin/definitions.adoc[]</p>
+<table id="_settings" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. Node-Level Query Settings</caption>
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>auto-prepare</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="auto-prepare" class="paragraph">
+<p>Specifies whether the query engine should create a prepared statement every time a N1QL request is submitted, whether the PREPARE statement is included or not.</p>
 </div>
+<div class="paragraph">
+<p>Refer to <a href="../n1ql/n1ql-language-reference/prepare.html#auto-prepare" class="page">Auto-Prepare</a> for more information.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="completed" class="paragraph">
+<p>A nested object that sets the parameters for the completed requests catalog.
+All completed requests that match these parameters are tracked in the completed requests catalog.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-config" class="page">Configure the Completed Requests</a> for more information and examples.<br>
+<strong>Example</strong> : <code>{
+  "user" : "marco",
+  "error" : 12003
+}</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><a href="#_logging_parameters">Logging parameters</a></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="completed-limit" class="paragraph">
+<p>Sets the number of requests to be logged in the completed requests catalog.
+As new completed requests are added, old ones are removed.</p>
+</div>
+<div class="paragraph">
+<p>Increase this when the completed request keyspace is not big enough to track the slow requests, such as when you want a larger sample of slow requests.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-config" class="page">Configure the Completed Requests</a> for more information and examples.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryCompletedLimit">cluster-level</a> <code>queryCompletedLimit</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>4000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>completed-threshold</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="completed-threshold" class="paragraph">
+<p>A duration in milliseconds.
+All completed queries lasting longer than this threshold are logged in the completed requests catalog.</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> to track all requests, independent of duration.
+Specify any negative number to track none.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-config" class="page">Configure the Completed Requests</a> for more information and examples.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryCompletedThreshold">cluster-level</a> <code>queryCompletedThreshold</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>1000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>controls</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="controls-srv" class="paragraph">
+<p>Specifies if there should be a controls section returned with the request results.</p>
+</div>
+<div class="paragraph">
+<p>When set to <code>true</code>, the query response document includes a controls section with runtime information provided along with the request, such as positional and named parameters or settings.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the request qualifies for caching, these values will also be cached in the <code>completed_requests</code> system keyspace.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <a href="#controls_req">request-level</a> <code>controls</code> parameter specifies this property per request.
+If a request does not include this parameter, the node-level <code>controls</code> setting will be used.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>cpuprofile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="cpuprofile" class="paragraph">
+<p>The absolute path and filename to write the CPU profile to a local file.</p>
+</div>
+<div class="paragraph">
+<p>The output file includes a controls section and performance measurements, such as memory allocation and garbage collection, to pinpoint bottlenecks and ways to improve your code execution.</p>
+</div>
+<div class="paragraph">
+<p>To stop <code>cpuprofile</code>, run with the empty setting of <code>""</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If <code>cpuprofile</code> is left running too long, it can slow the system down as its file size increases.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"/tmp/info.txt"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>debug</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="debug" class="paragraph">
+<p>Use debug mode.</p>
+</div>
+<div class="paragraph">
+<p>When set to <code>true</code>, extra logging is provided.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>distribute</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="distribute" class="paragraph">
+<p>This field is only available with the POST method.
+When specified alongside other settings, this field instructs the node that is processing the request to cascade those settings to all other query nodes.
+The actual value of this field is ignored.<br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>keep-alive-length</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="keep-alive-length" class="paragraph">
+<p>Maximum size of buffered result.<br>
+<strong>Default</strong> : <code>16384</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>loglevel</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="loglevel" class="paragraph">
+<p>Log level used in the logger.</p>
+</div>
+<div class="paragraph">
+<p>All values, in descending order of data:</p>
+</div>
+<div class="paragraph">
+<p><code>DEBUG</code>&#8201;&#8212;&#8201;For developers.
+Writes everything.</p>
+</div>
+<div class="paragraph">
+<p><code>TRACE</code>&#8201;&#8212;&#8201;For developers.
+Less info than <code>DEBUG</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>INFO</code>&#8201;&#8212;&#8201;For admin &amp; customers.
+Lists warnings &amp; errors.</p>
+</div>
+<div class="paragraph">
+<p><code>WARN</code>&#8201;&#8212;&#8201;For admin.
+Only abnormal items.</p>
+</div>
+<div class="paragraph">
+<p><code>ERROR</code>&#8201;&#8212;&#8201;For admin.
+Only errors to be fixed.</p>
+</div>
+<div class="paragraph">
+<p><code>SEVERE</code>&#8201;&#8212;&#8201;For admin.
+Major items, like crashes.</p>
+</div>
+<div class="paragraph">
+<p><code>NONE</code>&#8201;&#8212;&#8201;Doesn’t write anything.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryLogLevel">cluster-level</a> <code>queryLogLevel</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>"INFO"</code><br>
+<strong>Example</strong> : <code>"DEBUG"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (DEBUG, TRACE, INFO, WARN, ERROR, SEVERE, NONE)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max-index-api</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="max-index-api" class="paragraph">
+<p>Max index API.
+This setting is provided for technical support only.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>max-parallelism</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="max-parallelism-srv" class="paragraph">
+<p>Specifies the maximum parallelism for queries on this node.</p>
+</div>
+<div class="paragraph">
+<p>If the value is zero or negative, the maximum parallelism is restricted to the number of allowed cores.
+Similarly, if the value is greater than the number of allowed cores, the maximum parallelism is restricted to the number of allowed cores.</p>
+</div>
+<div class="paragraph">
+<p>(The number of allowed cores is the same as the number of logical CPUs.
+In Community Edition, the number of allowed cores cannot be greater than 4.
+In Enterprise Edition, there is no limit to the number of allowed cores.)</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryMaxParallelism">cluster-level</a> <code>queryMaxParallelism</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, there is a <a href="#max_parallelism_req">request-level</a> <code>max_parallelism</code> parameter.
+If a request includes this parameter, it will be capped by the node-level <code>max-parallelism</code> setting.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To enable queries to run in parallel, you must specify the cluster-level <code>queryMaxParallelism</code> parameter, or specify the node-level <code>max-parallelism</code> parameter on all Query nodes.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../n1ql/n1ql-language-reference/index-partitioning.html#max-parallelism" class="page">Max Parallelism</a> for more information.<br>
+<strong>Default</strong> : <code>1</code><br>
+<strong>Example</strong> : <code>0</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>memprofile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="memprofile" class="paragraph">
+<p>Filename to write the diagnostic memory usage log.</p>
+</div>
+<div class="paragraph">
+<p>To stop <code>memprofile</code>, run with the empty setting of <code>""</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If <code>memprofile</code> is left running too long, it can slow the system down as its file size increases.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"/tmp/memory-usage.log"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>mutexprofile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="mutexprofile" class="paragraph">
+<p>Mutex profile.
+This setting is provided for technical support only.<br>
+<strong>Default</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>n1ql-feat-ctrl</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="n1ql-feat-ctrl" class="paragraph">
+<p>N1QL feature control.
+This setting is provided for technical support only.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryN1qlFeatCtrl">cluster-level</a> <code>queryN1qlFeatCtrl</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline-batch</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pipeline-batch-srv" class="paragraph">
+<p>Controls the number of items execution operators can batch for Fetch from the KV.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryPipelineBatch">cluster-level</a> <code>queryPipelineBatch</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#pipeline_batch_req">request-level</a> <code>pipeline_batch</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>pipeline-batch</code> setting is applied.<br>
+<strong>Default</strong> : <code>16</code><br>
+<strong>Example</strong> : <code>64</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pipeline-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pipeline-cap-srv" class="paragraph">
+<p>Maximum number of items each execution operator can buffer between various operators.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryPipelineCap">cluster-level</a> <code>queryPipelineCap</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#pipeline_cap_req">request-level</a> <code>pipeline_cap</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>pipeline-cap</code> setting is applied.<br>
+<strong>Default</strong> : <code>512</code><br>
+<strong>Example</strong> : <code>1024</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>prepared-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="prepared-limit" class="paragraph">
+<p>Maximum number of prepared statements in the cache.
+When this cache reaches the limit, the least recently used prepared statements will be discarded as new prepared statements are created.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryPreparedLimit">cluster-level</a> <code>queryPreparedLimit</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>16384</code><br>
+<strong>Example</strong> : <code>65536</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pretty</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="pretty-srv" class="paragraph">
+<p>Specifies whether query results are returned in pretty format.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#pretty_req">request-level</a> <code>pretty</code> parameter specifies this property per request.
+If a request does not include this parameter, the node-level <code>pretty</code> setting will be used, which defaults to <code>false</code>.<br>
+<strong>Default</strong> : <code>false</code><br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>profile</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="profile-srv" class="paragraph">
+<p>Specifies if there should be a profile section returned with the request results.
+The valid values are:</p>
+</div>
+<div class="paragraph">
+<p><code>off</code>&#8201;&#8212;&#8201;No profiling information is added to the query response.</p>
+</div>
+<div class="paragraph">
+<p><code>phases</code>&#8201;&#8212;&#8201;The query response includes a profile section with stats and details about various phases of the query plan and execution.
+Three phase times will be included in the <code>system:active_requests</code> and <code>system:completed_requests</code> monitoring keyspaces.</p>
+</div>
+<div class="paragraph">
+<p><code>timings</code>&#8201;&#8212;&#8201;Besides the phase times, the profile section of the query response document will include a full query plan with timing and information about the number of processed documents at each phase.
+This information will be included in the <code>system:active_requests</code> and <code>system:completed_requests</code> keyspaces.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If <code>profile</code> is not set as one of the above values, then the profile setting does not change.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#monitor-profile-details" class="page">Monitoring and Profiling Details</a> for more information and examples.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#profile_req">request-level</a> <code>profile</code> parameter specifies this property per request.
+If a request does not include this parameter, the node-level <code>profile</code> setting will be used.<br>
+<strong>Default</strong> : <code>"off"</code><br>
+<strong>Example</strong> : <code>"phases"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>enum (off, phases, timings)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>request-size-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="request-size-cap" class="paragraph">
+<p>Maximum size of a request.<br>
+<strong>Default</strong> : <code>67108864</code><br>
+<strong>Example</strong> : <code>70000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>scan-cap</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="scan-cap-srv" class="paragraph">
+<p>Maximum buffered channel size between the indexer client and the query service for index scans.
+This parameter controls when to use scan backfill.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>0</code> or a negative number to disable.
+Smaller values reduce GC, while larger values reduce indexer backfill.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryScanCap">cluster-level</a> <code>queryScanCap</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#scan_cap_req">request-level</a> <code>scan_cap</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>scan-cap</code> setting is applied.<br>
+<strong>Default</strong> : <code>512</code><br>
+<strong>Example</strong> : <code>1024</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>servicers</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="servicers" class="paragraph">
+<p>The number of service threads for the query.<br>
+<strong>Default</strong> : <code>32</code><br>
+<strong>Example</strong> : <code>8</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>timeout</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="timeout-srv" class="paragraph">
+<p>Maximum time to spend on the request before timing out (ns).</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> (the default value) or a negative integer to disable.
+When disabled, no timeout is applied and the request runs for however long it takes.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#queryTimeout">cluster-level</a> <code>queryTimeout</code> setting specifies this property for the whole cluster.
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>In addition, the <a href="#timeout_req">request-level</a> <code>timeout</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>timeout</code> setting is applied.</p>
+</div>
+<div class="paragraph">
+<p>The node-level <code>timeout</code> setting is an integer, representing a duration in nanoseconds.
+It must not be delimited by quotes, and must not include a unit.<br>
+<strong>Default</strong> : <code>0</code><br>
+<strong>Example</strong> : <code>500000000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int64)</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div id="_logging_parameters" class="paragraph">
+<p><strong>Logging parameters</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>aborted</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>If true, all requests that generate a panic are logged.<br>
+<strong>Example</strong> : <code>true</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>client</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The IP address of the client.
+If specified, all completed requests from this IP address are logged.<br>
+<strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"172.1.2.3"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>context</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>The opaque ID or context provided by the client.
+If specified, all completed requests with this client context ID are logged.</p>
+</div>
+<div class="paragraph">
+<p>Refer to the <a href="#client_context_id">request-level</a> <code>client_context_id</code> parameter for more information.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>error</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>An error number.
+If specified, all completed queries returning this error number are logged.<br>
+<strong>Example</strong> : <code>12003</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>tag</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A unique string which tags a set of qualifiers.</p>
+</div>
+<div class="paragraph">
+<p>Refer to <a href="../manage/monitor/monitoring-n1ql-query.html#sys-completed-config" class="page">Configure the Completed Requests</a> for more information.<br>
+<strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"both_user_and_error"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>threshold</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A duration in milliseconds.
+If specified, all completed queries lasting longer than this threshold are logged.</p>
+</div>
+<div class="paragraph">
+<p>This is another way of specifying the <a href="#completed-threshold">node-level</a> <code>completed-threshold</code> setting.<br>
+<strong>Default</strong> : <code>1000</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>user</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A user name, as given in the request credentials.
+If specified, all completed queries with this user name are logged.<br>
+<strong>Default</strong> : <code>""</code><br>
+<strong>Example</strong> : <code>"marco"</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -4969,7 +6119,7 @@ For example:</p>
 <p>The table below contains details of all request-level parameters, along with examples.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Request-Level Parameters</caption>
+<caption class="title">Table 8. Request-Level Parameters</caption>
 <colgroup>
 <col style="width: 16.6666%;">
 <col style="width: 61.1111%;">
@@ -6067,7 +7217,7 @@ Positional Parameters</a> for examples.</p>
 As summarized in the below table, these two types of requests should contain the following parameters:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Named Parameters VS. Positional Parameters</caption>
+<caption class="title">Table 9. Named Parameters VS. Positional Parameters</caption>
 <colgroup>
 <col style="width: 22.2222%;">
 <col style="width: 55.5555%;">
