@@ -4484,6 +4484,7 @@ server
 <h1 class="page">CREATE FUNCTION</h1>
 <div class="labels">
 <ul>
+<li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
 <li class="status"><span>Couchbase Server 7.0</span></li>
 </ul>
 </div>
@@ -4502,7 +4503,7 @@ The <code>CREATE FUNCTION</code> statement enables you to create a user-defined 
 </div>
 </div>
 <div class="sect1">
-<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<h2 id="purpose"><a class="anchor" href="#purpose"></a>Purpose</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>There are two types of user-defined function:</p>
@@ -4520,6 +4521,46 @@ The only supported language is JavaScript.</p>
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="context"><a class="anchor" href="#context"></a>Global and Scope Functions</h3>
+<div class="paragraph">
+<p>You can create user-defined functions at two different levels of the N1QL <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="page">logical hierarchy</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <em class="def">global</em> function is created within a namespace, at the same level as the buckets within the namespace.
+When you execute a global function, any partial keyspace references within the function definition are resolved against the function&#8217;s namespace, regardless of the current <a href="../../settings/query-settings.html#query_context" class="page">query context</a>.</p>
+<div class="paragraph">
+<p>For example, when you execute a global function <code>default:global()</code> which contains the keyspace reference <code>travel-sample</code>, the keyspace reference is always resolved within the context of the function to the <code>default:`travel-sample`</code> bucket.</p>
+</div>
+</li>
+<li>
+<p>A <em class="def">scope</em> function is created within a scope, at the same level as the collections within the scope.
+When you execute a scope function, any partial keyspace references within the function definition are resolved against the function&#8217;s scope, regardless of the current <a href="../../settings/query-settings.html#query_context" class="page">query context</a>.</p>
+<div class="paragraph">
+<p>For example, when you execute a scope function <code>default:`travel-sample`.modes.scope()</code> which contains the keyspace reference <code>train</code>, the keyspace reference is always resolved within the context of the function to <code>default:`travel-sample`.modes.train</code>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When you create a user-defined function, the current query context determines whether it is created as a global function or a scope function.
+If you want to create a user-defined function outside of the current query context, you must include the full path to the function when you specify the function name.</p>
+</div>
+<div class="paragraph">
+<p>Similarly, when you call a user-defined function, the current query context determines the path to the function.
+If you want to call a user-defined function outside of the current query context, you must include the full path to the function when you specify the function name.</p>
+</div>
+<div class="paragraph">
+<p>Finally, it is important to note that a global function is <em>not</em> the same as a scope function stored in the default scope in a bucket.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The <code>CREATE FUNCTION</code> statement takes a different syntax depending on the type of function you are creating.</p>
 </div>
@@ -4554,10 +4595,16 @@ The two syntaxes are synonymous.</p>
 <dt class="hdlist1">name</dt>
 <dd>
 <p>The name of the function.
-This may be an unqualified identifier, such as <code>func1</code> or <code>`func-1`</code>, or a qualified identifier with a namespace, such as <code>default:func1</code>.
-It is recommended to use an unqualified identifier for the function name.
-This may not be the same as a reserved keyword.
-A function name with a namespace may have the same name as a reserved keyword.</p>
+It is recommended to use an unqualified identifier for the function name, such as <code>func1</code> or <code>`func-1`</code>.
+In this case, the function is created as a global function or a scope function, depending on the current query context.</p>
+<div class="paragraph">
+<p>To create a global function in a particular namespace, the function name must be a qualified identifier with a namespace, such as <code>default:func1</code>.
+Similarly, to create a scope function in a particular scope, the function name must be a qualified identifier with the full path to a scope, such as <code>default:`travel-sample`.modes.func1</code>.</p>
+</div>
+<div class="paragraph">
+<p>If the function name is an unqualified identifier, it may not be the same as a reserved keyword.
+A function name with a specified namespace or scope may have the same name as a reserved keyword.</p>
+</div>
 </dd>
 </dl>
 </div>
@@ -4636,10 +4683,16 @@ If these keywords are present, and a function with the same name already exists,
 <dt class="hdlist1">name</dt>
 <dd>
 <p>The name of the function.
-This may be an unqualified identifier, such as <code>func1</code> or <code>`func-1`</code>, or a qualified identifier with a namespace, such as <code>default:func1</code>.
-It is recommended to use an unqualified identifier for the function name.
-This may not be the same as a reserved keyword.
-A function name with a namespace may have the same name as a reserved keyword.</p>
+It is recommended to use an unqualified identifier for the function name, such as <code>func1</code> or <code>`func-1`</code>.
+In this case, the function is created as a global function or a scope function, depending on the current query context.</p>
+<div class="paragraph">
+<p>To create a global function in a particular namespace, the function name must be a qualified identifier with a namespace, such as <code>default:func1</code>.
+Similarly, to create a scope function in a particular scope, the function name must be a qualified identifier with the full path to a scope, such as <code>default:`travel-sample`.modes.func1</code>.</p>
+</div>
+<div class="paragraph">
+<p>If the function name is an unqualified identifier, it may not be the same as a reserved keyword.
+A function name with a specified namespace or scope may have the same name as a reserved keyword.</p>
+</div>
 </dd>
 </dl>
 </div>
@@ -4659,6 +4712,7 @@ To create a variadic function, that is, a function which you can call with any n
 <dt class="hdlist1">object</dt>
 <dd>
 <p>The name of the JavaScript function that you want to use for the user-defined function.
+This parameter is a string and must be wrapped in quotes.
 The supported JavaScript syntax is the same as for the Eventing service.
 For details, refer to <a href="../../eventing/eventing-language-constructs.html" class="page">Language Constructs</a>.</p>
 </dd>
@@ -4669,6 +4723,7 @@ For details, refer to <a href="../../eventing/eventing-language-constructs.html"
 <dt class="hdlist1">library</dt>
 <dd>
 <p>The name of the JavaScript library that contains the function you want to use.
+This parameter is a string and must be wrapped in quotes.
 You must create the JavaScript library and the JavaScript function using the N1QL Functions REST API.
 For details, refer to <a href="../n1ql-rest-api/functions.html" class="page">Functions REST API</a>.</p>
 </dd>
