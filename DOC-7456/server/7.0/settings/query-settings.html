@@ -5613,6 +5613,20 @@ The actual value of this field is ignored.<br>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>functions-limit</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="functions-limit" class="paragraph">
+<p>Maximum number of user-defined functions.<br>
+<strong>Default</strong> : <code>16384</code><br>
+<strong>Example</strong> : <code>7000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><strong>keep-alive-length</strong><br>
 <em>optional</em></p>
 </div></div></td>
@@ -5734,6 +5748,28 @@ To enable queries to run in parallel, you must specify the cluster-level <code>q
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>memory-quota</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="memory-quota-srv" class="paragraph">
+<p>Specifies the maximum document memory consumption for each request on this node, in MB.</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> (the default value) to disable.
+When disabled, there is no quota.</p>
+</div>
+<div class="paragraph">
+<p>The {memory_quota_req}[request-level] <code>memory_quota</code> parameter specifies this property per request.
+If a request includes this parameter, it will be capped by the node-level <code>memory-quota</code> setting.<br>
+<strong>Default</strong> : <code>0</code><br>
+<strong>Example</strong> : <code>4</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int32)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><strong>memprofile</strong><br>
 <em>optional</em></p>
 </div></div></td>
@@ -5788,7 +5824,8 @@ This setting is provided for technical support only.</p>
 </div>
 <div class="paragraph">
 <p>The <a href="#queryN1qlFeatCtrl">cluster-level</a> <code>queryN1qlFeatCtrl</code> setting specifies this property for the whole cluster.
-When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.</p>
+When you change the cluster-level setting, the node-level setting is over-written for all nodes in the cluster.<br>
+<strong>Default</strong> : <code>76</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>integer (int32)</p>
@@ -5867,7 +5904,7 @@ When you change the cluster-level setting, the node-level setting is over-writte
 </div>
 <div class="paragraph">
 <p>The <a href="#pretty_req">request-level</a> <code>pretty</code> parameter specifies this property per request.
-If a request does not include this parameter, the node-level <code>pretty</code> setting will be used, which defaults to <code>false</code>.<br>
+If a request does not include this parameter, the node-level setting is used, which defaults to <code>false</code>.<br>
 <strong>Default</strong> : <code>false</code><br>
 <strong>Example</strong> : <code>true</code></p>
 </div></div></td>
@@ -6003,6 +6040,54 @@ It must not be delimited by quotes, and must not include a unit.<br>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>integer (int64)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>txtimeout</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="txtimeout-srv" class="paragraph">
+<p>Maximum time to spend on a transaction before timing out (ns).</p>
+</div>
+<div class="paragraph">
+<p>Specify <code>0</code> (the default value) to disable.
+When disabled, no timeout is applied and the transaction runs for however long it takes.</p>
+</div>
+<div class="paragraph">
+<p>This setting only applies to requests containing the <code>BEGIN TRANSACTION</code> statement, or to requests where the {tximplicit}[tximplicit] parameter is set.
+For all other requests, it is ignored.</p>
+</div>
+<div class="paragraph">
+<p>The {txtimeout_req}[request-level] <code>txtimeout</code> parameter specifies this property per request.
+The minimum of that and the node-level <code>txtimeout</code> setting is applied.</p>
+</div>
+<div class="paragraph">
+<p>The node-level <code>txtimeout</code> setting is an integer, representing a duration in nanoseconds.
+It must not be delimited by quotes, and must not include a unit.<br>
+<strong>Default</strong> : <code>0</code><br>
+<strong>Example</strong> : <code>500000000</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>integer (int64)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>use-cbo</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div id="use-cbo-srv" class="paragraph">
+<p>Specifies whether the cost-based optimizer is enabled.</p>
+</div>
+<div class="paragraph">
+<p>The {use_cbo_req}[request-level] <code>use_cbo</code> parameter specifies this property per request.
+If a request does not include this parameter, the node-level setting is used, which defaults to <code>true</code>.<br>
+<strong>Default</strong> : <code>true</code><br>
+<strong>Example</strong> : <code>false</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
 </div></div></td>
 </tr>
 </tbody>
