@@ -1,0 +1,5588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Querying MapReduce Views | Couchbase Docs (Staging)</title>
+<link rel="stylesheet" href="../../../../_/css/site.css">
+<script src="../../../../_/js/vendor/jquery.js"></script>
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="7.0">
+<meta name="generator" content="Antora 2.3.0">
+<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+
+              <a class="navbar-brand" href="https://www.couchbase.com">
+                <img src="../../../../_/img/couchbase-documentation-logo.svg" alt="Couchbase" />
+              </a>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-7457/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/cloud.html">
+                      Cloud
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      Tutorials
+                      <span class="arrow">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <form class="navbar-item search">
+                  <input type="text" placeholder="Search Docs" class="query" id="search-query" />
+                  <button type="button" class="search-btn">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </form>
+                <a class="btn btn-primary try-btn" href="https://www.couchbase.com/downloads">
+                  Downloads
+                </a>
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="left-sidebar-menu">
+<div class="version-control-box">
+<div class="component-frame has-dropdown">
+<div class="frame-icon">
+<img src="../../../../_/img/server-icon.png" alt="">
+</div>
+<div class="frame-body">
+<h4 class="title">
+<span class="">
+server
+</span>
+<div class="frame-link-dropdowns">
+<a class="frame-link component" href="../../introduction/intro.html"><span class="version">7.0 DRAFT</span> <i class="fas fa-chevron-down"></i></a>
+<div class="frame-dropdown versions">
+<div class="column">
+<ul class="frame-dropdown-list">
+<li><a class="frame-item" href="../../../6.6/index.html">6.6</a></li>
+<li><a class="frame-item" href="../../../6.5/index.html">6.5</a></li>
+<li><a class="frame-item" href="../../../6.0/index.html">6.0</a></li>
+<li><a class="frame-item" href="../../../5.5/index.html">5.5</a></li>
+</ul>
+</div>
+</div>
+</div>
+</h4>
+
+</div>
+</div>
+</div>
+<div class="nav-menu">
+<ul class="nav-list">
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<a class="nav-link" href="../../introduction/intro.html">Introduction</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../introduction/why-couchbase.html">Why Couchbase?</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../introduction/whats-new.html">What&#8217;s New?</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Get Started</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../getting-started/start-here.html">Start Here!</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../getting-started/do-a-quick-install.html">Do a Quick Install</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../getting-started/look-at-the-results.html">Explore the Server Configuration</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../getting-started/try-a-query.html">Run Your First N1QL Query</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../getting-started/choose-your-next-steps.html">Choose Your Next Steps</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Learn</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../architecture-overview.html">Overview</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../glossary.html">Glossary</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../architecture-diagrams.html">List of Architecture Diagrams</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../data/data.html">Data</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data/document-data-model.html">Data Model</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data/n1ql-versus-sql.html">N1QL versus SQL</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data/extended-attributes-fundamentals.html">Extended Attributes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data/scopes-and-collections.html">Scopes and Collections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data/durability.html">Durability</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data/transactions.html">Transactions</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../buckets-memory-and-storage/buckets-memory-and-storage.html">Buckets, Memory, and Storage</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../buckets-memory-and-storage/buckets.html">Buckets</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../buckets-memory-and-storage/vbuckets.html">vBuckets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../buckets-memory-and-storage/compression.html">Compression</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../buckets-memory-and-storage/expiration.html">Expiration</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../buckets-memory-and-storage/memory-and-storage.html">Memory and Storage</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../buckets-memory-and-storage/memory.html">Memory</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../buckets-memory-and-storage/storage.html">Storage</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../services-and-indexes/services-and-indexes.html">Services and Indexes</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../services-and-indexes/services/services.html">Services</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/data-service.html">Data Service</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/query-service.html">Query Service</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/index-service.html">Index Service</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/search-service.html">Search Service</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/analytics-service.html">Analytics Service</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/eventing-service.html">Eventing Service</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../services-and-indexes/services/backup-service.html">Backup Service</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../services-and-indexes/indexes/indexes.html">Indexes</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../services-and-indexes/indexes/global-secondary-indexes.html">Global Secondary Indexes</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../services-and-indexes/indexes/index-replication.html">Availability and Performance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../services-and-indexes/indexes/indexing-and-query-perf.html">Indexing</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../services-and-indexes/indexes/index-scans.html">Scans</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../services-and-indexes/indexes/index_pushdowns.html">Pushdowns</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../services-and-indexes/indexes/storage-modes.html">Storage Settings</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="views-intro.html">Views</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="views-basics.html">View Concepts</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="views-streaming.html">Stream-based Views</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="views-operation.html">View Operations</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="views-store-data.html">Views and Stored Data</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="views-development.html">Development Views</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="views-production.html">Production Views</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="views-mapreduce-intro.html">MapReduce Views</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<span class="in-toggle" data-depth="5"></span>
+<a class="nav-link" href="views-writing.html">Writing MapReduce Views</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-views.html">Views Best Practices</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-map.html">Map Function</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-reduce.html">Reduce Function</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-utility.html">Built-in Utility Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-count.html">Built-in _count Function</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-sum.html">Built-in _sum Function</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-stats.html">Built-in _stats Function</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-rewriting.html">Re-writing Built-in Reduce Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-custom-reduce.html">Custom Reduce Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-rereduce.html">Re-reduce Argument</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-writing-nonjson.html">Views for Non-JSON Objects</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-trans-sql.html">Translating SQL to MapReduce</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-schemaless.html">Views in a Schema-less Database</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-page is-active is-active-depth-2  " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<span class="in-toggle" data-depth="5"></span>
+<a class="nav-link" href="views-querying.html">Querying MapReduce Views</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="views-query-samples.html">View and Query Examples</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters-and-availability/clusters-and-availability.html">Clusters and Availability</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters-and-availability/cluster-manager.html">Cluster Manager</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters-and-availability/connectivity.html">Connectivity</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters-and-availability/size-limitations.html">Size Limits</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../clusters-and-availability/nodes.html">Nodes</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../clusters-and-availability/rebalance.html">Rebalance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../clusters-and-availability/removal.html">Removal</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../clusters-and-availability/failover.html">Failover</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../clusters-and-availability/graceful-failover.html">Graceful</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../clusters-and-availability/hard-failover.html">Hard</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../clusters-and-availability/automatic-failover.html">Automatic</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../clusters-and-availability/recovery.html">Recovery</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../clusters-and-availability/node-to-node-encryption.html">Node-to-Node Encryption</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../clusters-and-availability/replication-architecture.html">Availability</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../clusters-and-availability/intra-cluster-replication.html">Intra-Cluster Replication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../clusters-and-availability/xdcr-overview.html">Cross Data Center Replication (XDCR)</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../clusters-and-availability/xdcr-filtering.html">XDCR Advanced Filtering</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../clusters-and-availability/xdcr-conflict-resolution.html">XDCR Conflict Resolution</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../clusters-and-availability/xdcr-cloud-deployment.html">XDCR Cloud Deployment</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../clusters-and-availability/groups.html">Server Group Awareness</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../security/security-overview.html">Security</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../security/authentication.html">Authentication</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/authentication-overview.html">Understanding Authentication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/usernames-and-passwords.html">Usernames and Passwords</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/authentication-domains.html">Authentication Domains</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/certificates.html">Certificates</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../security/authorization-overview.html">Authorization</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/roles.html">Roles</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/resources-under-access-control.html">Resources Under Access Control</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../security/upgrading-to-rbac.html">Upgrading to RBAC</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../security/auditing.html">Auditing</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../security/encryption-overview.html">Encryption</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Manage</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/management-overview.html">Overview</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-ui/manage-ui.html">Couchbase Web Console</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/manage-nodes/node-management-overview.html">Manage Nodes and Clusters</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/initialize-node.html">Initialize a Node</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/create-cluster.html">Create a Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/add-node-and-rebalance.html">Add a Node and Rebalance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/join-cluster-and-rebalance.html">Join a Cluster and Rebalance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/list-cluster-nodes.html">List Cluster Nodes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/remove-node-and-rebalance.html">Remove a Node and Rebalance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../manage/manage-nodes/fail-nodes-over.html">Fail a Node Over and Rebalance</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-nodes/failover-graceful.html">Graceful</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-nodes/failover-hard.html">Hard</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/recover-nodes.html">Recover a Node and Rebalance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/apply-node-to-node-encryption.html">Manage Node-to-Node Encryption</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-nodes/manage-address-families.html">Manage Address Families</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/manage-buckets/bucket-management-overview.html">Manage Buckets</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-buckets/create-bucket.html">Create a Bucket</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-buckets/edit-bucket.html">Edit a Bucket</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-buckets/flush-bucket.html">Flush a Bucket</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../manage/manage-scopes-and-collections/manage-scopes-and-collections.html">Manage Scopes and Collections</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../manage/manage-logging/manage-logging.html">Manage Logging</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/manage-settings/manage-settings.html">Manage Settings</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-settings/general-settings.html">General</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-settings/configure-compact-settings.html">Auto-Compaction</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-settings/configure-alerts.html">Email Alerts</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-settings/install-sample-buckets.html">Sample Buckets</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../manage/manage-groups/manage-groups.html">Manage Server Groups</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/manage-xdcr/xdcr-management-overview.html">Manage XDCR</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/prepare-for-xdcr.html">Prepare for XDCR</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/create-xdcr-reference.html">Create a Reference</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/create-xdcr-replication.html">Create a Replication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/pause-xdcr-replication.html">Pause a Replication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/resume-xdcr-replication.html">Resume a Replication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/delete-xdcr-replication.html">Delete a Replication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/delete-xdcr-reference.html">Delete a Reference</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../manage/manage-xdcr/secure-xdcr-replication.html">Secure a Replication</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-xdcr/enable-half-secure-replication.html">Half-Secure</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-xdcr/enable-full-secure-replication.html">Fully Secure</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/filter-xdcr-replication.html">Filter a Replication</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/replicate-using-scopes-and-collections.html">Replicate Using Scopes and Collections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/recover-data-with-xdcr.html">Recover Data with XDCR</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-xdcr/monitor-xdcr-replication.html">Monitor a Replication</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/manage-security/security-management-overview.html">Manage Security</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-security-settings.html">Manage Security Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-users-and-roles.html">Manage Users, Groups, and Roles</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../manage/manage-security/manage-authentication.html">Manage Authentication</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-security/configure-ldap.html">Configure LDAP</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-security/configure-saslauthd.html">Configure saslauthd</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../manage/manage-security/configure-pam.html">Configure PAM</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../manage/manage-security/manage-certificates.html">Manage Certificates</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../manage/manage-security/configure-server-certificates.html">Configure Server Certificates</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../manage/manage-security/configure-client-certificates.html">Configure Client Certificates</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../manage/manage-security/enable-client-certificate-handling.html">Enable Client-Certificate Handling</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../manage/manage-security/rotate-server-certificates.html">Certificate Rotation</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../manage/manage-security/handle-certificate-errors.html">Certificate Error Handling</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-tls.html">Manage TLS</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-auditing.html">Manage Auditing</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-sessions.html">Manage Sessions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-console-access.html">Manage Console Access</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-system-secrets.html">Manage System Secrets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/manage-security/manage-connections-and-disks.html">Manage Connections and Disks</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../manage/manage-statistics/manage-statistics.html">Manage Statistics</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../manage/manage-indexes/manage-indexes.html">Manage Indexes</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../manage/import-documents/import-documents.html">Import Documents</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/manage-backup-and-restore/manage-backup-and-restore.html">Manage Backup and Restore</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../backup-restore/enterprise-backup-restore.html">cbbackupmgr</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#backup-restore:cbbackupmgr-strategies.adoc">Strategies</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#backup-restore:cbbackupmgr-tutorial.adoc">Tutorial</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#backup-restore:cbbackupmgr-cloud.adoc">Cloud Backup</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#backup-restore:cbbackupmgr-archivelayout.adoc">Archive Layout</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/monitor/monitor-intro.html">Monitor</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/monitoring-stats-configuration.html">Manage Monitoring Options</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/ui-monitoring-statistics.html">Monitor with the UI</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/monitoring-cli.html">Monitor with cbstats</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/monitoring-rest.html">Monitor with REST</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/xdcr-monitor-timestamp-conflict-resolution.html">Monitor XDCR Timestamp-based Conflict Resolution</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/monitoring-n1ql-query.html">Monitor Queries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/monitor/monitoring-indexes.html">Monitor Indexes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../manage/troubleshoot/troubleshoot.html">Troubleshoot</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/troubleshoot/common-errors.html">Common Errors</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../manage/troubleshoot/core-files.html">Core Files</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Develop</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../sdk/development-intro.html">Developer&#8217;s Intro</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../sdk/overview.html">SDKs</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../getting-started/starter-kits.html">Starter Kits</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../n1ql/query.html">Query</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../n1ql/n1ql-intro/index.html">Running Queries</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-intro/queriesandresults.html">N1QL Queries and Results</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-intro/sysinfo.html">Getting System Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/n1ql-error-codes.html">N1QL Error Codes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../n1ql/tutorial.html">Tutorials</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../tools/tools-ref.html">Query Tools</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../tools/cbq-shell.html">cbq: The Command Line Shell for N1QL</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../tools/query-workbench.html">Query Workbench</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../tools/query-monitoring.html">Query Monitoring</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/n1ql-auditing.html">N1QL Auditing</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/backfill.html">Backfill Support for N1QL</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../settings/query-settings.html">Settings and Parameters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../n1ql/advanced.html">Advanced Features</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/covering-indexes.html">Covering Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/flex-indexes.html">Flex Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/cost-based-optimizer.html">Cost-Based Optimizer</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/index.html">N1QL Language Reference</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/conventions.html">Conventions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/reservedwords.html">Reserved Words</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/datatypes.html">Data Types</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/literals.html">Literals</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/identifiers.html">Identifiers</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/operators.html">Operators</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/arithmetic.html">Arithmetic Operators</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/collectionops.html">Collection Operators</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/comparisonops.html">Comparison Operators</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/conditionalops.html">Conditional Operators</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/constructionops.html">Construction Operators</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/logicalops.html">Logical Operators</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/nestedops.html">Nested Operators and Expressions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/stringops.html">String Operators</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/functions.html">Functions</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/aggregatefun.html">Aggregate Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/arrayfun.html">Array Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/bitwisefun.html">Bitwise Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/comparisonfun.html">Comparison Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/condfununknown.html">Conditional Functions for Unknowns</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/condfunnum.html">Conditional Functions for Numbers</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/datefun.html">Date Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/jsonfun.html">JSON Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/metafun.html">Miscellaneous Utility Functions</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/advisor.html">ADVISOR Function</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/curl.html">CURL Function</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/numericfun.html">Number Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/objectfun.html">Object Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/patternmatchingfun.html">Pattern-Matching Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/searchfun.html">Search Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/stringfun.html">String Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/tokenfun.html">Token Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/typefun.html">Type Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/userfun.html">User-Defined Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/windowfun.html">Window Functions</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/window.html">OVER clause</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/subqueries.html">Subqueries</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/correlated-subqueries.html">Correlated Subqueries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/subquery-examples.html">Examples</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/booleanlogic.html">Boolean Logic</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<span class="nav-text ">Statements</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/advise.html">ADVISE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/alterindex.html">ALTER INDEX</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/begin-transaction.html">BEGIN TRANSACTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/build-index.html">BUILD INDEX</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/commit-transaction.html">COMMIT TRANSACTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/createcollection.html">CREATE COLLECTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/createfunction.html">CREATE FUNCTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/createindex.html">CREATE INDEX</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/indexing-arrays.html">Array Indexing</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/adaptive-indexing.html">Adaptive Index</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/indexing-meta-info.html">Indexing Metadata Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/index-partitioning.html">Index Partitioning</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/createprimaryindex.html">CREATE PRIMARY INDEX</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/createscope.html">CREATE SCOPE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/delete.html">DELETE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/dropcollection.html">DROP COLLECTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/dropfunction.html">DROP FUNCTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/dropindex.html">DROP INDEX</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/dropprimaryindex.html">DROP PRIMARY INDEX</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/dropscope.html">DROP SCOPE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/execute.html">EXECUTE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/execfunction.html">EXECUTE FUNCTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/explain.html">EXPLAIN</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/grant.html">GRANT</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/infer.html">INFER</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/insert.html">INSERT</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/merge.html">MERGE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/prepare.html">PREPARE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/revoke.html">REVOKE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/rollback-transaction.html">ROLLBACK TRANSACTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/savepoint.html">SAVEPOINT</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/selectintro.html">SELECT</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/select-syntax.html">SELECT Syntax</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/selectclause.html">SELECT Clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/with.html">WITH clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/from.html">FROM clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/hints.html">USE clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/join.html">JOIN clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/nest.html">NEST clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/unnest.html">UNNEST clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/let.html">LET clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/where.html">WHERE clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby.html">GROUP BY clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/union.html">UNION, INTERSECT, and EXCEPT</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/orderby.html">ORDER BY clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/limit.html">LIMIT clause</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/offset.html">OFFSET clause</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/set-transaction.html">SET TRANSACTION</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/update.html">UPDATE</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/updatestatistics.html">UPDATE STATISTICS</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/statistics-expressions.html">Updating Statistics for Index Expressions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/statistics-index.html">Updating Statistics for a Single Index</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/statistics-indexes.html">Updating Statistics for Multiple Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/statistics-delete.html">Deleting Statistics</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/upsert.html">UPSERT</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../fts/full-text-intro.html">Search</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../fts/fts-performing-searches.html">Performing Searches</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../fts/fts-searching-from-the-ui.html">Searching from the UI</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../fts/fts-searching-with-the-rest-api.html">Searching with the REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../fts/fts-demonstration-indexes.html">Demonstration Indexes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../fts/fts-creating-indexes.html">Creating Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../fts/fts-using-analyzers.html">Understanding Analyzers</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../fts/fts-queries.html">Understanding Queries</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../fts/fts-query-types.html">Query Types</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../fts/query-string-queries.html">Query String Queries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../fts/fts-geospatial-queries.html">Geospatial Queries</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../fts/fts-sorting.html">Sorting Query Results</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../fts/fts-response-object-schema.html">Handling Response Objects</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../fts/fts-troubleshooting.html">Troubleshooting and FAQs</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../eventing/eventing-overview.html">Eventing</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../eventing/eventing-Terminologies.html">Terminology</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../eventing/eventing-language-constructs.html">Language Constructs</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-timers.html">Timers</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-curl-spec.html">cURL</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../eventing/eventing-lifecycle.html">Eventing Lifecycle</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../eventing/eventing-examples.html">Examples: Using the Eventing Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-example-data-enrichment.html">Data Enrichment</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-cascade-delete.html">Cascade Delete</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-docexpiry.html">Document Expiry</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-delete-v-expiry.html">Delete v Expiry</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-docarchive.html">Document Archival</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-cancel-overwrite-timer.html">Cancel or Overwrite Timer</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-recurring-timer.html">Recurring Timer</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-rest-via-curl-get.html">External REST via cURL GET</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-examples-high-risk.html">Risk Assessment</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../eventing/eventing-examples.html#examples-scriptlets">Examples: Terse Scriptlets</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-basicBucketOps.html">basicBucketOps</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-curl-get.html">basicCurlGet</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-curl-post.html">basicCurlPost</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-redactSharedData.html">redactSharedData</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-simpleFlatten.html">simpleFlatten</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-fixEmailDomains.html">fixEmailDomains</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-keepLastN.html">keepLastN</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-docControlledSelfExpiry.html">docControlledSelfExpiry</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-shippingNotifier.html">shippingNotifier</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-basicN1qlSelectStmt.html">basicN1qlSelectStmt</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-basicN1qlPreparedSelectStmt.html">basicN1qlPreparedSelectStmt</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-dateToEpochConversion.html">dateToEpochConversion</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-deepCloneAndModify.html">deepCloneAndModify</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-removeNullsAndEmptys.html">removeNullsAndEmptys</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-genericRename.html">genericRename</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-genericFlatten.html">genericFlatten</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-handler-fasterToLocalString.html">fasterToLocalString</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../eventing/eventing-debugging-and-diagnosability.html">Debugging and Diagnosability</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../eventing/eventing-statistics.html">Statistics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../eventing/troubleshooting-best-practices.html">Troubleshooting and Best Practices</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../eventing/eventing-faq.html">Frequently Asked Questions</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<span class="nav-text ">Analytics</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../analytics/introduction.html">Introduction</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">Using Analytics</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/run-query.html">Running Queries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/monitor.html">Monitoring Queries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/rest-analytics.html">Analytics REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/rest-links.html">Links REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/config.html">Configuration Parameters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/query-params.html">Query Parameters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/query-responses.html">Query Responses</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/error-codes.html">Error Codes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../analytics/primer-beer.html">Tutorial</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">N1QL for Analytics Language Reference</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/1_intro.html">What&#8217;s N1QL for Analytics?</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/2_expr.html">Expressions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/3_query.html">Queries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/4_error.html">Errors</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/5_ddl.html">Data Definition Language (DDL)</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/6_n1ql.html">N1QL for Analytics vs. N1QL for Query</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/7_using_index.html">Using Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/8_builtin.html">Builtin Functions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/9_data_type.html">Data Types</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/appendix_1_keywords.html">Appendix 1: Reserved Keywords</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/appendix_2_parameters.html">Appendix 2: Performance Tuning</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../analytics/appendix_3_resolution.html">Appendix 3: Variable Bindings and Name Resolution</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Install &amp; Upgrade</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../install/get-started.html">Deployment Options</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../install/plan-for-production.html">System Requirements</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-platforms.html">Supported Operating Systems</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/pre-install.html">System Resource Requirements</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-environments.html">Additional Requirements</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../install/install-production-deployment.html">Deployment Guidelines</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/sizing-general.html">Sizing Guidelines</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/synchronize-clocks-using-ntp.html">Clock Synchronization Requirements</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/thp-disable.html">Disable THP</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-swap-space.html">Configure Kernel Swappiness</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-client-server.html">Client Deployment Strategies</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-security-bp.html">Security Considerations</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/server-processes.html">Couchbase Server Process List</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/best-practices-vm.html">VM and Container Guidelines</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/deployment-considerations-lt-3nodes.html">About Clusters with Fewer Than 3 Nodes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../install/install-intro.html">Installation</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../install/install-linux.html">Install on Linux</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/rhel-suse-install-intro.html">Red Hat &amp; CentOS</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/ubuntu-debian-install.html">Ubuntu &amp; Debian</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/install_suse.html">SUSE Enterprise</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/install-oracle.html">Oracle Enterprise</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/amazon-linux2-install.html">Amazon Linux 2</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/non-root.html">Non-Root Install and Upgrade</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/rhel-multiple-instances.html">Install Multiple Instances</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-package-windows.html">Install on Windows</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/macos-install.html">Install on macOS</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/testing.html">Verify the Installation</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/startup-shutdown.html">Startup and Shutdown</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/install-uninstalling.html">Uninstall</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../cloud/couchbase-cloud-deployment.html">Cloud and Container Deployment</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">AWS</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cloud/couchbase-aws-marketplace.html">Deploy with AWS Marketplace</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cloud/aws-terraform.html">Deploy with Terraform</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">Azure</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cloud/couchbase-azure-marketplace.html">Deploy with Azure Marketplace</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">GCP</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cloud/couchbase-gcp-cloud-launcher.html">Deploy with GCP Marketplace</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">Kubernetes &amp; OpenShift</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#operator:ROOT:overview.adoc">Deploy with Autonomous Operator</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<span class="nav-text ">Docker</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../install/getting-started-docker.html">Install with Docker</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../install/upgrade.html">Upgrading Couchbase Server</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/upgrade-strategies.html">Upgrade Options</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/upgrade-online.html">Performing the Rolling Online Upgrade</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/upgrade-offline.html">Performing the Offline Upgrade</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/upgrade-individual-nodes.html">Performing the Single Node Upgrade</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/upgrade-to-ipv6.html">Upgrading IPv6 Clusters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/upgrade-strategy-for-features.html">Upgrading to Couchbase Server 6.6</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<span class="nav-text ">Migrating</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/migration.html">Enabling Timestamp-based Conflict Resolution for Migrated Data</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/migrate-couchdb.html">Migrating from Apache CouchDB</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../install/migrate-mysql.html">Migrating from Relational Databases</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Integrate</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../connectors/intro.html">Connector Guides</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="#elasticsearch-connector::index.adoc">Elasticsearch Plug-in</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="#kafka-connector::index.adoc">Kafka Connector</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="#spark-connector::index.adoc">Spark Connector</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../connectors/odbc-jdbc-drivers.html">Couchbase ODBC and JDBC Drivers</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Reference</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../cli/cli-intro.html">CLI Reference</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../cli/cbanalyze-core-tool.html">cbanalyze-core</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="#cli:cbtools/cbbackup.adoc">cbbackup</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#cli:cbtools/guides/cbbackup-guide.adoc">Guide</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#cli:cbtools/cbbackupwrapper.adoc">cbbackupwrapper</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../cli/cbcollect-info-tool.html">cbcollect_info</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../cli/cbdocloader-tool.html">cbdocloader</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../cli/cbepctl-intro.html">cbepctl</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbepctl/set-checkpoint_param.html">set checkpoint_param</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbepctl/set-flush_param.html">set flush_param</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbepctl/set-tap_param.html">set tap_param</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../cli/cbft-bleve.html">cbft-bleve</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbft-bleve-moss.html">cbft-bleve: Moss Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbft-bleve-scorch.html">cbft-bleve: Scorch Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbft-bleve-zap.html">cbft-bleve: Zap Files</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#cli:cbcli/cblogredaction.adoc">cblogredaction</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../cli/cbq-tool.html">cbq</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#cli:cbtools/cbrecovery.adoc">cbrecovery</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="#cli:cbtools/cbrestore.adoc">cbrestore</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#cli:cbtools/guides/cbrestore-guide.adoc">Guide</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="#cli:cbtools/guides/cbrestore-rehash1-guide.adoc">rehash=1</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#cli:cbtools/cbrestorewrapper.adoc">cbrestorewrapper</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../cli/cbstats-intro.html">cbstats</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-all.html">all</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-allocator.html">allocator</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-checkpoint.html">checkpoint</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-collections.html">collections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-collections-details.html">collections-details</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-config.html">config</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-dcp.html">dcp</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-dcpagg.html">dcpagg</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-dcp-vbtakeover.html">dcp-vbtakeover</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-diskinfo.html">diskinfo</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-dispatcher-job.html">dispatcher</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-durability-monitor.html">durability-monitor</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-failovers.html">failovers</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-hash.html">hash</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-items.html">items</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-key.html">key</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-kvstore.html">kvstore</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-kvtimings.html">kvtimings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-memory.html">memory</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-prev-vbucket.html">prev-vbucket</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-raw.html">raw</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-reset.html">reset</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-responses.html">responses</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-runtimes.html">runtimes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-scheduler.html">scheduler</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-scopes.html">scopes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-scopes-details.html">scopes-details</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-slabs.html">slabs</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-tap-vbtakeover.html">tap-vbtakeover</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-tasks.html">tasks</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-timing.html">timings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-uuid.html">uuid</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-vbucket.html">vbucket</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-vbucket-details.html">vbucket-details</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-vbucket-seqno.html">vbucket-seqno</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-vkey.html">vkey</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-warmup.html">warmup</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../cli/cbstats/cbstats-workload.html">workload</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#cli:cbtools/cbtransfer.adoc">cbtransfer</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#cli:cbtools/cbworkloadgen.adoc">cbworkloadgen</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../cli/couchbase-server.html">couchbase-server</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../cli/mctimings.html">mctimings</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../rest-api/rest-intro.html">REST API Reference</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../rest-api/rest-endpoints-all.html">REST API endpoint list</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-cluster-intro.html">Cluster API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-provisioning.html">Creating a new cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-get.html">Retrieving Cluster Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-details.html">Viewing Cluster Details</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-identify-orchestrator.html">Identifying the Orchestrator Node</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-addnodes.html">Adding Nodes to Clusters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-joinnode.html">Joining Nodes into Clusters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-removenode.html">Removing Nodes from Clusters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../rest-api/rest-rebalance-overview.html">Rebalance API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-cluster-rebalance.html">Rebalancing the Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-get-rebalance-progress.html">Getting Rebalance Progress</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-configure-rebalance-retry.html">Configuring Rebalance Retries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-get-rebalance-retry.html">Getting Rebalance-Retry Status</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-cancel-rebalance-retry.html">Canceling Rebalance Retries</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-limit-rebalance-moves.html">Limiting Concurrent vBucket Moves</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-get-internal-setting.html">Viewing Internal Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-get-cluster-tasks.html">Getting Cluster Tasks</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../rest-api/rest-cluster-autofailover-intro.html">Managing Auto-Failover</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-cluster-autofailover-settings.html">Retrieving Auto-Failover Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-cluster-autofailover-enable.html">Enabling and Disabling Auto-Failover</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-cluster-autofailover-reset.html">Resetting Auto-Failover</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-disable-query.html">Disabling Consistent View Query Results on Rebalance</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-email-notifications.html">Setting Email Notifications</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-cluster-query-settings.html">Cluster Query Settings API</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-server-nodes.html">Server Nodes API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-get-info.html">Getting Server Node Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-services.html">Enabling Couchbase Server Services</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-failover.html">Performing Hard Failover</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-recovery-incremental.html">Setting Recovery Type</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-failover-graceful.html">Performing Graceful Failover</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-hostname.html">Setting Hostnames</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-set-username.html">Setting Usernames and Passwords</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-memory-quota.html">Setting Memory Quota</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-reader-writer-thread-config.html">Setting Thread Allocations</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-node-index-path.html">Setting Storage Paths</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-getting-storage-information.html">Getting Storage Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-list-node-services.html">Listing Node Services</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-set-up-alternate-address.html">Managing Alternate Addresses</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-rza.html">Server Groups API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-servergroup-get.html">Getting Group Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-servergroup-post-create.html">Creating Groups</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-servergroup-post-add.html">Adding Nodes to Groups</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-servergroup-put.html">Renaming Groups</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-servergroup-put-membership.html">Updating Group Membership</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-servergroup-delete.html">Deleting Groups</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-bucket-intro.html">Buckets API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-bucket-create.html">Creating and Editing Buckets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-buckets-summary.html">Getting all Bucket Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-bucket-info.html">Getting Single Bucket Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-retrieve-bucket-nodes.html">Listing Nodes by Bucket</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-bucket-stats.html">Getting Bucket Statistics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-buckets-streamingURI.html">Getting Bucket Streaming URI</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-bucket-delete.html">Deleting Buckets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-bucket-flush.html">Flushing Buckets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-sample-buckets.html">Managing Sample Buckets</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/scopes-and-collections-api.html">Scopes and Collections API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/creating-a-scope.html">Creating a Scope</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/creating-a-collection.html">Creating a Collection</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/listing-scopes-and-collections.html">Listing Scopes and Collections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/dropping-a-collection.html">Dropping a Collection</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/dropping-a-scope.html">Dropping a Scope</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/compaction-rest-api.html">Compaction API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-compact-post.html">Performing Compaction Manually</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-autocompact-global.html">Auto-Compaction: Global</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-autocompact-per-bucket.html">Auto-Compaction: Per Bucket</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/index.html">Query Service API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/examplesrest.html">Examples</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exsuccessful.html">Successful request</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/expositional.html">Request with positional parameters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exnamed.html">Request with Named Parameters</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/extimeout.html">Request Timeout</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exrequesterror.html">Request error</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exserviceerror.html">Service error</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exn1qlerror.html">N1QL error</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exunsupportedhttp.html">Unsupported HTTP method</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exauthhttp.html">Request with authentication - HTTP header</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/exauthrequest.html">Request with authentication - request parameter</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/admin.html">Admin REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../n1ql/n1ql-rest-api/functions.html">Functions REST API</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-index-service.html">Index Service API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/get-settings-indexes.html">Retrieve GSI Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/post-settings-indexes.html">Set GSI Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-index-stats.html">Index Statistics API</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/backup-rest-api.html">Backup Service API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-create-and-edit-plans.html">Create and Edit Plans</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-create-repository.html">Create a Repository</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-get-repository-info.html">Get Information on Repositories</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-get-plan-info.html">Get Information on Plans</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-get-task-info.html">Get Information on Tasks</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-pause-and-resume-tasks.html">Pause and Resume Tasks</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-examine-data.html">Examine Backed-Up Data</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-trigger-backup.html">Perform an Immediate Backup</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-trigger-merge.html">Perform an Immediate Merge</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-restore-data.html">Restore Data</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-delete-backups.html">Delete a Backup</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-archive-a-repository.html">Archive a Repository</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-import-repository.html">Import a Repository</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-delete-repository.html">Delete a Repository</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-delete-plan.html">Delete a Plan</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-get-cluster-info.html">Get Information on the Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/backup-manage-config.html">Manage Backup Configuration</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-fts.html">Search Service API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-fts-node.html">Node Configuration</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-fts-indexing.html">Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-fts-advanced.html">Advanced</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-fts-statistics.html">Getting Search Statistics</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../eventing/eventing-api.html">Eventing Service API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../analytics/rest-analytics.html">Analytics Service API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="#analytics:rest-service.adoc">Analytics Service REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="#analytics:rest-admin.adoc">Analytics Admin REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="#analytics:rest-config.adoc">Analytics Config REST API</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../analytics/rest-links.html">Analytics Links REST API</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-views-intro.html">Views API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-ddocs-get.html">Getting Design Doc Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-ddocs-create.html">Creating Design Documents</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-ddocs-delete.html">Deleting Design Documents</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-views-get.html">Getting Views Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-views-requests.html">Limiting Views Requests</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-xdcr-intro.html">XDCR API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-create-replication.html">Creating XDCR Replications</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-get-ref.html">Getting a Destination Cluster Reference</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-create-ref.html">Setting Destination Cluster References</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-delete-ref.html">Deleting a Destination Cluster Reference</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-data-encrypt.html">Managing XDCR Data Encryption</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-delete-replication.html">Deleting XDCR Replications</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-adv-settings.html">Managing Advanced XDCR Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-pause-resume.html">Pausing XDCR Replication Streams</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-xdcr-statistics.html">Getting XDCR Stats</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/logs-rest-api.html">Logs API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-logs-get.html">Retrieving Log Information</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-client-logs.html">Creating Client Logs</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<span class="in-toggle" data-depth="3"></span>
+<a class="nav-link" href="../../rest-api/rest-security.html">Security API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-whoami.html">Who Am I?</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-auditing.html">Configure Auditing</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../rest-api/rest-authentication.html">Authentication API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-configure-ldap.html">Configure LDAP</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-configure-saslauthd.html">Configure saslauthd</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rest-set-password-policy.html">Set Password Policy</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<span class="in-toggle" data-depth="5"></span>
+<a class="nav-link" href="../../rest-api/rest-certificate-management.html">Certificate Management API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="../../rest-api/upload-retrieve-root-cert.html">Upload and Retrieve the Root Certificate</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="../../rest-api/upload-retrieve-node-cert.html">Upload and Retrieve a Node Certificate</a>
+</span>
+</li>
+<li class="nav-item " data-depth="6">
+
+<span class="nav-line "  data-depth="6">
+<a class="nav-link" href="../../rest-api/rest-regenerate-all-certs.html">Regenerate All Certificates</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../../rest-api/rest-authorization.html">Authorization API</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../../rest-api/rbac.html">Role-Based Access Control (RBAC)</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-secret-mgmt.html">Secret Management API</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../xdcr-reference/xdcr-reference-intro.html">XDCR Reference</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../xdcr-reference/xdcr-advanced-settings.html">Advanced Settings</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
+<a class="nav-link" href="../../xdcr-reference/xdcr-filtering-reference-intro.html">Filtering</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../xdcr-reference/xdcr-regular-expressions.html">Regular Expressions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../xdcr-reference/xdcr-filtering-expressions.html">Filtering Expressions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="../../xdcr-reference/xdcr-filtering-data-type-conversion.html">Data-Type Conversion</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../audit-event-reference/audit-event-reference.html">Audit Event Reference</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../rebalance-reference/rebalance-reference.html">Rebalance Reference</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Release Notes &amp; Licenses</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../release-notes/relnotes.html">Release Notes</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../third-party-licenses.html">Licenses for Third-Party Components</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Contribute</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../../../home/contribute/index.html">Contribute to the Documentation</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<a href="#" class="menu-expand-toggle"> <span>Navigation</span> <i class="fas fa-times-circle"></i> <i class="fas fa-chevron-circle-left"></i></a>
+</div></nav>
+<aside class="toc sidebar">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/pages/views/views-querying.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-banner">
+<i class="fas fa-file-alt"></i> <p>You are viewing the documentation for a prerelease version.</p>
+</div>
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../../introduction/intro.html">server</a></li>
+<li class="crumb">Learn</li>
+<li class="crumb"><a href="../services-and-indexes/services-and-indexes.html">Services and Indexes</a></li>
+<li class="crumb"><a href="../services-and-indexes/indexes/indexes.html">Indexes</a></li>
+<li class="crumb"><a href="views-intro.html">Views</a></li>
+<li class="crumb"><a href="views-mapreduce-intro.html">MapReduce Views</a></li>
+<li class="crumb"><a href="views-querying.html">Querying MapReduce Views</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Querying MapReduce Views</h1>
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+The content of the key that is generated by the <code>emit()</code> function provides information on how the data is selected from your view.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>In order to query a view, the view definition must include a suitable map function that uses the <code>emit()</code> function to generate each row of information.</p>
+</div>
+<div class="paragraph">
+<p>The key can be used when querying a view as the selection mechanism, either by using an:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>explicit key</em> — show all the records matching the exact structure of the supplied key.</p>
+</li>
+<li>
+<p><em>list of keys</em> — show all the records matching the exact structure of each of the supplied keys (effectively showing keyA or keyB or keyC).</p>
+</li>
+<li>
+<p><em>range of keys</em> — show all the records starting with keyA and stopping on the last instance of keyB.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When querying the view results, a number of parameters can be used to select, limit, order and otherwise control the execution of the view and the information that is returned.</p>
+</div>
+<div class="paragraph">
+<p>When a view is accessed without specifying any parameters, the view produces results matching the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Full view specification, i.e.
+all documents are potentially output according to the view definition.</p>
+</li>
+<li>
+<p>Limited to 10 items within the web console, unlimited through the REST API.</p>
+</li>
+<li>
+<p>Reduce function used if defined in the view.</p>
+</li>
+<li>
+<p>Items sorted in ascending order (using UTF-8 comparison for strings, natural number order)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>View results and the parameters operate and interact in a specific order.
+The interaction directly affects how queries are written and data is selected.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/views/views-query-flow.png" alt="views query flow" width="480">
+</div>
+</div>
+<div class="paragraph">
+<p>The core arguments and selection systems are the same through both the REST API interface, and the client libraries.
+The setting of these values differs between different client libraries, but the argument names and expected and supported values are the same across all environments.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying"><a class="anchor" href="#querying"></a>Querying</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Querying can be performed through the REST API endpoint.
+The REST API supports and operates using the core HTTP protocol, and this is the same system used by the client libraries to obtain the view data.</p>
+</div>
+<div class="paragraph">
+<p>To retrieve views information, access any server node in a cluster on port 8092.</p>
+</div>
+<div class="paragraph">
+<p>The following is the HTTP method and URI used to query views:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>GET /[bucket-name]/_design/[ddoc-name]/_view/[view-name]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>bucket-name is the name of the bucket.</p>
+</li>
+<li>
+<p>ddoc-name is the name of the design document that contains the view.</p>
+</li>
+<li>
+<p>view-name is the name of the corresponding view within the design document.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Development view, the <code>ddoc-name</code> is prefixed with <code>dev_</code>.
+For example, the design document <code>beer</code> is accessible as a development view using <code>dev_beer</code>.</p>
+</div>
+<div class="paragraph">
+<p>Production views are accessible using their name only.</p>
+</div>
+<div class="paragraph">
+<p>Parameters (optional):</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Views parameters</caption>
+<colgroup>
+<col style="width: 16.7785%;">
+<col style="width: 16.7785%;">
+<col style="width: 66.443%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameters</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>descending</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return the documents in descending by key order.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>endkey</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stop returning records when the specified key is reached.
+Key must be specified as a JSON value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>endkey_docid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stop returning records when the specified document ID is reached.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>full_set</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use the full cluster data set (development views only).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>group</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Group the results using the reduce function to a group or single row.
+Note: Do not use <code>group</code> with <code>group_level</code> because they are not compatible.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>group_level</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">numeric</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify the group level to be used.
+Note: Do not use <code>group_level</code> with <code>group</code> because they are not compatible.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>inclusive_end</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether the specified end key is included in the result.
+Note: Do not use <code>inclusive_end</code> with <code>key</code> or <code>keys</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return only documents that match the specified key.
+Key must be specified as a JSON value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>keys</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return only documents that match each of keys specified within the given array.
+Key must be specified as a JSON value.
+Sorting is not applied when using this option.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>limit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">numeric</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limit the number of the returned documents to the specified number.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>on_error</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Sets the response in the event of an error.</p>
+</div>
+<div class="paragraph">
+<p>Supported values:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>continue</code> : Continue to generate view information in the event of an error, including the error information in the view response stream.</p>
+</li>
+<li>
+<p><code>stop</code> : Stop immediately when an error condition occurs.
+No further view information is returned.</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>reduce</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use the reduction function.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>skip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">numeric</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Skip this number of records before starting to return the results.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stale</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Allow the results from a stale view to be used.</p>
+</div>
+<div class="paragraph">
+<p>Supported values:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>false</code> : The server waits for the indexer to finish the changes that correspond to the current key-value document set and then returns the latest entries from the view index.</p>
+</li>
+<li>
+<p><code>ok</code> : The server returns the current entries from the index file including the stale views.</p>
+</li>
+<li>
+<p><code>update_after</code> : The server returns the current entries from the index, and then initiates an index update.</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>startkey</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return records with a value equal to or greater than the specified key.
+Key must be specified as a JSON value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>startkey_docid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return records starting with the specified document ID.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For additional details, see <a href="../../rest-api/rest-views-get.html" class="page">Getting Views Information</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="selecting-information"><a class="anchor" href="#selecting-information"></a>Selecting information</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Server supports a number of mechanisms for selecting information returned by the view.
+Key selection is made after the view results (including the reduction function) are executed, and after the items in the view output have been sorted.</p>
+</div>
+<div class="paragraph">
+<p>When specifying keys to the selection mechanism, the key must be expressed in the form of a JSON value.
+For example, when specifying a single key, a string must be quoted ("string").</p>
+</div>
+<div class="paragraph">
+<p>When specifying the key selection through a parameter, the keys must match the format of the keys emitted by the view.
+Compound keys, for example where an array or hash has been used in the emitted key structure, the supplied selection value should also be an array or a hash.</p>
+</div>
+<div class="paragraph">
+<p>The following selection types are supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Explicit Key</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>An explicit key can be specified using the parameter <code>key</code>.
+The view query will only return results where the key in the view output, and the value supplied to the <code>key</code> parameter match identically.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you supply the value "tomato" only records matching <em>exactly</em> "tomato" will be selected and returned.
+Keys with values such as "tomatoes" will not be returned.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Key List</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A list of keys to be output can be specified by supplying an array of values using the <code>keys</code> parameter.
+In this instance, each item in the specified array will be used as explicit match to the view result key, with each array value being combined with a logical <code>or</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, if the value specified to the <code>keys</code> parameter was <code>["tomato","avocado"]</code>, then all results with a key of ‘tomato’ <em>or</em> ‘avocado’ will be returned.</p>
+</div>
+<div class="paragraph">
+<p>When using this query option, the output results are not sorted by key.
+This is because key sorting of these values would require collating and sorting all the rows before returning the requested information.</p>
+</div>
+<div class="paragraph">
+<p>In the event of using a compound key, each compound key must be specified in the query.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>```
+keys=[["tomato",20],["avocado",20]]
+```</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Key Range</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A key range, consisting of a <code>startkey</code> and <code>endkey</code>.
+These options can be used individually, or together, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>* `startkey` only
+
+  Output does not start until the first occurrence of `startkey`, or a value
+  greater than the specified value, is seen. Output will then continue until the
+  end of the view.
+
+* `endkey` only
+
+  Output starts with the first view result, and continues until the last
+  occurrence of `endkey`, or until the emitted value is greater than the computed
+  lexical value of `endkey`.
+
+* `startkey` and `endkey`
+
+  Output of values does not start until `startkey` is seen, and stops when the
+  last occurrence of `endkey` is identified.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When using <code>endkey</code>, the <code>inclusive_end</code> option specifies whether output stops after the last occurrence of the specified <code>endkey</code> (the default).
+If set to false, output stops on the last result before the specified <code>endkey</code> is seen.</p>
+</div>
+<div class="paragraph">
+<p>The matching algorithm works on partial values, which can be used to an advantage when searching for ranges of keys.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Do not use the <code>inclusive_end</code> parameter with <code>key</code> or <code>keys</code> parameters.
+The <code>inclusive_end</code> parameter is not designed to work with <code>key</code> or <code>keys</code> because it is an attribute of range operations.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="selecting-compound-information-by-key-or-keys"><a class="anchor" href="#selecting-compound-information-by-key-or-keys"></a>Selecting compound information by key or keys</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you are generating a compound key within your view, for example when outputting a date split into individually year, month, day elements, then the selection value must exactly match the format and size of your compound key.
+The value of <code>key</code> or <code>keys</code> must exactly match the output key structure.</p>
+</div>
+<div class="paragraph">
+<p>For example, with the view data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{"total_rows":5693,"rows":[
+{"id":"1310653019.12667","key":[2011,7,14,14,16,59],"value":null},
+{"id":"1310662045.29534","key":[2011,7,14,16,47,25],"value":null},
+{"id":"1310668923.16667","key":[2011,7,14,18,42,3],"value":null},
+{"id":"1310675373.9877","key":[2011,7,14,20,29,33],"value":null},
+{"id":"1310684917.60772","key":[2011,7,14,23,8,37],"value":null},
+{"id":"1310693478.30841","key":[2011,7,15,1,31,18],"value":null},
+{"id":"1310694625.02857","key":[2011,7,15,1,50,25],"value":null},
+{"id":"1310705375.53361","key":[2011,7,15,4,49,35],"value":null},
+{"id":"1310715999.09958","key":[2011,7,15,7,46,39],"value":null},
+{"id":"1310716023.73212","key":[2011,7,15,7,47,3],"value":null}
+]
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using the <code>key</code> selection mechanism you must specify the entire key value, i.e.:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?key=[2011,7,15,7,47,3]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you specify a value, such as only the date:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?key=[2011,7,15]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The view will return no records, since there is no exact key match.
+Instead, you must use a range that encompasses the information range you want to output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey=[2011,7,15,0,0,0]&amp;endkey=[2011,7,15,99,99,99]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will output all records within the specified range for the specified date.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="partial-selection-and-key-ranges"><a class="anchor" href="#partial-selection-and-key-ranges"></a>Partial selection and key ranges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Matching of the key value has a precedence from right to left for the key value and the supplied <code>startkey</code> and/or <code>endkey</code>.
+Partial strings may therefore be specified and return specific information.</p>
+</div>
+<div class="paragraph">
+<p>For example, given the view data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"a",
+ "aa",
+ "bb",
+ "bbb",
+ "c",
+ "cc",
+ "ccc"
+ "dddd"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Specifying a <code>startkey</code> parameter with the value "aa" will return the last seven records, including "aa":</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"aa",
+ "bb",
+ "bbb",
+ "c",
+ "cc",
+ "ccc",
+ "dddd"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Specifying a partial string to <code>startkey</code> will trigger output of the selected values as soon as the first value or value greater than the specified value is identified.
+For strings, this partial match (from left to right) is identified.
+For example, specifying a <code>startkey</code> of "d" will return:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"dddd"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is because the first match is identified as soon as the a key from a view row matches the supplied <code>startkey</code> value <em>from left to right</em>.
+The supplied single character matches the first character of the view output.</p>
+</div>
+<div class="paragraph">
+<p>When comparing larger strings and compound values the same matching algorithm is used.
+For example, searching a database of ingredients and specifying a <code>startkey</code> of "almond" will return all the ingredients, including "almond", "almonds", and "almond essence".</p>
+</div>
+<div class="paragraph">
+<p>To match all of the records for a given word or value across the entire range, you can use the null value in the <code>endkey</code> parameter.
+For example, to search for all records that start only with the word "almond", you specify a <code>startkey</code> of "almond", and an endkey of "almond\u02ad" (i.e.
+with the last Latin character at the end).
+If you are using Unicode strings, you may want to use "\uefff".</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>startkey="almond"&amp;endkey="almond\u02ad"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The precedence in this example is that output starts when ‘almond’ is seen, and stops when the emitted data is lexically greater than the supplied <code>endkey</code>.
+Although a record with the value "almond\02ad" will never be seen, the emitted data will eventually be lexically greater than "almond\02ad" and output will stop.</p>
+</div>
+<div class="paragraph">
+<p>In effect, a range specified in this way acts as a prefix with all the data being output that match the specified prefix.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="partial-selection-with-compound-keys"><a class="anchor" href="#partial-selection-with-compound-keys"></a>Partial selection with compound keys</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Compound keys, such as arrays or hashes, can also be specified in the view output, and the matching precedence can be used to provide complex selection ranges.
+For example, if time data is emitted in the following format:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[year,month,day,hour,minute]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then precise date (and time) ranges can be selected by specifying the date and time in the generated data.
+For example, to get information between 1st April 2011, 00:00 and 30th September 2011, 23:59:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey=[2011,4,1,0,0]&amp;endkey=[2011,9,30,23,59]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The flexible structure and nature of the <code>startkey</code> and <code>endkey</code> values enable selection through a variety of range specifications.
+For example, you can obtain all of the data from the beginning of the year until the 5th March using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey=[2011]&amp;endkey=[2011,3,5,23,59]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also examine data from a specific date through to the end of the month:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey=[2011,3,16]&amp;endkey=[2011,3,99]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, the value for the <code>day</code> element of the array is an impossible value, but the matching algorithm will identify when the emitted value is lexically greater than the supplied <code>endkey</code> value, and information selected for output will be stopped.</p>
+</div>
+<div class="paragraph">
+<p>A limitation of this structure is that it is not possible to ignore the earlier array values.
+For example, to select information from 10am to 2pm each day, you cannot use this parameter set:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey=[null,null,null,10,0]&amp;endkey=[null,null,null,14,0]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, because selection is made by a outputting a range of values based on the start and end key, you cannot specify range values for the date portion of the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey=[0,0,0,10,0]&amp;endkey=[9999,99,99,14,0]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will instead output all the values from the first day at 10am to the last day at 2pm.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pagination"><a class="anchor" href="#pagination"></a>Pagination</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Pagination over results can be achieved by using the <code>skip</code> and <code>limit</code> parameters.
+For example, to get the first 10 records from the view:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?limit=10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next ten records can obtained by specifying:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?skip=10&amp;limit=10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On the server, the <code>skip</code> option works by executing the query and literally iterating over the specified number of output records specified by <code>skip</code>, then returning the remainder of the data up until the specified <code>limit</code> records are reached, if the <code>limit</code> parameter is specified.</p>
+</div>
+<div class="paragraph">
+<p>When paginating with larger values for <code>skip</code>, the overhead for iterating over the records can be significant.
+A better solution is to track the document id output by the first query (with the <code>limit</code> parameter).
+You can then use <code>startkey_docid</code> to specify the last document ID seen, skip over that record, and output the next ten records.</p>
+</div>
+<div class="paragraph">
+<p>Therefore, the paging sequence is, for the first query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey="carrots"&amp;limit=10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Record the last document ID in the generated output, then use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey="carrots"&amp;startkey_docid=DOCID&amp;skip=1&amp;limit=10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When using <code>startkey_docid</code> you must specify the <code>startkey</code> parameter to specify the information being searched for.
+By using the <code>startkey_docid</code> parameter, Couchbase Server skips through the B-Tree index to the specified document ID.
+This is much faster than the skip/limit example shown above.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="grouping-in-queries"><a class="anchor" href="#grouping-in-queries"></a>Grouping in queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you have specified an array as your compound key within your view, then you can specify the group level to be applied to the query output when using a <code>reduce()</code>.</p>
+</div>
+<div class="paragraph">
+<p>When grouping is enabled, the view output is grouped according to the key array, and you can specify the level within the defined array that the information is grouped by.
+You do this by specifying the index within the array by which you want the output grouped using the <code>group_level</code> parameter.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/views/views-grouping.png" alt="views grouping" width="480">
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>group_level</code> parameter specifies the array index (starting at 1) at which you want the grouping occur, and generate a unique value based on this value that is used to identify all the items in the view output that include this unique value:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A group level of <code>0</code> groups by the entire dataset (as if no array exists).</p>
+</li>
+<li>
+<p>A group level of <code>1</code> groups the content by the unique value of the first element in the view key array.
+For example, when outputting a date split by year, month, day, hour, minute, each unique year will be output.</p>
+</li>
+<li>
+<p>A group level of <code>2</code> groups the content by the unique value of the first and second elements in the array.
+With a date, this outputs each unique year and month, including all records with that year and month into each group.</p>
+</li>
+<li>
+<p>A group level of <code>3</code> groups the content by the unique value of the first three elements of the view key array.
+In a date this outputs each unique date (year, month, day) grouping all items according to these first three elements.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The grouping will work for any output structure where you have output an compound key using an array as the output value for the key.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="selection-when-grouping"><a class="anchor" href="#selection-when-grouping"></a>Selection when grouping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When using grouping and selection using the <code>key</code>, <code>keys</code>, or <code>startkey</code> / <code>endkey</code> parameters, the query value should match at least the format (and element count) of the group level that is being queried.</p>
+</div>
+<div class="paragraph">
+<p>For example, using the following <code>map()</code> function to output information by date as an array:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>function(doc, meta)
+{
+  emit([doc.year, doc.mon, doc.day], doc.logtype);
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you specify a <code>group_level</code> of <code>2</code> then you must specify a key using at least the year and month information.
+For example, you can specify an explicit key, such as <code>[2012,8]</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?group_level=2&amp;key=[2012,8]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can query it for a range:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?group_level=2&amp;startkey=[2012,2]&amp;endkey=[2012,8]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also specify a year, month and day, while still grouping at a higher level.
+For example, to group by year/month while selecting by specific dates:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?group_level=2&amp;startkey=[2012,2,15]&amp;endkey=[2012,8,10]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Specifying compound keys that are shorter than the specified group level may output unexpected results due to the selection mechanism and the way <code>startkey</code> and <code>endkey</code> are used to start and stop the selection of output rows.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ordering"><a class="anchor" href="#ordering"></a>Ordering</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All view results are automatically output sorted, with the sorting based on the content of the key in the output view.
+Views are sorted using a specific sorting format, with the basic order for all basic and compound follows as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>null</code></p>
+</li>
+<li>
+<p><code>false</code></p>
+</li>
+<li>
+<p><code>true</code></p>
+</li>
+<li>
+<p>Numbers</p>
+</li>
+<li>
+<p>Text (case sensitive, lowercase first, UTF-8 order)</p>
+</li>
+<li>
+<p>Arrays (according to the values of each element, in order)</p>
+</li>
+<li>
+<p>Objects (according to the values of keys, in key order)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The natural sorting is therefore by default close to natural sorting order both alphabetically (A-Z) and numerically (0-9).</p>
+</div>
+<div class="paragraph">
+<p>There is no collation or foreign language support.
+Sorting is always according to the above rules based on UTF-8 values.</p>
+</div>
+<div class="paragraph">
+<p>You can alter the direction of the sorting (reverse, highest to lowest numerically, Z-A alphabetically) by using the <code>descending</code> option.
+When set to true, this reverses the order of the view results, ordered by their key.</p>
+</div>
+<div class="paragraph">
+<p>Because selection is made after sorting the view results, if you configure the results to be sorted in descending order and you are selecting information using a key range, then you must also reverse the <code>startkey</code> and <code>endkey</code> parameters.
+For example, if you query ingredients where the start key is ‘tomato’ and the end key is ‘zucchini’, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?startkey="tomato"&amp;endkey="zucchini"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The selection will operate, returning information when the first key matches ‘tomato’ and stopping on the last key that matches ‘zucchini’.</p>
+</div>
+<div class="paragraph">
+<p>If the return order is reversed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?descending=true&amp;startkey="tomato"&amp;endkey="zucchini"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The query will return only entries matching ‘tomato’.
+This is because the order will be reversed, ‘zucchini’ will appear first, and it is only when the results contain ‘tomato’ that any information is returned.</p>
+</div>
+<div class="paragraph">
+<p>To get all the entries that match, the <code>startkey</code> and <code>endkey</code> values must also be reversed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>?descending=true&amp;startkey="zucchini"&amp;endkey="tomato"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above selection will start generating results when ‘zucchini’ is identified in the key, and stop returning results when ‘tomato’ is identified in the key.</p>
+</div>
+<div class="paragraph">
+<p>View output and selection are case sensitive.
+Specifying the key ‘Apple’ will not return ‘apple’ or ‘APPLE’ or other case differences.
+Normalizing the view output and query input to all lowercase or upper case will simplify the process by eliminating the case differences.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="understanding-letter-ordering-in-views"><a class="anchor" href="#understanding-letter-ordering-in-views"></a>Understanding letter ordering in views</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Server uses a Unicode collation algorithm to order letters, so you should be aware of how this functions.
+Most developers are typically used to Byte order, such as that found in ASCII and which is used in most programming languages for ordering strings during string comparisons.</p>
+</div>
+<div class="paragraph">
+<p>The following shows the order of precedence used in Byte order, such as ASCII:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>123456890 &lt; A-Z &lt; a-z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This means any items that start with integers will appear before any items with letters; any items that beginning with capital letters will appear before items in lower case letters.
+This means the item named "Apple" will appear before "apple" and the item "Zebra" will appear before "apple".
+Compare this with the order of precedence used in Unicode collation, which is used in Couchbase Server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>123456790 &lt; aAbBcCdDeEfFgGhH...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice again that items that start with integers will appear before any items with letters.
+However, in this case, the lowercase and then uppercase of the same letter are grouped together.
+This means that that if "apple" will appear before "Apple" and would also appear before "Zebra." In addition, be aware that with accented characters will follow this ordering:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>a &lt; á &lt; A &lt; Á &lt; b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This means that all items starting with "a" <em>and accented variants of the letter</em> will occur before "A" and any accented variants of "A."</p>
+</div>
+<div class="paragraph">
+<p><strong>Ordering Example</strong></p>
+</div>
+<div class="paragraph">
+<p>In Byte order, keys in an index would appear as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"ABC123" &lt; "ABC223" &lt; "abc123" &lt; "abc223" &lt; "abcd23" &lt; "bbc123" &lt; "bbcd23"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The same items will be ordered this way by Couchbase Server under Unicode collation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"abc123" &lt; "ABC123" &lt; "abc223" &lt; "ABC223" &lt; "abcd23" &lt; "bbc123" &lt; "bbcd23"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is particularly important for you to understand if you query Couchbase Server with a <code>startkey</code> and <code>endkey</code> to get back a range of results.
+The items you would retrieve under Byte order are different compared to Unicode collation.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ordering and Query Example</strong></p>
+</div>
+<div class="paragraph">
+<p>This following example demonstrates Unicode collation in Couchbase Server and the impact on query results returned with a <code>startkey</code> and <code>endkey</code>.
+It is based on the <code>beer-sample</code> database provided with Couchbase Server.</p>
+</div>
+<div class="paragraph">
+<p>Imagine you want to retrieve all breweries with names starting with uppercase Y.
+Your query parameters would appear as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>startkey="Y"&amp;endkey="z"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want breweries starting with lowercase y <em>or</em> uppercase Y, you would provides a query as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>startkey="y"&amp;endkey="z"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will return all names with lower case Y and items up to, but not including lowercase z, thereby including uppercase Y as well.
+To retrieve the names of breweries starting with lowercase y only, you would terminate your range with capital Y:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>startkey="y"&amp;endkey="Y"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As it happens, the sample database does not contain any results because there are no beers in it which start with lowercase <code>y</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-control"><a class="anchor" href="#error-control"></a>Error control</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are a number of parameters that can be used to help control errors and responses during a view query.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>on_error</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>on_error</code> parameter specifies whether the view results will be terminated on the first error from a node, or whether individual nodes can fail and other nodes return information.</p>
+</div>
+<div class="paragraph">
+<p>When returning the information generated by a view request, the default response is for any raised error to be included as part of the JSON response, but for the view process to continue.
+This permits for individual nodes within the Couchbase cluster to timeout or fail, while still generating the requested view information.</p>
+</div>
+<div class="paragraph">
+<p>In this instance, the error is included as part of the JSON returned:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+   "errors" : [
+      {
+         "from" : "http://192.168.1.80:9503/_view_merge/?stale=false",
+         "reason" : "req_timedout"
+      },
+      {
+         "from" : "http://192.168.1.80:9502/_view_merge/?stale=false",
+         "reason" : "req_timedout"
+      },
+      {
+         "from" : "http://192.168.1.80:9501/_view_merge/?stale=false",
+         "reason" : "req_timedout"
+      }
+   ],
+   "rows" : [
+      {
+         "value" : 333280,
+         "key" : null
+      }
+   ]
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can alter this behavior by using the <code>on_error</code> argument.
+The default value is <code>continue</code>.
+If you set this value to <code>stop</code> then the view response will cease the moment an error occurs.
+The returned JSON will contain the error information for the node that returned the first error.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>```
+{
+   "errors" : [
+      {
+         "from" : "http://192.168.1.80:9501/_view_merge/?stale=false",
+         "reason" : "req_timedout"
+      }
+   ],
+   "rows" : [
+      {
+         "value" : 333280,
+         "key" : null
+      }
+   ]
+}
+```</pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../../_/img/couchbase_logo_black.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2020 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
