@@ -6337,7 +6337,7 @@ Positional parameters apply to <code>prepared</code> also.
 </table>
 </div>
 <div class="paragraph">
-<p>Refer to <a href="#section_srh_tlm_n1b">Named Parameters VS. Positional Parameters</a> for details.</p>
+<p>See section <a href="#section_srh_tlm_n1b">Named Parameters VS. Positional Parameters</a> for details.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
@@ -6571,9 +6571,6 @@ $ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * 
 <em>Optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
-</div>
-<div class="paragraph">
 <p>The level of durability for mutations produced by the request.</p>
 </div>
 <div class="paragraph">
@@ -7125,9 +7122,6 @@ Before processing each statement, a current vector is obtained and used as a low
 </dd>
 </dl>
 </div>
-<div class="paragraph">
-<p>Values are case-insensitive.</p>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -7141,8 +7135,16 @@ The default behavior is RYOW within the request, however, if you want to disable
 </table>
 </div>
 <div class="paragraph">
+<p>Values are case-insensitive.</p>
+</div>
+<div class="paragraph">
 <p>If the request contains a <code>BEGIN TRANSACTION</code> statement, or a DML statement with the <a href="#tximplicit">tximplicit</a> parameter set to <code>true</code>, then this parameter sets the transactional scan consistency.
-Refer to <a href="#transactional-scan-consistency">Transactional Scan Consistency</a> for details.</p>
+If you specify a transactional scan consistency of <code>request_plus</code>, <code>status_plus</code>, or <code>at_plus</code>, or if you specify no transactional scan consistency, the transactional scan consistency is set to <code>request_plus</code>; otherwise, the transactional scan consistency is set as specified.</p>
+</div>
+<div class="paragraph">
+<p>Any DML statements within the transaction that have no scan consistency set will inherit from the transactional scan consistency.
+When you specify a scan consistency of <code>request_plus</code> or <code>status_plus</code> for a statement within the transaction, the scan consistency for the statement is set to <code>request_plus</code>.
+If you specify a scan consistency of <code>not_bounded</code> or <code>at_plus</code> for a statement within the transaction, the scan consistency for the statement is set as specified.</p>
 </div>
 <div class="paragraph">
 <div class="title">Default</div>
@@ -7426,9 +7428,6 @@ $ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * 
 <em>Optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
-</div>
-<div class="paragraph">
 <p>Transaction data.
 For internal use only.</p>
 </div></div></td>
@@ -7442,9 +7441,6 @@ For internal use only.</p>
 <em>Required</em> for statements within a transaction</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
-</div>
-<div class="paragraph">
 <p>Transaction ID.
 Specifies the transaction to which a statement belongs.
 For use with DML statements within a transaction, rollbacks, and commits.</p>
@@ -7477,9 +7473,6 @@ $ curl http://localhost:8093/query/service \
 <em>Optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
-</div>
-<div class="paragraph">
 <p>Specifies that a DML statement is a singleton transaction.</p>
 </div>
 <div class="paragraph">
@@ -7518,9 +7511,6 @@ $ curl http://localhost:8093/query/service \
 <em>Optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
-</div>
-<div class="paragraph">
 <p>Transaction statement number.
 The transaction statement number must be a positive integer, and must be higher than any previous transaction statement numbers in the transaction.
 If the transaction statement number is lower than the transaction statement number for any previous statement, an error is generated.</p>
@@ -7550,9 +7540,6 @@ $ curl http://localhost:8093/query/service \
 <em>Optional</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
-</div>
-<div class="paragraph">
 <p>Maximum time to spend on a transaction before timing out.
 Only applies to <code>BEGIN TRANSACTION</code> statements, or DML statements for which <a href="#tximplicit">tximplicit</a> is set.
 For other statements, it is ignored.</p>
@@ -7701,7 +7688,8 @@ $ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * 
 <p>Named parameters apply to <code>prepared</code> also.</p>
 </div>
 <div class="paragraph">
-<p>Refer to <a href="#section_srh_tlm_n1b">Named Parameters VS. Positional Parameters</a> for examples.</p>
+<p>See section <a href="#section_srh_tlm_n1b">Named Parameters VS.
+Positional Parameters</a> for examples.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>JSON value</p>
@@ -7709,16 +7697,6 @@ $ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * 
 </tr>
 </tbody>
 </table>
-<h5 id="transactional-scan-consistency" class="discrete">Transactional Scan Consistency</h5>
-<div class="paragraph">
-<p>If the request contains a <code>BEGIN TRANSACTION</code> statement, or a DML statement with the <a href="#tximplicit">tximplicit</a> parameter set to <code>true</code>, then the <a href="#scan_consistency">scan_consistency</a> parameter sets the <em class="def">transactional scan consistency</em>.
-If you specify a transactional scan consistency of <code>request_plus</code>, <code>status_plus</code>, or <code>at_plus</code>, or if you specify no transactional scan consistency, the transactional scan consistency is set to <code>request_plus</code>; otherwise, the transactional scan consistency is set as specified.</p>
-</div>
-<div class="paragraph">
-<p>Any DML statements within the transaction that have no scan consistency set will inherit from the transactional scan consistency.
-When you specify a scan consistency of <code>request_plus</code> or <code>status_plus</code> for a statement within the transaction, the scan consistency for the statement is set to <code>request_plus</code>.
-If you specify a scan consistency of <code>not_bounded</code> or <code>at_plus</code> for a statement within the transaction, the scan consistency for the statement is set as specified.</p>
-</div>
 </div>
 </div>
 <div class="sect1">

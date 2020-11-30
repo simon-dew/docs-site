@@ -4541,7 +4541,7 @@ server
 </div><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Creating the right index - with the right keys, in the right order, and using the right expressions, is critical to query performance in any database system.
+<p>Creating the right index&#8201;&#8212;&#8201;with the right keys, in the right order, and using the right expressions&#8201;&#8212;&#8201;is critical to query performance in any database system.
 This is true for Couchbase as well.
 This topic provides an overview of the indexing options for JSON in Couchbase, which in turn would help query for data efficiently and improve query performance.</p>
 </div>
@@ -4579,19 +4579,23 @@ For instructions on how to install the sample bucket, see <a href="../../../mana
 </div>
 <div class="paragraph">
 <p>Couchbase Server is a distributed database that supports flexible data model using JSON.
-Each document in a bucket has a user-generated unique document key and this uniqueness is enforced when inserting data into the bucket.
+Each document in a keyspace has a user-generated unique document key and this uniqueness is enforced when inserting data into the keyspace.
 Consider the following sample document:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT meta().id, travel
+FROM `travel-sample`.inventory.airline travel
+LIMIT 1;</code></pre>
+</div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>SELECT meta().id, travel
-FROM `travel-sample` travel
-WHERE type = 'airline'
-LIMIT 1;
-
-[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
     {
-        "id": "airline_10",
+        "id": "airline_10", <i class="conum" data-value="1"></i><b>(1)</b>
         "travel": {
             "callsign": "MILE-AIR",
             "country": "United States",
@@ -4600,9 +4604,23 @@ LIMIT 1;
             "id": 10,
             "name": "40-Mile Air",
             "type": "airline"
-            }
-        }
-    ]</pre>
+        } <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+]</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The document key</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The document content</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -4611,39 +4629,52 @@ LIMIT 1;
 <h2 id="primary-index"><a class="anchor" href="#primary-index"></a>Primary Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The primary index is simply an index on the document key on the entire bucket.</p>
+<p>The primary index is simply an index on the document key on the entire keyspace.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE PRIMARY INDEX ON `travel-sample`;</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE PRIMARY INDEX ON `travel-sample`.inventory.airline;</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>The Couchbase data layer enforces the uniqueness constraint on the document key.
 The primary index, like every other index, is maintained asynchronously.
-Use the primary index for full bucket scans (primary scans) when the query does not have any filters (predicates) or when no other index or access path can be used.</p>
+Use the primary index for full keyspace scans (primary scans) when the query does not have any filters (predicates) or when no other index or access path can be used.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Metadata for Primary Index</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:indexes WHERE name = '#primary';</code></pre>
+</div>
 </div>
 <div class="listingblock">
-<div class="title">Metadata for Primary Index</div>
+<div class="title">Results</div>
 <div class="content">
-<pre>SELECT * FROM system:indexes WHERE name = '#primary';
-
-Results:
-[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "indexes": {
+      "bucket_id": "travel-sample",
       "datastore_id": "http://127.0.0.1:8091",
-      "id": "1b7ac1abf01d9038",
+      "id": "c6f4ec5d935e1626",
       "index_key": [],
       "is_primary": true,
-      "keyspace_id": "travel-sample",
+      "keyspace_id": "airline",
       "name": "#primary",
       "namespace_id": "default",
+      "scope_id": "inventory",
       "state": "online",
       "using": "gsi"
     }
   }
-]</pre>
+]</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -4657,9 +4688,13 @@ Results:
 <div class="paragraph">
 <p>You can name the primary index, as seen in the following example.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE PRIMARY INDEX def_primary ON `travel-sample`;</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE PRIMARY INDEX travel_primary ON `travel-sample`.inventory.airline;</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -4667,30 +4702,6 @@ Results:
 The advantage of naming a primary index is that you can have multiple primary indexes in the system.
 Duplicate indexes help with high availability and query load distribution between the indexes.
 This is true for both primary indexes and secondary indexes.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>SELECT meta().id AS documentkey, `travel-sample` airline
-FROM `travel-sample`
-WHERE type = 'airline'
-LIMIT 1;
-
-Results:
-[
-  {
-    "airline": {
-      "callsign": "MILE-AIR",
-      "country": "United States",
-      "iata": "Q5",
-      "icao": "MLA",
-      "id": 10,
-      "name": "40-Mile Air",
-      "type": "airline"
-    },
-    "documentkey": "airline_10"
-  }
-]</pre>
-</div>
 </div>
 </div>
 </div>
@@ -4702,77 +4713,103 @@ Results:
 This index can use any key within the document and the key can be of any type: scalar, object, or array.
 The query has to use the same type of object for the query engine to use the index.</p>
 </div>
-<div class="listingblock">
-<div class="title">Example: Key is a Simple Scalar Value</div>
+<div class="exampleblock">
+<div class="title">Example 2. Key is a Simple Scalar Value</div>
 <div class="content">
-<pre>CREATE INDEX travel_name ON `travel-sample`(name);
-
-# Name is a simple scalar value such as:
-# { "name": "Air France" }</pre>
-</div>
-</div>
 <div class="listingblock">
-<div class="title">Example: Key is an Object Embedded Within the Document</div>
 <div class="content">
-<pre>CREATE INDEX travel_geo on `travel-sample`(geo);
-
-# geo is an object embedded within the document such as:
-# "geo": {
-#    "alt": 12,
-#    "lat": 50.962097,
-#    "lon": 1.954764
-#    }</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_name ON `travel-sample`.inventory.airline(name);</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>In this keyspace, <code>name</code> is a simple scalar value such as <code>{ "name": "Air France" }</code>.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Key is an Object Embedded Within the Document</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">Example: Keys from Nested Objects</div>
 <div class="content">
-<pre>CREATE INDEX travel_geo on `travel-sample`(geo.alt);
-
-CREATE INDEX travel_geo on `travel-sample`(geo.lat);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_geo on `travel-sample`.inventory.landmark(geo);</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>In this keyspace, <code>geo</code> is an object embedded within the document, such as:</p>
 </div>
 <div class="listingblock">
-<div class="title">Example: Keys is an Array of Objects</div>
 <div class="content">
-<pre># Schedule is an array of objects with flight details. This command indexes the
-# complete array and is useful only if you're looking for the entire array.
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"geo": {
+   "alt": 12,
+   "lat": 50.962097,
+   "lon": 1.954764
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Keys from Nested Objects</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_geo_alt on `travel-sample`.inventory.landmark(geo.alt);
 
-CREATE INDEX travel_schedule ON `travel-sample`(schedule);
-
-Example Results:
-"schedule": [
-        {
-            "day": 0,
-            "flight": "AF198",
-            "utc": "10:13:00"
-            },
-        {
-            "day": 0,
-            "flight": "AF547",
-            "utc": "19:14:00"
-            },
-        {
-            "day": 0,
-            "flight": "AF943",
-            "utc": "01:31:00"
-            },
-        {
-            "day": 1,
-            "flight": "AF356",
-            "utc": "12:40:00"
-            },
-        {
-            "day": 1,
-            "flight": "AF480",
-            "utc": "08:58:00"
-            },
-        {
-            "day": 1,
-            "flight": "AF250",
-            "utc": "12:59:00"
-            }
-    ]</pre>
+CREATE INDEX travel_geo_lat on `travel-sample`.inventory.landmark(geo.lat);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. Keys from an Array of Objects</div>
+<div class="content">
+<div class="paragraph">
+<p>In the <code>route</code> keyspace, <code>schedule</code> is an array of objects with flight details.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"schedule": [
+    {
+        "day": 0,
+        "flight": "AF198",
+        "utc": "10:13:00"
+    },
+    {
+        "day": 0,
+        "flight": "AF547",
+        "utc": "19:14:00"
+    },
+    {
+        "day": 0,
+        "flight": "AF943",
+        "utc": "01:31:00"
+    },
+    {
+        "day": 1,
+        "flight": "AF356",
+        "utc": "12:40:00"
+    },
+    {
+        "day": 1,
+        "flight": "AF480",
+        "utc": "08:58:00"
+    },
+    {
+        "day": 1,
+        "flight": "AF250",
+        "utc": "12:59:00"
+    }
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command indexes the complete array and is useful only if you&#8217;re looking for the entire array.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_schedule ON `travel-sample`.inventory.route(schedule);</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4786,9 +4823,13 @@ In such cases, you want to use indexes with multiple keys so the indexes can ret
 Additionally, if a query is referencing only the keys in the index, the query engine can simply answer the query from the index scan result without having to fetch from the data nodes.
 This is commonly used for performance optimization.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX travel_info ON `travel-sample`(name,type,id,icoo,iata);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_info ON `travel-sample`.inventory.airline(name, id, icao, iata);</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -4805,45 +4846,56 @@ For the index filtering to be exploited, the filters have to use respective obje
 <div class="sectionbody">
 <div class="paragraph">
 <p>It&#8217;s common to have names in the database with a mix of upper and lower cases.
-When you need to search, say for the city "Villeneuve-sur-lot," you want to search for all uppercase and lowercase possibilities of it.
+When you need to search, say for the city "Villeneuve-sur-lot", you want to search for all uppercase and lowercase possibilities of it.
 In order to do so, first create an index using an expression or a function as the key.
 For example:</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX travel_cxname ON `travel-sample`(LOWER(name));</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_cxname ON `travel-sample`.inventory.airport(LOWER(name));</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>If you provide the search string in lowercase, the index helps the query engine more efficiently search for already lowercase values in the index.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>EXPLAIN SELECT * FROM `travel-sample` WHERE LOWER(name) = "john";
-
-Results:
-[
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN SELECT * FROM `travel-sample`.inventory.airport WHERE LOWER(name) = "villeneuve-sur-lot";</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "plan": {
       "#operator": "Sequence",
       "~children": [
         {
-          "#operator": "IndexScan2",
+          "#operator": "IndexScan3",
+          "bucket": "travel-sample",
           "index": "travel_cxname",
-          "index_id": "59af53f0ec534d08",
+          "index_id": "97307509cbce54ca",
           "index_projection": {
             "primary_key": true
           },
-          "keyspace": "travel-sample",
+          "keyspace": "airport",
           "namespace": "default",
+          "scope": "inventory",
           "spans": [
             {
               "exact": true,
               "range": [
                 {
-                  "high": "\"john\"",
+                  "high": "\"villeneuve-sur-lot\"",
                   "inclusion": 3,
-                  "low": "\"john\""
+                  "low": "\"villeneuve-sur-lot\""
                 }
               ]
             }
@@ -4852,8 +4904,10 @@ Results:
         },
         {
           "#operator": "Fetch",
-          "keyspace": "travel-sample",
-          "namespace": "default"
+          "bucket": "travel-sample",
+          "keyspace": "airport",
+          "namespace": "default",
+          "scope": "inventory"
         },
         {
           "#operator": "Parallel",
@@ -4862,7 +4916,7 @@ Results:
             "~children": [
               {
                 "#operator": "Filter",
-                "condition": "(lower((`travel-sample`.`name`)) = \"john\")"
+                "condition": "(lower((`airport`.`name`)) = \"villeneuve-sur-lot\")"
               },
               {
                 "#operator": "InitialProject",
@@ -4872,27 +4926,30 @@ Results:
                     "star": true
                   }
                 ]
-              },
-              {
-                "#operator": "FinalProject"
               }
             ]
           }
         }
       ]
     },
-    "text": "SELECT * FROM `travel-sample` WHERE LOWER(name) = \"john\";"
+    "text": "SELECT * FROM `travel-sample`.inventory.airport WHERE LOWER(name) = \"villeneuve-sur-lot\";"
   }
-]</pre>
+]</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>You can also use complex expressions in the functional index.
 For example:</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX travel_cx1 ON `travel-sample`(LOWER(name), length*width, round(salary));</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_cx1 ON `travel-sample`.inventory.airport(LOWER(name), ROUND(geo.alt * 0.3048));</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4906,37 +4963,45 @@ At the top level, it can have scalar fields, objects, or arrays.
 Each object can nest other objects and arrays; each array can have other objects and arrays, and the nesting can continue.
 Consider the following example array.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>schedule:
-[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"schedule": [
     {
         "day" : 0,
-        "special_flights" :
-        [
-        {
-            "flight" : "AI111", "utc" : "1:11:11"
+        "special_flights" : [
+            {
+                "flight" : "AI111",
+                "utc" : "1:11:11"
             },
-        {
-            "flight" : "AI222", "utc" : "2:22:22"
+            {
+                "flight" : "AI222",
+                "utc" : "2:22:22"
             }
-            ]
-        },
+        ]
+    },
     {
-        "day": 1,
-        "flight": "AF552",
-        "utc": "14:41:00"
-        }
-    ]</pre>
+        "day" : 1,
+        "flight" : "AF552",
+        "utc" : "14:41:00"
+    }
+]</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>With a rich structure as seen in the array schedule, here&#8217;s how you index a particular array or a field within the sub-object.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX travel_sched ON `travel-sample`
- (ALL DISTINCT ARRAY v.day FOR v IN schedule END);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_sched ON `travel-sample`.inventory.route
+ (ALL DISTINCT ARRAY v.day FOR v IN schedule END);</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -4945,26 +5010,31 @@ Consider the following example array.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>schedule</code> - the array we’re dereferencing into.</p>
+<p><code>schedule</code>&#8201;&#8212;&#8201;the array we’re dereferencing into.</p>
 </li>
 <li>
-<p><code>v</code> - the variable implicitly declared to reference each element/object within the array <code>schedule</code>.</p>
+<p><code>v</code>&#8201;&#8212;&#8201;the variable implicitly declared to reference each element/object within the array <code>schedule</code>.</p>
 </li>
 <li>
-<p><code>v.day</code> - the element within each object of the array <code>schedule</code>.</p>
+<p><code>v.day</code>&#8201;&#8212;&#8201;the element within each object of the array <code>schedule</code>.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>The following query uses the array index created above.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>EXPLAIN SELECT * FROM `travel-sample`
-WHERE ANY v IN schedule SATISFIES v.day = 2 END;
-
-Results:
-[
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN SELECT * FROM `travel-sample`.inventory.route
+WHERE ANY v IN schedule SATISFIES v.day = 2 END;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -4972,14 +5042,16 @@ Results:
         {
           "#operator": "DistinctScan",
           "scan": {
-            "#operator": "IndexScan2",
-            "index": "travel_sched",             / Index created above
-            "index_id": "f026dca7f2419e39",
+            "#operator": "IndexScan3",
+            "bucket": "travel-sample",
+            "index": "travel_sched", <i class="conum" data-value="1"></i><b>(1)</b>
+            "index_id": "7cb7b03a5a2a7522",
             "index_projection": {
               "primary_key": true
             },
-            "keyspace": "travel-sample",
+            "keyspace": "route",
             "namespace": "default",
+            "scope": "inventory",
             "spans": [
               {
                 "exact": true,
@@ -4997,8 +5069,10 @@ Results:
         },
         {
           "#operator": "Fetch",
-          "keyspace": "travel-sample",
-          "namespace": "default"
+          "bucket": "travel-sample",
+          "keyspace": "route",
+          "namespace": "default",
+          "scope": "inventory"
         },
         {
           "#operator": "Parallel",
@@ -5007,7 +5081,7 @@ Results:
             "~children": [
               {
                 "#operator": "Filter",
-                "condition": "any `v` in (`travel-sample`.`schedule`) satisfies ((`v`.`day`) = 2) end"
+                "condition": "any `v` in (`route`.`schedule`) satisfies ((`v`.`day`) = 2) end"
               },
               {
                 "#operator": "InitialProject",
@@ -5017,18 +5091,25 @@ Results:
                     "star": true
                   }
                 ]
-              },
-              {
-                "#operator": "FinalProject"
               }
             ]
           }
         }
       ]
     },
-    "text": "SELECT * FROM `travel-sample` \nWHERE ANY v IN schedule SATISFIES v.day = 2 END;"
+    "text": "SELECT * FROM `travel-sample`.inventory.route\nWHERE ANY v IN schedule SATISFIES v.day = 2 END;"
   }
-]</pre>
+]</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Index created above</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -5040,10 +5121,14 @@ As you&#8217;re referencing individual fields of the object or element within th
 <p>The index <code>travel_sched</code> stores only the distinct values within an array.
 To store all elements of an array in an index, do not use the DISTINCT modifier to the expression.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX travel_sched ON `travel-sample`
-    (ALL ARRAY v.day FOR v IN schedule END);</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_sched ON `travel-sample`.inventory.route
+    (ALL ARRAY v.day FOR v IN schedule END);</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -5052,40 +5137,65 @@ To store all elements of an array in an index, do not use the DISTINCT modifier 
 <h2 id="partial-index"><a class="anchor" href="#partial-index"></a>Partial Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Unlike relational systems where each type of row is in a distinct table, Couchbase buckets can have documents of various types.
-You can include a type field in your document to differentiate distinct types.</p>
+<p>Unlike relational systems where each type of row is in a distinct table, Couchbase keyspaces can have documents of various types.
+You can include a distinguishing field in your document to differentiate distinct types.</p>
 </div>
+<div class="paragraph">
+<p>For example, the <code>landmark</code> keyspace distinguishes types of landmark using the <code>activity</code> field:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>{
-    "airline": {
-        "callsign": "MILE-AIR",
-        "country": "United States",
-        "iata": "Q5",
-        "icao": "MLA",
-        "id": 10,
-        "name": "40-Mile Air",
-        "type": "airline"
-        },
-    "documentkey": "airline_10"
-    }</pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT DISTINCT activity FROM `travel-sample`.inventory.landmark;</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Also, since Couchbase data model is JSON and the JSON schema is flexible, an index may not contain entries to documents with absent index keys.</p>
-</div>
-<div class="paragraph">
-<p>When you want to create an index of airline documents, you can simply add the type field for the WHERE clause of the index.</p>
 </div>
 <div class="listingblock">
+<div class="title">Result</div>
 <div class="content">
-<pre>CREATE INDEX travel_info ON `travel-sample`(name, id, icoo, iata)
-WHERE type='airline';</pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "activity": "see"
+  },
+  {
+    "activity": "eat"
+  },
+  {
+    "activity": "do"
+  },
+  {
+    "activity": "drink"
+  },
+  {
+    "activity": "buy"
+  },
+  {
+    "activity": "listing"
+  }
+]</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
-<p>This creates an index only on documents that have <code>type='airline'</code>.
-The queries must include the filter <code>type='airline'</code> in addition to other filters for this index to qualify.</p>
+<p>Since the Couchbase data model is JSON and the JSON schema is flexible, an index may not contain entries to documents with absent index keys.</p>
+</div>
+<div class="paragraph">
+<p>When you want to create an index of restaurants, you can simply add the distinguishing field for the WHERE clause of the index.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX travel_eat ON `travel-sample`.inventory.landmark(name, id, address)
+WHERE activity='eat';</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>This creates an index only on documents that have <code>activity='eat'</code>.
+The queries must include the filter <code>activity='eat'</code> in addition to other filters for this index to qualify.</p>
 </div>
 <div class="paragraph">
 <p>You can use complex predicates in the WHERE clause of the index.
@@ -5119,16 +5229,20 @@ Use UNION ALL to have a query exploit multiple partitioned indexes in a single q
 <p>Duplicate index isn&#8217;t really a special type of index, but a feature of Couchbase indexing.
 You can create duplicate indexes with distinct names.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre>CREATE INDEX i1 ON `travel-sample`(LOWER(name),id, icoo)
-WHERE type = 'airline';
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX i1 ON `travel-sample`.inventory.airport(LOWER(name), id, icao)
+WHERE country = 'France';
 
-CREATE INDEX i2 ON `travel-sample`(LOWER(name),id, icoo)
-WHERE type = 'airline';
+CREATE INDEX i2 ON `travel-sample`.inventory.airport(LOWER(name), id, icao)
+WHERE country = 'France';
 
-CREATE INDEX i3 ON `travel-sample`(LOWER(name),id, icoo)
-WHERE type = 'airline';</pre>
+CREATE INDEX i3 ON `travel-sample`.inventory.airport(LOWER(name), id, icao)
+WHERE country = 'France';</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">

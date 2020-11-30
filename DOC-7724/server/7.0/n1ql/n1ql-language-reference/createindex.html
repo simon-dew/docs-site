@@ -4726,10 +4726,6 @@ If omitted, the default collection in the bucket&#8217;s default scope is used.<
 <div class="paragraph">
 <p>For example, <code>default:`travel-sample`</code> indicates the default collection in the default scope in the <code>travel-sample</code> bucket in the <code>default</code> namespace.</p>
 </div>
-</div>
-</div>
-<div class="exampleblock">
-<div class="content">
 <div class="paragraph">
 <p>Similarly, <code>default:`travel-sample`.places.cities</code> indicates the <code>cities</code> collection in the <code>places</code> scope in the <code>travel-sample</code> bucket in the <code>default</code> namespace.</p>
 </div>
@@ -5082,24 +5078,58 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 <div class="title">Example 1. Create an index</div>
 <div class="content">
 <div class="paragraph">
-<p>Create a secondary index that contains airports with an <code>alt</code> value greater than 1000 on the node <code>192.0.2.1</code>.</p>
+<p>This example creates an index on the default collection in the default scope within the <code>travel-sample</code> bucket.
+First make sure the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> is not set.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../tools/_images/query-workbench-context-unset.png" alt="\UNSET -query_context;">
+</div>
+</div>
+<div class="paragraph">
+<p>Create a secondary index that contains airports with an <code>alt</code> value greater than 1000 on the node <code>127.0.0.1</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX over1000 ON `travel-sample`(geo.alt) WHERE geo.alt &gt; 1000 USING GSI WITH {"nodes": ["192.0.2.1:8091"]};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_default_over1000 ON `travel-sample`(geo.alt) WHERE geo.alt &gt; 1000 USING GSI WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div id="ex-create-idx-collection" class="exampleblock">
+<div class="title">Example 2. Create an index on a collection with query context</div>
+<div class="content">
+<div class="paragraph">
+<p>This example is similar to <a href="#ex-create-idx">Example 1</a>, but creates an index on the <code>airport</code> collection.
+First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> to <code>`travel-sample`.inventory</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../tools/_images/query-workbench-context.png" alt="\SET -query_context 'travel-sample.inventory';">
+</div>
+</div>
+<div class="paragraph">
+<p>Create a secondary index that contains airports with an <code>alt</code> value greater than 1000 on the node <code>127.0.0.1</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_airport_over1000 ON airport(geo.alt) WHERE geo.alt &gt; 1000 USING GSI WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In each of the examples that follow, the path to the required keyspace is specified by the query, so you do not need to set the query context.</p>
 </div>
 <div id="ex-create-idx-defer" class="exampleblock">
-<div class="title">Example 2. Create a deferred index</div>
+<div class="title">Example 3. Create a deferred index</div>
 <div class="content">
 <div class="paragraph">
 <p>Create a secondary index with the <code>defer_build</code> option.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX `travel-sample-type-index` ON `travel-sample`(type) USING GSI
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country ON `travel-sample`.inventory.landmark(country) USING GSI
    WITH {"defer_build":true};</code></pre>
 </div>
 </div>
@@ -5108,7 +5138,7 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-defer.n1ql">SELECT * FROM system:indexes WHERE name="travel-sample-type-index";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-defer.n1ql">SELECT * FROM system:indexes WHERE name="idx_landmark_country";</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5117,14 +5147,16 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-defer.jsonc">[
   {
     "indexes": {
+      "bucket_id": "travel-sample",
       "datastore_id": "http://127.0.0.1:8091",
-      "id": "91e28fbb76aa93f6",
+      "id": "d079aec40eb0c6cc",
       "index_key": [
-        "`type`"
+        "`country`"
       ],
-      "keyspace_id": "travel-sample",
-      "name": "travel-sample-type-index",
+      "keyspace_id": "landmark",
+      "name": "idx_landmark_country",
       "namespace_id": "default",
+      "scope_id": "inventory",
       "state": "deferred", <i class="conum" data-value="1"></i><b>(1)</b>
       "using": "gsi"
     }
@@ -5138,19 +5170,19 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>travel-sample-type-index</code> is in the pending state (deferred).</td>
+<td>The index is in the pending state (deferred).</td>
 </tr>
 </table>
 </div>
 <div id="ex-build-idx-defer" class="exampleblock">
-<div class="title">Example 3. Build a deferred index</div>
+<div class="title">Example 4. Build a deferred index</div>
 <div class="content">
 <div class="paragraph">
 <p>Kick off a deferred build using the index name.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-single.n1ql">BUILD INDEX ON `travel-sample`(`travel-sample-type-index`) USING GSI;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-single.n1ql">BUILD INDEX ON `travel-sample`.inventory.landmark(idx_landmark_country) USING GSI;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5158,7 +5190,7 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-online.n1ql">SELECT * FROM system:indexes WHERE name="travel-sample-type-index";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-online.n1ql">SELECT * FROM system:indexes WHERE name="idx_landmark_country";</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5167,14 +5199,16 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-online.jsonc">[
   {
     "indexes": {
+      "bucket_id": "travel-sample",
       "datastore_id": "http://127.0.0.1:8091",
-      "id": "91e28fbb76aa93f6",
+      "id": "d079aec40eb0c6cc",
       "index_key": [
-        "`type`"
+        "`country`"
       ],
-      "keyspace_id": "travel-sample",
-      "name": "travel-sample-type-index",
+      "keyspace_id": "landmark",
+      "name": "idx_landmark_country",
       "namespace_id": "default",
+      "scope_id": "inventory",
       "state": "online", <i class="conum" data-value="1"></i><b>(1)</b>
       "using": "gsi"
     }
