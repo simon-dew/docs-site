@@ -4585,7 +4585,7 @@ In this case, <code>system:indexes</code> output might report an error similar t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-error.jsonc">[
   {
     "code": 5000,
     "msg": "BuildIndexes - cause: Build index fails.  Some index will be retried building in the background.  For more details, please check index status.\n",
@@ -4779,19 +4779,19 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_landmark_country ON `travel-sample`.inventory.landmark(country) USING GSI
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX `travel-sample-type-index` ON `travel-sample`(type) USING GSI
    WITH {"defer_build":true};</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_landmark_name ON `travel-sample`.inventory.landmark(name) USING GSI
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-2.n1ql">CREATE INDEX `travel-sample-name-index` ON `travel-sample`(name) USING GSI
    WITH {"defer_build":true};</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE PRIMARY INDEX idx_landmark_primary ON `travel-sample`.inventory.landmark USING GSI
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-3.n1ql">CREATE PRIMARY INDEX `travel-sample-primary-index` ON `travel-sample` USING GSI
     WITH {"defer_build":true};</code></pre>
 </div>
 </div>
@@ -4805,25 +4805,23 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:indexes WHERE name="idx_landmark_country";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-defer.n1ql">SELECT * FROM system:indexes WHERE name="travel-sample-type-index";</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-defer.jsonc">[
   {
     "indexes": {
-      "bucket_id": "travel-sample",
       "datastore_id": "http://127.0.0.1:8091",
-      "id": "d079aec40eb0c6cc",
+      "id": "91e28fbb76aa93f6",
       "index_key": [
-        "`country`"
+        "`type`"
       ],
-      "keyspace_id": "landmark",
-      "name": "idx_landmark_country",
+      "keyspace_id": "travel-sample",
+      "name": "travel-sample-type-index",
       "namespace_id": "default",
-      "scope_id": "inventory",
       "state": "deferred", <i class="conum" data-value="1"></i><b>(1)</b>
       "using": "gsi"
     }
@@ -4837,7 +4835,7 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The index is in the pending state (deferred).</td>
+<td>The <code>travel-sample-type-index</code> is in the pending state (deferred).</td>
 </tr>
 </table>
 </div>
@@ -4849,7 +4847,7 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`.inventory.landmark(idx_landmark_country) USING GSI;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-single.n1ql">BUILD INDEX ON `travel-sample`(`travel-sample-type-index`) USING GSI;</code></pre>
 </div>
 </div>
 </div>
@@ -4862,12 +4860,10 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`.inventory.landmark (( <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-all.n1ql">BUILD INDEX ON `travel-sample` (( <i class="conum" data-value="1"></i><b>(1)</b>
   SELECT RAW name <i class="conum" data-value="2"></i><b>(2)</b>
   FROM system:indexes
-  WHERE keyspace_id = 'landmark'
-    AND scope_id = 'inventory'
-    AND bucket_id = 'travel-sample'
+  WHERE keyspace_id = 'travel-sample'
     AND state = 'deferred' ));</code></pre>
 </div>
 </div>
@@ -4894,25 +4890,23 @@ In this case there is a double set of parentheses, as the subquery is the only i
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM system:indexes WHERE name="idx_landmark_country";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-online.n1ql">SELECT * FROM system:indexes WHERE name="travel-sample-type-index";</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/check-idx-online.jsonc">[
   {
     "indexes": {
-      "bucket_id": "travel-sample",
       "datastore_id": "http://127.0.0.1:8091",
-      "id": "d079aec40eb0c6cc",
+      "id": "91e28fbb76aa93f6",
       "index_key": [
-        "`country`"
+        "`type`"
       ],
-      "keyspace_id": "landmark",
-      "name": "idx_landmark_country",
+      "keyspace_id": "travel-sample",
+      "name": "travel-sample-type-index",
       "namespace_id": "default",
-      "scope_id": "inventory",
       "state": "online", <i class="conum" data-value="1"></i><b>(1)</b>
       "using": "gsi"
     }
