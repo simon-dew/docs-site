@@ -4754,14 +4754,14 @@ If omitted, a default timeout value is calculated based on the number of samples
 <div class="listingblock">
 <div class="title">Create indexes</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_country_city ON `travel-sample`(country, city);
-CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_country_city ON `travel-sample`.inventory.hotel(country, city);
+CREATE INDEX idx_city_country ON `travel-sample`.inventory.hotel(city, country);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Update statistics</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE STATISTICS FOR `travel-sample`(type, city, country);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE STATISTICS FOR `travel-sample`.inventory.hotel(city, country);</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -4775,17 +4775,20 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
   {
+    "cardinality": 1,
+    "cost": 29.362844982943358,
     "plan": {
       "#operator": "Sequence",
       "~children": [
         {
           "#operator": "IndexScan3",
-          "cardinality": 147.4090909090909, <i class="conum" data-value="1"></i><b>(1)</b>
-          "cost": 82.99131818181819, <i class="conum" data-value="2"></i><b>(2)</b>
+          "bucket": "travel-sample",
+          "cardinality": 1, <i class="conum" data-value="1"></i><b>(1)</b>
+          "cost": 29.29658036191524, <i class="conum" data-value="2"></i><b>(2)</b>
           "covers": [
-            "cover ((`travel-sample`.`country`))",
-            "cover ((`travel-sample`.`city`))",
-            "cover ((meta(`travel-sample`).`id`))",
+            "cover ((`hotel`.`country`))",
+            "cover ((`hotel`.`city`))",
+            "cover ((meta(`hotel`).`id`))",
             "cover (count(*))"
           ],
           "index": "idx_country_city",
@@ -4799,14 +4802,15 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
               }
             ]
           },
-          "index_id": "ebcdefa561f1e3f6",
+          "index_id": "7cba9563eb478906",
           "index_projection": {
             "entry_keys": [
               3
             ]
           },
-          "keyspace": "travel-sample",
+          "keyspace": "hotel",
           "namespace": "default",
+          "scope": "inventory",
           "spans": [
             {
               "exact": true,
@@ -4828,21 +4832,20 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
             "~children": [
               {
                 "#operator": "InitialProject",
+                "cardinality": 1,
+                "cost": 29.362844982943358,
                 "result_terms": [
                   {
                     "expr": "cover (count(*))"
                   }
                 ]
-              },
-              {
-                "#operator": "FinalProject"
               }
             ]
           }
         }
       ]
     },
-    "text": "SELECT count(*) FROM `travel-sample` WHERE country = 'France';"
+    "text": "SELECT COUNT(*) FROM `travel-sample`.inventory.hotel WHERE country = 'France';"
   }
 ]</code></pre>
 </div>
@@ -4870,7 +4873,7 @@ CREATE INDEX idx_city_country ON `travel-sample`(city, country);</code></pre>
 <div class="listingblock">
 <div class="title">Update statistics</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE STATISTICS FOR `travel-sample`(type, city, country, free_breakfast);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE STATISTICS FOR `travel-sample`.inventory.hotel(city, country, free_breakfast);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4880,7 +4883,7 @@ However, the query below refers to this field as a predicate, so we collect stat
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT COUNT(*) FROM `travel-sample` WHERE country = 'United States' AND type = 'hotel' AND free_breakfast = true;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT COUNT(*) FROM `travel-sample`.inventory.hotel WHERE country = 'United States' AND free_breakfast = true;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -4888,20 +4891,24 @@ However, the query below refers to this field as a predicate, so we collect stat
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
   {
+    "cardinality": 1,
+    "cost": 1294.4644872408794,
     "plan": {
       "#operator": "Sequence",
       "~children": [
         {
           "#operator": "IndexScan3",
-          "cardinality": 703.8225187176041, <i class="conum" data-value="1"></i><b>(1)</b>
-          "cost": 396.2520780380112,
+          "bucket": "travel-sample",
+          "cardinality": 361.00000000000006, <i class="conum" data-value="1"></i><b>(1)</b>
+          "cost": 65.70723143606952,
           "index": "idx_country_city",
-          "index_id": "ebcdefa561f1e3f6",
+          "index_id": "7cba9563eb478906",
           "index_projection": {
             "primary_key": true
           },
-          "keyspace": "travel-sample",
+          "keyspace": "hotel",
           "namespace": "default",
+          "scope": "inventory",
           "spans": [
             {
               "exact": true,
@@ -4918,10 +4925,12 @@ However, the query below refers to this field as a predicate, so we collect stat
         },
         {
           "#operator": "Fetch",
-          "cardinality": 703.8225187176041, <i class="conum" data-value="2"></i><b>(2)</b>
-          "cost": 3296.0008551545407,
-          "keyspace": "travel-sample",
-          "namespace": "default"
+          "bucket": "travel-sample",
+          "cardinality": 361.00000000000006, <i class="conum" data-value="2"></i><b>(2)</b>
+          "cost": 1267.7836409935865,
+          "keyspace": "hotel",
+          "namespace": "default",
+          "scope": "inventory"
         },
         {
           "#operator": "Parallel",
@@ -4930,15 +4939,17 @@ However, the query below refers to this field as a predicate, so we collect stat
             "~children": [
               {
                 "#operator": "Filter",
-                "cardinality": 0.2514468840707154, <i class="conum" data-value="3"></i><b>(3)</b>
-                "condition": "((((`travel-sample`.`country`) = \"United States\") and ((`travel-sample`.`type`) = \"hotel\")) and ((`travel-sample`.`free_breakfast`) = true))",
-                "cost": 3298.1123227106937
+                "cardinality": 267.3053435114504, <i class="conum" data-value="3"></i><b>(3)</b>
+                "condition": "(((`hotel`.`country`) = \"United States\") and ((`hotel`.`free_breakfast`) = true))",
+                "cost": 1291.7051691847369
               },
               {
                 "#operator": "InitialGroup",
                 "aggregates": [
                   "count(*)"
                 ],
+                "cardinality": 1,
+                "cost": 1294.3782226198514,
                 "group_keys": []
               }
             ]
@@ -4949,6 +4960,8 @@ However, the query below refers to this field as a predicate, so we collect stat
           "aggregates": [
             "count(*)"
           ],
+          "cardinality": 1,
+          "cost": 1294.3882226198514,
           "group_keys": []
         },
         {
@@ -4956,6 +4969,8 @@ However, the query below refers to this field as a predicate, so we collect stat
           "aggregates": [
             "count(*)"
           ],
+          "cardinality": 1,
+          "cost": 1294.3982226198514,
           "group_keys": []
         },
         {
@@ -4965,21 +4980,20 @@ However, the query below refers to this field as a predicate, so we collect stat
             "~children": [
               {
                 "#operator": "InitialProject",
+                "cardinality": 1,
+                "cost": 1294.4644872408794,
                 "result_terms": [
                   {
                     "expr": "count(*)"
                   }
                 ]
-              },
-              {
-                "#operator": "FinalProject"
               }
             ]
           }
         }
       ]
     },
-    "text": "SELECT COUNT(*) FROM `travel-sample` WHERE country = 'United States' AND type = 'hotel' AND free_breakfast = true;"
+    "text": "SELECT COUNT(*) FROM `travel-sample`.inventory.hotel WHERE country = 'United States' AND free_breakfast = true;"
   }
 ]</code></pre>
 </div>
@@ -5008,20 +5022,20 @@ However, the query below refers to this field as a predicate, so we collect stat
 <div class="listingblock">
 <div class="title">Create index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_public_likes ON `travel-sample`((DISTINCT (`public_likes`)));</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_public_likes ON `travel-sample`.inventory.hotel((DISTINCT (`public_likes`)));</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Update statistics</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">UPDATE STATISTICS FOR `travel-sample`((DISTINCT (`public_likes`)));</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">UPDATE STATISTICS FOR `travel-sample`.inventory.hotel((DISTINCT (`public_likes`)));</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">EXPLAIN SELECT COUNT(1)
-FROM `travel-sample`
+FROM `travel-sample`.inventory.hotel
 WHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;</code></pre>
 </div>
 </div>
@@ -5030,24 +5044,28 @@ WHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
   {
+    "cardinality": 1,
+    "cost": 109.7611716607931,
     "plan": {
       "#operator": "Sequence",
       "~children": [
         {
           "#operator": "DistinctScan",
-          "cardinality": 7.088088423748743,
-          "cost": 3.0904065527544518,
+          "cardinality": 277.5315701314658,
+          "cost": 106.89959133845032,
           "scan": {
             "#operator": "IndexScan3",
-            "cardinality": 7.088088423748743,
-            "cost": 3.0691422874832055,
+            "bucket": "travel-sample",
+            "cardinality": 339.4999999999998,
+            "cost": 84.40275249940453,
             "covers": [
-              "cover ((distinct ((`travel-sample`.`public_likes`))))",
-              "cover ((meta(`travel-sample`).`id`))"
+              "cover ((distinct ((`hotel`.`public_likes`))))",
+              "cover ((meta(`hotel`).`id`))"
             ],
+            "filter": "cover (any `p` in (`hotel`.`public_likes`) satisfies ((\"A\" &lt;= `p`) and (`p` &lt; \"B\")) end)",
             "filter_covers": {
-              "cover (any `p` in (`travel-sample`.`public_likes`) satisfies ((\"A\" \u003c= `p`) and (`p` \u003c \"B\")) end)": true,
-              "cover (any `p` in (`travel-sample`.`public_likes`) satisfies (`p` like \"A%\") end)": true
+              "cover (any `p` in (`hotel`.`public_likes`) satisfies ((\"A\" &lt;= `p`) and (`p` &lt; \"B\")) end)": true,
+              "cover (any `p` in (`hotel`.`public_likes`) satisfies (`p` like \"A%\") end)": true
             },
             "index": "idx_public_likes",
             ...
@@ -5059,16 +5077,12 @@ WHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;</code></pre>
             "#operator": "Sequence",
             "~children": [
               {
-                "#operator": "Filter",
-                "cardinality": 0.012547701674046188,
-                "condition": "cover (any `p` in (`travel-sample`.`public_likes`) satisfies (`p` like \"A%\") end)",
-                "cost": 3.111670818025698
-              },
-              {
                 "#operator": "InitialGroup",
                 "aggregates": [
                   "count(1)"
                 ],
+                "cardinality": 1,
+                "cost": 109.67490703976497,
                 "group_keys": []
               }
             ]
@@ -5077,7 +5091,7 @@ WHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;</code></pre>
         ...
       ]
     },
-    "text": "SELECT COUNT(1)\nFROM `travel-sample`\nWHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END"
+    "text": "SELECT COUNT(1)\nFROM `travel-sample`.inventory.hotel\nWHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;"
   }
 ]</code></pre>
 </div>
@@ -5090,21 +5104,22 @@ WHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;</code></pre>
 <div class="listingblock">
 <div class="title">Create index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_reviews_ratings_overall ON `travel-sample`(DISTINCT ARRAY r.ratings.Overall FOR r IN reviews END);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_reviews_ratings_overall
+ON `travel-sample`.inventory.hotel(DISTINCT ARRAY r.ratings.Overall FOR r IN reviews END);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Update statistics</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">UPDATE STATISTICS FOR `travel-sample`(DISTINCT ARRAY r.ratings.Overall FOR r IN reviews END);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">UPDATE STATISTICS FOR `travel-sample`.inventory.hotel(DISTINCT ARRAY r.ratings.Overall FOR r IN reviews END);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">EXPLAIN SELECT COUNT(1)
-FROM `travel-sample`
-WHERE ANY r IN reviews SATISFIES r.ratings.Overall = 4 END</code></pre>
+FROM `travel-sample`.inventory.hotel
+WHERE ANY r IN reviews SATISFIES r.ratings.Overall = 4 END;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5112,20 +5127,23 @@ WHERE ANY r IN reviews SATISFIES r.ratings.Overall = 4 END</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
   {
+    "cardinality": 1,
+    "cost": 107.30834694637392,
     "plan": {
       "#operator": "Sequence",
       "~children": [
         {
           "#operator": "IndexScan3",
-          "cardinality": 57.22814556197126,
-          "cost": 19.056972472136433,
+          "bucket": "travel-sample",
+          "cardinality": 1,
+          "cost": 107.2420823253458,
           "covers": [
-            "cover ((distinct (array ((`r`.`ratings`).`Overall`) for `r` in (`travel-sample`.`reviews`) end)))",
-            "cover ((meta(`travel-sample`).`id`))",
+            "cover ((distinct (array ((`r`.`ratings`).`Overall`) for `r` in (`hotel`.`reviews`) end)))",
+            "cover ((meta(`hotel`).`id`))",
             "cover (count(1))"
           ],
           "filter_covers": {
-            "cover (any `r` in (`travel-sample`.`reviews`) satisfies (((`r`.`ratings`).`Overall`) = 4) end)": true
+            "cover (any `r` in (`hotel`.`reviews`) satisfies (((`r`.`ratings`).`Overall`) = 4) end)": true
           },
           "index": "idx_reviews_ratings_overall",
           ...
@@ -5133,7 +5151,7 @@ WHERE ANY r IN reviews SATISFIES r.ratings.Overall = 4 END</code></pre>
         ...
       ]
     },
-    "text": "SELECT COUNT(1)\nFROM `travel-sample` WHERE ANY r IN reviews SATISFIES r.ratings.Overall = 4 END"
+    "text": "SELECT COUNT(1)\nFROM `travel-sample`.inventory.hotel\nWHERE ANY r IN reviews SATISFIES r.ratings.Overall = 4 END;"
   }
 ]</code></pre>
 </div>
