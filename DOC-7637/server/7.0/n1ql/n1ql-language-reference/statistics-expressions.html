@@ -4609,7 +4609,9 @@ To use the cost-based optimizer with that query, you must collect statistics on 
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>update-statistics-expressions ::= ( UPDATE STATISTICS [ FOR ] | ANALYZE [ KEYSPACE | COLLECTION ] ) <a href="#keyspace-ref">keyspace-ref</a> '(' <a href="#index-expr">index-expr</a> [ ',' <a href="#index-expr">index-expr</a> ]* ')' [ <a href="#index-with">index-with</a> ]</pre>
+<pre>update-statistics-expressions ::=
+  ( UPDATE STATISTICS [ FOR ] | ANALYZE [ KEYSPACE | COLLECTION ] )
+  <a href="#keyspace-ref">keyspace-ref</a> '(' <a href="#index-expr">index-expr</a> [ ',' <a href="#index-expr">index-expr</a> ]* ')' [ <a href="#index-with">index-with</a> ]</pre>
 </div>
 </div>
 <div class="imageblock">
@@ -4775,16 +4777,16 @@ CREATE INDEX idx_city_country ON `travel-sample`.inventory.hotel(city, country);
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
   {
-    "cardinality": 1,
-    "cost": 29.362844982943358,
+    "cardinality": 1, <i class="conum" data-value="1"></i><b>(1)</b>
+    "cost": 29.362844982943358, <i class="conum" data-value="2"></i><b>(2)</b>
     "plan": {
       "#operator": "Sequence",
       "~children": [
         {
           "#operator": "IndexScan3",
           "bucket": "travel-sample",
-          "cardinality": 1, <i class="conum" data-value="1"></i><b>(1)</b>
-          "cost": 29.29658036191524, <i class="conum" data-value="2"></i><b>(2)</b>
+          "cardinality": 1, <i class="conum" data-value="3"></i><b>(3)</b>
+          "cost": 29.29658036191524,
           "covers": [
             "cover ((`hotel`.`country`))",
             "cover ((`hotel`.`city`))",
@@ -4832,7 +4834,7 @@ CREATE INDEX idx_city_country ON `travel-sample`.inventory.hotel(city, country);
             "~children": [
               {
                 "#operator": "InitialProject",
-                "cardinality": 1,
+                "cardinality": 1, <i class="conum" data-value="4"></i><b>(4)</b>
                 "cost": 29.362844982943358,
                 "result_terms": [
                   {
@@ -4856,11 +4858,19 @@ CREATE INDEX idx_city_country ON `travel-sample`.inventory.hotel(city, country);
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The cardinality estimate for the index scan operator.</td>
+<td>The overall cardinality estimate for the query.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The cost estimate for the index scan operator.</td>
+<td>The overall cost estimate for the query.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Cardinality and cost estimates for the index scan operator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Cardinality and cost estimates for the initial project operator.</td>
 </tr>
 </table>
 </div>
@@ -4883,7 +4893,8 @@ However, the query below refers to this field as a predicate, so we collect stat
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT COUNT(*) FROM `travel-sample`.inventory.hotel WHERE country = 'United States' AND free_breakfast = true;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT COUNT(*) FROM `travel-sample`.inventory.hotel
+WHERE country = 'United States' AND free_breakfast = true;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -4891,7 +4902,7 @@ However, the query below refers to this field as a predicate, so we collect stat
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
   {
-    "cardinality": 1,
+    "cardinality": 1, <i class="conum" data-value="1"></i><b>(1)</b>
     "cost": 1294.4644872408794,
     "plan": {
       "#operator": "Sequence",
@@ -4899,7 +4910,7 @@ However, the query below refers to this field as a predicate, so we collect stat
         {
           "#operator": "IndexScan3",
           "bucket": "travel-sample",
-          "cardinality": 361.00000000000006, <i class="conum" data-value="1"></i><b>(1)</b>
+          "cardinality": 361.00000000000006, <i class="conum" data-value="2"></i><b>(2)</b>
           "cost": 65.70723143606952,
           "index": "idx_country_city",
           "index_id": "7cba9563eb478906",
@@ -4926,7 +4937,7 @@ However, the query below refers to this field as a predicate, so we collect stat
         {
           "#operator": "Fetch",
           "bucket": "travel-sample",
-          "cardinality": 361.00000000000006, <i class="conum" data-value="2"></i><b>(2)</b>
+          "cardinality": 361.00000000000006, <i class="conum" data-value="3"></i><b>(3)</b>
           "cost": 1267.7836409935865,
           "keyspace": "hotel",
           "namespace": "default",
@@ -4939,7 +4950,7 @@ However, the query below refers to this field as a predicate, so we collect stat
             "~children": [
               {
                 "#operator": "Filter",
-                "cardinality": 267.3053435114504, <i class="conum" data-value="3"></i><b>(3)</b>
+                "cardinality": 267.3053435114504, <i class="conum" data-value="4"></i><b>(4)</b>
                 "condition": "(((`hotel`.`country`) = \"United States\") and ((`hotel`.`free_breakfast`) = true))",
                 "cost": 1291.7051691847369
               },
@@ -4948,7 +4959,7 @@ However, the query below refers to this field as a predicate, so we collect stat
                 "aggregates": [
                   "count(*)"
                 ],
-                "cardinality": 1,
+                "cardinality": 1, <i class="conum" data-value="5"></i><b>(5)</b>
                 "cost": 1294.3782226198514,
                 "group_keys": []
               }
@@ -4960,7 +4971,7 @@ However, the query below refers to this field as a predicate, so we collect stat
           "aggregates": [
             "count(*)"
           ],
-          "cardinality": 1,
+          "cardinality": 1, <i class="conum" data-value="6"></i><b>(6)</b>
           "cost": 1294.3882226198514,
           "group_keys": []
         },
@@ -4969,7 +4980,7 @@ However, the query below refers to this field as a predicate, so we collect stat
           "aggregates": [
             "count(*)"
           ],
-          "cardinality": 1,
+          "cardinality": 1, <i class="conum" data-value="7"></i><b>(7)</b>
           "cost": 1294.3982226198514,
           "group_keys": []
         },
@@ -4980,7 +4991,7 @@ However, the query below refers to this field as a predicate, so we collect stat
             "~children": [
               {
                 "#operator": "InitialProject",
-                "cardinality": 1,
+                "cardinality": 1, <i class="conum" data-value="8"></i><b>(8)</b>
                 "cost": 1294.4644872408794,
                 "result_terms": [
                   {
@@ -5004,15 +5015,35 @@ However, the query below refers to this field as a predicate, so we collect stat
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Cardinality and cost estimates for the index scan operator.</td>
+<td>Overall cardinality and cost estimates for the query.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Cardinality and cost estimates for the fetch operator.</td>
+<td>Cardinality and cost estimates for the index scan operator.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Cardinality and cost estimates for the fetch operator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Cardinality and cost estimates for the filter operator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Cardinality and cost estimates for the initial group operator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Cardinality and cost estimates for the intermediate group operator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Cardinality and cost estimates for the final group operator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Cardinality and cost estimates for the initial project operator.</td>
 </tr>
 </table>
 </div>
@@ -5022,7 +5053,8 @@ However, the query below refers to this field as a predicate, so we collect stat
 <div class="listingblock">
 <div class="title">Create index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_public_likes ON `travel-sample`.inventory.hotel((DISTINCT (`public_likes`)));</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_public_likes
+ON `travel-sample`.inventory.hotel((DISTINCT (`public_likes`)));</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5105,13 +5137,16 @@ WHERE ANY p IN public_likes SATISFIES p LIKE 'A%' END;</code></pre>
 <div class="title">Create index</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_reviews_ratings_overall
-ON `travel-sample`.inventory.hotel(DISTINCT ARRAY r.ratings.Overall FOR r IN reviews END);</code></pre>
+ON `travel-sample`.inventory.hotel(DISTINCT ARRAY r.ratings.Overall
+FOR r IN reviews END);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Update statistics</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">UPDATE STATISTICS FOR `travel-sample`.inventory.hotel(DISTINCT ARRAY r.ratings.Overall FOR r IN reviews END);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1Ql hljs" data-lang="N1Ql">UPDATE STATISTICS
+FOR `travel-sample`.inventory.hotel(DISTINCT ARRAY r.ratings.Overall
+FOR r IN reviews END);</code></pre>
 </div>
 </div>
 <div class="listingblock">
