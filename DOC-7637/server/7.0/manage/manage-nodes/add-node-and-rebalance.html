@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4723,7 +4723,7 @@ The <strong>Servers</strong> screen is redisplayed, with the following appearanc
 </div>
 <div class="paragraph">
 <p>This indicates that the new node, <code>10.142.181.102</code> has been successfully added.
-However, it is not yet taking traffic, and will be added following a <em>rebalance</em>. Note, at this point, the figure under the <strong>Items</strong> column for for <code>10.142.181.101</code>: this is <code>31.1 K/0</code>, which indicates that the node contains 3.1 K items in <em>active</em> vBuckets, and 0 items in <em>replica</em> vBuckets.
+However, it is not yet taking traffic, and will be added following a <em>rebalance</em>. Note, at this point, the figure under the <strong>Items</strong> column for for <code>10.142.181.101</code>: this is <code>63.1 K/0</code>, which indicates that the node contains 63.1 K items in <em>active</em> vBuckets, and 0 items in <em>replica</em> vBuckets.
 Meanwhile, the <strong>Items</strong> figure for <code>10.142.181.102</code> is 0/0, indicating that no items are yet distributed onto that node in either active or replica form.</p>
 </div>
 <div class="paragraph">
@@ -4748,12 +4748,12 @@ Additionally, a <strong>Rebalance</strong> dialog is displayed:</p>
 </div>
 <div class="paragraph">
 <p>The dialog indicates rebalance progress for each of the services on the cluster.
-To see more information on the progress related to the Data Service, left-click on the <strong>Data</strong> tab:
-The pane expands to provide additional information on the progress of data-transfer:</p>
+To see more information on the progress related to the Data Service, left-click on the <strong>travel-sample</strong> tab, under <strong>Data</strong>:
+The pane expands to provide additional information on the progress of data-transfer for the <strong>travel-sample</strong> bucket:</p>
 </div>
 <div class="imageblock text-middle">
 <div class="content">
-<img src="../_images/manage-nodes/rebalanceOpenedDataTabfor6.5.png" alt="rebalanceOpenedDataTabfor6.5" width="430">
+<img src="../_images/manage-nodes/rebalanceOpenedDataTabfor7.0.png" alt="rebalanceOpenedDataTabfor7.0" width="430">
 </div>
 </div>
 <div class="paragraph">
@@ -4774,7 +4774,7 @@ This also reports rebalance progress:</p>
 </div>
 <div class="imageblock text-middle">
 <div class="content">
-<img src="../_images/manage-nodes/rebalanceCompletion6.5.png" alt="rebalanceCompletion6.5" width="430">
+<img src="../_images/manage-nodes/rebalanceCompletion7.0.png" alt="rebalanceCompletion7.0" width="430">
 </div>
 </div>
 <div class="paragraph">
@@ -4802,7 +4802,7 @@ Additionally, a complete report on the concluded rebalance activity can be downl
 </div>
 <div class="paragraph">
 <p>This indicates that cluster <code>10.142.181.101</code> now contains two fully functioning nodes, which are <code>10.142.181.101</code> and <code>10.142.181.102</code>.
-(Note that the figure in the <strong>Items</strong> column for node <code>10.142.181.101</code> is <code>15.2 K/15.8 K</code>, which indicates that 15.2 K items are stored on the node in <em>active</em> vBuckets, and 15.8 K in <em>replica</em> vBuckets.
+(Note that the figure in the <strong>Items</strong> column for node <code>10.142.181.101</code> is <code>31.5 K/31.6 K</code>, which indicates that 31.5 K items are stored on the node in <em>active</em> vBuckets, and 31.6 K in <em>replica</em> vBuckets.
 The figure for <code>10.142.181.102</code> indicates the converse.
 Therefore, replication has successfully distributed the contents of <code>travel-sample</code> across both nodes, providing a single replica vBucket for each active vBucket.)</p>
 </div>
@@ -4897,14 +4897,18 @@ See <a href="#cancel-retries-with-the-cli">Cancel Retries with the CLI</a> and <
 <p>To add a new Couchbase Server-node to an existing cluster, use the <a href="#cli:cbcli/couchbase-cli-server-add.adoc" class="page unresolved">server-add</a> command.
 Note that this command requires that arguments be provided for its <code>--server-add-username</code> and <code>--server-add-password</code> flags.
 In this case, meaningful arguments do not exist, since the new node features an instance of Couchbase Server that is running, but has not been provisioned with a username or password.
-Therefore, specify placeholder arguments. Additionally, specify that the <code>data</code> service be run on the node, once it is part of the cluster.</p>
+Therefore, specify placeholder arguments.
+Additionally, specify that the <code>data</code> service be run on the node, once it is part of the cluster.</p>
+</div>
+<div class="paragraph">
+<p>Note that the server to be added should be prefixed with an appropriate <em>scheme</em> (<em>ie</em>, <code>http://</code> or <code>https://</code>): if none is specified, <code>https://</code> is used as the default.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>couchbase-cli server-add -c 10.142.181.101:8091 \
 --username Administrator \
 --password password \
---server-add 10.142.181.102:8091 \
+--server-add http://10.142.181.102:8091 \
 --server-add-username someName \
 --server-add-password somePassword \
 --services data</pre>

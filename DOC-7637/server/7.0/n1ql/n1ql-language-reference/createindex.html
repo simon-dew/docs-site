@@ -951,7 +951,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1480,7 +1480,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2655,7 +2655,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4640,6 +4640,11 @@ This is to avoid the possibility of duplicate index names.</p>
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
 <h5 id="rbac-privileges" class="discrete">RBAC Privileges</h5>
 <div class="paragraph">
 <p>User executing the CREATE INDEX statement must have the <em>Query Manage Index</em> privilege granted on the keyspace/bucket.
@@ -4760,7 +4765,7 @@ If omitted, the default collection in the bucket&#8217;s default scope is used.<
 <p>For example, <code>default:`travel-sample`</code> indicates the default collection in the default scope in the <code>travel-sample</code> bucket in the <code>default</code> namespace.</p>
 </div>
 <div class="paragraph">
-<p>Similarly, <code>default:`travel-sample`.places.cities</code> indicates the <code>cities</code> collection in the <code>places</code> scope in the <code>travel-sample</code> bucket in the <code>default</code> namespace.</p>
+<p>Similarly, <code>default:`travel-sample`.inventory.airline</code> indicates the <code>airline</code> collection in the <code>inventory</code> scope in the <code>travel-sample</code> bucket in the <code>default</code> namespace.</p>
 </div>
 </div>
 </div>
@@ -4792,7 +4797,7 @@ In this case, you must set the <a href="../n1ql-intro/sysinfo.html#query-context
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>cities</code> indicates the <code>cities</code> collection, assuming the query context is set.</p>
+<p>For example, <code>airline</code> indicates the <code>airline</code> collection, assuming the query context is set.</p>
 </div>
 </div>
 </div>
@@ -5054,7 +5059,7 @@ For example, given the index <code>alt_idx</code> created using the following st
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX alt_idx ON `travel-sample`(geo.alt);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX alt_idx ON `travel-sample`.inventory.airport(geo.alt);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5062,7 +5067,7 @@ For example, given the index <code>alt_idx</code> created using the following st
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT MIN(geo.alt), MAX(geo.alt) FROM `travel-sample`;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT MIN(geo.alt), MAX(geo.alt) FROM `travel-sample`.inventory.airport;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5107,24 +5112,85 @@ Adding index replicas enables you to scale scan throughput, in addition to provi
 <div class="sect1">
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <div class="sectionbody">
+<h5 id="default-collection" class="discrete">Default Collection</h5>
+<div class="paragraph">
+<p>The following example creates an index on the default collection in the default scope within the <code>travel-sample</code> bucket.
+First make sure the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> is not set.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_query-workbench"></a>Query Workbench</p>
+</li>
+<li>
+<p><a id="tabset1_cbq-shell"></a>CBQ Shell</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_query-workbench">
+<div class="imageblock">
+<div class="content">
+<img src="../../tools/_images/query-workbench-context-unset.png" alt="The query context drop-down menu, with 'bucket.scope' selected">
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_cbq-shell">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; \UNSET -query_context;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="ex-create-idx" class="exampleblock">
 <div class="title">Example 1. Create an index</div>
 <div class="content">
-<div class="paragraph">
-<p>This example creates an index on the default collection in the default scope within the <code>travel-sample</code> bucket.
-First make sure the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> is not set.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../../tools/_images/query-workbench-context-unset.png" alt="\UNSET -query_context;">
-</div>
-</div>
 <div class="paragraph">
 <p>Create a secondary index that contains airports with an <code>alt</code> value greater than 1000 on the node <code>127.0.0.1</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_default_over1000 ON `travel-sample`(geo.alt) WHERE geo.alt &gt; 1000 USING GSI WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_default_over1000
+  ON `travel-sample`(geo.alt)
+  WHERE geo.alt &gt; 1000
+  USING GSI
+  WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
+</div>
+</div>
+</div>
+</div>
+<h5 id="query-context" class="discrete">Query Context</h5>
+<div class="paragraph">
+<p>The following example is similar to <a href="#ex-create-idx">Example 1</a>, but creates an index on the <code>airport</code> collection.
+First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> to <code>`travel-sample`.inventory</code>.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_query-workbench"></a>Query Workbench</p>
+</li>
+<li>
+<p><a id="tabset2_cbq-shell"></a>CBQ Shell</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_query-workbench">
+<div class="imageblock">
+<div class="content">
+<img src="../../tools/_images/query-workbench-context.png" alt="The query context drop-down menu, with 'travel-sample.inventory' selected">
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_cbq-shell">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; \SET -query_context 'travel-sample.inventory';</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -5133,24 +5199,20 @@ First make sure the <a href="../n1ql-intro/sysinfo.html#query-context" class="pa
 <div class="title">Example 2. Create an index on a collection with query context</div>
 <div class="content">
 <div class="paragraph">
-<p>This example is similar to <a href="#ex-create-idx">Example 1</a>, but creates an index on the <code>airport</code> collection.
-First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> to <code>`travel-sample`.inventory</code>.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../../tools/_images/query-workbench-context.png" alt="\SET -query_context 'travel-sample.inventory';">
-</div>
-</div>
-<div class="paragraph">
 <p>Create a secondary index that contains airports with an <code>alt</code> value greater than 1000 on the node <code>127.0.0.1</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_airport_over1000 ON airport(geo.alt) WHERE geo.alt &gt; 1000 USING GSI WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_airport_over1000
+  ON airport(geo.alt)
+  WHERE geo.alt &gt; 1000
+  USING GSI
+  WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
 </div>
 </div>
 </div>
 </div>
+<h5 id="named-collection" class="discrete">Named Collection</h5>
 <div class="paragraph">
 <p>In each of the examples that follow, the path to the required keyspace is specified by the query, so you do not need to set the query context.</p>
 </div>
@@ -5162,8 +5224,10 @@ First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">qu
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country ON `travel-sample`.inventory.landmark(country) USING GSI
-   WITH {"defer_build":true};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country
+  ON `travel-sample`.inventory.landmark(country)
+  USING GSI
+  WITH {"defer_build":true};</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5197,8 +5261,6 @@ First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">qu
 ]</code></pre>
 </div>
 </div>
-</div>
-</div>
 <div class="colist arabic">
 <table>
 <tr>
@@ -5206,6 +5268,8 @@ First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">qu
 <td>The index is in the pending state (deferred).</td>
 </tr>
 </table>
+</div>
+</div>
 </div>
 <div id="ex-build-idx-defer" class="exampleblock">
 <div class="title">Example 4. Build a deferred index</div>
@@ -5249,8 +5313,6 @@ First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">qu
 ]</code></pre>
 </div>
 </div>
-</div>
-</div>
 <div class="colist arabic">
 <table>
 <tr>
@@ -5258,6 +5320,8 @@ First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">qu
 <td>The index has now been created.</td>
 </tr>
 </table>
+</div>
+</div>
 </div>
 </div>
 </div>

@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4617,9 +4617,9 @@ You may use this statement when you encounter any of the following situations:</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx1 ON `travel-sample`(id, airline) WHERE type="route";
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx1 ON `travel-sample`.inventory.route(id, airline);
 
-ALTER INDEX `travel-sample`.idx1
+ALTER INDEX idx1 ON `travel-sample`.inventory.route
 WITH {"action": "move", "nodes": ["172.23.120.25:8091"]}</code></pre>
 </div>
 </div>
@@ -4765,7 +4765,7 @@ Currently, only the <code>default</code> namespace is available.</p>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>default:`travel-sample`.places.cities.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection in the <code>places</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
+<p>For example, <code>default:`travel-sample`.inventory.airline.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection in the <code>inventory</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 </div>
 </div>
@@ -4835,7 +4835,7 @@ In this case, you must set the <a href="../n1ql-intro/sysinfo.html#query-context
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>cities.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection, assuming that the query context is set.</p>
+<p>For example, <code>airline.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection, assuming that the query context is set.</p>
 </div>
 </div>
 </div>
@@ -4918,7 +4918,7 @@ If omitted, the default collection in the bucket&#8217;s default scope is used.<
 <p>For example, <code>def_type ON default:`travel-sample`</code> indicates the <code>def_type</code> index on the default collection in the default scope in the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 <div class="paragraph">
-<p>Similarly, <code>`idx-name` ON default:`travel-sample`.places.cities</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection in the <code>places</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
+<p>Similarly, <code>`idx-name` ON default:`travel-sample`.inventory.airline</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection in the <code>inventory</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 </div>
 </div>
@@ -4950,7 +4950,7 @@ In this case, you must set the <a href="../n1ql-intro/sysinfo.html#query-context
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>`idx-name` ON cities</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection, assuming the query context is set.</p>
+<p>For example, <code>`idx-name` ON airline</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection, assuming the query context is set.</p>
 </div>
 </div>
 </div>
@@ -5230,22 +5230,22 @@ For a partitioned index, run a rebalance to move a replica into the vacant serve
 <p>When using the below examples, make sure that an up-to-date version of Couchbase Server Enterprise Edition is already running on the named nodes.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 1. Move the <code>def_faa</code> index from one node to another</div>
+<div class="title">Example 1. Move the <code>def_inventory_airport_faa</code> index from one node to another</div>
 <div class="content">
 <div class="paragraph">
 <p>Create a cluster of 3 nodes and then go to <span class="menuseq"><b class="menu">Settings</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Sample buckets</b></span> to install the <code>travel-sample</code> bucket.
 The indexes are then installed in a round-robin fashion and distributed over the 3 nodes.
-Then move the <code>def_faa</code> index from the first node (192.168.10.<strong>10</strong> in the screenshot) to the second node (192.168.10.<strong>11</strong> in the screenshot).</p>
+Then move the <code>def_inventory_airport_faa</code> index from its original node (192.168.10.<strong>10</strong> in this example) to a new node (192.168.10.<strong>11</strong> in this example).</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/alter-index_servers_step1.png" alt="alter index servers step1" width="70%">
+<img src="../_images/n1ql-language-reference/alter-index_servers_step1.png" alt="The Indexes tab showing def_inventory_airport_faa on 192.168.10.10">
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ALTER INDEX `travel-sample`.def_faa
-WITH {"action": "move", "nodes": ["192.168.10.11:8091"]}</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ALTER INDEX def_inventory_airport_faa ON `travel-sample`.inventory.airport
+WITH {"action": "move", "nodes": ["192.168.10.11:8091"]};</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5260,7 +5260,7 @@ WITH {"action": "move", "nodes": ["192.168.10.11:8091"]}</code></pre>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/alter-index_servers_step2.png" alt="alter index servers step2" width="70%">
+<img src="../_images/n1ql-language-reference/alter-index_servers_step2.png" alt="The Indexes tab showing def_inventory_airport_faa on 192.168.10.11">
 </div>
 </div>
 </div>
@@ -5273,12 +5273,12 @@ WITH {"action": "move", "nodes": ["192.168.10.11:8091"]}</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`(country, city)
-       WHERE type="route" USING GSI
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+       USING GSI
        WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091"]};
 
-ALTER INDEX `travel-sample`.country_idx
-WITH {"action": "move", "nodes": ["192.168.10.10:8091", "192.168.10.12:8091"]}</code></pre>
+ALTER INDEX country_idx ON `travel-sample`.inventory.airport
+WITH {"action": "move", "nodes": ["192.168.10.10:8091", "192.168.10.12:8091"]};</code></pre>
 </div>
 </div>
 </div>
@@ -5291,12 +5291,12 @@ WITH {"action": "move", "nodes": ["192.168.10.10:8091", "192.168.10.12:8091"]}</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`(country, city)
-WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]}
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]};
 
-ALTER INDEX `travel-sample`.country_idx
-WITH {"action": "move", "nodes":
-      ["192.168.10.10:8091", "192.168.10.13:8091", "192.168.10.14:8091"]}</code></pre>
+ALTER INDEX country_idx ON `travel-sample`.inventory.airport
+WITH {"action": "move",
+      "nodes": ["192.168.10.10:8091", "192.168.10.13:8091", "192.168.10.14:8091"]};</code></pre>
 </div>
 </div>
 </div>
@@ -5309,11 +5309,11 @@ WITH {"action": "move", "nodes":
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`(country, city)
-WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]}
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]};
 
-ALTER INDEX `travel-sample`.country_idx
-WITH {"action": "replica_count", "num_replica": 4}</code></pre>
+ALTER INDEX country_idx ON `travel-sample`.inventory.airport
+WITH {"action": "replica_count", "num_replica": 4};</code></pre>
 </div>
 </div>
 </div>
@@ -5326,11 +5326,17 @@ WITH {"action": "replica_count", "num_replica": 4}</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`(country, city)
-WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]}
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]};
 
-ALTER INDEX `travel-sample`.country_idx
-WITH {"action": "replica_count", "num_replica": 4, "nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091", "192.168.10.13:8091", "192.168.10.14:8091"]}</code></pre>
+ALTER INDEX country_idx ON `travel-sample`.inventory.airport
+WITH {"action": "replica_count",
+      "num_replica": 4,
+      "nodes": ["192.168.10.10:8091",
+                "192.168.10.11:8091",
+                "192.168.10.12:8091",
+                "192.168.10.13:8091",
+                "192.168.10.14:8091"]};</code></pre>
 </div>
 </div>
 </div>
@@ -5343,11 +5349,11 @@ WITH {"action": "replica_count", "num_replica": 4, "nodes": ["192.168.10.10:8091
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`(country, city)
-WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]}
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091"]};
 
-ALTER INDEX `travel-sample`.country_idx
-WITH {"action": "replica_count", "num_replica": 1}</code></pre>
+ALTER INDEX country_idx ON `travel-sample`.inventory.airport
+WITH {"action": "replica_count", "num_replica": 1};</code></pre>
 </div>
 </div>
 </div>
@@ -5361,11 +5367,16 @@ Then delete replica 2.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`(country, city)
-WHERE type="route" USING GSI
-WITH {"num_replica": 2, "nodes": ["192.168.10.10:8091", "192.168.10.11:8091", "192.168.10.12:8091", "192.168.10.13:8091"]};
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+USING GSI
+WITH {"num_replica": 2,
+      "nodes": ["192.168.10.10:8091",
+                "192.168.10.11:8091",
+                "192.168.10.12:8091",
+                "192.168.10.13:8091"]};
 
-ALTER INDEX `travel-sample`.country_idx WITH {"action": "drop_replica", "replicaId": 2};</code></pre>
+ALTER INDEX country_idx ON `travel-sample`.inventory.airport
+WITH {"action": "drop_replica", "replicaId": 2};</code></pre>
 </div>
 </div>
 </div>

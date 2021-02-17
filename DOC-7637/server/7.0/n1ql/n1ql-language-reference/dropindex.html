@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4578,6 +4578,11 @@ server
 Dropping an index that has replicas will also drop all of the replica indexes too.
 You can drop unnamed primary indexes using the <a href="dropprimaryindex.html" class="page">DROP PRIMARY INDEX</a> statement.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
 <h5 id="rbac-privileges" class="discrete">RBAC Privileges</h5>
 <div class="paragraph">
 <p>User executing the DROP INDEX statement must have the <em>Query Manage Index</em> privilege granted on the keyspace/bucket.
@@ -4676,7 +4681,7 @@ Currently, only the <code>default</code> namespace is available.</p>
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>default:`travel-sample`.places.cities.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection in the <code>places</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
+<p>For example, <code>default:`travel-sample`.inventory.airline.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection in the <code>inventory</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 </div>
 </div>
@@ -4746,7 +4751,7 @@ In this case, you must set the <a href="../n1ql-intro/sysinfo.html#query-context
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>cities.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection, assuming that the query context is set.</p>
+<p>For example, <code>airline.`idx-name`</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection, assuming that the query context is set.</p>
 </div>
 </div>
 </div>
@@ -4829,7 +4834,7 @@ If omitted, the default collection in the bucket&#8217;s default scope is used.<
 <p>For example, <code>def_type ON default:`travel-sample`</code> indicates the <code>def_type</code> index on the default collection in the default scope in the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 <div class="paragraph">
-<p>Similarly, <code>`idx-name` ON default:`travel-sample`.places.cities</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection in the <code>places</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
+<p>Similarly, <code>`idx-name` ON default:`travel-sample`.inventory.airline</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection in the <code>inventory</code> scope in the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 </div>
 </div>
@@ -4861,7 +4866,7 @@ In this case, you must set the <a href="../n1ql-intro/sysinfo.html#query-context
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>For example, <code>`idx-name` ON cities</code> indicates the <code>idx-name</code> index on the <code>cities</code> collection, assuming the query context is set.</p>
+<p>For example, <code>`idx-name` ON airline</code> indicates the <code>idx-name</code> index on the <code>airline</code> collection, assuming the query context is set.</p>
 </div>
 </div>
 </div>
@@ -4916,25 +4921,56 @@ We recommend that you do not drop (or create) secondary indexes when any node wi
 <div class="sect1">
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <div class="sectionbody">
+<h5 id="default-collection" class="discrete">Default Collection</h5>
+<div class="paragraph">
+<p>The following example drops an index from the default collection in the default scope within the <code>travel-sample</code> bucket.
+First make sure the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> is not set.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_query-workbench"></a>Query Workbench</p>
+</li>
+<li>
+<p><a id="tabset1_cbq-shell"></a>CBQ Shell</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_query-workbench">
+<div class="imageblock">
+<div class="content">
+<img src="../../tools/_images/query-workbench-context-unset.png" alt="The query context drop-down menu, with 'bucket.scope' selected">
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_cbq-shell">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; \UNSET -query_context;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="ex-1" class="exampleblock">
 <div class="title">Example 1. Drop index from the default collection in the default scope</div>
 <div class="content">
 <div class="paragraph">
-<p>This example creates a secondary index on the default collection in the default scope in the travel-sample bucket.
-Once the index creation statement comes back, <code>system:indexes</code> is queried for the status of the index.</p>
+<p>Create a secondary index on the default collection in the default scope in the <code>travel-sample</code> bucket.
+Once the index creation statement comes back, query <code>system:indexes</code> for the status of the index.</p>
 </div>
 <div class="listingblock">
-<div class="title">Create the index</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX `idx-callsign` ON `travel-sample`(callsign) USING GSI;
 SELECT * FROM system:indexes WHERE name="idx-callsign";</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Subsequently, the index is dropped with the following statement and it no longer is reported in the <code>system:indexes</code> output.</p>
+<p>Subsequently, drop the index and check that it is no longer reported in the <code>system:indexes</code> output.</p>
 </div>
 <div class="listingblock">
-<div class="title">Drop the index</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `travel-sample`.`idx-callsign` USING GSI;
 SELECT * FROM system:indexes WHERE name="idx-callsign";</code></pre>
@@ -4944,9 +4980,41 @@ SELECT * FROM system:indexes WHERE name="idx-callsign";</code></pre>
 <p>The following command would drop the index in exactly the same way, but uses alternative syntax.</p>
 </div>
 <div class="listingblock">
-<div class="title">Drop the index&#8201;&#8212;&#8201;alternative syntax</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `idx-callsign` ON `travel-sample` USING GSI;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<h5 id="query-context" class="discrete">Query Context</h5>
+<div class="paragraph">
+<p>The following example drops an index from the <code>airport</code> collection within the <code>inventory</code> scope in the <code>travel-sample</code> bucket.
+First set the <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a> to <code>`travel-sample`.inventory</code>.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_query-workbench"></a>Query Workbench</p>
+</li>
+<li>
+<p><a id="tabset2_cbq-shell"></a>CBQ Shell</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_query-workbench">
+<div class="imageblock">
+<div class="content">
+<img src="../../tools/_images/query-workbench-context.png" alt="The query context drop-down menu, with 'travel-sample.inventory' selected">
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_cbq-shell">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; \SET -query_context 'travel-sample.inventory';</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -4955,46 +5023,52 @@ SELECT * FROM system:indexes WHERE name="idx-callsign";</code></pre>
 <div class="title">Example 2. Drop index from a named collection with query context</div>
 <div class="content">
 <div class="paragraph">
-<p>This statement drops an index called <code>idx-name</code> from the <code>countries</code> collection within the <code>places</code> scope in the <code>travel-sample</code> bucket.
-It is assumed that the scope, collection, and index have already been created.</p>
+<p>Create an index called <code>idx-name</code> in the <code>airline</code> collection.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX `idx-name` ON airline(name) USING GSI;</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>This example uses the cbq shell, but you can also set the query context and drop the index using the Query Workbench.</p>
+<p>Drop the index <code>idx-name</code> from the <code>airline</code> collection.</p>
 </div>
 <div class="listingblock">
-<div class="title">Set the query context</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; \SET -query_context "travel-sample.places";</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Drop the index</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; DROP INDEX countries.`idx-name`;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX airline.`idx-name`;</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The following command would drop the index in exactly the same way, but uses alternative syntax.</p>
 </div>
 <div class="listingblock">
-<div class="title">Drop the index&#8201;&#8212;&#8201;alternative syntax</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">cbq&gt; DROP INDEX `idx-name` ON countries;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `idx-name` ON airline;</code></pre>
 </div>
 </div>
 </div>
+</div>
+<h5 id="named-collection" class="discrete">Named Collection</h5>
+<div class="paragraph">
+<p>The following example is similar to <a href="#ex-2">Example 2</a>, but the path to the required keyspace is specified by the query, so you do not need to set the query context.</p>
 </div>
 <div id="ex-3" class="exampleblock">
 <div class="title">Example 3. Drop index from a named collection with path</div>
 <div class="content">
 <div class="paragraph">
-<p>This statement drops an index called <code>idx-name</code> from the <code>countries</code> collection within the <code>places</code> scope in the <code>travel-sample</code> bucket.
-It is assumed that the scope, collection, and index have already been created.</p>
+<p>Create an index called <code>idx-name</code> in the <code>airline</code> collection.</p>
 </div>
 <div class="listingblock">
-<div class="title">Drop the index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `idx-name` ON `travel-sample`.places.countries;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX `idx-name` ON `travel-sample`.inventory.airline(name) USING GSI;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Drop the index <code>idx-name</code> from the <code>airline</code> collection.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DROP INDEX `idx-name` ON `travel-sample`.inventory.airline;</code></pre>
 </div>
 </div>
 <div class="paragraph">

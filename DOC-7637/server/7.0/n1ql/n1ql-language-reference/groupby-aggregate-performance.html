@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Group By and Aggregate Performance | Couchbase Docs (Staging)</title>
+<title>Grouping and Aggregate Pushdown | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item is-current-page is-active is-active-depth-2  " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4558,13 +4558,13 @@ server
 <li class="crumb">Develop</li>
 <li class="crumb"><a href="../query.html">Query</a></li>
 <li class="crumb"><a href="../advanced.html">Advanced Features</a></li>
-<li class="crumb"><a href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a></li>
+<li class="crumb"><a href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a></li>
 </ul>
 </nav>
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Group By and Aggregate Performance</h1>
+<h1 class="page">Grouping and Aggregate Pushdown</h1>
 <div class="labels">
 <ul>
 <li class="edition"><a href="https://www.couchbase.com/products/editions">enterprise edition</a></li>
@@ -4579,7 +4579,7 @@ server
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-N1QL Pushdowns optimize the performance of N1QL queries by supporting GROUP BY and Aggregate expressions.
+N1QL Pushdowns optimize the performance of N1QL queries by supporting grouping and aggregate expressions.
 </blockquote>
 </div>
 </div>
@@ -4588,7 +4588,7 @@ N1QL Pushdowns optimize the performance of N1QL queries by supporting GROUP BY a
 <h2 id="Overview"><a class="anchor" href="#Overview"></a>Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This features improves performance of N1QL queries with aggregations and GROUP BY execution.</p>
+<p>Grouping and aggregate pushdown improves the performance of N1QL queries with groupings and aggregations.</p>
 </div>
 <div class="paragraph">
 <p>After the optimizer selects an index for a query block, it attempts the two optimizations below:</p>
@@ -4599,23 +4599,23 @@ N1QL Pushdowns optimize the performance of N1QL queries by supporting GROUP BY a
 <p>Pagination optimization, by pushing the OFFSET and LIMIT parameters to the index scan.</p>
 </li>
 <li>
-<p>Grouping and aggregation pushdown to the indexer (introduced in Couchbase 5.5).</p>
+<p>Grouping and aggregate pushdown to the indexer (introduced in Couchbase 5.5).</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Prior to Couchbase 5.5, even when a query with aggregate and/or GROUP BY is covered by an index, the query fetched all relevant data from the indexer and group the data within the query engine.
-With this enhancement, the query intelligently requests the indexer to perform grouping and aggregation in addition to range scan.
+<p>Prior to Couchbase Server 5.5, when a query contained aggregation and/or grouping, the query engine would fetch all relevant data from the indexer and group the data itself, even if the query was covered by an index.
+With Couchbase Server 5.5 (Enterprise Edition) and later, the query intelligently requests the indexer to perform grouping and aggregation in addition to range scan.
 The Indexer has been enhanced to perform grouping, COUNT(), SUM(), MIN(), MAX(), AVG(), and related operations.</p>
 </div>
 <div class="paragraph">
-<p>This requires no changes to the user query, but a good index design to cover the query and order the keys is required.
+<p>You do not need to make any changes to the query to use this feature, but a good index design is required to cover the query and order the keys.
 Not every query will benefit from this optimization, and not every index can accelerate every grouping and aggregation.
 Understanding the right patterns will help you to design your indexes and queries.
-Aggregate Pushdown to the global secondary index is supported on both storage engines: Standard GSI and Memory Optimized GSI (MOI).</p>
+Grouping and aggregate pushdown is supported on both storage engines: Standard GSI and Memory Optimized GSI (MOI).</p>
 </div>
 <div class="paragraph">
-<p>This reduction step of performing the GROUP BY and Aggregation on the indexer reduces the amount of data transfer and disk I/O, resulting in:</p>
+<p>This reduction step reduces the amount of data transfer and disk I/O, resulting in:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -4637,118 +4637,65 @@ Aggregate Pushdown to the global secondary index is supported on both storage en
 </ul>
 </div>
 <div class="paragraph">
-<p>For example, let&#8217;s compare the previous vs.
-current performance of using GROUP BY and examine the EXPLAIN plan of the following query that is defined in the Couchbase <code>travel-sample</code> index:</p>
+<p>Let&#8217;s compare query performance with and without grouping and aggregate pushdown.
+Consider the following generic example index and query:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX `def_type` ON `travel-sample`(`type`)</code></pre>
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>keyspace_ref</em> (<em>a</em>);
+
+SELECT <em>a</em>, <em>aggregate_function</em>(<em>a</em>)
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Consider the query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT type, COUNT(type)
-FROM `travel-sample`
-WHERE type IS NOT MISSING
-GROUP BY type;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Before Couchbase version 5.5, this query engine fetched relevant data from the indexer and group the data within the query engine and then aggregate.
-This simple query takes about 250 ms.</p>
+<p>Without grouping and aggregate pushdown, the query engine fetches relevant data from the indexer, and then the query engine groups and aggregates the data, as shown in the typical query execution plan below.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_Ex0_QP_before55.png" alt="GBAP Ex0 QP before55">
+<img src="../_images/n1ql-language-reference/GBAP_Ex0_QP_before55.png" alt="Execution plan with 6 steps: Authorize, IndexScan3, Filter, Group, Project with 2 terms, and Stream">
 </div>
 </div>
 <div class="paragraph">
-<p>Now, in Couchbase version 5.5, this query use the same <code>def_type</code> index, but executes in under 70 ms.
-In the explain below, you can see fewer steps and the lack of the grouping step after the index scan because the index scan step does the grouping and aggregation as well.</p>
+<p>With grouping and aggregate pushdown, the query uses the same index, but the indexer does the grouping and aggregation as well.
+In the typical query execution plan below, you can see fewer steps, and note the lack of the grouping step after the index scan.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_Ex0_QP_after55.png" alt="GBAP Ex0 QP after55">
+<img src="../_images/n1ql-language-reference/GBAP_Ex0_QP_after55.png" alt="Execution plan with 4 items: Authorize, IndexScan3, Project with 2 terms, and Stream">
 </div>
 </div>
 <div class="paragraph">
-<p>As the data and query complexity grows, the performance benefit (both latency and throughput) will grow as well.</p>
+<p>With grouping and aggregate pushdown, this simple generic query typically executes in less than a third of the time.
+As the data and query complexity grows, the performance benefit (both latency and throughput) will grow as well.</p>
 </div>
 <div class="paragraph">
-<p>For example, consider the query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT type, COUNT(type)
-FROM `travel-sample`
-WHERE type IS NOT MISSING
-GROUP BY type;</code></pre>
-</div>
+<p>The query plan shows the accelerated aggregation details.
+For details, see <a href="#section_bpf_wjf_ycb">Appendix: Query Plan Fields</a>.</p>
 </div>
 <div class="paragraph">
-<p>The text explain plan shows the accelerated aggregation details.
-For details, see <a href="#section_bpf_wjf_ycb">Appx 1 - Query Plan Fields</a>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">...
-        "index_group_aggs": {
-          "aggregates": [
-            {
-              "aggregate": "COUNT",
-              "expr": "1",
-              "id": 2,
-              "keypos": -1
-            }
-          ],
-          "depends": [
-            0
-          ],
-          "group": [
-            {
-              "depends": [
-                0
-              ],
-              "expr": "cover ((`travel-sample`.`type`))",
-              "id": 0,
-              "keypos": 0
-            }
-          ]
-        },
-        "index_id": "c5bbb792c69c1704",
-        "index_projection": {
-          "entry_keys": [
-            0,
-            2
-          ]
-        },
-...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Here’s is how this query executes when the indexer executes the GROUP BY and aggregation.
-The query engine does not fetch any data from the data service (KV service), as shown below:</p>
+<p>Here&#8217;s how a query executes when the indexer handles the grouping and aggregation.
+Note that the query engine does not fetch any data from the data service (KV service).</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_55execution.png" alt="GBAP 55execution" width="700">
+<img src="../_images/n1ql-language-reference/GBAP_55execution.png" alt="GBAP 55execution" width="700" height="Query execution process, showing grouping and aggregation pushed down to the indexer">
 </div>
 </div>
 <div class="paragraph">
-<p>For your reference, this is how the same query executed before 5.5.</p>
+<p>For reference, this is how the same query would be executed without grouping and aggregate pushdown.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_pre55execution.png" alt="GBAP pre55execution" width="700">
+<img src="../_images/n1ql-language-reference/GBAP_pre55execution.png" alt="GBAP pre55execution" width="700" height="Query execution process, showing grouping and aggregation performed by the query engine">
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="examples-for-indexer-group-by-and-aggregation"><a class="anchor" href="#examples-for-indexer-group-by-and-aggregation"></a>Examples for Indexer GROUP BY and Aggregation</h2>
+<h2 id="examples-for-grouping-and-aggregation"><a class="anchor" href="#examples-for-grouping-and-aggregation"></a>Examples for Grouping and Aggregation</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Let’s consider a composite index to explore some scenarios:</p>
@@ -4756,7 +4703,8 @@ The query engine does not fetch any data from the data service (KV service), as 
 <div class="listingblock">
 <div class="title">Example A</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_a ON `travel-sample` (geo.alt, geo.lat, geo.lon, id) WHERE type = "airport"</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_grp_add ON `travel-sample`.inventory.airport
+(geo.alt, geo.lat, geo.lon, id);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4765,73 +4713,73 @@ The query engine does not fetch any data from the data service (KV service), as 
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Positive Case examples of queries that use indexing grouping and aggregation</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>SELECT COUNT(*) FROM `travel-sample` WHERE geo.alt &gt; 10 AND type="airport";</code></p>
-</li>
-<li>
-<p><code>SELECT COUNT(geo.alt) FROM `travel-sample` WHERE geo.alt BETWEEN 10 AND 30 AND type = "airport";</code></p>
-</li>
-<li>
-<p><code>SELECT COUNT(geo.lat) FROM `travel-sample` WHERE geo.alt BETWEEN 10 AND 30 AND geo.lat = 40 AND type = "airport";</code></p>
-</li>
-<li>
-<p><code>SELECT geo.alt, AVG(id), SUM(id), COUNT(geo.alt), MIN (geo.lon), MAX(ABS(geo.lon)) FROM `travel-sample` WHERE geo.alt &gt; 100 AND type = "airport" GROUP BY geo.alt;</code></p>
-</li>
-<li>
-<p><code>SELECT lat_count, SUM(id) FROM `travel-sample` WHERE geo.alt &gt; 100 AND type = "airport" GROUP BY geo.alt LETTING lat_count = COUNT(geo.lat) HAVING lat_count &gt; 1;</code></p>
-</li>
-<li>
-<p><code>SELECT AVG(DISTINCT geo.lat) FROM `travel-sample` WHERE geo.alt &gt; 100 AND type = "airport" GROUP BY geo.alt;</code></p>
-</li>
-</ul>
+</dl>
 </div>
-</dd>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(*) FROM `travel-sample`.inventory.airport WHERE geo.alt &gt; 10;
+
+SELECT COUNT(geo.alt) FROM `travel-sample`.inventory.airport
+WHERE geo.alt BETWEEN 10 AND 30;
+
+SELECT COUNT(geo.lat) FROM `travel-sample`.inventory.airport
+WHERE geo.alt BETWEEN 10 AND 30 AND geo.lat = 40;
+
+SELECT geo.alt, AVG(id), SUM(id), COUNT(geo.alt), MIN (geo.lon), MAX(ABS(geo.lon))
+FROM `travel-sample`.inventory.airport WHERE geo.alt &gt; 100 GROUP BY geo.alt;
+
+SELECT lat_count, SUM(id) FROM `travel-sample`.inventory.airport
+WHERE geo.alt &gt; 100 GROUP BY geo.alt
+LETTING lat_count = COUNT(geo.lat) HAVING lat_count &gt; 1;
+
+SELECT AVG(DISTINCT geo.lat) FROM `travel-sample`.inventory.airport
+WHERE geo.alt &gt; 100 GROUP BY geo.alt;
+
+SELECT ARRAY_AGG(geo.alt) FROM `travel-sample`.inventory.airport
+WHERE geo.alt &gt; 10;</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
 <dt class="hdlist1">Negative Case examples</dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>SELECT COUNT(*) FROM `travel-sample` WHERE geo.lat &gt; 20 AND type = "airport";</code></p>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(*) FROM `travel-sample`.inventory.airport WHERE geo.lat &gt; 20;</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>This query has no predicate on the leading key <code>geo.alt</code>.
-The index <code>idx_a</code> cannot be used.</p>
+The index <code>idx_grp_add</code> cannot be used.</p>
 </div>
-</li>
-<li>
-<p><code>SELECT COUNT(*) FROM `travel-sample`;</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(*) FROM `travel-sample`.inventory.airport;</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>This query has no predicate at all.</p>
 </div>
-</li>
-<li>
-<p><code>SELECT COUNT(v1) FROM `travel-sample` LET v1 = ROUND(geo.lat) WHERE geo.lat &gt; 10 AND type = "airport";</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(v1) FROM `travel-sample`.inventory.airport
+LET v1 = ROUND(geo.lat) WHERE geo.lat &gt; 10;</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>The aggregate depends on <code>LET</code> variable.</p>
-</div>
-</li>
-<li>
-<p><code>SELECT ARRAY_AGG(geo.alt) FROM `travel-sample` WHERE geo.alt &gt; 10 AND type = "airport";</code></p>
-<div class="paragraph">
-<p><code>ARRAY_AGG</code> is not supported.</p>
-</div>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
 </div>
 <div class="sect2">
 <h3 id="positive-query-examples-with-group-by-on-leading-index-keys"><a class="anchor" href="#positive-query-examples-with-group-by-on-leading-index-keys"></a>Positive query examples with GROUP BY on leading index keys</h3>
 <div class="paragraph">
-<p>Consider the following index:</p>
+<p>The following example uses the <code>idx_grp_add</code> index defined previously:</p>
 </div>
 <div class="listingblock">
 <div class="title">Example B</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_b ON `travel-sample`(geo.alt, geo.lat, geo.lon, id)</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_grp_add ON `travel-sample`.inventory.airport
+(geo.alt, geo.lat, geo.lon, id);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4841,49 +4789,46 @@ Therefore, the query below is suitable for indexer to handle grouping and aggreg
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT geo.alt, geo.lat, SUM(geo.lon), AVG(id), COUNT(DISTINCT geo.lon)
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE geo.alt BETWEEN 10 AND 30
-AND type = "airport"
 GROUP BY geo.alt, geo.lat
 HAVING SUM(geo.lon) &gt; 1000;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Here&#8217;s the executed query plan showing that index scan handled grouping and aggregation:</p>
+<p>The query plan shows that the index scan handles grouping and aggregation:</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_ExB_Plan.png" alt="GBAP ExB Plan" width="70%">
+<img src="../_images/n1ql-language-reference/GBAP_ExB_Plan.png" alt="Visual plan with three steps: IndexScan3 using idx_grp_add, Filter, and Project with 5 terms">
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="positive-query-examples-with-group-by-on-non-leading-index-keys"><a class="anchor" href="#positive-query-examples-with-group-by-on-non-leading-index-keys"></a>Positive query examples with GROUP BY on non-leading index keys</h3>
 <div class="paragraph">
-<p>Consider the following index and query:</p>
+<p>The following example uses the <code>idx_grp_add</code> index defined previously:</p>
 </div>
 <div class="listingblock">
 <div class="title">Example C</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_c ON `travel-sample`(geo.alt, geo.lat, geo.lon, id)
- WHERE type = "airport"
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_grp_add ON `travel-sample`.inventory.airport
+(geo.alt, geo.lat, geo.lon, id);
 
 SELECT geo.lat, id, SUM(geo.lon)
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE geo.alt BETWEEN 10 AND 30
-AND type = "airport"
 GROUP BY geo.lat, id
 HAVING SUM(geo.lon) &gt; 1000;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The following is a bottom-up rendering of the execution plan for easier viewing.
-In this case, the indexer sends partial group aggregation, which the query merges to create the final group and aggregation.
+<p>In this case, the indexer sends partial group aggregation, which the query merges to create the final group and aggregation.
 In this scenario (when the grouping is on non-leading keys), any query with aggregation and DISTINCT modifier cannot be accelerated by the indexer, such as <code>COUNT(DISTINCT id)</code>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_ExC_Plan.png" alt="GBAP ExC Plan" width="50%">
+<img src="../_images/n1ql-language-reference/GBAP_ExC_Plan.png" alt="Visual plan with 4 steps: IndexScan3 using idx_grp_add, Group, Filter, and Project with 3 terms">
 </div>
 </div>
 </div>
@@ -4895,14 +4840,14 @@ In this scenario (when the grouping is on non-leading keys), any query with aggr
 <div class="listingblock">
 <div class="title">Example D</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_d ON `travel-sample` (geo.lat, geo.lon, DISTINCT public_likes, id) WHERE type = "hotel"
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_grp_add_distinct ON `travel-sample`.inventory.hotel
+(geo.lat, geo.lon, DISTINCT public_likes, id);
 
 SELECT geo.lat, geo.lon, SUM(id), AVG(id)
-FROM `travel-sample`
+FROM `travel-sample`.inventory.hotel
 WHERE geo.lat BETWEEN 10 AND 30
  AND geo.lon &gt; 50
- AND type = "hotel"
- AND ANY v IN public_likes SATISFIES  v = “%a%” END
+ AND ANY v IN public_likes SATISFIES  v = "%a%" END
 GROUP BY geo.lat, geo.lon
 HAVING SUM(id) &gt; 100;</code></pre>
 </div>
@@ -4910,31 +4855,11 @@ HAVING SUM(id) &gt; 100;</code></pre>
 <div class="paragraph">
 <p>In this case, the predicates are on the leading keys up to and including the array key.
 Therefore, indexer can efficiently do the grouping as seen by the optimal plan below.
-It’s important to note the array index key is created with a <code>DISTINCT</code> modifier (not the <code>ALL</code> modifier) to get this optimization and that the <code>SATISFIES</code> clause in the <code>ANY</code> predicate must be that of equality (that is, <code>v = “%a%”</code>).</p>
+It’s important to note the array index key is created with a <code>DISTINCT</code> modifier (not the <code>ALL</code> modifier) to get this optimization and that the <code>SATISFIES</code> clause in the <code>ANY</code> predicate must be that of equality (that is, <code>v = "%a%"</code>).</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_ExD_Plan.png" alt="GBAP ExD Plan" width="70%">
-</div>
-</div>
-<div class="paragraph">
-<p>On the other hand, if there’s a predicate missing on <code>geo.lon</code>&#8201;&#8212;&#8201;which is prior to the array key&#8201;&#8212;&#8201;while using the same <code>idx_d</code> index as above, then the grouping is done by the old method:</p>
-</div>
-<div class="listingblock">
-<div class="title">Example D2</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT geo.lat, geo.lon, SUM(id), AVG(id)
-FROM `travel-sample`
-WHERE geo.lat BETWEEN 10 AND 30
- AND type = "hotel"
- AND ANY v IN public_likes SATISFIES  v = “%a%” END
-GROUP BY geo.lat, geo.lon
-HAVING SUM(id) &gt; 100;</code></pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_ExD2_Plan.png" alt="GBAP ExD2 Plan">
+<img src="../_images/n1ql-language-reference/GBAP_ExD_Plan.png" alt="Visual plan with 3 steps: IndexScan3 using idx_grp_add_distinct, Filter, and Project with 4 terms">
 </div>
 </div>
 <div class="paragraph">
@@ -4943,23 +4868,23 @@ HAVING SUM(id) &gt; 100;</code></pre>
 <div class="listingblock">
 <div class="title">Example E</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_e ON `travel-sample` (ALL public_likes, geo.lat, geo.lon, id) WHERE type = "hotel"
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_grp_add_all ON `travel-sample`.inventory.hotel
+(ALL public_likes, geo.lat, geo.lon, id);
 
 SELECT un, t.geo.lat, COUNT(un), AVG(t.geo.lat)
-FROM `travel-sample` AS t
+FROM `travel-sample`.inventory.hotel AS t
  UNNEST t.public_likes AS un
 WHERE un &gt; "J"
-AND t.type = "hotel"
 GROUP BY un, t.geo.lat;</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>In this case, the <code>UNNEST</code> operation can use the index because the leading <code>ALL</code> array key is the array being unwound.
-Note, the unwound operation repeats the parent document (<code>travel-sample</code>) and the <code>t.geo.lat</code> reference would have duplicates compared to the original <code>travel-sample</code> documents.</p>
+Note, the unwound operation repeats the parent document (<code>hotel</code>) and the <code>t.geo.lat</code> reference would have duplicates compared to the original <code>hotel</code> documents.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_ExE_Plan.png" alt="GBAP ExE Plan" width="50%">
+<img src="../_images/n1ql-language-reference/GBAP_ExE_Plan.png" alt="Visual plan with two steps: IndexScan3 using idx_grp_add_all, and Project with 4 terms">
 </div>
 </div>
 </div>
@@ -5014,11 +4939,11 @@ Following are some simple rules that will help you to write the proper queries a
 </div>
 </div>
 <div class="sect1">
-<h2 id="scenarios-for-group-by-and-aggregation"><a class="anchor" href="#scenarios-for-group-by-and-aggregation"></a>Scenarios for Group By and Aggregation</h2>
+<h2 id="scenarios-for-grouping-and-aggregation"><a class="anchor" href="#scenarios-for-grouping-and-aggregation"></a>Scenarios for Grouping and Aggregation</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Like any feature in a query language, there are subtle variations between each query and index that affects this optimization.
-We use the <code>travel-sample</code> dataset to illustrate both positive and negative use cases.</p>
+We use the <code>travel-sample</code> bucket to illustrate both positive and negative use cases.</p>
 </div>
 <div class="paragraph">
 <p>The following table lists the scenarios and requirements for queries to request the indexer to do the grouping and acceleration.
@@ -5099,19 +5024,19 @@ The simplest predicate is <code>IS NOT MISSING</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON Keyspace_ref (a, b, c);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);
 
-SELECT a, b, Aggregate_Function(c)  <i class="conum" data-value="1"></i><b>(1)</b>
-FROM Keyspace_ref
-WHERE a IS NOT MISSING <i class="conum" data-value="2"></i><b>(2)</b>
-GROUP BY a, b;</code></pre>
+SELECT <em>a</em>, <em>b</em>, <em>aggregate_function</em>(<em>c</em>) <i class="conum" data-value="1"></i><b>(1)</b>
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING <i class="conum" data-value="2"></i><b>(2)</b>
+GROUP BY <em>a</em>, <em>b</em>;</pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Where <code>Aggregate_Function(c)</code> is <code>MIN(c)</code>, <code>MAX(c)</code>, <code>COUNT(c)</code>, or <code>SUM(c)</code></td>
+<td>Where <code><em>aggregate_function</em>(<em>c</em>)</code> is <code>MIN(<em>c</em>)</code>, <code>MAX(<em>c</em>)</code>, <code>COUNT(<em>c</em>)</code>, or <code>SUM(<em>c</em>)</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -5128,17 +5053,16 @@ GROUP BY a, b;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx1 ON `travel-sample`(country, state, geo.lat)
-WHERE type="landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx1 ON `travel-sample`.inventory.landmark
+(country, state, geo.lat);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT country, state, MAX(ROUND(geo.lat)) AS Max_Latitude
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE country IS NOT MISSING
-AND type = "landmark"
 GROUP BY country, state
 ORDER BY Max_Latitude DESC;</code></pre>
 </div>
@@ -5166,11 +5090,12 @@ Without a matching predicate, the query will use the primary index.</p>
     "country": "France",
     "state": "Picardie"
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Explain Plan</div>
+<div class="title">Plan</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "plan": {
@@ -5181,17 +5106,14 @@ Without a matching predicate, the query will use the primary index.</p>
         "~children": [
           {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((`travel-sample`.`country`))",
-              "cover ((`travel-sample`.`state`))",
-              "cover (((`travel-sample`.`geo`).`lat`))",
-              "cover ((meta(`travel-sample`).`id`))",
-              "cover (count(cover ((`travel-sample`.`country`))))",
-              "cover (min(round(cover (((`travel-sample`.`geo`).`lat`)))))"
+              "cover ((`landmark`.`country`))",
+              "cover ((`landmark`.`state`))",
+              "cover (((`landmark`.`geo`).`lat`))",
+              "cover ((meta(`landmark`).`id`))",
+              "cover (max(round(cover (((`landmark`.`geo`).`lat`)))))"
             ],
-            "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "landmark"
-            },
             "index": "idx1",
             "index_group_aggs": {
               "aggregates": [
@@ -5200,7 +5122,7 @@ Without a matching predicate, the query will use the primary index.</p>
                   "depends": [
                     2
                   ],
-                  "expr": "round(cover (((`travel-sample`.`geo`).`lat`)))",
+                  "expr": "round(cover (((`landmark`.`geo`).`lat`)))",
                   "id": 4,
                   "keypos": -1
                 }
@@ -5215,7 +5137,7 @@ Without a matching predicate, the query will use the primary index.</p>
                   "depends": [
                     0
                   ],
-                  "expr": "cover ((`travel-sample`.`country`))",
+                  "expr": "cover ((`landmark`.`country`))",
                   "id": 0,
                   "keypos": 0
                 },
@@ -5223,17 +5145,23 @@ Without a matching predicate, the query will use the primary index.</p>
                   "depends": [
                     1
                   ],
-                  "expr": "cover ((`travel-sample`.`state`))",
+                  "expr": "cover ((`landmark`.`state`))",
                   "id": 1,
                   "keypos": 1
                 }
               ]
             },
-...</code></pre>
+...
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The EXPLAIN Plan shows that <code>GROUP BY</code> is executed by the indexer.
+<p>The query plan shows that grouping is executed by the indexer.
 This is detailed in <a href="#table_bw2_nrf_ycb">Table 2</a>.</p>
 </div>
 </div>
@@ -5263,53 +5191,53 @@ The N1QL indexer will do 2nd level of aggregation and compute the final result.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON Keyspace_ref (a, b, c);</code></pre>
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax A</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT Aggregate_Function(a), b, Aggregate_Function(c)
-FROM Keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY b;</code></pre>
+<pre>SELECT <em>aggregate_function</em>(<em>a</em>), <em>b</em>, <em>aggregate_function</em>(<em>c</em>)
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>b</em>;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax B</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT Aggregate_Function(a), Aggregate_Function(b), c
-FROM Keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY c;</code></pre>
+<pre>SELECT <em>aggregate_function</em>(<em>a</em>), <em>aggregate_function</em>(<em>b</em>), <em>c</em>
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>c</em>;</pre>
 </div>
 </div>
 <div id="ex2-a" class="exampleblock">
 <div class="title">Example 2. List the states with their total number of landmarks and the lowest latitude of any landmark</div>
 <div class="content">
 <div class="paragraph">
-<p>Use the <code>COUNT()</code> operator to find the total number of landmarks and use the <code>MIN()</code> operator to find the lowest landmark latitude in each state, group the results by <code>state</code>, and then sort in order by the lowest latitudes per <code>state</code>.</p>
+<p>Use the <code>COUNT()</code> operator to find the total number of landmarks and use the <code>MIN()</code> operator to find the lowest landmark latitude in each state, group the results by <code>state</code>, and then sort in order by the lowest latitudes per <code>state</code>.
+This example uses the <code>idx1</code> index defined previously:</p>
 </div>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx2 ON `travel-sample`(country, state, ROUND(geo.lat))
-WHERE type="landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx1 ON `travel-sample`.inventory.landmark
+(country, state, geo.lat);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(country) AS Total_landmarks, state, MIN(ROUND(geo.lat)) AS Min_Latitude
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE country IN ["France", "United States", "United Kingdom"]
-AND type = "landmark"
 GROUP BY state
 ORDER BY Min_Latitude;</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Explain Plan</div>
+<div class="title">Plan</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "plan": {
@@ -5320,18 +5248,16 @@ ORDER BY Min_Latitude;</code></pre>
         "~children": [
           {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((`travel-sample`.`country`))",
-              "cover ((`travel-sample`.`state`))",
-              "cover (((`travel-sample`.`geo`).`lat`))",
-              "cover ((meta(`travel-sample`).`id`))",
-              "cover (count(cover ((`travel-sample`.`country`))))",
-              "cover (min(round(cover (((`travel-sample`.`geo`).`lat`)))))"
+              "cover ((`landmark`.`country`))",
+              "cover ((`landmark`.`state`))",
+              "cover (((`landmark`.`geo`).`lat`))",
+              "cover ((meta(`landmark`).`id`))",
+              "cover (count(cover ((`landmark`.`country`))))",
+              "cover (min(round(cover (((`landmark`.`geo`).`lat`)))))"
             ],
-            "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "landmark"
-            },
-            "index": "idx2",
+            "index": "idx1",
             "index_group_aggs": {
               "aggregates": [
                 {
@@ -5339,7 +5265,7 @@ ORDER BY Min_Latitude;</code></pre>
                   "depends": [
                     0
                   ],
-                  "expr": "cover ((`travel-sample`.`country`))",
+                  "expr": "cover ((`landmark`.`country`))",
                   "id": 4,
                   "keypos": 0
                 },
@@ -5348,7 +5274,7 @@ ORDER BY Min_Latitude;</code></pre>
                   "depends": [
                     2
                   ],
-                  "expr": "round(cover (((`travel-sample`.`geo`).`lat`)))",
+                  "expr": "round(cover (((`landmark`.`geo`).`lat`)))",
                   "id": 5,
                   "keypos": -1
                 }
@@ -5363,19 +5289,25 @@ ORDER BY Min_Latitude;</code></pre>
                   "depends": [
                     1
                   ],
-                  "expr": "cover ((`travel-sample`.`state`))",
+                  "expr": "cover ((`landmark`.`state`))",
                   "id": 1,
                   "keypos": 1
                 }
               ],
               "partial": true <i class="conum" data-value="1"></i><b>(1)</b>
             },
-...</code></pre>
+...
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_Ex2A_EP.png" alt="GBAP Ex2A EP">
+<img src="../_images/n1ql-language-reference/GBAP_Ex2A_EP.png" alt="Query plan with 4 steps: IndexScan3 using idx1, Group, Project with 3 terms, and Order by Min Latitude">
 </div>
 </div>
 <div class="listingblock">
@@ -5394,10 +5326,11 @@ ORDER BY Min_Latitude;</code></pre>
   },
   {
     "Min_Latitude": 43,
-    "Total_landmarks": 6,
-    "state": "Languedoc-Roussillon"
+    "Total_landmarks": 2208,
+    "state": null
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5421,9 +5354,8 @@ At a particular latitude, the <code>state</code> will be the same; but an aggreg
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(country) Num_Landmarks, MIN(state) State_Name, ROUND(geo.lat) Latitude
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE country IS NOT MISSING
-AND type = "landmark"
 GROUP BY ROUND(geo.lat)
 ORDER BY ROUND(geo.lat);</code></pre>
 </div>
@@ -5447,7 +5379,8 @@ ORDER BY ROUND(geo.lat);</code></pre>
     "Num_Landmarks": 27,
     "State_Name": "California"
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5460,12 +5393,12 @@ ORDER BY ROUND(geo.lat);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON Keyspace_ref(a, b, c);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>keyspace_ref</em>(<em>a</em>, <em>b</em>, <em>c</em>);
 
-SELECT Aggregate_Function(c)
-FROM Keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY b, a;</code></pre>
+SELECT <em>aggregate_function</em>(<em>c</em>)
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>b</em>, <em>a</em>;</pre>
 </div>
 </div>
 <div id="ex3" class="exampleblock">
@@ -5480,19 +5413,18 @@ GROUP BY b, a;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx3 ON `travel-sample`(activity, city, geo.lon)
-WHERE type="landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx3 ON `travel-sample`.inventory.landmark
+(activity, city, geo.lon);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT activity, city, MIN(ROUND(geo.lon)) AS Max_Longitude
-FROM `travel-sample`
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT activity, city, MIN(ROUND(geo.lon)) AS Min_Longitude
+FROM `travel-sample`.inventory.landmark
 WHERE country IS NOT MISSING
-AND type = "landmark"
 GROUP BY activity, city
-ORDER BY Min_Longitude;</code></pre>
+ORDER BY Min_Longitude, activity;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5506,20 +5438,21 @@ ORDER BY Min_Longitude;</code></pre>
   },
   {
     "Min_Longitude": -123,
-    "activity": "drink",
-    "city": "Glen Ellen"
-  },
-  {
-    "Min_Longitude": -123,
-    "activity": "do",
+    "activity": "eat",
     "city": "Santa Rosa"
   },
   {
     "Min_Longitude": -123,
     "activity": "eat",
-    "city": "Moss Beach"
+    "city": "Sebastopol"
   },
-...</code></pre>
+  {
+    "Min_Longitude": -123,
+    "activity": "see",
+    "city": "Sebastopol"
+  },
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5536,23 +5469,23 @@ ORDER BY Min_Longitude;</code></pre>
 <div class="listingblock">
 <div class="title">Syntax A: Field with an expression&#8201;&#8212;&#8201;GROUP BY and Index keys match</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON Keyspace_ref(a+b, b, c);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>keyspace_ref</em>(<em>a</em>+<em>b</em>, <em>b</em>, <em>c</em>);
 
-SELECT Aggregate_Function(c)
-FROM Keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a+b;</code></pre>
+SELECT <em>aggregate_function</em>(<em>c</em>)
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>+<em>b</em>;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax B: Operation on a field&#8201;&#8212;&#8201;GROUP BY and Index keys match</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_operation ON Keyspace_ref (LOWER(a), b, c);
+<pre>CREATE INDEX <em>idx_operation</em> ON <em>keyspace_ref</em> (LOWER(<em>a</em>), <em>b</em>, <em>c</em>);
 
-SELECT Aggregate_Function(c)
-FROM Keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY LOWER(a);</code></pre>
+SELECT <em>aggregate_function</em>(<em>c</em>)
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY LOWER(<em>a</em>);</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5561,12 +5494,12 @@ GROUP BY LOWER(a);</code></pre>
 <div class="listingblock">
 <div class="title">Pre-aggregated Syntax&#8201;&#8212;&#8201;the GROUP BY and Index keys don&#8217;t match</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_operation ON Keyspace_ref (a, b, c);
+<pre>CREATE INDEX <em>idx_operation</em> ON <em>keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);
 
-SELECT Aggregate_Function(c)
-FROM Keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY UPPER(a);</code></pre>
+SELECT <em>aggregate_function</em>(<em>c</em>)
+FROM <em>keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY UPPER(<em>a</em>);</pre>
 </div>
 </div>
 <div id="ex4-a" class="exampleblock">
@@ -5579,9 +5512,8 @@ Then we can list and group by flight distances by calculating the distance multi
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx4_expr
-ON `travel-sample`(ROUND(distance*stops), ROUND(distance), sourceairport)
-WHERE type="route";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx4_expr ON `travel-sample`.inventory.route
+(ROUND(distance*stops), ROUND(distance), sourceairport);</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5590,14 +5522,13 @@ WHERE type="route";</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ROUND(distance*stops) AS Distance_Feels_Like,
        MAX(ROUND(distance)) AS Distance_True,
        COUNT(sourceairport) Number_of_Airports
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE ROUND(distance*stops) IS NOT MISSING
-AND type = "route"
 GROUP BY ROUND(distance*stops);</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Explain Plan</div>
+<div class="title">Plan</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">...
         "index_group_aggs": {
@@ -5607,7 +5538,7 @@ GROUP BY ROUND(distance*stops);</code></pre>
               "depends": [
                 2
               ],
-              "expr": "cover ((`travel-sample`.`sourceairport`))",
+              "expr": "cover ((`route`.`sourceairport`))",
               "id": 4,
               "keypos": 2
             },
@@ -5616,7 +5547,7 @@ GROUP BY ROUND(distance*stops);</code></pre>
               "depends": [
                 1
               ],
-              "expr": "cover (round((`travel-sample`.`distance`)))",
+              "expr": "cover (round((`route`.`distance`)))",
               "id": 5,
               "keypos": 1
             }
@@ -5631,17 +5562,18 @@ GROUP BY ROUND(distance*stops);</code></pre>
               "depends": [
                 0
               ],
-              "expr": "cover (round(((`travel-sample`.`distance`) * (`travel-sample`.`stops`))))",
+              "expr": "cover (round(((`route`.`distance`) * (`route`.`stops`))))",
               "id": 0,
               "keypos": 0
             }
           ]
+        },
 ...</code></pre>
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_Ex4A_VP.png" alt="GBAP Ex4A VP" width="50%">
+<img src="../_images/n1ql-language-reference/GBAP_Ex4A_VP.png" alt="Query plan with 2 steps: IndexScan3 using idx4_expr, and Project with 3 terms">
 </div>
 </div>
 <div class="listingblock">
@@ -5649,21 +5581,22 @@ GROUP BY ROUND(distance*stops);</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
-    "Distance_Feels_Like": 1055,
-    "Distance_True": 1055,
-    "Number_of_Airports": 1
-  },
-  {
-    "Distance_Feels_Like": 1806,
-    "Distance_True": 1806,
-    "Number_of_Airports": 2
-  },
-  {
     "Distance_Feels_Like": 0,
     "Distance_True": 13808,
     "Number_of_Airports": 24018
   },
-...</code></pre>
+  {
+    "Distance_Feels_Like": 309,
+    "Distance_True": 309,
+    "Number_of_Airports": 1
+  },
+  {
+    "Distance_Feels_Like": 1055,
+    "Distance_True": 1055,
+    "Number_of_Airports": 1
+  },
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5678,9 +5611,8 @@ Then we can list and group by the uppercase of the airport codes and listing the
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx4_oper
-ON `travel-sample`(sourceairport, ROUND(distance*stops), distance)
-WHERE type="route";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx4_oper ON `travel-sample`.inventory.route
+(sourceairport, ROUND(distance*stops), distance);</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5689,9 +5621,8 @@ WHERE type="route";</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT UPPER(sourceairport) AS Airport_Code,
        MIN(ROUND(distance*stops)) AS Distance_Feels_Like,
        SUM(ROUND(distance)) AS Total_Distance
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport IS NOT MISSING
-AND type = "route"
 GROUP BY UPPER(sourceairport);</code></pre>
 </div>
 </div>
@@ -5700,21 +5631,22 @@ GROUP BY UPPER(sourceairport);</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
-    "Airport_Code": "ESU",
+    "Airport_Code": "ITO",
     "Distance_Feels_Like": 0,
-    "Total_Distance": 6223
+    "Total_Distance": 4828
   },
   {
-    "Airport_Code": "QSF",
+    "Airport_Code": "GJT",
     "Distance_Feels_Like": 0,
-    "Total_Distance": 3285
+    "Total_Distance": 6832
   },
   {
-    "Airport_Code": "LHW",
+    "Airport_Code": "HYA",
     "Distance_Feels_Like": 0,
-    "Total_Distance": 13837
+    "Total_Distance": 148
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5741,16 +5673,21 @@ GROUP BY UPPER(sourceairport);</code></pre>
 <div class="listingblock">
 <div class="title">Create Documents</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample` VALUES("01",{"type":1, "email":"abc","xx":3});
-INSERT INTO `travel-sample` VALUES("01",{"type":1, "email":"abc","xx":null});
-INSERT INTO `travel-sample` VALUES("02",{"type":1, "email":"abcd"});</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO `travel-sample`.inventory.landmark
+  VALUES("01",{"type":1, "email":"abc","xx":3});
+
+INSERT INTO `travel-sample`.inventory.landmark
+  VALUES("02",{"type":1, "email":"abc","xx":null});
+
+INSERT INTO `travel-sample`.inventory.landmark
+  VALUES("03",{"type":1, "email":"abcd"});</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT type, xx, MIN(email) AS Min_Email
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE type IS NOT NULL
 GROUP BY type, xx;</code></pre>
 </div>
@@ -5774,10 +5711,10 @@ GROUP BY type, xx;</code></pre>
     "type": 1 <i class="conum" data-value="1"></i><b>(1)</b>
   },
   {
-    "Min_Email": null,
-    "type": "airline"
-  },
-...</code></pre>
+    "Min_Email": "2willowroad@nationaltrust.org.uk",
+    "type": "landmark"
+  }
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5801,11 +5738,11 @@ GROUP BY type, xx;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE PRIMARY INDEX idx_expr ON named_keyspace_ref;
+<pre>CREATE PRIMARY INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em>;
 
 SELECT COUNT(1)
-FROM named_keyspace_ref
-GROUP BY SUBSTR(META().id, 0, 10);</code></pre>
+FROM <em>named_keyspace_ref</em>
+GROUP BY SUBSTR(META().id, <em>start</em>, <em>finish</em>);</pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -5821,19 +5758,19 @@ If there is a filter on the Document ID, then the primary index can be used as a
 </table>
 </div>
 <div id="ex6" class="exampleblock">
-<div class="title">Example 8. List the number of countries that are in each decile of the <code>META().id</code> field</div>
+<div class="title">Example 8. List the number of airports that are in each decile of the <code>META().id</code> field</div>
 <div class="content">
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE PRIMARY INDEX idx6 ON `travel-sample`;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE PRIMARY INDEX idx6 ON `travel-sample`.inventory.airport;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(1) AS Cnt, SUBSTR(META().id,0,9) AS Meta_Group
-FROM `travel-sample`
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(1) AS Count, SUBSTR(META().id,0,9) AS Meta_Group
+FROM `travel-sample`.inventory.airport
 GROUP BY SUBSTR(META().id,0,9);</code></pre>
 </div>
 </div>
@@ -5842,18 +5779,19 @@ GROUP BY SUBSTR(META().id,0,9);</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
-    "Meta_Group": "airport_9",
-    "Number_of_Country": 121
+    "Count": 168,
+    "Meta_Group": "airport_4"
   },
   {
-    "Meta_Group": "airport_1",
-    "Number_of_Country": 187
+    "Count": 175,
+    "Meta_Group": "airport_5"
   },
   {
-    "Meta_Group": "airport_3",
-    "Number_of_Country": 482
+    "Count": 125,
+    "Meta_Group": "airport_6"
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5866,13 +5804,13 @@ GROUP BY SUBSTR(META().id,0,9);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (k0, k1);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>k0</em>, <em>k1</em>);
 
-SELECT k0, COUNT(k1)
-FROM named_keyspace_ref
-WHERE k0 IS NOT MISSING
-GROUP BY k0
-LIMIT n;</code></pre>
+SELECT <em>k0</em>, COUNT(<em>k1</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>k0</em> IS NOT MISSING
+GROUP BY <em>k0</em>
+LIMIT <em>n</em>;</pre>
 </div>
 </div>
 <div id="ex7" class="exampleblock">
@@ -5881,23 +5819,22 @@ LIMIT n;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx7 ON `travel-sample` (city, name)
-WHERE type = "landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx7 ON `travel-sample`.inventory.landmark
+(city, name);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT city AS City, COUNT(DISTINCT name) AS Landmark_Count
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE city IS NOT MISSING
-AND type = "landmark"
 GROUP BY city
 LIMIT 4;</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Explain Plan</div>
+<div class="title">Plan</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "plan": {
@@ -5908,15 +5845,13 @@ LIMIT 4;</code></pre>
         "~children": [
           {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((`travel-sample`.`city`))",
-              "cover ((`travel-sample`.`name`))",
-              "cover ((meta(`travel-sample`).`id`))",
-              "cover (count(distinct cover ((`travel-sample`.`name`))))"
+              "cover ((`landmark`.`city`))",
+              "cover ((`landmark`.`name`))",
+              "cover ((meta(`landmark`).`id`))",
+              "cover (count(DISTINCT cover ((`landmark`.`name`))))"
             ],
-            "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "landmark"
-            },
             "index": "idx7",
             "index_group_aggs": {
               "aggregates": [
@@ -5926,7 +5861,7 @@ LIMIT 4;</code></pre>
                     1
                   ],
                   "distinct": true,
-                  "expr": "cover ((`travel-sample`.`name`))",
+                  "expr": "cover ((`landmark`.`name`))",
                   "id": 3,
                   "keypos": 1
                 }
@@ -5940,23 +5875,29 @@ LIMIT 4;</code></pre>
                   "depends": [
                     0
                   ],
-                  "expr": "cover ((`travel-sample`.`city`))",
+                  "expr": "cover ((`landmark`.`city`))",
                   "id": 0,
                   "keypos": 0
                 }
               ]
             },
-            "index_id": "7852b5e2c07281f3",
+            "index_id": "7fe5ede3626e6d29",
             "index_projection": {
               "entry_keys": [
                 0,
                 3
               ]
             },
-            "keyspace": "travel-sample",
+            "keyspace": "landmark",
             "limit": "4", <i class="conum" data-value="1"></i><b>(1)</b>
             "namespace": "default",
-...</code></pre>
+...
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6000,38 +5941,40 @@ LIMIT 4;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (k0, k1);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>k0</em>, <em>k1</em>);
 
-SELECT k0, COUNT(k1)
-FROM named_keyspace_ref
-WHERE k0 IS NOT MISSING
-GROUP BY k0
-OFFSET n;</code></pre>
+SELECT <em>k0</em>, COUNT(k1)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>k0</em> IS NOT MISSING
+GROUP BY <em>k0</em>
+OFFSET <em>n</em>;</pre>
 </div>
 </div>
 <div id="ex8" class="exampleblock">
 <div class="title">Example 10. OFFSET with GROUP BY on a leading key</div>
 <div class="content">
+<div class="paragraph">
+<p>This example uses the <code>idx7</code> index defined previously:</p>
+</div>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx8 ON `travel-sample` (city, name)
-WHERE type = "landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx7 ON `travel-sample`.inventory.landmark
+(city, name);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT city AS City, COUNT(DISTINCT name) AS Landmark_Count
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE city IS NOT MISSING
-AND type = "landmark"
 GROUP BY city
 OFFSET 4;</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Explain Plan</div>
+<div class="title">Plan</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "plan": {
@@ -6042,15 +5985,13 @@ OFFSET 4;</code></pre>
         "~children": [
           {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((`travel-sample`.`city`))",
-              "cover ((`travel-sample`.`name`))",
-              "cover ((meta(`travel-sample`).`id`))",
-              "cover (count(distinct cover ((`travel-sample`.`name`))))"
+              "cover ((`landmark`.`city`))",
+              "cover ((`landmark`.`name`))",
+              "cover ((meta(`landmark`).`id`))",
+              "cover (count(DISTINCT cover ((`landmark`.`name`))))"
             ],
-            "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "landmark"
-            },
             "index": "idx7",
             "index_group_aggs": {
               "aggregates": [
@@ -6060,7 +6001,7 @@ OFFSET 4;</code></pre>
                     1
                   ],
                   "distinct": true,
-                  "expr": "cover ((`travel-sample`.`name`))",
+                  "expr": "cover ((`landmark`.`name`))",
                   "id": 3,
                   "keypos": 1
                 }
@@ -6074,24 +6015,32 @@ OFFSET 4;</code></pre>
                   "depends": [
                     0
                   ],
-                  "expr": "cover ((`travel-sample`.`city`))",
+                  "expr": "cover ((`landmark`.`city`))",
                   "id": 0,
                   "keypos": 0
                 }
               ]
             },
-            "index_id": "7852b5e2c07281f3",
+            "index_id": "7fe5ede3626e6d29",
             "index_projection": {
               "entry_keys": [
                 0,
                 3
               ]
             },
-            "keyspace": "travel-sample",
+            "keyspace": "landmark",
             "namespace": "default",
             "offset": "4", <i class="conum" data-value="1"></i><b>(1)</b>
+            "scope": "inventory",
             "spans": [
-...</code></pre>
+...
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6114,7 +6063,8 @@ OFFSET 4;</code></pre>
     "City": "Aberfeldy",
     "Landmark_Count": 2
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -6137,39 +6087,39 @@ To use Aggregate Pushdown, use the following syntax for index and queries:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a, b, c);</code></pre>
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q1</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT Aggregate_Function(c)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING;</code></pre>
+<pre>SELECT <em>aggregate_function</em>(<em>c</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q2</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(a)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING;</code></pre>
+<pre>SELECT SUM(<em>a</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q3</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(a), COUNT(a), MIN(a)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING;</code></pre>
+<pre>SELECT SUM(<em>a</em>), COUNT(<em>a</em>), MIN(<em>a</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q4</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(a), COUNT(b), MIN(c)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING;</code></pre>
+<pre>SELECT SUM(<em>a</em>), COUNT(<em>b</em>), MIN(<em>c</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING;</pre>
 </div>
 </div>
 <div id="ex9-q1" class="exampleblock">
@@ -6178,9 +6128,8 @@ WHERE a IS NOT MISSING;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx9
-ON `travel-sample`(ROUND(distance), stops, sourceairport)
-WHERE type = "airport";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx9 ON `travel-sample`.inventory.route
+(distance, stops, sourceairport);</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6189,9 +6138,8 @@ WHERE type = "airport";</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(ROUND(distance)) AS Total_Distance,
        SUM(stops) AS Total_Stops,
        COUNT(sourceairport) AS Total_Airports
-FROM `travel-sample`
-WHERE distance IS NOT MISSING
-AND type = "airport";</code></pre>
+FROM `travel-sample`.inventory.route
+WHERE distance IS NOT MISSING;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6215,7 +6163,7 @@ AND type = "airport";</code></pre>
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(ROUND(distance)) AS Total_Distance
-FROM `travel-sample`;</code></pre>
+FROM `travel-sample`.inventory.route;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6239,7 +6187,7 @@ FROM `travel-sample`;</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(ROUND(distance)) AS Total_Distance,
        COUNT(ROUND(distance)) AS Count_of_Distance,
        MIN(ROUND(distance)) AS Min_of_Distance
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE distance IS NOT MISSING;</code></pre>
 </div>
 </div>
@@ -6266,7 +6214,7 @@ WHERE distance IS NOT MISSING;</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(ROUND(distance)) AS Total_Distance,
        COUNT(stops) AS Count_of_Stops,
        MIN(sourceairport) AS Min_of_Airport
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE distance IS NOT MISSING;</code></pre>
 </div>
 </div>
@@ -6293,12 +6241,12 @@ To use Aggregate Pushdown, use the following syntax for the index and query stat
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a,b,c);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);
 
-SELECT Aggregate_Function1(Expression(c))
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a,b;</code></pre>
+SELECT <em>aggregate_function1</em>(<em>expression</em>(c))
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>, <em>b</em>;</pre>
 </div>
 </div>
 <div id="ex10" class="exampleblock">
@@ -6310,23 +6258,31 @@ GROUP BY a,b;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx10 ON `travel-sample`(country, state, ABS(ROUND(geo.lat)))
-WHERE type="landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx10 ON `travel-sample`.inventory.landmark
+(country, state, ABS(ROUND(geo.lat)));</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT country, state, SUM(ABS(ROUND(geo.lat))) AS SumAbs_Latitude
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
+USE INDEX (idx10) <i class="conum" data-value="1"></i><b>(1)</b>
 WHERE country IS NOT MISSING
-AND type = "landmark"
 GROUP BY country, state
 ORDER BY SumAbs_Latitude DESC;</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Specifies that the query must use <code>idx10</code> rather than the similar <code>idx1</code></td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
-<div class="title">Explain Plan</div>
+<div class="title">Plan</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "plan": {
@@ -6337,16 +6293,14 @@ ORDER BY SumAbs_Latitude DESC;</code></pre>
         "~children": [
           {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((`travel-sample`.`country`))",
-              "cover ((`travel-sample`.`state`))",
-              "cover (abs(round(((`travel-sample`.`geo`).`lat`))))",
-              "cover ((meta(`travel-sample`).`id`))",
-              "cover (sum(cover (abs(round(((`travel-sample`.`geo`).`lat`))))))"
+              "cover ((`landmark`.`country`))",
+              "cover ((`landmark`.`state`))",
+              "cover (abs(round(((`landmark`.`geo`).`lat`))))",
+              "cover ((meta(`landmark`).`id`))",
+              "cover (sum(cover (abs(round(((`landmark`.`geo`).`lat`))))))"
             ],
-            "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "landmark"
-            },
             "index": "idx10",
             "index_group_aggs": {
               "aggregates": [
@@ -6355,7 +6309,7 @@ ORDER BY SumAbs_Latitude DESC;</code></pre>
                   "depends": [
                     2
                   ],
-                  "expr": "cover (abs(round(((`travel-sample`.`geo`).`lat`))))",
+                  "expr": "cover (abs(round(((`landmark`.`geo`).`lat`))))",
                   "id": 4,
                   "keypos": 2
                 }
@@ -6370,7 +6324,7 @@ ORDER BY SumAbs_Latitude DESC;</code></pre>
                   "depends": [
                     0
                   ],
-                  "expr": "cover ((`travel-sample`.`country`))",
+                  "expr": "cover ((`landmark`.`country`))",
                   "id": 0,
                   "keypos": 0
                 },
@@ -6378,20 +6332,28 @@ ORDER BY SumAbs_Latitude DESC;</code></pre>
                   "depends": [
                     1
                   ],
-                  "expr": "cover ((`travel-sample`.`state`))",
+                  "expr": "cover ((`landmark`.`state`))",
                   "id": 1,
                   "keypos": 1
                 }
-...</code></pre>
+...
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The Explain Plan shows that Aggregates are executed by the indexer.
+<p>The query plan shows that aggregates are executed by the indexer.
 This is detailed in <a href="#docs-internal-guid-facfdbc0-bb3d-b00f-2ec0-6bee4921dabc">Table 3</a>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="../_images/n1ql-language-reference/GBAP_Ex10_VP.png" alt="GBAP Ex10 VP" width="70%">
+<img src="../_images/n1ql-language-reference/GBAP_Ex10_VP.png" alt="Query plan with 3 steps: IndexScan3 using idx10, Project with 3 terms, and Order by SumAbs_Latitude">
 </div>
 </div>
 <div class="listingblock">
@@ -6413,7 +6375,8 @@ This is detailed in <a href="#docs-internal-guid-facfdbc0-bb3d-b00f-2ec0-6bee492
     "country": "France",
     "state": "Île-de-France"
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -6429,13 +6392,13 @@ This is detailed in <a href="#docs-internal-guid-facfdbc0-bb3d-b00f-2ec0-6bee492
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a,b,c,d);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>);
 
-SELECT Aggregate_Function(a), Aggregate_Function(b),
-       Aggregate_Function(c), Aggregate_Function(d)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a;</code></pre>
+SELECT <em>aggregate_function</em>(<em>a</em>), <em>aggregate_function</em>(<em>b</em>),
+       <em>aggregate_function</em>(<em>c</em>), <em>aggregate_function</em>(<em>d</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>;</pre>
 </div>
 </div>
 <div class="exampleblock">
@@ -6444,8 +6407,8 @@ GROUP BY a;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx11 ON `travel-sample`(ROUND(geo.lat), geo.alt, city, ROUND(geo.lon))
-       WHERE type = "airport";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx11 ON `travel-sample`.inventory.airport
+(geo.lat, geo.alt, city, geo.lon);</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6455,9 +6418,8 @@ GROUP BY a;</code></pre>
        SUM(geo.alt) AS Sum_Alt,
        COUNT(city) AS Count_City,
        MAX(ROUND(geo.lon)) AS Max_Lon
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE geo.lat IS NOT MISSING
-AND type = "airport"
 GROUP BY (ROUND(geo.lat))
 ORDER BY (ROUND(geo.lat)) DESC;</code></pre>
 </div>
@@ -6484,7 +6446,8 @@ ORDER BY (ROUND(geo.lat)) DESC;</code></pre>
     "Min_Lat": 70,
     "Sum_Alt": 292
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -6521,25 +6484,25 @@ ORDER BY (ROUND(geo.lat)) DESC;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a, b, c);</code></pre>
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax A</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT a)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a;</code></pre>
+<pre>SELECT SUM(DISTINCT <em>a</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax B</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT a), SUM(DISTINCT b)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a, b;</code></pre>
+<pre>SELECT COUNT(DISTINCT <em>a</em>), SUM(DISTINCT <em>b</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>, <em>b</em>;</pre>
 </div>
 </div>
 <div id="ex12-1-a" class="exampleblock">
@@ -6548,17 +6511,16 @@ GROUP BY a, b;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_1 ON `travel-sample`(ROUND(geo.lat), ROUND(geo.lon), country)
-WHERE type = "airport";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_1 ON `travel-sample`.inventory.airport
+(geo.lat, geo.lon, country);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT ROUND(geo.lat)) AS Sum_Lat
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE geo.lat IS NOT MISSING
-AND type = "airport"
 GROUP BY ROUND(geo.lat);</code></pre>
 </div>
 </div>
@@ -6575,7 +6537,8 @@ GROUP BY ROUND(geo.lat);</code></pre>
   {
     "Sum_Lat": 71
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -6588,9 +6551,8 @@ GROUP BY ROUND(geo.lat);</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT ROUND(geo.lat)) AS Count_Lat,
        SUM(DISTINCT ROUND(geo.lon)) AS Sum_Lon
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE geo.lat IS NOT MISSING
-AND type = "airport"
 GROUP BY ROUND(geo.lat), ROUND(geo.lon);</code></pre>
 </div>
 </div>
@@ -6610,7 +6572,8 @@ GROUP BY ROUND(geo.lat), ROUND(geo.lon);</code></pre>
     "Count_Lat": 1,
     "Sum_Lon": -159
   },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -6623,25 +6586,25 @@ GROUP BY ROUND(geo.lat), ROUND(geo.lon);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a, b, c);</code></pre>
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax A</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT b)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a;</code></pre>
+<pre>SELECT SUM(DISTINCT <em>b</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>;</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Syntax B</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT c)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY a, b;</code></pre>
+<pre>SELECT COUNT(DISTINCT <em>c</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>a</em>, <em>b</em>;</pre>
 </div>
 </div>
 <div id="ex12-2-a" class="exampleblock">
@@ -6650,8 +6613,8 @@ GROUP BY a, b;</code></pre>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_2 ON `travel-sample`(country, ROUND(geo.lat), ROUND(geo.lon))
-WHERE type = "airport";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_2 ON `travel-sample`.inventory.airport
+(country, ROUND(geo.lat), ROUND(geo.lon));</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6659,9 +6622,8 @@ WHERE type = "airport";</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT country) AS Count_Country,
        SUM(DISTINCT ROUND(geo.lat)) AS Sum_Lat
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE country IS NOT MISSING
-AND type = "airport"
 GROUP BY country;</code></pre>
 </div>
 </div>
@@ -6675,11 +6637,11 @@ GROUP BY country;</code></pre>
   },
   {
     "Count_Country": 1,
-    "Sum_Lat": 2290
+    "Sum_Lat": 591
   },
   {
     "Count_Country": 1,
-    "Sum_Lat": 591
+    "Sum_Lat": 2290
   }
 ]</code></pre>
 </div>
@@ -6695,9 +6657,8 @@ GROUP BY country;</code></pre>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT country) AS Count_Country,
        SUM(DISTINCT ROUND(geo.lat)) AS Sum_Lat,
        COUNT(DISTINCT ROUND(geo.lon)) AS Count_Lon
-FROM `travel-sample`
+FROM `travel-sample`.inventory.airport
 WHERE country IS NOT MISSING
-AND type = "airport"
 GROUP BY country, ROUND(geo.lat);</code></pre>
 </div>
 </div>
@@ -6707,19 +6668,20 @@ GROUP BY country, ROUND(geo.lat);</code></pre>
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "Count_Country": 1,
-    "Count_Lon": 16,
-    "Sum_Lat": 483
+    "Count_Lon": 1,
+    "Sum_Lat": 18
   },
   {
     "Count_Country": 1,
-    "Count_Lon": 103,
-    "Sum_Lat": 2290
+    "Count_Lon": 1,
+    "Sum_Lat": 42
   },
   {
     "Count_Country": 1,
-    "Count_Lon": 13,
-    "Sum_Lat": 591
-  }
+    "Count_Lon": 9,
+    "Sum_Lat": 43
+  },
+...
 ]</code></pre>
 </div>
 </div>
@@ -6733,12 +6695,12 @@ GROUP BY country, ROUND(geo.lat);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a, b, c);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);
 
-SELECT a, COUNT(DISTINCT 1)
-FROM named_keyspace_ref
-WHERE a IS NOT MISSING
-GROUP BY b;</code></pre>
+SELECT <em>a</em>, COUNT(DISTINCT 1)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>a</em> IS NOT MISSING
+GROUP BY <em>b</em>;</pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -6759,8 +6721,8 @@ The results will be pre-aggregated if the <code>GROUP BY</code> key is non-leadi
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_3 ON `travel-sample`(country, geo.lat, geo.lon)
-WHERE type = "airport";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_3 ON `travel-sample`.inventory.airport
+(country, geo.lat, geo.lon);</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6768,10 +6730,9 @@ WHERE type = "airport";</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT MIN(country) AS Min_Country,
        COUNT(DISTINCT 1) AS Constant_Value,
-       MIN(ROUND(geo.lon)) AS Min_Logitude
-FROM `travel-sample`
+       MIN(ROUND(geo.lon)) AS Min_Longitude
+FROM `travel-sample`.inventory.airport
 WHERE country IS NOT MISSING
-AND type = "airport"
 GROUP BY geo.lat;</code></pre>
 </div>
 </div>
@@ -6782,19 +6743,20 @@ GROUP BY geo.lat;</code></pre>
   {
     "Constant_Value": 1,
     "Min_Country": "United States",
-    "Min_Longitude": -75
+    "Min_Longitude": -103
+  },
+  {
+    "Constant_Value": 1,
+    "Min_Country": "France",
+    "Min_Longitude": 3
   },
   {
     "Constant_Value": 1,
     "Min_Country": "United States",
-    "Min_Longitude": -169
+    "Min_Longitude": -105
   },
-  {
-    "Constant_Value": 1,
-    "Min_Country": "United States",
-    "Min_Longitude": -165
-  },
-...</code></pre>
+...
+]</code></pre>
 </div>
 </div>
 </div>
@@ -6807,28 +6769,28 @@ GROUP BY geo.lat;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (a, b, c);</code></pre>
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>a</em>, <em>b</em>, <em>c</em>);</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q1</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT a)
-FROM named_keyspace_ref; <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre>SELECT <em>aggregate_function</em>(DISTINCT <em>a</em>)
+FROM <em>named_keyspace_ref</em>; <i class="conum" data-value="1"></i><b>(1)</b></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q2</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT 1)
-FROM named_keyspace_ref; <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre>SELECT <em>aggregate_function</em>(DISTINCT 1)
+FROM <em>named_keyspace_ref</em>; <i class="conum" data-value="2"></i><b>(2)</b></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Q3</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT c)
-FROM named_keyspace_ref; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+<pre>SELECT <em>aggregate_function</em>(DISTINCT <em>c</em>)
+FROM <em>named_keyspace_ref</em>; <i class="conum" data-value="3"></i><b>(3)</b></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -6854,22 +6816,21 @@ FROM named_keyspace_ref; <i class="conum" data-value="3"></i><b>(3)</b></code></
 <div class="title">Example 22. DISTINCT aggregate&#8201;&#8212;&#8201;Case 4, Q1</div>
 <div class="content">
 <div class="paragraph">
-<p>A DISTINCT aggregate on the first key only or in a constant expression, where there is no GROUP BY clause.</p>
+<p>A DISTINCT aggregate on the first key only, where there is no GROUP BY clause.</p>
 </div>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_4 ON `travel-sample`(geo.alt, geo.lat, geo.lon)
-WHERE type = "airport";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx12_4 ON `travel-sample`.inventory.airport
+(geo.alt, geo.lat, geo.lon);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT ROUND(geo.alt)) AS Sum_Alt
-FROM `travel-sample`
-WHERE geo.alt IS NOT MISSING
-AND type = "airport";</code></pre>
+FROM `travel-sample`.inventory.airport
+WHERE geo.alt IS NOT MISSING;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6888,14 +6849,14 @@ AND type = "airport";</code></pre>
 <div class="title">Example 23. DISTINCT aggregate&#8201;&#8212;&#8201;Case 4, Q2</div>
 <div class="content">
 <div class="paragraph">
-<p>Another query with index <code>idx12_4</code>.</p>
+<p>A DISTINCT aggregate on a constant expression, where there is no GROUP BY clause.
+This query pushes the aggregation down to the indexer, but does not necessarily use the index <code>idx12_4</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT COUNT(DISTINCT 1) AS Const_expr
-FROM `travel-sample`
-WHERE type = "airport";</code></pre>
+FROM `travel-sample`.inventory.airport;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6914,15 +6875,15 @@ WHERE type = "airport";</code></pre>
 <div class="title">Example 24. DISTINCT aggregate&#8201;&#8212;&#8201;Case 4, Q3</div>
 <div class="content">
 <div class="paragraph">
-<p>Another query with index <code>idx12_4</code>, which will not push down the aggregate to the indexer.</p>
+<p>A DISTINCT aggregate on a non-leading key, where there is no GROUP BY clause.
+This query uses the index <code>idx12_4</code>, but does not push the aggregation down to the indexer.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT SUM(DISTINCT ROUND(geo.lon)) AS Sum_Lon
-FROM `travel-sample`
-WHERE geo.alt IS NOT MISSING
-AND type = "airport";</code></pre>
+FROM `travel-sample`.inventory.airport
+WHERE geo.alt IS NOT MISSING;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6946,35 +6907,35 @@ AND type = "airport";</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (k0, k1);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>k0</em>, <em>k1</em>);
 
-SELECT k0, COUNT(k1)
-FROM named_keyspace_ref
-WHERE k0 IS NOT MISSING
-GROUP BY k0
-HAVING Aggregate_Function(k1);</code></pre>
+SELECT <em>k0</em>, COUNT(<em>k1</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>k0</em> IS NOT MISSING
+GROUP BY <em>k0</em>
+HAVING <em>aggregate_function</em>(<em>k1</em>);</pre>
 </div>
 </div>
 <div id="ex13" class="exampleblock">
 <div class="title">Example 25. HAVING with an aggregate function inside</div>
 <div class="content">
 <div class="paragraph">
-<p>List the cities that have more than 180 landmarks.</p>
+<p>List the cities that have more than 180 landmarks.
+This example uses the <code>idx7</code> index defined previously:</p>
 </div>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx13 ON `travel-sample` (city, name)
-WHERE type = "landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx7 ON `travel-sample`.inventory.landmark
+(city, name);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT city AS City, COUNT(DISTINCT name) AS Landmark_Count
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE city IS NOT MISSING
-AND type = "landmark"
 GROUP BY city
 HAVING COUNT(DISTINCT name) &gt; 180;</code></pre>
 </div>
@@ -7012,36 +6973,36 @@ HAVING COUNT(DISTINCT name) &gt; 180;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_expr ON named_keyspace_ref (k0, k1);
+<pre>CREATE INDEX <em>idx_expr</em> ON <em>named_keyspace_ref</em> (<em>k0</em>, <em>k1</em>);
 
-SELECT k0, COUNT(k1)
-FROM named_keyspace_ref
-WHERE k0 IS NOT MISSING
-GROUP BY k0
-LETTING var_expr = Aggregate_Function(k1)
-HAVING var_expr;</code></pre>
+SELECT <em>k0</em>, COUNT(<em>k1</em>)
+FROM <em>named_keyspace_ref</em>
+WHERE <em>k0</em> IS NOT MISSING
+GROUP BY <em>k0</em>
+LETTING var_expr = <em>aggregate_function</em>(<em>k1</em>)
+HAVING var_expr;</pre>
 </div>
 </div>
 <div id="ex14" class="exampleblock">
 <div class="title">Example 26. LETTING with an aggregate function inside</div>
 <div class="content">
 <div class="paragraph">
-<p>List cities that have more than half of all landmarks.</p>
+<p>List cities that have more than half of all landmarks.
+This example uses the <code>idx7</code> index defined previously:</p>
 </div>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx14 ON `travel-sample` (city, name)
-WHERE type = "landmark";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx7 ON `travel-sample`.inventory.landmark
+(city, name);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT city AS City, COUNT(DISTINCT name) AS Landmark_Count
-FROM `travel-sample`
+FROM `travel-sample`.inventory.landmark
 WHERE city IS NOT MISSING
-AND type = "landmark"
 GROUP BY city
 LETTING MinimumThingsToSee = COUNT(DISTINCT name)
 HAVING MinimumThingsToSee &gt; 180;</code></pre>
@@ -7155,17 +7116,20 @@ HAVING MinimumThingsToSee &gt; 180;</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section_bpf_wjf_ycb"><a class="anchor" href="#section_bpf_wjf_ycb"></a>Appx 1 - Query Plan Fields</h2>
+<h2 id="section_bpf_wjf_ycb"><a class="anchor" href="#section_bpf_wjf_ycb"></a>Appendix: Query Plan Fields</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Consider the example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN SELECT type, COUNT(type)
-FROM `travel-sample`
-WHERE type IS NOT MISSING
-GROUP BY type;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_landmark_activity
+ON `travel-sample`.inventory.landmark(activity);
+
+EXPLAIN SELECT activity, COUNT(activity)
+FROM `travel-sample`.inventory.landmark
+WHERE activity IS NOT MISSING
+GROUP BY activity;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -7219,7 +7183,7 @@ The absence of this item means there is no Aggregate function.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Group expression or an aggregate expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`travel-sample`.`type`))"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`landmark`.`activity`))"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... id</code></p></td>
@@ -7265,7 +7229,7 @@ The absence of this item means there is no GROUP BY clause.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Single GROUP BY expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`travel-sample`.`type`))"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`landmark`.`activity`))"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... id</code></p></td>
@@ -7300,19 +7264,23 @@ The absence of this item means there is no GROUP BY clause.</p></td>
     "~children": [
       {
         "#operator": "IndexScan3",
+        "bucket": "travel-sample",
         "covers": [
-          "cover ((`travel-sample`.`name`))",
-          "cover ((meta(`travel-sample`).`id`))",
-          "cover (count(1))"
+          "cover ((`landmark`.`activity`))",
+          "cover ((meta(`landmark`).`id`))",
+          "cover (count(cover ((`landmark`.`activity`))))"
         ],
-        "index": "idx_name",
+        "index": "idx_landmark_activity",
         "index_group_aggs": { <i class="conum" data-value="1"></i><b>(1)</b>
           "aggregates": [
             {
               "aggregate": "COUNT",
-              "expr": "1",
+              "depends": [
+                0
+              ],
+              "expr": "cover ((`landmark`.`activity`))",
               "id": 2,
-              "keypos": -1
+              "keypos": 0
             }
           ],
           "depends": [
@@ -7323,21 +7291,22 @@ The absence of this item means there is no GROUP BY clause.</p></td>
               "depends": [
                 0
               ],
-              "expr": "cover ((`travel-sample`.`name`))",
+              "expr": "cover ((`landmark`.`activity`))",
               "id": 0,
               "keypos": 0
             }
           ]
         },
-        "index_id": "5dfe130db88b4ec",
+        "index_id": "ba98a2af8f4e0f4d",
         "index_projection": {
           "entry_keys": [
             0,
             2
           ]
         },
-        "keyspace": "travel-sample",
+        "keyspace": "landmark",
         "namespace": "default",
+        "scope": "inventory",
         "spans": [
           {
             "exact": true,
@@ -7360,22 +7329,19 @@ The absence of this item means there is no GROUP BY clause.</p></td>
               "#operator": "InitialProject",
               "result_terms": [
                 {
-                  "expr": "cover ((`travel-sample`.`name`))"
+                  "expr": "cover ((`landmark`.`activity`))"
                 },
                 {
-                  "expr": "cover (count(1))"
+                  "expr": "cover (count(cover ((`landmark`.`activity`))))"
                 }
               ]
-            },
-            {
-              "#operator": "FinalProject"
             }
           ]
         }
       }
     ]
   },
-  "text": "select name, count(1)\nfrom `travel-sample` use index (idx_name)\nwhere name is not missing\ngroup by name;"
+  "text": "SELECT activity, COUNT(activity)\nFROM `travel-sample`.inventory.landmark\nWHERE activity IS NOT MISSING\nGROUP BY activity;"
 }</code></pre>
 </div>
 </div>
@@ -7422,7 +7388,7 @@ The absence of this item means there is no Aggregate function.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Group expression or an aggregate expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round(cover (((`travel-sample`.
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>round(cover (((`landmark`.
 `geo`).`lat`)))</code></p></td>
 </tr>
 <tr>
@@ -7468,7 +7434,7 @@ The absence of this item means there is no GROUP BY clause.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Single GROUP BY expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>`travel-sample`.`country`</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>`landmark`.`country`</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... id</code></p></td>
@@ -7533,7 +7499,7 @@ The absence of this item means there is no Aggregate function.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Group expression or an aggregate expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"abs(round(cover (((`travel-sample`.`geo`).`lat`))))"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"abs(round(cover (((`landmark`.`geo`).`lat`))))"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... id</code></p></td>
@@ -7578,7 +7544,7 @@ The absence of this item means there is no GROUP BY clause.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Single GROUP BY expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`travel-sample`.`state`))"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`landmark`.`country`))"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... id</code></p></td>
@@ -7601,18 +7567,18 @@ The absence of this item means there is no GROUP BY clause.</p></td>
 </ul>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p>
-<p class="tableblock">(because it matches the 1st  key in the index expression)</p></td>
+<p class="tableblock">(because it matches the 1st key in the index expression)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... depends</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Index key position of a single GROUP BY expression, starting with 0.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p>
-<p class="tableblock">(because it&#8217;s the 1st GROUP BY key)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1</code></p>
+<p class="tableblock">(because it&#8217;s the 2nd GROUP BY key)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... expr</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Single GROUP BY expression.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`travel-sample`.`state`))"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"cover ((`landmark`.`state`))"</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>... id</code></p></td>

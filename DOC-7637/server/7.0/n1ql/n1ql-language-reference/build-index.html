@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4598,6 +4598,11 @@ If any of the indexes specified by BUILD INDEX have already been built, BUILD IN
 <div class="paragraph">
 <p>When building an index which has automatic index replicas, all of the replicas are also built as part of the BUILD INDEX statement, without having to manually specify them.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
 <h5 id="rbac-privileges" class="discrete">RBAC Privileges</h5>
 <div class="paragraph">
 <p>User executing the BUILD INDEX statement must have the <em>Query Manage Index</em> privilege granted on the keyspace/bucket.
@@ -4715,7 +4720,7 @@ The BUILD INDEX clause may contain a mixture of the different types of index ter
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`(ix1, ix2, ix3);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`.inventory.airline(ix1, ix2, ix3);</code></pre>
 </div>
 </div>
 </div>
@@ -4730,9 +4735,9 @@ The BUILD INDEX clause may contain a mixture of the different types of index ter
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`('ix1', 'ix2', 'ix3');
-BUILD INDEX ON `travel-sample`(['ix1', 'ix2', 'ix3']);
-BUILD INDEX ON `travel-sample`('ix1', ['ix2', 'ix3'], ['ix4']);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`.inventory.airline('ix1', 'ix2', 'ix3');
+BUILD INDEX ON `travel-sample`.inventory.airline(['ix1', 'ix2', 'ix3']);
+BUILD INDEX ON `travel-sample`.inventory.airline('ix1', ['ix2', 'ix3'], ['ix4']);</code></pre>
 </div>
 </div>
 </div>
@@ -4749,8 +4754,8 @@ BUILD INDEX ON `travel-sample`('ix1', ['ix2', 'ix3'], ['ix4']);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`([ix1, ix2, ix3]);
-BUILD INDEX ON `travel-sample`([ix1], [ix2, ix3]);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">BUILD INDEX ON `travel-sample`.inventory.airline([ix1, ix2, ix3]);
+BUILD INDEX ON `travel-sample`.inventory.airline([ix1], [ix2, ix3]);</code></pre>
 </div>
 </div>
 </td>
@@ -4808,24 +4813,30 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 <div class="title">Example 1. Create deferred indexes</div>
 <div class="content">
 <div class="paragraph">
-<p>Create a set of primary and secondary indexes on the <code>travel-sample</code> bucket with the <code>defer_build</code> option.</p>
+<p>Create a set of primary and secondary indexes in the <code>landmark</code> keyspace with the <code>defer_build</code> option.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country ON `travel-sample`.inventory.landmark(country) USING GSI
-   WITH {"defer_build":true};</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-2.n1ql">CREATE INDEX idx_landmark_name ON `travel-sample`.inventory.landmark(name) USING GSI
-   WITH {"defer_build":true};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country
+  ON `travel-sample`.inventory.landmark(country)
+  USING GSI
+  WITH {"defer_build":true};</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-3.n1ql">CREATE PRIMARY INDEX idx_landmark_primary ON `travel-sample`.inventory.landmark USING GSI
-    WITH {"defer_build":true};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-2.n1ql">CREATE INDEX idx_landmark_name
+  ON `travel-sample`.inventory.landmark(name)
+  USING GSI
+  WITH {"defer_build":true};</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-3.n1ql">CREATE PRIMARY INDEX idx_landmark_primary
+  ON `travel-sample`.inventory.landmark
+  USING GSI
+  WITH {"defer_build":true};</code></pre>
 </div>
 </div>
 </div>

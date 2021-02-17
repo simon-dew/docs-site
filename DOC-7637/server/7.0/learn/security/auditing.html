@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="../../n1ql/n1ql-language-reference/groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4639,31 +4639,39 @@ Note that different event-types generate different field-subsets.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"id"</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The unique identifier for the event.
-For example, <code>20480</code>, <code>8192</code>, <code>28672</code>.</p></td>
+For example, <code>20480</code>, <code>8192</code>, or <code>28672</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"name"</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The name of the event.
-For example, <code>"login success"</code>, <code>"User was deleted"</code>, <code>"A N1QL UPSERT statement was executed"</code>.</p></td>
+For example, <code>"login success"</code>, <code>"User was deleted"</code>, or <code>"A N1QL UPSERT statement was executed"</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"description"</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A description for the event.
-For example, <code>"Unsuccessful attempt to login to couchbase cluster"</code>, <code>"Node was removed from the cluster"</code>, <code>"Bucket was created"</code>.</p></td>
+For example, <code>"Unsuccessful attempt to login to couchbase cluster"</code>, <code>"Node was removed from the cluster"</code>, or <code>"Bucket was created"</code>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"filtering_permitted"</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the event is filterable.
-Can be <code>true</code> or <code>false</code>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"mandatory_fields"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"real_userid"</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Object</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contains key-value pairs that are mandatory for all events.
-These include the <code>"timestamp"</code> for the event (for example, <code>"2020-01-29T08:02:07.476-08:00"</code>: see <a href="http://www.w3.org/TR/NOTE-datetime" class="bare" target="_blank" rel="noopener">http://www.w3.org/TR/NOTE-datetime</a>), and the <code>"user"</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains key-value pairs for <code>"domain"</code> (specifying <code>"local"</code>; <code>"external"</code>; <code>"builtin"</code> &#8212; for the administrator who set up the cluster; or <code>"rejected"</code> &#8212; for a user who has been denied access); and <code>"user"</code> (specifying the id of the user who generated the event).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"local"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains key-value pairs for <code>"ip"</code> and incoming <code>"port"</code>, for the node on which the event was processed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"remote"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains key-value pairs for <code>"ip"</code> and outgoing <code>"port"</code>, for the node on which the event-request was dispatched.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"timestamp"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UTC timestamp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The UTC timestamp for the event&#8217;s generation (for example, <code>"2020-01-29T08:02:07.476-08:00"</code>: see <a href="http://www.w3.org/TR/NOTE-datetime" target="_blank" rel="noopener">Date and Time Formats</a>).</p></td>
 </tr>
 </tbody>
 </table>
@@ -4689,25 +4697,29 @@ For instructions on configuring the file&#8217;s <em>rotation time</em>, see <a 
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "description": "Successful login to couchbase cluster",
   "id": 8192,
+  "local": {
+    "ip": "10.144.210.101",
+    "port": 8091
+  },
   "name": "login success",
   "real_userid": {
-    "domain": "builtin",
-    "user": "Administrator"
+    "domain": "local",
+    "user": "testUser"
   },
   "remote": {
-    "ip": "10.143.192.1",
-    "port": 51410
+    "ip": "10.144.210.1",
+    "port": 53322
   },
   "roles": [
     "admin"
   ],
-  "sessionid": "483a1e627e0ca710bdb3c6f5e8ac0177",
-  "timestamp": "2020-02-04T07:11:09.856-08:00"
+  "sessionid": "ba2760cee506d0293a8b4a0bf83687b807329667",
+  "timestamp": "2021-02-09T14:44:17.938Z"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In this example, a user named <code>Administrator</code> has successfully logged into a Couchbase cluster using the domain IP address <code>10.143.192.1</code>.</p>
+<p>In this example, a user named <code>testUser</code> has successfully logged into a Couchbase cluster-node whose IP address is <code>10.144.210.101</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4720,21 +4732,25 @@ For instructions on configuring the file&#8217;s <em>rotation time</em>, see <a 
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "description": "Unsuccessful attempt to login to couchbase cluster",
   "id": 8193,
+  "local": {
+    "ip": "10.144.210.101",
+    "port": 8091
+  },
   "name": "login failure",
   "real_userid": {
     "domain": "rejected",
-    "user": "Administrator"
+    "user": "newUser"
   },
   "remote": {
-    "ip": "10.143.192.1",
-    "port": 51451
+    "ip": "10.144.210.1",
+    "port": 53348
   },
-  "timestamp": "2020-02-04T07:15:34.098-08:00"
+  "timestamp": "2021-02-09T14:45:34.934Z"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that a user named <code>Administrator</code> incurred an <code>Unsuccessful attempt to login to couchbase cluster</code> on <code>2020-02-04</code> at <code>07:15:34</code>.</p>
+<p>This record indicates that a user named <code>newUser</code> incurred an <code>Unsuccessful attempt to login to couchbase cluster</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4748,15 +4764,23 @@ For instructions on configuring the file&#8217;s <em>rotation time</em>, see <a 
   "bucket_name": "testBucket",
   "description": "Bucket was created",
   "id": 8201,
+  "local": {
+    "ip": "10.144.210.101",
+    "port": 8091
+  },
   "name": "create bucket",
   "props": {
     "compression_mode": "passive",
     "conflict_resolution_type": "seqno",
+    "durability_min_level": "none",
     "eviction_policy": "value_only",
     "flush_enabled": false,
     "max_ttl": 0,
     "num_replicas": 1,
     "num_threads": 3,
+    "pitr_enabled": false,
+    "pitr_granularity": 600,
+    "pitr_max_history_age": 86400,
     "purge_interval": "undefined",
     "ram_quota": 268435456,
     "replica_index": false,
@@ -4767,17 +4791,17 @@ For instructions on configuring the file&#8217;s <em>rotation time</em>, see <a 
     "user": "Administrator"
   },
   "remote": {
-    "ip": "10.143.192.1",
-    "port": 51463
+    "ip": "10.144.210.1",
+    "port": 53374
   },
-  "sessionid": "90ba9344e7fbf0d39ae85deee00a0274",
-  "timestamp": "2020-02-04T07:16:51.804-08:00",
+  "sessionid": "eb1411eaa5eb041ea07fb86ffe93a94a59f8e8e2",
+  "timestamp": "2021-02-09T14:47:06.257Z",
   "type": "membase"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that a <code>Bucket was created</code> on <code>2020-02-04</code> at <code>07:16:51</code>; that the bucket was named <code>testBucket</code>; and that its eviction-policy was defined as <code>value_only</code>.
+<p>This record indicates that a <code>Bucket was created</code>; that the bucket was named <code>testBucket</code>; and that its eviction-policy was defined as <code>value_only</code>.
 The bucket was created by the user <code>Administrator</code>.</p>
 </div>
 </div>
@@ -4792,12 +4816,17 @@ The bucket was created by the user <code>Administrator</code>.</p>
   "bucket_name": "testBucket",
   "description": "Bucket was modified",
   "id": 8202,
+  "local": {
+    "ip": "10.144.210.101",
+    "port": 8091
+  },
   "name": "modify bucket",
   "props": {
     "compression_mode": "passive",
+    "durability_min_level": "none",
     "eviction_policy": "value_only",
     "flush_enabled": false,
-    "max_ttl": 10000000,
+    "max_ttl": 100000,
     "num_replicas": 1,
     "num_threads": 3,
     "purge_interval": "undefined",
@@ -4809,18 +4838,18 @@ The bucket was created by the user <code>Administrator</code>.</p>
     "user": "Administrator"
   },
   "remote": {
-    "ip": "10.143.192.1",
-    "port": 51498
+    "ip": "10.144.210.1",
+    "port": 53397
   },
-  "sessionid": "90ba9344e7fbf0d39ae85deee00a0274",
-  "timestamp": "2020-02-04T07:18:59.669-08:00",
+  "sessionid": "eb1411eaa5eb041ea07fb86ffe93a94a59f8e8e2",
+  "timestamp": "2021-02-09T14:48:14.653Z",
   "type": "membase"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that the bucket <code>testBucket</code> was modified on <code>2020-02-04</code> at <code>07:18:59</code>.
-The <code>max_ttl</code> is now represented as <code>10000000</code> seconds.</p>
+<p>This record indicates that the bucket <code>testBucket</code> was modified.
+The <code>max_ttl</code> is now represented as <code>100000</code> seconds.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4832,12 +4861,16 @@ The <code>max_ttl</code> is now represented as <code>10000000</code> seconds.</p
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "description": "User was added or updated",
-  "full_name": "Test User",
+  "full_name": "",
   "groups": [],
   "id": 8232,
   "identity": {
     "domain": "local",
-    "user": "testUser"
+    "user": "clusterUser"
+  },
+  "local": {
+    "ip": "10.144.210.101",
+    "port": 8091
   },
   "name": "set user",
   "real_userid": {
@@ -4846,19 +4879,19 @@ The <code>max_ttl</code> is now represented as <code>10000000</code> seconds.</p
   },
   "reason": "added",
   "remote": {
-    "ip": "10.143.192.1",
-    "port": 51514
+    "ip": "10.144.210.1",
+    "port": 53444
   },
   "roles": [
-    "bucket_admin[testBucket]"
+    "cluster_admin"
   ],
-  "sessionid": "82d1c8837f0f7cbafefe3b5c6722a016",
-  "timestamp": "2020-02-04T07:21:01.612-08:00"
+  "sessionid": "eb1411eaa5eb041ea07fb86ffe93a94a59f8e8e2",
+  "timestamp": "2021-02-09T14:50:38.256Z"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that a user named <code>testUser</code> was created by <code>Administrator</code> on <code>2020-02-04</code> at <code>07:21:01</code>; and that the user was given the role of <code>bucket_admin</code> for the bucket <code>testBucket</code>.</p>
+<p>This record indicates that a user named <code>clusterUser</code> was created by <code>Administrator</code>; and that the user was given the role of <code>cluster_admin</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -4871,18 +4904,26 @@ The <code>max_ttl</code> is now represented as <code>10000000</code> seconds.</p
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "description": "FTS index was created/Updated",
   "id": 24577,
-  "index_name": "travelSampleIndex",
+  "index_name": "testIndex",
+  "local": {
+    "ip": "127.0.0.1",
+    "port": "8094"
+  },
   "name": "Create/Update index",
   "real_userid": {
     "domain": "builtin",
     "user": "Administrator"
   },
-  "timestamp": "2020-02-04T07:23:48.482-08:00"
+  "remote": {
+    "ip": "127.0.0.1",
+    "port": "39575"
+  },
+  "timestamp": "2021-02-09T15:20:49.953Z"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This record indicates that an <code>FTS</code> index named <code>travelSampleIndex</code> was created or updated on <code>2020-02-04</code> at <code>07:23:48</code>.</p>
+<p>This record indicates that an <code>FTS</code> index named <code>testIndex</code> was created or updated.</p>
 </div>
 </div>
 </div>

@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4871,7 +4871,7 @@ The partition ID is then used to identify the partition in which the document&#8
 </div>
 <div class="paragraph">
 <p>The partition keys should be immutable, that is, its values shouldn&#8217;t change once the document is created.
-For example, in the <code>travel-sample</code> keyspace, the field named <code>type</code> almost never changes, and is therefore a good candidate for partition key.
+For example, in the <code>landmark</code> keyspace, the field named <code>activity</code> almost never changes, and is therefore a good candidate for partition key.
 If the partition keys have changed, then the corresponding document should be deleted and recreated with the new partition keys.</p>
 </div>
 <div class="paragraph">
@@ -4895,55 +4895,64 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The document key.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The document key.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(country, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.airline
+(country, name, id)
  PARTITION BY HASH(META().id);</code></pre>
 </div>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Any single or multiple immutable field in the defined index.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Any single or multiple immutable field in the defined index.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(sourceairport,destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH(sourceairport,destinationairport);</code></pre>
 </div>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Any single or multiple immutable non-leading field in the defined index.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Any single or multiple immutable non-leading field in the defined index.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(airline, sourceairport, destinationairport, stops, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.route
+(airline, sourceairport, destinationairport, stops, id)
  PARTITION BY HASH(sourceairport, destinationairport);</code></pre>
 </div>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Any single or multiple immutable document field not defined in the index.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Any single or multiple immutable document field not defined in the index.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample` (sourceairport, stops, airline, id)
- PARTITION BY HASH (sourceairport, destinationairport)</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.route
+(sourceairport, stops, airline, id)
+ PARTITION BY HASH (sourceairport, destinationairport);</code></pre>
 </div>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A function on the index fields, such as <code>LOWER(), LEAST(), GREATEST(), SUBSTR()</code>, etc.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A function on the index fields, such as <code>LOWER(), LEAST(), GREATEST(), SUBSTR()</code>, etc.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
- PARTITION BY HASH(LOWER(sourceairport), LOWER(destinationairport));</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.route
+(LOWER(sourceairport), LOWER(destinationairport),
+ stops, airline, id)
+ PARTITION BY HASH (LOWER(sourceairport),
+                    LOWER(destinationairport));</code></pre>
 </div>
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A complex expression on the index fields combining functions and operators.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A complex expression on the index fields combining functions and operators.</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(POSITION(meta().id,'__')+2, destinationairport, sourceairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.route
+(POSITION(meta().id,'__')+2, destinationairport,
+ sourceairport, stops, airline, id)
  PARTITION BY HASH(POSITION(meta().id,'__')+2));</code></pre>
 </div>
 </div></div></td>
@@ -4963,13 +4972,13 @@ Partition keys do not support N1QL array expressions, e.g. <code>ARRAY</code> ..
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe1 ON `travel-sample`(country, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe1 ON `travel-sample`.inventory.airline (country, name, id)
  PARTITION BY HASH(META().id);
 
-SELECT airline, id
-FROM `travel-sample`
+SELECT name, id
+FROM `travel-sample`.inventory.airline
 WHERE country="United States"
-ORDER BY airline;</code></pre>
+ORDER BY name;</code></pre>
 </div>
 </div>
 </div>
@@ -4997,11 +5006,12 @@ In this case, the application can maintain a low query latency while allowing th
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe2 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe2 ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport="SFO" AND
 destinationairport="JFK" AND
 stops == 0
@@ -5023,12 +5033,13 @@ The following example scans a single partition with a given pair of <code>source
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe3 ON `travel-sample` (airline, sourceairport, destinationairport, stops, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe3 ON `travel-sample`.inventory.route
+(airline, sourceairport, destinationairport, stops, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
-FROM `travel-sample`
-WHERE airline in ["UA", "AA"] AND
+FROM `travel-sample`.inventory.route
+WHERE airline IN ["UA", "AA"] AND
 sourceairport="SFO" AND
 destinationairport="JFK" AND
 stops == 0
@@ -5048,11 +5059,12 @@ ORDER BY airline;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe4 ON `travel-sample` (LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe4 ON `travel-sample`.inventory.route
+(LOWER(sourceairport), LOWER(destinationairport), stops, airline, id)
  PARTITION BY HASH (LOWER(sourceairport), LOWER(destinationairport))
 
 SELECT airline, id
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE LOWER(sourceairport)="sfo" AND
 LOWER(destinationairport)="jfk" AND
 stops == 0
@@ -5073,12 +5085,13 @@ The following example scans at most three partitions with <code>sourceairport "S
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe5 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe5 ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
-FROM `travel-sample`
-WHERE sourceairport in ["SFO", "SJC", "OAK"] AND
+FROM `travel-sample`.inventory.route
+WHERE sourceairport IN ["SFO", "SJC", "OAK"] AND
 destinationairport="JFK" AND
 stops == 0
 ORDER BY airline;</code></pre>
@@ -5099,11 +5112,12 @@ Consequently, this query will gather qualifying index keys from all partitions.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe6 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe6 ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport="SFO" AND
 stops == 0
 ORDER BY airline;</code></pre>
@@ -5122,13 +5136,14 @@ ORDER BY airline;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe7 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe7 ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport="SFO" AND
-destinationport is not missing AND
+destinationairport is not missing AND
 stops == 0
 ORDER BY airline;</code></pre>
 </div>
@@ -5147,11 +5162,12 @@ The following index always gathers keys from all partitions as <code>destination
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe8 ON `travel-sample` (sourceairport, stops, airline, id)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe8 ON `travel-sample`.inventory.route
+(sourceairport, stops, airline, id)
  PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT airline, id
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport="SFO" AND
 destinationairport="JFK"
 ORDER BY airline;</code></pre>
@@ -5167,7 +5183,8 @@ For example, for the index in the following example, the partitions containing t
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`(airline, destinationairport, sourceairport)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx ON `travel-sample`.inventory.route
+(airline, destinationairport, sourceairport)
  PARTITION BY HASH(airline);</code></pre>
 </div>
 </div>
@@ -5185,7 +5202,8 @@ It tries to even out resource utilization across the index service nodes by movi
 <div class="paragraph">
 <p>As with a range query, when an index is partitioned by document key, an aggregate query can gather the qualifying index keys from all the partitions before performing aggregation in the query engine.
 Whenever aggregate pushdown optimization is allowed, the query engine will push down "partial aggregate" calculation to each partition.
-The query engine then computes the final aggregate result from the partial aggregates across all the partitions.</p>
+The query engine then computes the final aggregate result from the partial aggregates across all the partitions.
+For more details on aggregate query optimization, refer to <a href="groupby-aggregate-performance.html" class="page">Group By and Aggregate Performance</a>.</p>
 </div>
 <div class="exampleblock">
 <div class="title">Example 9. Create a partitioned index with partition key being document key</div>
@@ -5195,13 +5213,13 @@ The query engine then computes the final aggregate result from the partial aggre
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe9 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
- PARTITION BY HASH (meta().id) where type="route";
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe9 ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
+ PARTITION BY HASH (meta().id);
 
 SELECT sourceairport, destinationairport, SUM(ARRAY_COUNT(schedule))
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport = "SFO"
-AND type = "route"
 GROUP BY sourceairport, destinationairport;</code></pre>
 </div>
 </div>
@@ -5234,13 +5252,13 @@ To enable a full aggregate computation, the index must be created with the follo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe10 ON `travel-sample` (sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
- PARTITION BY HASH (sourceairport, destinationairport) where type="route";
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe10 ON `travel-sample`.inventory.route
+(sourceairport, destinationairport, stops, airline, id, ARRAY_COUNT(schedule))
+ PARTITION BY HASH (sourceairport, destinationairport);
 
 SELECT sourceairport, destinationairport, SUM(ARRAY_COUNT(schedule))
-FROM `travel-sample`
+FROM `travel-sample`.inventory.route
 WHERE sourceairport = "SFO"
-AND type = "route"
 GROUP BY sourceairport, destinationairport;</code></pre>
 </div>
 </div>
@@ -5261,8 +5279,9 @@ The Administrator can override the number of partitions at index creation time.<
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe11 ON `travel-sample`(airline, sourceairport, destinationairport)
- PARTITION BY HASH(airline) WITH {"num_partition":16};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe11 ON `travel-sample`.inventory.route
+(airline, sourceairport, destinationairport)
+ PARTITION BY HASH(airline) WITH {"num_partition": 16};</code></pre>
 </div>
 </div>
 </div>
@@ -5282,12 +5301,14 @@ If the index has a replica, then the replica partition will not be placed onto t
 <p>Alternatively, you can specify the node list to restrict the set of nodes available for placement by using a command similar to the following example.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 12. Create a partitioned index on specific ports of a node</div>
+<div class="title">Example 12. Create a partitioned index on specific nodes</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe12 ON `travel-sample`(airline, sourceairport, destinationairport)
- PARTITION BY KEY(airline) WITH {"nodes":["127.0.0.1:9001", "127.0.0.1:9002"]};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe12 ON `travel-sample`.inventory.route
+(airline, sourceairport, destinationairport)
+ PARTITION BY HASH(airline)
+ WITH {"nodes": ["192.168.10.10:8091", "192.168.10.11:8091"]};</code></pre>
 </div>
 </div>
 </div>
@@ -5366,8 +5387,9 @@ Non-array fields will be ignored.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe13 ON `travel-sample`(airline, sourceairport, destinationairport)
- PARTITION BY HASH (airline) WITH {"secKeySize":20, "docKeySize":20};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe13 ON `travel-sample`.inventory.route
+(airline, sourceairport, destinationairport)
+ PARTITION BY HASH (airline) WITH {"secKeySize": 20, "docKeySize": 20};</code></pre>
 </div>
 </div>
 </div>
@@ -5377,8 +5399,9 @@ Non-array fields will be ignored.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe14 ON `travel-sample`(airline, sourceairport, schedule)
- PARTITION BY HASH (airline) WITH {"secKeySize":20, "docKeySize":20, "arrSize": 100};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe14 ON `travel-sample`.inventory.route
+(airline, sourceairport, schedule)
+ PARTITION BY HASH (airline) WITH {"secKeySize": 20, "docKeySize": 20, "arrSize": 100};</code></pre>
 </div>
 </div>
 </div>
@@ -5401,8 +5424,9 @@ Therefore, index replicas can also be used to load rebalancing of query requests
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe15 ON `travel-sample`(airline, sourceairport, schedule)
- PARTITION BY HASH (airline) WITH {"num_replica":2};</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE INDEX idx_pe15 ON `travel-sample`.inventory.route
+(airline, sourceairport, schedule)
+ PARTITION BY HASH (airline) WITH {"num_replica": 2};</code></pre>
 </div>
 </div>
 </div>

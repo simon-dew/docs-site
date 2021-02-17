@@ -950,7 +950,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Delete a Bucket</a>
+<a class="nav-link" href="../../manage/manage-buckets/delete-bucket.html">Drop a Bucket</a>
 </span>
 </li>
 </ul>
@@ -1479,7 +1479,7 @@ server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="groupby-aggregate-performance.html">Group By and Aggregate Performance</a>
+<a class="nav-link" href="groupby-aggregate-performance.html">Grouping and Aggregate Pushdown</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -2654,7 +2654,7 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="../../install/install-ports.html">Network and Firewall Requirements</a>
+<a class="nav-link" href="../../install/install-ports.html">Couchbase Server Ports</a>
 </span>
 </li>
 </ul>
@@ -4892,11 +4892,6 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 </dd>
 </dl>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>WITH { "nodes": [ "<em>node_name</em>" ], "defer_build": <em>boolean</em> }</pre>
-</div>
-</div>
 <div class="paragraph">
 <p>See the <a href="createindex.html" class="page">CREATE INDEX</a> statement for more details on the syntax.</p>
 </div>
@@ -4920,7 +4915,7 @@ The <code>USING GSI</code> keywords are optional and may be omitted.</p>
 <p>Couchbase Server 4.6.2 and later allows arbitrary variable names in array index selection.
 That is, a SELECT query or DML statement that needs to use the array index can use different variable names in the query from those used in the array index definition.
 In earlier releases, the variable names must exactly match.
-See the <a href="#4.5@n1ql-language-reference/indexing-arrays.adoc" class="page unresolved">Couchbase Server 4.5 documentation</a> for details.</p>
+See the <a href="https://docs-archive.couchbase.com/server/4.5/n1ql/n1ql-language-reference/indexing-arrays.html">Couchbase Server 4.5 documentation</a> for details.</p>
 </div>
 </td>
 </tr>
@@ -4931,9 +4926,9 @@ See the <a href="#4.5@n1ql-language-reference/indexing-arrays.adoc" class="page 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>DISTINCT ARRAY f(x) FOR x IN expr1 END; <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DISTINCT ARRAY f(x) FOR x IN expr1 END; <i class="conum" data-value="1"></i><b>(1)</b>
 
-DISTINCT ARRAY f(x) FOR x WITHIN expr1 END; <i class="conum" data-value="2"></i><b>(2)</b></pre>
+DISTINCT ARRAY f(x) FOR x WITHIN expr1 END; <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4941,9 +4936,9 @@ DISTINCT ARRAY f(x) FOR x WITHIN expr1 END; <i class="conum" data-value="2"></i>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>ANY x IN expr2 SATISFIES g(x) END; <i class="conum" data-value="3"></i><b>(3)</b>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ANY x IN expr2 SATISFIES g(x) END; <i class="conum" data-value="3"></i><b>(3)</b>
 
-ANY x WITHIN expr2 SATISFIES g(x) END <i class="conum" data-value="4"></i><b>(4)</b></pre>
+ANY x WITHIN expr2 SATISFIES g(x) END <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4990,7 +4985,7 @@ They can efficiently index and query recursive trees of arbitrary depth.
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The following examples use the <a href="../../manage/manage-settings/install-sample-buckets.html" class="page">travel-sample</a> keyspace that is shipped with Couchbase Server.</p>
+<p>The following examples use the <a href="../../manage/manage-settings/install-sample-buckets.html" class="page">travel-sample</a> bucket that is shipped with Couchbase Server.</p>
 </div>
 <div class="exampleblock">
 <div class="title">Example 1. Indexing all DISTINCT elements in an array</div>
@@ -4999,13 +4994,14 @@ They can efficiently index and query recursive trees of arbitrary depth.
 <div class="title">C1: Create an index on all schedules</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched
-ON `travel-sample` ( DISTINCT ARRAY v.flight FOR v IN schedule END );</code></pre>
+ON `travel-sample`.inventory.route
+( DISTINCT ARRAY v.flight FOR v IN schedule END );</code></pre>
 </div>
 </div>
 <div id="Q1" class="listingblock">
 <div class="title">Q1: Find the list of scheduled 'UA' flights</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`.inventory.route
 WHERE ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 </div>
 </div>
@@ -5015,18 +5011,19 @@ WHERE ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 <div class="title">Example 2. Partial index (with WHERE clause) of individual attributes from selected elements (using WHEN clause) of an array</div>
 <div class="content">
 <div id="C2" class="listingblock">
-<div class="title">C2: Create an index on flight IDs scheduled in the first 4 days of the week</div>
+<div class="title">C2: Create an index on flights from San Francisco scheduled in the first 4 days of the week</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_flight_day
-ON `travel-sample` ( ALL ARRAY v.flight FOR v IN schedule WHEN v.day &lt; 4 END )
-WHERE type = "route" ;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_flight_sfo
+ON `travel-sample`.inventory.route
+( ALL ARRAY v.flight FOR v IN schedule WHEN v.day &lt; 4 END )
+WHERE sourceairport = "SFO";</code></pre>
 </div>
 </div>
 <div id="Q2" class="listingblock">
 <div class="title">Q2: Find the list of scheduled 'UA' flights on day 1</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`
-WHERE type = "route" <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`.inventory.route
+WHERE sourceairport = "SFO" <i class="conum" data-value="1"></i><b>(1)</b>
 AND ANY v IN schedule SATISFIES (v.flight LIKE 'UA%') <i class="conum" data-value="2"></i><b>(2)</b>
 AND (v.day=1) END; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
@@ -5038,7 +5035,7 @@ AND (v.day=1) END; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <a href="#Q2">Q2</a> predicate <code>type = "route"</code> matches that of the partial index WHERE clause.</td>
+<td>The <a href="#Q2">Q2</a> predicate <code>sourceairport = "SFO"</code> matches that of the partial index WHERE clause.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -5046,7 +5043,7 @@ AND (v.day=1) END; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The ANY-SATISFIES condition <code>v.day=1</code> in <a href="#Q2">Q2</a> is sargable to that in the index definition WHEN clause <code>v.day&lt;4</code>.</td>
+<td>The ANY-SATISFIES condition <code>v.day=1</code> in <a href="#Q2">Q2</a> is sargable to that in the index definition WHEN clause <code>v.day &lt; 4</code>.</td>
 </tr>
 </table>
 </div>
@@ -5059,17 +5056,15 @@ AND (v.day=1) END; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 <div class="title">C3: Create an index on scheduled flight IDs and number of stops</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_flight_stops
-ON `travel-sample`
-    ( stops, DISTINCT ARRAY v.flight FOR v IN schedule END )
-WHERE type = "route" ;</code></pre>
+ON `travel-sample`.inventory.route
+    ( stops, DISTINCT ARRAY v.flight FOR v IN schedule END );</code></pre>
 </div>
 </div>
 <div id="Q3" class="listingblock">
 <div class="title">Q3: Find the list of scheduled 'FL' flights that have one or more stops</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`
-WHERE type = "route"
-AND stops &gt;=1
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`.inventory.route
+WHERE stops &gt;=1
 AND ANY v IN schedule SATISFIES v.flight LIKE 'FL%' END;</code></pre>
 </div>
 </div>
@@ -5084,24 +5079,22 @@ For example,</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE `travel-sample`
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">UPDATE `travel-sample`.inventory.route
 SET schedule[0] = {"day" : 7, "special_flights" :
                [ {"flight" : "AI444", "utc" : "4:44:44"},
                  {"flight" : "AI333", "utc" : "3:33:33"}
                ] }
-WHERE type = "route"
-AND destinationairport = "CDG" AND sourceairport = "TLV";</code></pre>
+WHERE destinationairport = "CDG" AND sourceairport = "TLV";</code></pre>
 </div>
 </div>
 <div id="C4" class="listingblock">
 <div class="title">C4: Create a partial index on a nested array <code class="var">special_flights</code></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_nested ON `travel-sample`
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_nested ON `travel-sample`.inventory.route
     (DISTINCT ARRAY
         (DISTINCT ARRAY y.flight <i class="conum" data-value="1"></i><b>(1)</b>
         FOR y IN x.special_flights END)
-    FOR x IN schedule END)
-WHERE type = "route";</code></pre>
+    FOR x IN schedule END);</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -5115,22 +5108,26 @@ WHERE type = "route";</code></pre>
 <div id="Q4" class="listingblock">
 <div class="title">Q4: Use nested ANY operator to use the index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT count(*) FROM `travel-sample`
-WHERE type = "route"
-AND ANY x in schedule SATISFIES
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT count(*) FROM `travel-sample`.inventory.route
+WHERE ANY x in schedule SATISFIES
     (ANY y in x.special_flights SATISFIES y.flight IS NOT NULL END)
 END;</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>This query returns 3 results, as there are 3 routes with special flights.</p>
+</div>
 <div id="Q4A" class="listingblock">
 <div class="title">Q4A: Use UNNEST operators to use the index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT count(*) FROM `travel-sample`
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT count(*) FROM `travel-sample`.inventory.route
 UNNEST schedule AS x
 UNNEST x.special_flights AS y
-WHERE type = "route"
-AND y.flight IS NOT NULL;</code></pre>
+WHERE y.flight IS NOT NULL;</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>This query returns 6 results, as there are 3 routes with 2 special flights each.</p>
 </div>
 </div>
 </div>
@@ -5140,17 +5137,15 @@ AND y.flight IS NOT NULL;</code></pre>
 <div id="C5" class="listingblock">
 <div class="title">C5: Create an index on <code class="var">flight</code> and <code class="var">day</code> fields in <code class="var">schedule</code></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_flight_day ON `travel-sample`
-    ( DISTINCT ARRAY [v.flight, v.day] FOR v IN schedule END)
-WHERE type = "route" ;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_flight_day ON `travel-sample`.inventory.route
+    (DISTINCT ARRAY [v.flight, v.day] FOR v IN schedule END);</code></pre>
 </div>
 </div>
 <div id="Q5" class="listingblock">
 <div class="title">Q5: Find the list of scheduled 'US681' flights on day 2</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT meta().id FROM `travel-sample`
-WHERE type = "route"
-AND ANY v in schedule SATISFIES [v.flight, v.day] = ["US681", 2] END;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT meta().id FROM `travel-sample`.inventory.route
+WHERE ANY v in schedule SATISFIES [v.flight, v.day] = ["US681", 2] END;</code></pre>
 </div>
 </div>
 </div>
@@ -5162,16 +5157,14 @@ AND ANY v in schedule SATISFIES [v.flight, v.day] = ["US681", 2] END;</code></pr
 <div class="title">C6: Create an index on all schedules using simplified array index syntax</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_simple
-ON `travel-sample` (ALL schedule)
-WHERE type = "route";</code></pre>
+ON `travel-sample`.inventory.route (ALL schedule);</code></pre>
 </div>
 </div>
 <div id="Q6" class="listingblock">
 <div class="title">Q6: Find details of all route documents matching a specific schedule</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`
-WHERE type = "route"
-AND ANY v IN schedule
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`.inventory.route
+WHERE ANY v IN schedule
 SATISFIES v = {"day":2, "flight": "US681", "utc": "19:20:00"} END; <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
@@ -5186,10 +5179,9 @@ SATISFIES v = {"day":2, "flight": "US681", "utc": "19:20:00"} END; <i class="con
 <div id="Q6A" class="listingblock">
 <div class="title">Q6A: Find details of all route documents matching a specific schedule</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample` t
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT * FROM `travel-sample`.inventory.route t
 UNNEST schedule sch
-WHERE t.type = "route"
-AND sch = {"day":2, "flight": "US681", "utc": "19:20:00"};</code></pre>
+WHERE sch = {"day":2, "flight": "US681", "utc": "19:20:00"};</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5203,29 +5195,28 @@ AND sch = {"day":2, "flight": "US681", "utc": "19:20:00"};</code></pre>
 <h2 id="covering-array-index"><a class="anchor" href="#covering-array-index"></a>Covering Array Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Covering indexes is an efficient method of using an Index for a particular query, whereby the index itself can completely cover the query in terms of providing all data required for the query.
+<p>Covering indexes are an efficient method of using an Index for a particular query, whereby the index itself can completely cover the query in terms of providing all data required for the query.
 Basically, it avoids the fetch phase of the query processing and related overhead in fetching the required documents from data-service nodes.
 For more details, see <a href="covering-indexes.html" class="page">Covering Indexes</a>.</p>
 </div>
 <div class="paragraph">
-<p>Array indexing requires special attention to create covered array indexes.
+<p>Array indexing requires special attention to create covering array indexes.
 In general, the array field itself should be included as one of the index keys in the CREATE INDEX definition.
 For example, the index <a href="#C1">C1</a> does not cover the query <a href="#Q1">Q1</a> because the <a href="#Q1">Q1</a> projection list includes * which needs to fetch the document from the Data Service.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 7. Covered Array Index</div>
+<div class="title">Example 7. Covering Array Index</div>
 <div class="content">
 <div id="C7" class="listingblock">
-<div class="title">C7: Creating a Covered Array Index</div>
+<div class="title">C7: Creating a Covering Array Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_covered ON `travel-sample`
-   ( DISTINCT ARRAY v.flight FOR v IN schedule END, schedule)
-WHERE type = "route";</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_cover ON `travel-sample`.inventory.route
+    (DISTINCT ARRAY v.flight FOR v IN schedule END, schedule);</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The index keys of an index must be used in the WHERE clause of a DML statement to use the index for that query.
-In the SELECT or DML WHERE clause, Covered Array Indexes can be used by the following operators:</p>
+In the SELECT or DML WHERE clause, Covering Array Indexes can be used by the following operators:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -5238,12 +5229,11 @@ In the SELECT or DML WHERE clause, Covered Array Indexes can be used by the foll
 </ul>
 </div>
 <div id="Q7" class="listingblock">
-<div class="title">Q7: Covered Array Index using the ANY clause</div>
+<div class="title">Q7: Covering Array Index using the ANY clause</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`
-USE INDEX (idx_sched_covered) <i class="conum" data-value="1"></i><b>(1)</b>
-WHERE type = "route"
-AND ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`.inventory.route
+USE INDEX (idx_sched_cover) <i class="conum" data-value="1"></i><b>(1)</b>
+WHERE ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -5266,27 +5256,33 @@ AND ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
           "#operator": "DistinctScan",
           "scan": {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((distinct (array (`v`.`flight`) for `v` in (`travel-sample`.`schedule`) end)))",
-              "cover ((`travel-sample`.`schedule`))",
-              "cover ((meta(`travel-sample`).`id`))"
+              "cover ((distinct (array (`v`.`flight`) for `v` in (`route`.`schedule`) end)))",
+              "cover ((`route`.`schedule`))",
+              "cover ((meta(`route`).`id`))"
             ],
+            "filter": "cover (any `v` in (`route`.`schedule`) satisfies ((`v`.`flight`) like \"UA%\") end)",
             "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "route",
-              "cover (any `v` in (`travel-sample`.`schedule`) satisfies ((\"UA\" &lt;= (`v`.`flight`)) and ((`v`.`flight`) &lt; \"UB\")) end)": true,
-              "cover (any `v` in (`travel-sample`.`schedule`) satisfies ((`v`.`flight`) like \"UA%\") end)": true
+              "cover (any `v` in (`route`.`schedule`) satisfies ((\"UA\" &lt;= (`v`.`flight`)) and ((`v`.`flight`) &lt; \"UB\")) end)": true,
+              "cover (any `v` in (`route`.`schedule`) satisfies ((`v`.`flight`) like \"UA%\") end)": true
             },
-            "index": "idx_sched_covered",
-      ...</code></pre>
+            "index": "idx_sched_cover",
+      ...
+          }
+        }
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 <div id="Q7A" class="listingblock">
-<div class="title">Q7A: Covered Array Index using the ANY AND EVERY clause</div>
+<div class="title">Q7A: Covering Array Index using the ANY AND EVERY clause</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`
-USE INDEX (idx_sched_covered)
-WHERE type = "route"
-AND ANY AND EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`.inventory.route
+USE INDEX (idx_sched_cover)
+WHERE ANY AND EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5301,25 +5297,30 @@ AND ANY AND EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
           "#operator": "DistinctScan",
           "scan": {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((distinct (array (`v`.`flight`) for `v` in (`travel-sample`.`schedule`) end)))",
-              "cover ((`travel-sample`.`schedule`))",
-              "cover ((meta(`travel-sample`).`id`))"
+              "cover ((distinct (array (`v`.`flight`) for `v` in (`route`.`schedule`) end)))",
+              "cover ((`route`.`schedule`))",
+              "cover ((meta(`route`).`id`))"
             ],
-            "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "route"
-            },
-            "index": "idx_sched_covered",
-      ...</code></pre>
+            "filter": "any and every `v` in cover ((`route`.`schedule`)) satisfies ((`v`.`flight`) like \"UA%\") end",
+            "index": "idx_sched_cover",
+      ...
+          }
+        }
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 <div id="Q7B" class="listingblock">
-<div class="title">Q7B: Covered Array Index using the UNNEST clause and aliasing</div>
+<div class="title">Q7B: Covering Array Index using the UNNEST clause and aliasing</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta(t).id FROM `travel-sample` t
-USE INDEX (idx_sched_covered)
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta(t).id FROM `travel-sample`.inventory.route t
+USE INDEX (idx_sched_cover)
 UNNEST schedule v
-WHERE t.type = "route" AND v.flight LIKE 'UA%';</code></pre>
+WHERE v.flight LIKE 'UA%';</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5335,16 +5336,21 @@ WHERE t.type = "route" AND v.flight LIKE 'UA%';</code></pre>
           "scan": {
             "#operator": "IndexScan3",
             "as": "t",
+            "bucket": "travel-sample",
             "covers": [
               "cover ((distinct (array (`v`.`flight`) for `v` in (`t`.`schedule`) end)))",
               "cover ((`t`.`schedule`))",
               "cover ((meta(`t`).`id`))"
             ],
-            "filter_covers": {
-              "cover ((`t`.`type`))": "route"
-            },
-            "index": "idx_sched_covered",
-      ...</code></pre>
+            "filter": "is_array(cover ((`t`.`schedule`)))",
+            "index": "idx_sched_cover",
+      ...
+          }
+        }
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -5355,13 +5361,13 @@ WHERE t.type = "route" AND v.flight LIKE 'UA%';</code></pre>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>The <a href="#Q7">Q7</a> Examples have the following limitation: the collection operator EVERY cannot use array indexes or covered array indexes because the EVERY operator needs to apply the SATISFIES predicate to all elements in the array, including the case where an array has zero elements.</p>
+<p>The <a href="#Q7">Q7</a> Examples have the following limitation: the collection operator EVERY cannot use array indexes or covering array indexes because the EVERY operator needs to apply the SATISFIES predicate to all elements in the array, including the case where an array has zero elements.</p>
 </div>
 <div class="paragraph">
 <p>As items cannot be indexed, it is not possible to index MISSING items, so the EVERY operator is evaluated in the N1QL engine and cannot leverage the array index scan.</p>
 </div>
 <div class="paragraph">
-<p>For example, the following query <a href="#Q7C">Q7C</a> uses the non-array index <code>def_type</code> ignoring the <a href="hints.html#use-index-clause" class="page">USE INDEX hint</a> to use the array indexes.
+<p>For example, the following query <a href="#Q7C">Q7C</a> uses the primary index <code>def_inventory_route_primary</code> ignoring the <a href="hints.html#use-index-clause" class="page">USE INDEX hint</a> to use the array indexes.
 (Note that query <a href="#C7">C7</a> defines a DISTINCT array index while <a href="#C7C">C7C</a> defines an ALL array index, and both are ignored).</p>
 </div>
 </td>
@@ -5371,18 +5377,16 @@ WHERE t.type = "route" AND v.flight LIKE 'UA%';</code></pre>
 <div id="C7C" class="listingblock">
 <div class="title">C7C: Non-array index with an ALL array index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_covered_all ON `travel-sample`
-   ( ALL ARRAY v.flight FOR v IN schedule END, schedule)
-WHERE type = "route";</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_cover_all ON `travel-sample`.inventory.route
+    (ALL ARRAY v.flight FOR v IN schedule END, schedule);</code></pre>
 </div>
 </div>
 <div id="Q7C" class="listingblock">
 <div class="title">Q7C: Non-array index with an ALL array index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`
-USE INDEX (idx_sched_covered_all, idx_sched_covered)
-WHERE type = "route"
-AND EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`.inventory.route
+USE INDEX (idx_sched_cover_all, idx_sched_cover)
+WHERE EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5394,9 +5398,15 @@ AND EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
       "#operator": "Sequence",
       "~children": [
         {
-          "#operator": "IndexScan3",
-          "index": "def_type",
-          ...</code></pre>
+          "#operator": "PrimaryScan3",
+          "bucket": "travel-sample",
+          "index": "def_inventory_route_primary",
+          ...
+        }
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5404,10 +5414,10 @@ AND EVERY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="implicit-covered-array-index"><a class="anchor" href="#implicit-covered-array-index"></a>Implicit Covered Array Index</h2>
+<h2 id="implicit-covering-array-index"><a class="anchor" href="#implicit-covering-array-index"></a>Implicit Covering Array Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>N1QL supports simplified Implicit Covered Array Index syntax in certain cases where the mandatory array index-key requirement is relaxed to create a covering array-index.
+<p>N1QL supports simplified Implicit Covering Array Index syntax in certain cases where the mandatory array index-key requirement is relaxed to create a covering array-index.
 This special optimization applies to those queries and DML which have WHERE clause predicates that can be exactly and completely pushed to the indexer during the array index scan.
 For example:</p>
 </div>
@@ -5421,20 +5431,18 @@ Hence, an item found in the index can cover the query.
 Furthermore, this is covered by both ALL and DISTINCT array indexes.</p>
 </div>
 <div id="C8" class="listingblock">
-<div class="title">C8: Creating an Implicit Covered Array Index with DISTINCT</div>
+<div class="title">C8: Creating an Implicit Covering Array Index with DISTINCT</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_covered_simple ON `travel-sample`
-  ( DISTINCT ARRAY v.flight FOR v IN schedule END)
-WHERE type = "route";</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_cover_simple ON `travel-sample`.inventory.route
+    (DISTINCT ARRAY v.flight FOR v IN schedule END);</code></pre>
 </div>
 </div>
 <div id="Q8" class="listingblock">
-<div class="title">Q8: Implicit Covered Array Index using the ANY clause</div>
+<div class="title">Q8: Implicit Covering Array Index using the ANY clause</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`
-USE INDEX (idx_sched_covered_simple)
-WHERE type = "route"
-AND ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta().id FROM `travel-sample`.inventory.route
+USE INDEX (idx_sched_cover_simple)
+WHERE ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5449,17 +5457,24 @@ AND ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
           "#operator": "DistinctScan",
           "scan": {
             "#operator": "IndexScan3",
+            "bucket": "travel-sample",
             "covers": [
-              "cover ((distinct (array (`v`.`flight`) for `v` in (`travel-sample`.`schedule`) end)))",
-              "cover ((meta(`travel-sample`).`id`))"
+              "cover ((distinct (array (`v`.`flight`) for `v` in (`route`.`schedule`) end)))",
+              "cover ((meta(`route`).`id`))"
             ],
+            "filter": "cover (any `v` in (`route`.`schedule`) satisfies ((`v`.`flight`) like \"UA%\") end)",
             "filter_covers": {
-              "cover ((`travel-sample`.`type`))": "route",
-              "cover (any `v` in (`travel-sample`.`schedule`) satisfies ((\"UA\" &lt;= (`v`.`flight`)) and ((`v`.`flight`) &lt; \"UB\")) end)": true,
-              "cover (any `v` in (`travel-sample`.`schedule`) satisfies ((`v`.`flight`) like \"UA%\") end)": true
+              "cover (any `v` in (`route`.`schedule`) satisfies ((\"UA\" &lt;= (`v`.`flight`)) and ((`v`.`flight`) &lt; \"UB\")) end)": true,
+              "cover (any `v` in (`route`.`schedule`) satisfies ((`v`.`flight`) like \"UA%\") end)": true
             },
-            "index": "idx_sched_covered_simple",
-            ...</code></pre>
+            "index": "idx_sched_cover_simple",
+            ...
+          }
+        }
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5472,24 +5487,22 @@ AND ANY v IN schedule SATISFIES v.flight LIKE 'UA%' END;</code></pre>
 Note that the array cannot be reconstructed if on DISTINCT elements of the array are indexed.</p>
 </div>
 <div class="paragraph">
-<p>For example, the following query <a href="#Q8A">Q9A</a> can be covered with the ALL index <code class="var">idx_sched_covered_simple_all</code> in <a href="#C8A">C9</a>, but <a href="#Q8B">Q9B</a> is not covered when using the DISTINCT <code class="var">index idx_sched_covered_simple</code> defined in <a href="#C8">C8</a>.</p>
+<p>For example, the following query <a href="#Q8A">Q9A</a> can be covered with the ALL index <code class="var">idx_sched_cover_simple_all</code> in <a href="#C8A">C9</a>, but <a href="#Q8B">Q9B</a> is not covered when using the DISTINCT <code class="var">index idx_sched_cover_simple</code> defined in <a href="#C8">C8</a>.</p>
 </div>
 <div id="C8A" class="listingblock">
 <div class="title">C9: UNNEST covered with the ALL index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_covered_simple_all ON `travel-sample`
-  ( ALL ARRAY v.flight FOR v IN schedule END)
-WHERE type = "route";</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">CREATE INDEX idx_sched_cover_simple_all ON `travel-sample`.inventory.route
+    (ALL ARRAY v.flight FOR v IN schedule END);</code></pre>
 </div>
 </div>
 <div id="Q8A" class="listingblock">
 <div class="title">Q9A: UNNEST covered with the ALL index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta(t).id FROM `travel-sample` t
-USE INDEX (idx_sched_covered_simple_all)
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta(t).id FROM `travel-sample`.inventory.route t
+USE INDEX (idx_sched_cover_simple_all)
 UNNEST schedule v
-WHERE t.type = "route"
-AND v.flight LIKE 'UA%';</code></pre>
+WHERE v.flight LIKE 'UA%';</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5503,20 +5516,22 @@ AND v.flight LIKE 'UA%';</code></pre>
         {
           "#operator": "IndexScan3",
           "as": "t",
+          "bucket": "travel-sample",
           "covers": [
             "cover ((`v`.`flight`))",
             "cover ((meta(`t`).`id`))"
           ],
+          "filter": "cover (is_array((`t`.`schedule`)))",
           "filter_covers": {
             "cover (((`t`.`schedule`) &lt; {}))": true,
             "cover (([] &lt;= (`t`.`schedule`)))": true,
-            "cover ((`t`.`type`))": "route",
             "cover (is_array((`t`.`schedule`)))": true
           },
-          "index": "idx_sched_covered_simple_all",
-          "index_id": "119e993a473f8297",
-          "keyspace": "travel-sample",
+          "index": "idx_sched_cover_simple_all",
+          "index_id": "de0704c3fdb45b07",
+          "keyspace": "route",
           "namespace": "default",
+          "scope": "inventory",
           "spans": [
             {
               "exact": true,
@@ -5531,17 +5546,20 @@ AND v.flight LIKE 'UA%';</code></pre>
           ],
           "using": "gsi"
         },
-...</code></pre>
+...
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 <div id="Q8B" class="listingblock">
 <div class="title">Q9B: UNNEST not covered when using the DISTINCT index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta(t).id FROM `travel-sample` t
-USE INDEX (idx_sched_covered_simple)
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXPLAIN SELECT meta(t).id FROM `travel-sample`.inventory.route t
+USE INDEX (idx_sched_cover_simple)
 UNNEST schedule v
-WHERE t.type = "route"
-AND v.flight LIKE 'UA%';</code></pre>
+WHERE v.flight LIKE 'UA%';</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -5557,13 +5575,15 @@ AND v.flight LIKE 'UA%';</code></pre>
           "scan": {
             "#operator": "IndexScan3",
             "as": "t",
-            "index": "idx_sched_covered_simple",
-            "index_id": "5a5c0f0dfa4829fb",
+            "bucket": "travel-sample",
+            "index": "idx_sched_cover_simple",
+            "index_id": "198a2bc8b0a3ea55",
             "index_projection": {
               "primary_key": true
             },
-            "keyspace": "travel-sample",
+            "keyspace": "route",
             "namespace": "default",
+            "scope": "inventory",
             "spans": [
               {
                 "exact": true,
@@ -5578,7 +5598,12 @@ AND v.flight LIKE 'UA%';</code></pre>
             ],
             "using": "gsi"
           }
-...</code></pre>
+...
+        }
+      ]
+    }
+  }
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5603,8 +5628,8 @@ AND v.flight LIKE 'UA%';</code></pre>
 <tr>
 <th class="tableblock halign-center valign-top">Operator in the SELECT/DML WHERE clause</th>
 <th class="tableblock halign-center valign-top">Array Index</th>
-<th class="tableblock halign-center valign-top">Covered Array Index (with explicit array index-key)</th>
-<th class="tableblock halign-center valign-top">Implicit Covered Array Index (without explicit array index-key)</th>
+<th class="tableblock halign-center valign-top">Covering Array Index (with explicit array index-key)</th>
+<th class="tableblock halign-center valign-top">Implicit Covering Array Index (without explicit array index-key)</th>
 </tr>
 </thead>
 <tbody>
