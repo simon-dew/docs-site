@@ -4616,14 +4616,14 @@ The only supported language is JavaScript.</p>
 <p>A <em class="def">global function</em> is created within a namespace, at the same level as the buckets within the namespace.
 When you call a global function, any partial keyspace references within the function definition are resolved against the function&#8217;s namespace, regardless of the current <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a>.</p>
 <div class="paragraph">
-<p>For example, when you call a global function <code>default:global()</code> which contains the keyspace reference <code>travel-sample</code>, the keyspace reference is always resolved within the context of the function to the <code>default:`travel-sample`</code> bucket.</p>
+<p>For example, when you call a global function <code>default:global()</code> which contains the keyspace reference <code>`travel-sample`</code>, the keyspace reference is always resolved within the context of the function to the <code>default:`travel-sample`</code> bucket.</p>
 </div>
 </li>
 <li>
 <p>A <em class="def">scope function</em> is created within a scope, at the same level as the collections within the scope.
 When you call a scope function, any partial keyspace references within the function definition are resolved against the function&#8217;s scope, regardless of the current <a href="../n1ql-intro/sysinfo.html#query-context" class="page">query context</a>.</p>
 <div class="paragraph">
-<p>For example, when you call a scope function <code>default:`travel-sample`.modes.scope()</code> which contains the keyspace reference <code>train</code>, the keyspace reference is always resolved within the context of the function to <code>default:`travel-sample`.modes.train</code>.</p>
+<p>For example, when you call a scope function <code>default:`travel-sample`.inventory.scope()</code> which contains the keyspace reference <code>route</code>, the keyspace reference is always resolved within the context of the function to <code>default:`travel-sample`.inventory.route</code>.</p>
 </div>
 </li>
 </ul>
@@ -4683,7 +4683,7 @@ It is recommended to use an unqualified identifier for the function name, such a
 In this case, the function is created as a global function or a scope function, depending on the current query context.</p>
 <div class="paragraph">
 <p>To create a global function in a particular namespace, the function name must be a qualified identifier with a namespace, such as <code>default:func1</code>.
-Similarly, to create a scope function in a particular scope, the function name must be a qualified identifier with the full path to a scope, such as <code>default:`travel-sample`.modes.func1</code>.</p>
+Similarly, to create a scope function in a particular scope, the function name must be a qualified identifier with the full path to a scope, such as <code>default:`travel-sample`.inventory.func1</code>.</p>
 </div>
 <div class="paragraph">
 <p>If the function name is an unqualified identifier, it may not be the same as a reserved keyword.
@@ -4699,7 +4699,7 @@ A function name with a specified namespace or scope may have the same name as a 
 <p>[Optional] The name of a function argument.
 If you specify named parameters for the function, then you must call the function with exactly the same number of arguments at execution time.
 If you specify no parameters, then you must call the function with no arguments.
-To create a variadic function, that is, a function which you can call with any number of arguments or none, specify <code>&#8230;&#8203;</code> as the only parameter.</p>
+To create a variadic function, that is, a function which you can call with any number of arguments or none, specify <code>...</code> as the only parameter.</p>
 </dd>
 </dl>
 </div>
@@ -4722,8 +4722,8 @@ If you specified that the function is variadic, any arguments passed to the func
 <ul>
 <li>
 <p>If the expression contains a parameter that has the same name as a field in the document, it will always refer to the parameter.
-To distinguish between the field and the parameter, prefix the field with the keyspace name, for example <code>`travel-sample`.type</code>.
-To avoid this ambiguity, you should use unique parameter names that do not clash with document field names, such as <code>vType</code>.</p>
+To distinguish between the field and the parameter, prefix the field with the keyspace name, for example <code>landmark.activity</code>.
+To avoid this ambiguity, you should use unique parameter names that do not clash with document field names, such as <code>vActivity</code>.</p>
 </li>
 <li>
 <p>Functions may return only one value, of any valid N1QL type.
@@ -4771,7 +4771,7 @@ It is recommended to use an unqualified identifier for the function name, such a
 In this case, the function is created as a global function or a scope function, depending on the current query context.</p>
 <div class="paragraph">
 <p>To create a global function in a particular namespace, the function name must be a qualified identifier with a namespace, such as <code>default:func1</code>.
-Similarly, to create a scope function in a particular scope, the function name must be a qualified identifier with the full path to a scope, such as <code>default:`travel-sample`.modes.func1</code>.</p>
+Similarly, to create a scope function in a particular scope, the function name must be a qualified identifier with the full path to a scope, such as <code>default:`travel-sample`.inventory.func1</code>.</p>
 </div>
 <div class="paragraph">
 <p>If the function name is an unqualified identifier, it may not be the same as a reserved keyword.
@@ -4787,7 +4787,7 @@ A function name with a specified namespace or scope may have the same name as a 
 <p>[Optional] The name of a function argument.
 If you specify named parameters for the function, then you must call the function with exactly the same number of arguments at execution time.
 If you specify no parameters, then you must call the function with no arguments.
-To create a variadic function, that is, a function which you can call with any number of arguments or none, specify <code>&#8230;&#8203;</code> as the only parameter.</p>
+To create a variadic function, that is, a function which you can call with any number of arguments or none, specify <code>...</code> as the only parameter.</p>
 </dd>
 </dl>
 </div>
@@ -4961,26 +4961,26 @@ The expression expects two named arguments: <code>vString</code>, which is the s
 <div class="title">Example 5. Inline function with subquery</div>
 <div class="content">
 <div class="paragraph">
-<p>The following statement creates a function called <code>locations</code>, which selects name and address information from all documents of the specified type in the <code>travel-sample</code> keyspace.</p>
+<p>The following statement creates a function called <code>locations</code>, which selects name and address information from all documents with the specified activity in the <code>landmark</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">CREATE FUNCTION locations(vType) { (
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/udf-locations-define.n1ql">CREATE FUNCTION locations(vActivity) { (
   SELECT id, name, address, city
-  FROM `travel-sample`
-  WHERE type = vType) };</code></pre>
+  FROM `travel-sample`.inventory.landmark
+  WHERE activity = vActivity) };</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Test</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXECUTE FUNCTION locations("landmark");</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/udf-locations-test.n1ql">EXECUTE FUNCTION locations("see");</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/udf-locations-test.jsonc#L2-L15">[
   [
     {
       "address": "Prince Arthur Road, ME4 4UG",
@@ -4989,14 +4989,12 @@ The expression expects two named arguments: <code>vString</code>, which is the s
       "name": "Royal Engineers Museum"
     },
     {
-      "address": "4 High Street, ME7 1BB",
-      "city": "Gillingham",
-      "id": 10020,
-      "name": "Hollywood Bowl"
+      "address": "84 rue Claude Monet",
+      "city": "Giverny",
+      "id": 10061,
+      "name": "Monet's House"
     },
-    ...
-  ]
-]</code></pre>
+...</code></pre>
 </div>
 </div>
 </div>
@@ -5009,7 +5007,13 @@ The expression expects two named arguments: <code>vString</code>, which is the s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -v -X POST http://localhost:8093/functions/v1/libraries/math/functions/add -H 'content-type: application/json' -d '{"name": "add", "code": "function add(a, b) { let data = a + b; return data; }"}' -u Administrator:password</code></pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ curl -v -X POST \
+  http://localhost:8093/functions/v1/libraries/math/functions/add \
+  -u Administrator:password \
+  -H 'content-type: application/json' \
+  -d '{"name": "add",
+       "code": "function add(a, b) { let data = a + b; return data; }"
+      }'</code></pre>
 </div>
 </div>
 <div class="paragraph">
