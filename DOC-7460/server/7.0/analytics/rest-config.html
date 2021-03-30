@@ -4618,7 +4618,7 @@ This API enables you to configure Analytics nodes and clusters.</p>
 <div class="sect2">
 <h3 id="version-information"><a class="anchor" href="#version-information"></a>Version information</h3>
 <div class="paragraph">
-<p><em>Version</em> : 6.6</p>
+<p><em>Version</em> : 7.0</p>
 </div>
 </div>
 <div class="sect2">
@@ -4761,34 +4761,49 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
   "activeMemoryGlobalBudget" : 67108864,
   "activeStopTimeout" : 3600,
   "activeSuspendTimeout" : 3600,
+  "analyticsBroadcastDcpStateMutationCount" : 10000,
   "analyticsHttpRequestQueueSize" : 256,
   "analyticsHttpThreadCount" : 16,
+  "bindAddress" : null,
+  "bindToHost" : false,
   "clusterConnectRetries" : 5,
+  "collectDcpStateFromNodesTimeout" : 600,
   "compilerFramesize" : 32768,
   "compilerGroupmemory" : 33554432,
   "compilerJoinmemory" : 33554432,
   "compilerParallelism" : 0,
+  "compilerSortParallel" : false,
   "compilerSortmemory" : 33554432,
+  "compilerWindowmemory" : 33554432,
   "coresMultiplier" : 3,
+  "dcpBufferAckWatermark" : 20,
+  "dcpChannelReconnectRemoteIdleSeconds" : 120,
+  "dcpConnectionBufferSize" : 10485760,
   "deadlockWatchdogHaltDelaySeconds" : 120,
   "deadlockWatchdogPollSeconds" : 300,
   "jobHistorySize" : 10,
   "jobQueueCapacity" : 4096,
   "jvmArgs" : null,
   "logLevel" : "DEBUG",
-  "maxWebRequestSize" : 52428800,
+  "maxWebRequestSize" : 209715200,
   "netBufferCount" : 1,
   "netThreadCount" : 1,
+  "rebalancePullDatasetSizeFrequency" : 5,
+  "remoteLinkConnectTimeoutSeconds" : 60,
+  "remoteLinkSocketTimeoutSeconds" : 60,
+  "requestsArchiveSize" : 50,
   "resultSweepThreshold" : 60000,
   "resultTtl" : 86400000,
   "storageBuffercacheMaxopenfiles" : 2147483647,
   "storageBuffercachePagesize" : 131072,
-  "storageMaxActiveWritableDatasets" : 8,
+  "storageCompressionBlock" : "snappy",
   "storageMemorycomponentNumcomponents" : 2,
   "storageMemorycomponentPagesize" : 131072,
+  "storageWriteRateLimit" : 0,
   "threaddumpFrequencySeconds" : 300,
   "threaddumpLogLevel" : "DEBUG",
-  "traceCategories" : [ ]
+  "traceCategories" : [ ],
+  "txnDatasetCheckpointInterval" : 3600
 }</code></pre>
 </div>
 </div>
@@ -5316,10 +5331,27 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
 <td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>dcpBufferAckWatermark</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The percentage of DCP connection buffer size at which to acknowledge bytes consumed to DCP producer. <br>
+<strong>Default</strong> : <code>20</code> <br>
+<strong>Minimum value</strong> : <code>1</code> <br>
+<strong>Maximum value</strong> : <code>100</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>dcpChannelReconnectRemoteIdleSeconds</strong> <br>
 <em>optional</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Reconnect remote DCP channels that are idle for the specified number of seconds to ensure permissions have not been lost. A value of 0 disables reconnects on idle. <br>
 <strong>Default</strong> : <code>120</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>dcpConnectionBufferSize</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DCP connection buffer size (in bytes).<br>
+<br>
+If the JVM maximum heap size is less than 8GB, the default for this parameter is 10 MB divided by the number of IO Devices on the node. Otherwise, the default is 1% of the JVM maximum heap size divided by the number of IO Devices on the node.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
 </tr>
 <tr>
@@ -5387,7 +5419,7 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>rebalancePullDatasetSizeFrequency</strong> <br>
 <em>optional</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The frequency at which the dataset size is pulled from nodes during rebalance in seconds. <br>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The frequency at which the Analytics collection size is pulled from nodes during rebalance in seconds. <br>
 <strong>Default</strong> : <code>5</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
 </tr>
@@ -5395,6 +5427,13 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>remoteLinkConnectTimeoutSeconds</strong> <br>
 <em>optional</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The maximum time (in seconds) to wait for a remote link connection to establish. A value of 0 disables timeout; a value of -1 sets timeout to the system default. <br>
+<strong>Default</strong> : <code>60</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>remoteLinkSocketTimeoutSeconds</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum time (in seconds) to wait after establishing the connection for remote links; the maximum time of inactivity between two data packets. A value of 0 disables timeout; a value of -1 sets timeout to the system default. <br>
 <strong>Default</strong> : <code>60</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
 </tr>
@@ -5441,13 +5480,6 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>storageMaxActiveWritableDatasets</strong> <br>
-<em>optional</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of datasets that can be concurrently modified. <br>
-<strong>Default</strong> : <code>8</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>storageMemorycomponentNumcomponents</strong> <br>
 <em>optional</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of memory components to be used per LSM index. <br>
@@ -5460,6 +5492,13 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
 <td class="tableblock halign-left valign-top"><p class="tableblock">The page size in bytes for pages allocated to memory components. <br>
 <strong>Default</strong> : <code>131072</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>storageWriteRateLimit</strong> <br>
+<em>optional</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum disk write rate for each storage partition in bytes per second. Disabled if the provided value is less than or equal to 0. <br>
+<strong>Default</strong> : <code>0</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer (int64)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>threaddumpFrequencySeconds</strong> <br>
@@ -5484,7 +5523,7 @@ Returns an object containing an error message. Refer to <a href="error-codes.htm
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>txnDatasetCheckpointInterval</strong> <br>
 <em>optional</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The interval (in seconds) after which a dataset is considered idle and persisted to disk. <br>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The interval (in seconds) after which an Analytics collection is considered idle and persisted to disk. <br>
 <strong>Default</strong> : <code>3600</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">integer (int32)</p></td>
 </tr>

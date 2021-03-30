@@ -4686,7 +4686,7 @@ These enable you to query data from outside the local Couchbase cluster.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>An Analytics collection on a remote link shadows the data from a remote cluster to a local Analytics collection.</p>
+<p>An Analytics collection on a remote link shadows the data from a remote Couchbase cluster to a local Analytics collection.</p>
 </li>
 <li>
 <p>An external Analytics collection reads data directly from an external source, such as Amazon S3,
@@ -4767,14 +4767,11 @@ You can disconnect the <code>Local</code> link to pause data ingestion to the lo
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-When a keyspace has one or more shadow Analytics collections and the <code>Local</code> link is connected,
-you cannot create a new Analytics collection to shadow that keyspace,
-or drop an Analytics collection which shadows that keyspace.
-However, you can always create a new Analytics collection on any keyspace
-which does <em>not</em> currently have a shadow Analytics collection,
-even if the <code>Local</code> link is connected.
-In this case, data ingestion to the new shadow Analytics collection does not start at once.
-To start ingestion to the new shadow Analytics collection, you must disconnect the <code>Local</code> link and connect it again.
+You can always create or drop an Analytics collection on any link,
+even if the link is already connected,
+and even if the data source already has existing shadow Analytics collections.
+If the link is connected when you create a new Analytics collection,
+data ingestion to the new shadow Analytics collection starts at once.
 </td>
 </tr>
 </table>
@@ -4864,7 +4861,7 @@ In case the index key cannot be built, there is no entry made in the index for t
 </div>
 <div class="paragraph">
 <p>Secondary indexes are automatically maintained by the system during data ingestion
-(i.e., when their corresponding keyspaces are connected and data are flowing into the system).
+(i.e., when their corresponding links are connected and populating their Analytics collections).
 In addition, they are automatically rebalanced when their shadow Analytics collections are rebalanced.</p>
 </div>
 <div class="paragraph">
@@ -4922,7 +4919,7 @@ data definition, and to connect Couchbase Analytics to Data Service keyspaces or
 <h5 id="scopename"><a class="anchor" href="#scopename"></a>ScopeName</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/ScopeName.png" alt="Identifier (&quot;.&quot; Identifier)*">
+<img src="_images/ScopeName.png" alt="(Identifier &quot;.&quot;)? Identifier">
 </div>
 </div>
 <div class="paragraph">
@@ -4958,7 +4955,7 @@ as an equivalent to the Data service bucket name and scope name.</p>
 <h5 id="createlocalcollection"><a class="anchor" href="#createlocalcollection"></a>CreateLocalCollection</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/CreateLocalCollection.png" alt="&quot;CREATE&quot; &quot;ANALYTICS&quot; &quot;COLLECTION&quot; QualifiedName? (&quot;IF&quot; &quot;NOT&quot; &quot;EXISTS&quot;)? &quot;ON&quot; KeyspaceName ( &quot;WITH&quot; ObjectConstructor )? ( &quot;WHERE&quot; Expr )?">
+<img src="_images/CreateLocalCollection.png" alt="&quot;CREATE&quot; &quot;ANALYTICS&quot; &quot;COLLECTION&quot; (&quot;IF&quot; &quot;NOT&quot; &quot;EXISTS&quot;)? QualifiedName? ( &quot;WITH&quot; ObjectConstructor )? &quot;ON&quot; KeyspaceName ( &quot;WHERE&quot; Expr )?">
 </div>
 </div>
 <div class="paragraph">
@@ -4969,7 +4966,7 @@ as an equivalent to the Data service bucket name and scope name.</p>
 <h5 id="createremotelinkedcollection"><a class="anchor" href="#createremotelinkedcollection"></a>CreateRemoteLinkedCollection</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/CreateRemoteLinkedCollection.png" alt="&quot;CREATE&quot; &quot;ANALYTICS&quot; &quot;COLLECTION&quot; QualifiedName? (&quot;IF&quot; &quot;NOT&quot; &quot;EXISTS&quot;)? &quot;ON&quot; KeyspaceName ( &quot;WITH&quot; ObjectConstructor )? ( &quot;AT&quot; Identifier )? ( &quot;WHERE&quot; Expr )?">
+<img src="_images/CreateRemoteLinkedCollection.png" alt="&quot;CREATE&quot; &quot;ANALYTICS&quot; &quot;COLLECTION&quot; (&quot;IF&quot; &quot;NOT&quot; &quot;EXISTS&quot;)? QualifiedName? ( &quot;WITH&quot; ObjectConstructor )? &quot;ON&quot; KeyspaceName ( &quot;AT&quot; QualifiedName )? ( &quot;WHERE&quot; Expr )?">
 </div>
 </div>
 <div class="paragraph">
@@ -4980,7 +4977,7 @@ as an equivalent to the Data service bucket name and scope name.</p>
 <h5 id="createexternalcollection"><a class="anchor" href="#createexternalcollection"></a>CreateExternalCollection</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/CreateExternalCollection.png" alt="&quot;CREATE&quot; &quot;EXTERNAL&quot; &quot;ANALYTICS&quot; &quot;COLLECTION&quot; QualifiedName? CollectionTypeDef? (&quot;IF&quot; &quot;NOT&quot; &quot;EXISTS&quot;)? &quot;ON&quot; Identifier ( &quot;WITH&quot; ObjectConstructor )? ( &quot;AT&quot; Identifier ( &quot;USING&quot; Expr )? )? ( &quot;WHERE&quot; Expr )?">
+<img src="_images/CreateExternalCollection.png" alt="&quot;CREATE&quot; &quot;EXTERNAL&quot; &quot;ANALYTICS&quot; &quot;COLLECTION&quot; (&quot;IF&quot; &quot;NOT&quot; &quot;EXISTS&quot;)? QualifiedName CollectionTypeDef? &quot;ON&quot; Identifier ( &quot;AT&quot; QualifiedName ( &quot;USING&quot; StringLiteral )? )? ( &quot;WITH&quot; ObjectConstructor )?">
 </div>
 </div>
 <div class="paragraph">
@@ -5029,10 +5026,15 @@ as an equivalent to the Data service bucket name and scope name.</p>
 <div class="paragraph">
 <p>The <code>QualifiedName</code> is the full name of the Analytics collection to create.
 It consists of an optional Analytics scope name and a name for the Analytics collection.
-If no Analytics scope name is given, the Analytics collection is created in the <code>Default</code> Analytics scope,
-or in the Analytics scope specified by the immediately preceding USE statement.
-If the full name of the Analytics collection is not specified,
-the name of the data source is used as the Analytics collection name.</p>
+If no Analytics scope name is given,
+the Analytics collection is created in the scope defined by the immediately preceding USE statement,
+or the scope defined by the <code>query_context</code> parameter, or the <code>Default</code> Analytics scope,
+according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <code>QualifiedName</code> may be omitted if you are creating a local Analytics collection,
+or an Analytics collection on a remote link,
+and the data source is just a bucket name&#8201;&#8212;&#8201;refer to the <code>ON</code> clause below.</p>
 </div>
 <div class="paragraph">
 <p>The <code>ON</code> clause enables you to specify the data source for the Analytics collection.
@@ -5045,23 +5047,15 @@ such as an Amazon S3 bucket.</p>
 </div>
 <div class="paragraph">
 <p>The <code>KeyspaceName</code> may consist of a bucket name, followed by an optional scope name and collection name.
-Alternatively, if the <a href="appendix_3_resolution.html#Query_context">query context</a> is set,
-it may contain just a collection name.
-It may <em>not</em> contain a namespace&#8201;&#8212;&#8201;the <code>default:</code> namespace is assumed.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>If the <code>KeyspaceName</code> contains just a bucket name,
+It may <em>not</em> contain a namespace&#8201;&#8212;&#8201;the <code>default:</code> namespace is assumed.
+If the <code>KeyspaceName</code> contains just a bucket name,
 the Data service scope is assumed to be the default scope within that bucket,
 and the Data service collection is assumed to be the default collection within that scope.</p>
-</li>
-<li>
-<p>If the <code>KeyspaceName</code> contains just a collection name,
-the Data service bucket and scope are taken from the current
-<a href="appendix_3_resolution.html#Query_context">query context</a> parameter.</p>
-</li>
-</ul>
+</div>
+<div class="paragraph">
+<p>Note also that if the <code>KeyspaceName</code> contains just a bucket name,
+the <code>QualifiedName</code> of the Analytics collection may be omitted.
+In this case, the bucket name is used as the Analytics collection name.</p>
 </div>
 <div class="paragraph">
 <p>The <code>WITH</code> clause enables you to specify parameters for the Analytics collection.
@@ -5161,12 +5155,16 @@ May contain the following wildcard characters, in common with the <strong>includ
 </tbody>
 </table>
 <div class="paragraph">
-<p>The <code>WHERE</code> clause enables you to filter the documents in the Analytics collection.
+<p>The <code>WHERE</code> clause is only used when creating an Analytics collection on a local link, or a remote link.
+It enables you to filter the documents in the Analytics collection.
 The <code>Expr</code> in this clause must be deterministic.</p>
 </div>
 <div class="paragraph">
 <p>The <code>AT</code> clause is only used when creating an Analytics collection on a remote link, or an external Analytics collection.
-The <code>Identifier</code> in this clause is the name of the remote or external link on which the Analytics collection is to be created.</p>
+The <code>QualifiedName</code> in this clause is the name of the remote or external link on which the Analytics collection is to be created.
+If this <code>QualifiedName</code> contains a scope name,
+the statement looks for the link within the specified Analytics scope.
+Otherwise, it looks for the link in the same scope as the Analytics collection.</p>
 </div>
 <div class="paragraph">
 <p>The <code>CollectionTypeDef</code> is only used when creating an external Analytics collection,
@@ -5214,7 +5212,7 @@ ON `beer-sample` WHERE `type` = "brewery";</pre>
 <div class="paragraph">
 <p>This example creates 2 Analytics collections <code>beers</code> and <code>breweries</code> on the <code>beer-sample</code> keyspace and filters
 the content for each Analytics collection by the value of the <code>type</code> field of the record.
-For the <code>breweries</code> Analytics collection, the <code>snappy</code> storage compression scheme is specified.
+For the <code>breweries</code> Analytics collection, the <code>snappy</code> storage compression scheme is explicitly specified.
 Note that back-ticks are only necessary for reserved keywords, such as <code>type</code>, or certain operators, such as <code>-</code>.</p>
 </div>
 <div class="literalblock">
@@ -5299,7 +5297,9 @@ These fields will be given the names <code>id</code>, <code>datetime</code>, <co
 <p>The first <code>QualifiedName</code> is the full name of the synonym.
 It consists of an optional Analytics scope name, followed by an identifier.
 If this <code>QualifiedName</code> contains a scope name, the synonym is created within the specified Analytics scope.
-Otherwise, the synonym is created within the <code>Default</code> scope.</p>
+Otherwise, the synonym is created in the scope defined by the immediately preceding USE statement,
+or the scope defined by the <code>query_context</code> parameter, or the <code>Default</code> Analytics scope,
+according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
 </div>
 <div class="paragraph">
 <p>The <code>FOR</code> clause enables you to specify the target of the synonym.
@@ -5307,7 +5307,7 @@ The <code>QualifiedName</code> in this clause is the full name of an Analytics c
 Again, it consists of an optional Analytics scope name, followed by an identifier.
 If this <code>QualifiedName</code> contains a scope name,
 the CREATE ANALYTICS SYNONYM statement looks for the target collection within the specified Analytics scope.
-Otherwise, it looks for the target collection within the <code>Default</code> scope.</p>
+Otherwise, it looks for the target collection in the same scope as the synonym.</p>
 </div>
 </div>
 <div class="sect4">
@@ -5353,8 +5353,10 @@ Otherwise, it looks for the target collection within the <code>Default</code> sc
 <div class="paragraph">
 <p>The <code>QualifiedName</code> identifies the Analytics collection on which the index is built.
 It consists of an optional Analytics scope name and the name of the Analytics collection.
-If no Analytics scope name is given, the Analytics collection is assumed to be in the <code>Default</code> Analytics scope,
-or in the Analytics scope specified by the immediately preceding USE statement.</p>
+If no Analytics scope name is given,
+the Analytics collection is assumed to be in the scope defined by the immediately preceding USE statement,
+or the scope defined by the <code>query_context</code> parameter, or the <code>Default</code> Analytics scope,
+according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
 </div>
 <div class="paragraph">
 <p>The <code>IndexField</code> consists of a <code>NestedField</code> that specifies a field path into the indexed JSON document,
@@ -5380,7 +5382,10 @@ CREATE ANALYTICS INDEX breweries_loc_idx on breweries (geo.lon: double, geo.lat:
 <h3 id="Use_statements"><a class="anchor" href="#Use_statements"></a>Use Statements</h3>
 <div class="paragraph">
 <p>The USE statement sets the <code>ScopeName</code> to be the default Analytics scope for the following statement.
-If no USE statement is issued, the <code>Default</code> Analytics scope is used.</p>
+If the following statement does not explicitly specify an Analytics scope,
+the statement defaults to the the scope defined by the immediately preceding USE statement,
+or the scope defined by the <code>query_context</code> parameter, or the <code>Default</code> Analytics scope,
+according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
 </div>
 <h5 id="usestmnt" class="discrete">UseStmnt</h5>
 <div class="imageblock">
@@ -5391,8 +5396,8 @@ If no USE statement is issued, the <code>Default</code> Analytics scope is used.
 <div class="paragraph">
 <p>The USE statement only works in a conjunction with another statement in a single request.</p>
 </div>
+<h5 id="example-2" class="discrete">Example</h5>
 <div class="literalblock">
-<div class="title">Example</div>
 <div class="content">
 <pre>USE `beer-data`;</pre>
 </div>
@@ -5454,24 +5459,24 @@ It can be used to drop Analytics scopes, collections, synonyms, and indexes.</p>
 </div>
 <div class="paragraph">
 <p>For the DROP ANALYTICS COLLECTION statement, the <code>QualifiedName</code> is the full name of the Analytics collection.
-It consists of an optional Analytics scope name and the name of the Analytics collection.
-If no Analytics scope name is given, the Analytics collection is assumed to be in the <code>Default</code> Analytics scope,
-or in the Analytics scope specified by the immediately preceding USE statement.</p>
+It consists of an optional Analytics scope name and the name of the Analytics collection.</p>
 </div>
 <div class="paragraph">
 <p>For the DROP ANALYTICS SYNONYM statement, the <code>QualifiedName</code> is the full name of the Analytics synonym.
-It consists of an optional Analytics scope name and the name of the Analytics synonym.
-If no Analytics scope name is given, the Analytics synonym is assumed to be in the <code>Default</code> Analytics scope,
-or in the Analytics scope specified by the immediately preceding USE statement.</p>
+It consists of an optional Analytics scope name and the name of the Analytics synonym.</p>
 </div>
 <div class="paragraph">
 <p>For the DROP ANALYTICS INDEX statement, the <code>DoubleQualifiedName</code> is the full name of the index.
-It consists of an optional Analytics scope name, the name of the Analytics collection, and the name of the index.
-If no Analytics scope name is given, the Analytics collection is assumed to be in the <code>Default</code> Analytics scope,
-or in the Analytics scope specified by the immediately preceding USE statement.</p>
+It consists of an optional Analytics scope name, the name of the Analytics collection, and the name of the index.</p>
 </div>
+<div class="paragraph">
+<p>When dropping a collection, synonym, or index, if no Analytics scope name is given,
+the database entity is assumed to be in the scope defined by the immediately preceding USE statement,
+or the scope defined by the <code>query_context</code> parameter, or the <code>Default</code> Analytics scope,
+according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
+</div>
+<h5 id="examples-4" class="discrete">Examples</h5>
 <div class="literalblock">
-<div class="title">Examples</div>
 <div class="content">
 <pre>DROP ANALYTICS SCOPE `beer-data` IF EXISTS;</pre>
 </div>
@@ -5537,7 +5542,9 @@ For more details, refer to <a href="#Creating_and_dropping">Create Statements</a
 <p>When used with the ENABLE ANALYTICS keywords,
 the ALTER COLLECTION statement creates an Analytics scope that corresponds to the specified Data service scope,
 and within that Analytics scope, an Analytics collection that corresponds to the specified Data service collection.
-The Analytics collection uses the Data service collection as its data source.
+(If there is already an Analytics scope with the same name as the specified Data service scope,
+the Analytics collection is created within the existing Analytics scope.)
+The Analytics collection then uses the Data service collection as its data source.
 This is equivalent to running CREATE ANALYTICS SCOPE followed by CREATE ANALYTICS COLLECTION.</p>
 </div>
 <div class="paragraph">
@@ -5562,9 +5569,8 @@ and enables you to refer to the collection using just the bucket name.</p>
 If an Analytics scope already exists with the same name as the specified Data service scope,
 and it contains an Analytics collection with the same name as the specified Data service collection,
 the ALTER COLLECTION statement fails.
-Similarly,
-if an Analytics synonym already exists in the <code>Default</code> scope with the same name as the specified Data service bucket,
-the ALTER COLLECTION statement fails.
+Similarly, if an Analytics synonym already exists in the <code>Default</code> scope with the same name
+as the specified Data service bucket, the ALTER COLLECTION statement fails.
 </td>
 </tr>
 </table>
@@ -5574,14 +5580,14 @@ the ALTER COLLECTION statement fails.
 and the synonym for the Analytics collection if it exists, but does not drop the Analytics scope.
 This is equivalent to running DROP ANALYTICS COLLECTION, and if necessary DROP ANALYTICS SYNONYM.</p>
 </div>
+<h5 id="examples-5" class="discrete">Examples</h5>
 <div class="literalblock">
-<div class="title">Examples</div>
 <div class="content">
 <pre>ALTER COLLECTION `travel-sample`.inventory.airline ENABLE ANALYTICS;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates an Analytics scope called <code>travel-sample.inventory</code>.
+<p>This example creates an Analytics scope called <code>`travel-sample`.inventory</code>.
 Within that scope, it creates an Analytics collection called <code>airline</code>.
 The Analytics collection uses the <code>airline</code> collection within the <code>inventory</code> scope in the <code>travel-sample</code> bucket
 as its data source.</p>
@@ -5592,7 +5598,7 @@ as its data source.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates an Analytics scope called <code>beer-sample._default</code>.
+<p>This example creates an Analytics scope called <code>`beer-sample`._default</code>.
 Within this scope, it creates an Analytics collection also called <code>_default</code>.
 It then creates a synonym <code>beer-sample</code> for this Analytics collection in the <code>Default</code> Analytics scope.
 The Analytics collection uses the default collection within the default scope in the <code>beer-sample</code> bucket
@@ -5605,7 +5611,7 @@ as its data source.</p>
 </div>
 <div class="paragraph">
 <p>This example drops the <code>airport</code> Analytics collection,
-but leaves the <code>travel-sample.inventory</code> Analytics scope in place.</p>
+but leaves the <code>`travel-sample`.inventory</code> Analytics scope in place.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -5614,15 +5620,15 @@ but leaves the <code>travel-sample.inventory</code> Analytics scope in place.</p
 </div>
 <div class="paragraph">
 <p>This example drops the <code>beer-sample</code> Analytics synonym and the <code>_default</code> Analytics collection,
-but leaves the <code>beer-sample._default</code> Analytics scope in place.</p>
+but leaves the <code>`beer-sample`._default</code> Analytics scope in place.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="Connecting_and_disconnecting"><a class="anchor" href="#Connecting_and_disconnecting"></a>Connect Statements</h3>
 <div class="paragraph">
-<p>The CONNECT statement connects all Analytics collections in the given Analytics scope(s) to the keyspaces on which the
-Analytics collections were created.
-The CONNECT statement is not applicable to connect external Analytics collections.</p>
+<p>The CONNECT statement connects all Analytics collections on the given Analytics links(s)
+to their specified data sources, and starts data ingestion.
+The CONNECT statement is not applicable to external links.</p>
 </div>
 <h5 id="connectstmnt" class="discrete">ConnectStmnt</h5>
 <div class="imageblock">
@@ -5633,17 +5639,20 @@ The CONNECT statement is not applicable to connect external Analytics collection
 <h5 id="linkspecification" class="discrete">LinkSpecification</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/LinkSpecification.png" alt="( Identifier &quot;.&quot; )? Identifier ( &quot;,&quot; ( Identifier &quot;.&quot; )? Identifier )*">
+<img src="_images/LinkSpecification.png" alt="QualifiedName ( &quot;,&quot; QualifiedName )*">
 </div>
 </div>
 <div class="paragraph">
 <p>The <code>LinkSpecification</code> is a comma separated list of one or more links to connect.
 Each item in the list is the full name of a link,
-consisting of (optionally) the name of the Analytics scope where the link will be created, and the name of the link.
+consisting of (optionally) the name of the Analytics scope where the link was created,
+and the name of the link.
 For the local link, the name of the link is <code>Local</code>; for remote links,
 it is the name given to the link when it was created.
-If no Analytics scope name is given, the link is created in the <code>Default</code> Analytics scope,
-or in the Analytics scope specified by the immediately preceding USE statement.</p>
+If no Analytics scope name is given,
+the link is assumed to be in the scope defined by the immediately preceding USE statement,
+or the scope defined by the <code>query_context</code> parameter, or the <code>Default</code> Analytics scope,
+according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
 </div>
 <div class="paragraph">
 <p>The <code>WITH</code> clause enables you to provide parameters for the connection.
@@ -5667,14 +5676,14 @@ If <code>force</code> is false, then CONNECT LINK fails.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-In Couchbase Server 7.0 and later, this parameter is deprecated and should not be used.
+In Couchbase Server 7.0 and later, this parameter is deprecated and will generate a warning if used.
 It will be removed in a future version of Couchbase Server.
 </td>
 </tr>
 </table>
 </div>
+<h5 id="examples-6" class="discrete">Examples</h5>
 <div class="literalblock">
-<div class="title">Examples</div>
 <div class="content">
 <pre>CONNECT LINK Local;</pre>
 </div>
@@ -5696,8 +5705,8 @@ Service keyspaces, and starts shadowing.</p>
 <h3 id="Disconnect_statements"><a class="anchor" href="#Disconnect_statements"></a>Disconnect Statements</h3>
 <div class="paragraph">
 <p>The DISCONNECT statement is the inverse of the CONNECT statement.
-It disconnects all Analytics collections in the given Analytics scope(s).
-The DISCONNECT statement is not applicable to external Analytics collections.</p>
+It disconnects all Analytics collections on the given Analytics link(s).
+The DISCONNECT statement is not applicable to external links.</p>
 </div>
 <h5 id="disconnectstmnt" class="discrete">DisconnectStmnt</h5>
 <div class="imageblock">
@@ -5705,8 +5714,8 @@ The DISCONNECT statement is not applicable to external Analytics collections.</p
 <img src="_images/DisconnectStmnt.png" alt="&quot;DISCONNECT&quot; &quot;LINK&quot; LinkSpecification">
 </div>
 </div>
+<h5 id="examples-7" class="discrete">Examples</h5>
 <div class="literalblock">
-<div class="title">Examples</div>
 <div class="content">
 <pre>DISCONNECT LINK Local;</pre>
 </div>
