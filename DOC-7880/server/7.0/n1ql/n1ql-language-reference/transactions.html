@@ -3554,6 +3554,12 @@ server
 <li class="nav-item " data-depth="4">
 
 <span class="nav-line "  data-depth="4">
+<a class="nav-link" href="../../rest-api/rest-manage-cluster-connections.html">Managing Cluster Connections</a>
+</span>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
 <a class="nav-link" href="../../rest-api/rest-get-cluster-tasks.html">Getting Cluster Tasks</a>
 </span>
 </li>
@@ -4591,7 +4597,7 @@ N1QL offers full support for Couchbase ACID transactions.
 </blockquote>
 </div>
 <div class="paragraph">
-<p>Starting with Couchbase Server 7.0, N1QL offers full support for Couchbase ACID transactions.
+<p>Starting with Couchbase Server 7.0, N1QL offers full support for Couchbase ACID transactions based on optimistic concurrency.
 Refer to <a href="../../learn/data/transactions.html" class="page">Transactions</a> for an overview of Couchbase transactions.</p>
 </div>
 <div class="ulist">
@@ -4661,6 +4667,12 @@ Refer to the documentation for each parameter for more information and examples.
 <li>
 <p>The <a href="../../settings/query-settings.html#txtimeout_req" class="page">txtimeout</a> request-level parameter and <a href="../../settings/query-settings.html#txtimeout-srv" class="page">txtimeout</a> node-level setting specify the maximum time to spend on a transaction before timing out.</p>
 </li>
+<li>
+<p>The <a href="../../settings/query-settings.html#atrcollection" class="page">atrcollection</a> parameter specifies where the active transaction record is stored.</p>
+</li>
+<li>
+<p>The <a href="../../settings/query-settings.html#numatrs" class="page">numatrs</a> parameter specifies the total number of active transaction records.</p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -4670,11 +4682,65 @@ Refer to <a href="../../settings/query-settings.html#transactional-scan-consiste
 </div>
 </div>
 <div class="sect1">
+<h2 id="query-tools"><a class="anchor" href="#query-tools"></a>Query Tools</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To create a Couchbase transaction using N1QL, you can use any of the tools that you use to run a N1QL query: the <a href="../../tools/query-workbench.html" class="page">Query Workbench</a>, the <a href="../../tools/cbq-shell.html" class="page">cbq shell</a>, or the <a href="../n1ql-rest-api/index.html" class="page">Query REST API</a>.
+There are slight differences in the way these tools operate when creating Couchbase transactions.
+These are explained below.</p>
+</div>
+<div class="paragraph">
+<p>When using the Query Workbench, you can specify parameters for the Couchbase transaction using the query run-time preferences window.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you are creating the Couchbase transaction one statement at a time, then once you have started the transaction, you must set the <code>txid</code> parameter to specify the transaction to which each subsequent statement belongs.</p>
+</li>
+<li>
+<p>Alternatively, you can use the <b class="button">Execute as Transaction</b> button to run a single statement as a transaction, or a complete set of statements as a transaction all at once.
+In this case, you do not need to specify the <code>txid</code> parameter.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When using the cbq shell, you can specify parameters for the Couchbase transaction using the <code>\SET</code> command.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you are creating the Couchbase transaction one statement at a time, you don&#8217;t need to set the <code>txid</code> parameter.
+Once you have started a transaction, all statements within the cbq shell session are assumed to be part of the same transaction until you rollback or commit the transaction.
+<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup></p>
+</li>
+<li>
+<p>Alternatively, you can use the <code>tximplicit</code> parameter to run a single statement as a transaction.
+In this case, you do not need to specify the <code>txid</code> parameter either.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When using the Query REST API, you can specify parameters for the Couchbase transaction as body parameters or query parameters alongside the query statement.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you are creating the Couchbase transaction one statement at a time, then once you have started the transaction, you must set the <code>txid</code> parameter to specify the transaction to which each subsequent statement belongs.</p>
+</li>
+<li>
+<p>Alternatively, you can use the <code>tximplicit</code> parameter to run a single statement as a transaction.
+In this case, you do not need to specify the <code>txid</code> parameter.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="worked-example"><a class="anchor" href="#worked-example"></a>Worked Example</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This worked example guides you through a complete Couchbase transaction session using the <a href="../../tools/cbq-shell.html" class="page">cbq shell</a>.
-Note that you must be using cbq shell version 2.0 or above, or some functionality will not be available.</p>
+Note that you must be using cbq shell version 2.0 or above.</p>
 </div>
 <div class="sect2">
 <h3 id="preparation"><a class="anchor" href="#preparation"></a>Preparation</h3>
@@ -4916,6 +4982,12 @@ Since you are using the cbq shell, all statements within this session are assume
 </li>
 </ul>
 </div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. You must be using cbq shell version 2.0 or above to use the automatic transaction ID functionality.
 </div>
 </div>
 </article>
