@@ -7,6 +7,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-7808/server/6.6/backup-restore/cbbackupmgr-merge.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="Merges two or more backups together">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="6.6">
@@ -197,7 +198,7 @@
 <div class="paragraph">
 <p>The merge command is used in order to merge two or more backups together. Since
 cbbackupmgr is a utility that always takes incremental backups it is necessary
-to reclaim disk space from time to time. Merging data will de-duplicate similar
+to reclaim disk space from time to time. Merging data will deduplicate similar
 keys in backup files being merged together in order to create a single smaller
 backup file. Doing merges should replace the full backup step by taking multiple
 incremental backups of a Couchbase cluster and converting them into a single
@@ -246,7 +247,7 @@ means that the index of the oldest backup should be used and specifying
 </dd>
 <dt class="hdlist1">--end &lt;backup&gt;</dt>
 <dd>
-<p>The name of the last backup to be merged or a index value which references
+<p>The name of the last backup to be merged or an index value which references
 an incremental backup. Valid index values are any positive integer,
 "oldest", and "latest". If a positive integer is used then it should
 reference the index of the incremental backup starting from the oldest to
@@ -259,7 +260,7 @@ means that the index of the oldest backup should be used and specifying
 <dd>
 <p>This flag takes a comma separated range of
 start backup day to merge and end backup to merge (inclusive).
-The accepted formats are dd-mm-yy, backup directory name or backup
+The accepted formats are <code>dd-mm-yy</code>, backup directory name or backup
 index, with the first backup being number 0. To read more about format
 go to the section BACKUP RANGES.</p>
 </dd>
@@ -317,12 +318,9 @@ backup was taken after four items were updated.</p>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>$ cbbackupmgr list -a /data/backups</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>Size      Items          Name
+<pre>$ cbbackupmgr list -a /data/backups
+
+Size      Items          Name
 148.70MB  -              /
 148.70MB  -              + example
 98.66MB   -                  + 2016-03-01T16_27_10.093782029-08_00
@@ -340,19 +338,13 @@ backup was taken after four items were updated.</p>
 50.04MB   4                              shard_0.fdb
 2B        0                          full-text.json
 4B        0                          gsi.json
-1.72KB    1                          views.json</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cbbackupmgr merge -a /tmp/backup -r example \
- --start 2016-03-01T16_27_10.093782029-08_00 \
- --end 2016-03-01T16_27_51.349151165-08_00</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cbbackupmgr list -a /tmp/backup
+1.72KB    1                          views.json
+
+$ cbbackupmgr merge -a /tmp/backup -r example \
+--start 2016-03-01T16_27_10.093782029-08_00 \
+--end 2016-03-01T16_27_51.349151165-08_00
+
+$ cbbackupmgr list -a /tmp/backup
 Size      Items          Name
 98.84MB   -              /
 98.84MB   -              + example
@@ -363,7 +355,7 @@ Size      Items          Name
 98.84MB   31592                          shard_0.fdb
 2B        0                          full-text.json
 4B        0                          gsi.json
-1.72KB    1                          views.json</pre>
+ 1.72KB    1                          views.json</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -415,33 +407,6 @@ backup process see <a href="cbbackupmgr-strategies.html" class="page">cbbackupmg
 <dd>
 <p>Specifies the path to the backup archive. If the archive path is supplied as
 a command line argument then this value is overridden.</p>
-</dd>
-<dt class="hdlist1">CB_OBJSTORE_STAGING_DIRECTORY</dt>
-<dd>
-<p>Specifies the path to the staging directory. If the <code>--obj-staging-dir</code>
-argument is provided in the command line then this value is overridden.</p>
-</dd>
-<dt class="hdlist1">CB_OBJSTORE_REGION</dt>
-<dd>
-<p>Specifies the object store region. If the <code>--obj-region</code> argument is provided
-in the command line then this value is overridden.</p>
-</dd>
-<dt class="hdlist1">CB_OBJSTORE_ACCESS_KEY_ID</dt>
-<dd>
-<p>Specifies the object store access key id. If the <code>--obj-access-key-id</code>
-argument is provided in the command line this value is overridden.</p>
-</dd>
-<dt class="hdlist1">CB_OBJSTORE_SECRET_ACCESS_KEY</dt>
-<dd>
-<p>Specifies the object store secret access key. If the
-<code>--obj-secret-access-key</code> argument is provided in the command line this value
-is overridden.</p>
-</dd>
-<dt class="hdlist1">CB_AWS_ENABLE_EC2_METADATA</dt>
-<dd>
-<p>By default cbbackupmgr will disable fetching EC2 instance metadata. Setting
-this environment variable to true will allow the AWS SDK to fetch metadata
-from the EC2 instance endpoint.</p>
 </dd>
 </dl>
 </div>

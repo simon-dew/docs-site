@@ -4637,21 +4637,21 @@ Cluster-level query settings, node-level query settings, and request-level param
 </thead>
 <tbody>
 <tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Cluster-level query settings</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Cluster-level query settings</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Cluster</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The administrator at the system level</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Server side</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The CLI, cURL statements, or the UI</p></td>
 </tr>
 <tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Node-level query settings</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Node-level query settings</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Service Node</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The administrator at the system level</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Server side</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">cURL statements</p></td>
 </tr>
 <tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Request-level parameters</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Request-level parameters</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Request (statement)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Each user</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Client side</p></td>
@@ -8309,11 +8309,76 @@ $ curl http://localhost:8093/query/service -u user:pword -d 'statement=select * 
 <p>If the request contains a <code>BEGIN TRANSACTION</code> statement, or a DML statement with the <a href="#tximplicit">tximplicit</a> parameter set to <code>true</code>, then the <a href="#scan_consistency">scan_consistency</a> parameter sets the <em class="def">transactional scan consistency</em>.
 If you specify a transactional scan consistency of <code>request_plus</code>, <code>statement_plus</code>, or <code>at_plus</code>, or if you specify no transactional scan consistency, the transactional scan consistency is set to <code>request_plus</code>; otherwise, the transactional scan consistency is set as specified.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 9. Transactional scan consistency</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scan consistency at start of transaction</th>
+<th class="tableblock halign-left valign-top">Transactional scan consistency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not set</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>request_plus</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>not_bounded</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>not_bounded</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>request_plus</code><br>
+  <code>statement_plus</code><br>
+  <code>at_plus</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>request_plus</code></p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p>Any DML statements within the transaction that have no scan consistency set will inherit from the transactional scan consistency.
-When you specify a scan consistency of <code>request_plus</code> or <code>statement_plus</code> for a statement within the transaction, the scan consistency for the statement is set to <code>request_plus</code>.
-If you specify a scan consistency of <code>not_bounded</code> or <code>at_plus</code> for a statement within the transaction, the scan consistency for the statement is set as specified.</p>
+Individual DML statements within the transaction may override the transactional scan consistency.
+If you specify a scan consistency of <code>not_bounded</code> for a statement within the transaction, the scan consistency for the statement is set as specified.
+When you specify a scan consistency of <code>request_plus</code>, <code>statement_plus</code>, or <code>at_plus</code> for a statement within the transaction, the scan consistency for the statement is set to <code>request_plus</code>.</p>
 </div>
+<div class="paragraph">
+<p>However, <code>request_plus</code> consistency is not supported for statements using a full-text index.
+If any statements within the transaction use a full-text index, by means of the SEARCH function or the Flex Index feature, the scan consistency is set to <code>not_bounded</code> for the duration of the full-text search.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 10. Overriding the transactional scan consistency</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scan consistency for statement within transaction</th>
+<th class="tableblock halign-left valign-top">Inherited scan consistency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not set</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transactional scan consistency<br>
+ (<code>not_bounded</code> for full-text search)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>not_bounded</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>not_bounded</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>request_plus</code><br>
+  <code>statement_plus</code><br>
+  <code>at_plus</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>request_plus</code><br>
+ (<code>not_bounded</code> for full-text search)</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -8324,7 +8389,7 @@ If you specify a scan consistency of <code>not_bounded</code> or <code>at_plus</
 As summarized in the below table, these two types of requests should contain the following parameters:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. Named Parameters VS. Positional Parameters</caption>
+<caption class="title">Table 11. Named Parameters VS. Positional Parameters</caption>
 <colgroup>
 <col style="width: 22.2222%;">
 <col style="width: 55.5555%;">
@@ -8339,7 +8404,7 @@ As summarized in the below table, these two types of requests should contain the
 </thead>
 <tbody>
 <tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Named Parameters</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Named Parameters</strong></p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT detail FROM emp WHERE name = $nval AND age &gt; $aval</code></pre>
@@ -8349,7 +8414,7 @@ As summarized in the below table, these two types of requests should contain the
 <p class="tableblock">$aval = 45</p></td>
 </tr>
 <tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Positional Parameters</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Positional Parameters</strong></p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT detail FROM emp WHERE name = $1 AND age &gt; $2</code></pre>

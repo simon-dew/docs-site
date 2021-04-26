@@ -7,6 +7,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-7808/server/6.6/backup-restore/cbbackupmgr-remove.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="Removes a backup repository from the backup archive">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="6.6">
@@ -226,7 +227,7 @@ the archive path with <code>s3://${BUCKET_NAME}/</code>.</p>
 <p>This flag will take either a single backup directory
 (e.g 2019-08-23T09_36_56.957232625Z) or a comma separated range containing
 the start/end date of the backups to be deleted (inclusive). The accepted
-formats are dd-mm-yy, backup directory name or backup index, with the first
+formats are <code>dd-mm-yy</code>, backup directory name or backup index, with the first
 backup being number 0. To read more about format  go to the section BACKUP
 RANGES.</p>
 </dd>
@@ -243,8 +244,8 @@ RANGES.</p>
 <p>When performing an operation on an archive which is located in the cloud such
 as AWS, the staging directory is used to store local meta data files. This
 directory can be temporary (it&#8217;s not treated as a persistent store) and is
-only used during the backup. NOTE: Do not use <code>/tmp</code> as the your <code>obj-staging-dir</code>.
-See OBJECT STORE STAGING DIRECTORY in <a href="cbbackupmgr-config.html" class="page">cbbackupmgr-config</a> for more information.</p>
+only used during the backup. NOTE: Do not use <code>/tmp</code> as the <code>obj-staging-dir</code>.
+See <code>Disk requirements</code> in <a href="cbbackupmgr-cloud.html" class="page">cbbackupmgr-cloud</a> for more information.</p>
 </dd>
 </dl>
 </div>
@@ -272,7 +273,7 @@ object store being connected to.</p>
 <dt class="hdlist1">--obj-no-ssl-verify</dt>
 <dd>
 <p>Skips the SSL verification phase when connecting to the object store.
-Specifiying this flag will allow a connection using SSL encryption, but you
+Specifying this flag will allow a connection using SSL encryption, but you
 are vulnerable to a man-in-the-middle attack.</p>
 </dd>
 <dt class="hdlist1">--obj-region &lt;region&gt;</dt>
@@ -350,12 +351,9 @@ the archive directory and the backup repository is named "example".</p>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>$ cbbackupmgr list -a /data/backup</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>Size      Items          Name
+<pre>$ cbbackupmgr list -a /data/backup
+
+Size      Items          Name
 91.52MB   -              /
 91.52MB   -              + example
 91.52MB   -                  + 2016-02-12T12:45:33.329408761-08:00
@@ -365,27 +363,15 @@ the archive directory and the backup repository is named "example".</p>
 91.51MB   31569                          shard_0.fdb
 2B        0                          full-text.json
 10.00KB   8                          gsi.json
-1.72KB    1                          views.json</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cbbackupmgr remove -a /data/backup -r example</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>Backup repository `example` deleted successfully from archive `/tmp/backup`</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ cbbackupmgr list -a /data/backup</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>Size      Items          Name
+1.72KB    1                          views.json
+
+$ cbbackupmgr remove -a /data/backup -r example
+
+Backup repository `example` deleted successfully from archive `/tmp/backup`
+
+$ cbbackupmgr list -a /data/backup
+
+Size      Items          Name
 0B        -              /</pre>
 </div>
 </div>
@@ -397,16 +383,13 @@ given the following archive:</p>
 <div class="content">
 <pre>$ cbbackupmgr info -a /data/backup -r example
 Name     | Size     | # Backups  |
-example  | 36.01MB  | 3          |</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>+  Backup                            | Size     | Type  | Source                 | Range  | Events  | Aliases  | Complete  |
-+  2019-09-18T11_13_58.136188+01_00  | 12.00MB  | FULL  | http://localhost:8091  | N/A    | 0       | 1        | true      |
-+  2019-09-19T11_14_29.026324+01_00  | 12.00MB  | INCR  | http://localhost:8091  | N/A    | 0       | 1        | true      |
-+  2019-09-19T11_14_40.410627+01_00  | 12.00MB  | INCR  | http://localhost:8091  | N/A    | 0       | 1        | true      |
-+  2019-09-20T11_14_43.410627+01_00  | 12.00MB  | INCR  | http://localhost:8091  | N/A    | 0       | 1        | true      |</pre>
+example  | 36.01MB  | 3          |
+
+  +  Backup                            | Size     | Type  | Source                 | Range  | Events  | Aliases  | Complete  |
+  +  2019-09-18T11_13_58.136188+01_00  | 12.00MB  | FULL  | http://localhost:8091  | N/A    | 0       | 1        | true      |
+  +  2019-09-19T11_14_29.026324+01_00  | 12.00MB  | INCR  | http://localhost:8091  | N/A    | 0       | 1        | true      |
+  +  2019-09-19T11_14_40.410627+01_00  | 12.00MB  | INCR  | http://localhost:8091  | N/A    | 0       | 1        | true      |
+  +  2019-09-20T11_14_43.410627+01_00  | 12.00MB  | INCR  | http://localhost:8091  | N/A    | 0       | 1        | true      |</pre>
 </div>
 </div>
 <div class="paragraph">
