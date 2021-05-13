@@ -4705,7 +4705,7 @@ A node&#8217;s participation in the move may be as either a source or a target.<
 <p>For example, if a node is at a given time the source for two moves in backfill phase, and is the target for two additional moves in backfill phase, and the setting stands at <code>4</code>, the node may participate in the backfill phase of no additional moves, until at least one of its current moves has completed its backfill phase.</p>
 </div>
 <div class="paragraph">
-<p>The setting may be established by means of Couchbase Web Console, the Couchbase CLI, or the REST API: for information, see the information provided on <a href="../../manage/manage-settings/general-settings.html#rebalance-settings" class="page">Rebalance Settings</a>.</p>
+<p>The setting may be established by means of the <a href="../../manage/manage-settings/general-settings.html#rebalance-settings" class="page">Couchbase Web Console</a>, the <a href="../../manage/manage-settings/general-settings.html#rebalance-settings-via-cli" class="page">Couchbase CLI</a>, or the <a href="../../manage/manage-settings/general-settings.html#rebalance-settings-via-rest" class="page">REST API</a>.</p>
 </div>
 <div class="paragraph">
 <p>A higher setting may improve rebalance performance, at the cost of higher resource consumption; in terms of CPU, memory, disk, and bandwidth.
@@ -4755,13 +4755,56 @@ The effects on services other than the Data Service are described below.</p>
 <div class="sect2">
 <h3 id="rebalancing-the-index-service"><a class="anchor" href="#rebalancing-the-index-service"></a>Index Service</h3>
 <div class="paragraph">
-<p>The Index Service maintains a cluster-wide set of index definitions and metadata, which allows the redistribution of indexes and index replicas from removed nodes to nodes that continue as part of the cluster.
-Indexes that reside on non-removed nodes are unaffected by rebalance.</p>
+<p>The Index Service maintains a cluster-wide set of index definitions and metadata, which allows the redistribution of indexes and index replicas during a rebalance.</p>
 </div>
 <div class="paragraph">
 <p>The rebalance process takes account of nodes' CPU and RAM utilization, and achieves the best resource-balance possible.
-Note that rebalance does not <em>move</em> indexes or replicas: instead, it <em>rebuilds</em> them in their new locations, using the latest data from the Data Service.
-If more index replicas exist than can be handled by the number of existing nodes, replicas are dropped: the numbers are automatically made up subsequently, if additional Index Service nodes are added to the cluster.</p>
+Note that rebalance does not <em>move</em> indexes or replicas: instead, it <em>rebuilds</em> them in their new locations, using the latest data from the Data Service.</p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 7.0 and later, the <em class="def">index redistribution</em> setting enables you to specify how Couchbase Server redistributes indexes on rebalance.
+The setting may be established by means of the <a href="../../manage/manage-settings/general-settings.html#index-storage-mode" class="page">Couchbase Web Console</a> or the <a href="../../manage/manage-settings/general-settings.html#index-settings-via-rest" class="page">REST API</a>.</p>
+</div>
+<div class="paragraph">
+<p>The setting affects how indexes are redistributed in the following scenarios:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rebalance after an index node is added</dt>
+<dd>
+<p>If the setting is enabled, existing partitioned and non-partitioned indexes are placed optimally across <em>all</em> index nodes in the cluster, including any new index nodes being added.
+If the setting is disabled, only partitioned indexes are redistributed.</p>
+</dd>
+<dt class="hdlist1">Rebalance after a non-index node is added or removed</dt>
+<dd>
+<p>If the setting is enabled, partitioned and non-partitioned indexes are moved from heavily loaded nodes to nodes with free resources to achieve balanced distribution.
+If the setting is disabled, only partitioned indexes are redistributed.</p>
+</dd>
+<dt class="hdlist1">Rebalance during index server group repair</dt>
+<dd>
+<p>With multiple server groups, when a group failure leads to all replicas being placed in a single server group, if the setting is enabled, partitioned and non-partitioned indexes are redistributed to ensure high availability across the server groups after repair.
+If the setting is disabled, only partitioned indexes are redistributed.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The setting does <em>not</em> affect how indexes are redistributed in the following scenarios:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rebalance when an index node is removed</dt>
+<dd>
+<p>Partitioned and non-partitioned indexes are moved on rebalance from removed nodes to nodes that continue as part of the cluster.
+Indexes that reside on non-removed nodes are unaffected by rebalance.</p>
+</dd>
+<dt class="hdlist1">Rebalance when index nodes are added and removed</dt>
+<dd>
+<p>During a swap rebalance, indexes from ejected nodes are placed on the nodes being added.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>If more index replicas exist than can be handled by the number of existing nodes, replicas are dropped: the numbers are automatically made up subsequently, if additional Index Service nodes are added to the cluster.</p>
 </div>
 <div class="paragraph">
 <p>During rebalance, no index node is removed until index-building has completed on alternative nodes.
