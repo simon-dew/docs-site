@@ -4603,6 +4603,12 @@ server
 <a class="nav-link" href="../rebalance-reference/rebalance-reference.html">Rebalance Reference</a>
 </span>
 </li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../metrics-reference/metrics-reference.html">Metrics Reference</a>
+</span>
+</li>
 </ul>
 </li>
 <li class="nav-item " data-depth="0">
@@ -4951,15 +4957,6 @@ Couchbase’s Kafka connector is an SDK component that needs an application cont
 <p>It should be noted, “document metadata” is different from the “metadata bucket”, described in the next section, used by the Eventing Service to maintain state and checkpoints.</p>
 </div>
 </li>
-</ul>
-</div>
-<div class="paragraph">
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="ulist">
-<ul>
 <li>
 <p>Can there be more than one Function listening to changes to a bucket?</p>
 <div class="paragraph">
@@ -4990,39 +4987,48 @@ For example, you can your enrich or update a document with data from another doc
 </li>
 </ul>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-metadata-bucket-or-the-eventing-storage-bucket"><a class="anchor" href="#the-metadata-bucket-or-the-eventing-storage-bucket"></a>The Metadata Bucket (or the Eventing Storage bucket)</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>What is the metadata bucket? Do I need to create a separate bucket?</p>
 <div class="paragraph">
-<p>== The Metadata Bucket (or the Eventing Storage bucket)</p>
+<p>To provide better resiliency and restartability semantics across Eventing nodes, some of the metadata that is used by the Eventing service needs to be stored in a standard <a href="../learn/buckets-memory-and-storage/buckets.html" class="page">Couchbase bucket</a> (hereafter referred to as the 'metadata bucket').</p>
 </div>
 <div class="paragraph">
-<p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; 47fd8de5&#8230;&#8203; Add new 6.6.2 capabilities, notations, and scriptlets (#1900)
-* What is the metadata bucket? Do I need to create a separate bucket?</p>
-</div>
-<div class="paragraph">
-<p>+
-To provide better resiliency and restartability semantics across Eventing nodes, some of the metadata that is used by the Eventing service needs to be stored in a standard <a href="../learn/buckets-memory-and-storage/buckets.html" class="page">Couchbase bucket</a> (hereafter referred to as the 'metadata bucket').</p>
-</div>
-<div class="paragraph">
-<p>+
-After provisioning the Eventing nodes in your cluster, you&#8217;ll need to create the metadata bucket before you can start using the Eventing service.
+<p>After provisioning the Eventing nodes in your cluster, you&#8217;ll need to create the metadata bucket before you can start using the Eventing service.
 All Eventing functions within a cluster can share the same metadata bucket (this is a best practice but not a requirement), regardless of the number of functions, or their source and destination buckets.
 (Setting up a metadata bucket is a one-time activity for the cluster should you choose to follow this best practice.)</p>
 </div>
 <div class="paragraph">
-<p>+
-Some additional requirements of the metadata bucket are as follows:</p>
-</div>
-<div class="paragraph">
-<p>+
-<strong> You should enable <a href="../manage/manage-buckets/create-bucket.html" class="page">vBucket replicas</a> on the metadata bucket to allow for failure recovery.
-</strong> You should reserve the metadata bucket solely for Eventing housekeeping.
-It shouldn&#8217;t be used for any other data storage.
-<strong> Each Eventing function always requires a fixed amount of space of about 2MB (1024 docs * 1884 bytes).
-</strong> If an Eventing function uses timers, then an additional fixed amount of space of about 0.2MB (1024 * docs of 196 bytes) is needed.
-** If an Eventing function uses timers, then for each active timer, an additional amount of space between 832 and 1856 bytes (832 bytes + sizeof(context)) is needed.
-Where by default the context cannot be larger than 1024 bytes and the maximum number of active timers is based on both the business logic and the mutation rate. Note, the "timer_context_size" can be overridden on a per function bases via the <a href="eventing-api.html" class="page">Eventing: REST API</a>. It is best to keep the size of the context small by using a reference rather than passing and storing a massive document in the timer.</p>
+<p>Some additional requirements of the metadata bucket are as follows:</p>
 </div>
 <div class="ulist">
 <ul>
+<li>
+<p>You should enable <a href="../manage/manage-buckets/create-bucket.html" class="page">vBucket replicas</a> on the metadata bucket to allow for failure recovery.</p>
+</li>
+<li>
+<p>You should reserve the metadata bucket solely for Eventing housekeeping.
+It shouldn&#8217;t be used for any other data storage.</p>
+</li>
+<li>
+<p>Each Eventing function always requires a fixed amount of space of about 2MB (1024 docs * 1884 bytes).</p>
+</li>
+<li>
+<p>If an Eventing function uses timers, then an additional fixed amount of space of about 0.2MB (1024 * docs of 196 bytes) is needed.</p>
+</li>
+<li>
+<p>If an Eventing function uses timers, then for each active timer, an additional amount of space between 832 and 1856 bytes (832 bytes + sizeof(context)) is needed.
+Where by default the context cannot be larger than 1024 bytes and the maximum number of active timers is based on both the business logic and the mutation rate. Note, the "timer_context_size" can be overridden on a per function bases via the <a href="eventing-api.html" class="page">Eventing: REST API</a>. It is best to keep the size of the context small by using a reference rather than passing and storing a massive document in the timer.</p>
+</li>
+</ul>
+</div>
+</li>
 <li>
 <p>Can there be more than one Function listening to changes to a bucket?</p>
 <div class="paragraph">
@@ -5052,9 +5058,11 @@ For example, you can your enrich or update a document with data from another doc
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>== Timer Behavior</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="timer-behavior"><a class="anchor" href="#timer-behavior"></a>Timer Behavior</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -5102,9 +5110,11 @@ As of the release 6.6.0, recurring Timers can be created days, weeks, or years i
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>== Cluster Behavior</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="cluster-behavior"><a class="anchor" href="#cluster-behavior"></a>Cluster Behavior</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -5138,20 +5148,10 @@ for a specific Function.
 You can also scale out horizontally via Couchbase’s elastic scaling option by adding another node and rebalancing.  In this case each eventing node is assigned a subset of vBuckets. Note this sharding increases overall performance for all Functions.</p>
 </div>
 <div class="paragraph">
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-However keep in mind that sometimes the Function is limited by the overall performance of the Data Service. In this case it is appropriate to scale the Data service.</p>
-</div>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="paragraph">
 <p>However keep in mind that sometimes the Function is limited by the overall performance of the Data Service.
 In this case it is appropriate to scale the Data service.</p>
 </div>
-<div class="ulist">
-<ul>
+</li>
 <li>
 <p>When I maximize the workers Eventing Function I sometimes see a stall in processing?</p>
 <div class="paragraph">
@@ -5164,8 +5164,7 @@ that you may need to raise the Memory Quota for Eventing).</p>
 <div class="paragraph">
 <p>However keep in mind that sometimes the Function is limited by both the number of cores in the Eventing instance the overall
 performance of the Data Service.  In these cases it is appropriate to either scale compute power of the Eventing node, scale the
-Eventing service, or scale the Data service.
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; 47fd8de5&#8230;&#8203; Add new 6.6.2 capabilities, notations, and scriptlets (#1900)</p>
+Eventing service, or scale the Data service.</p>
 </div>
 </li>
 </ul>
