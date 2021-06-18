@@ -5750,7 +5750,7 @@ queries and will still evaluate them as best it can using nested loop based tech
 parallel case).</p>
 </div>
 <div class="paragraph">
-<p>As an example of such a use case, suppose that you wanted for each Arizona landmark to get the landmark&#8217;s name,
+<p>As an example of such a use case, suppose that you wanted for each California landmark to get the landmark&#8217;s name,
 location, and a list of neighboring landmark&#8217;s names&#8201;&#8212;&#8201;where neighbors are other landmarks that are geographically
 close to their location.
 In N1QL for Analytics, this can be accomplished in a manner similar to the previous query, but with locality plus name
@@ -5766,6 +5766,7 @@ inequality instead of a simple key equality condition in the correlated query&#8
      AND abs(lm2.geo.lon - lm1.geo.lon) &lt;= 0.01
   ) AS neighbors
 FROM landmark lm1
+WHERE lm1.state = "California"
 ORDER BY lm1.name
 LIMIT 3;</code></pre>
 </div>
@@ -5778,15 +5779,18 @@ LIMIT 3;</code></pre>
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "neighbors": [
-      "Ron Donovan house",
       "Randall Museum",
       "Buena Vista Park",
       "Hippie Hill",
+      "Ron Donovan house",
       "731 Buena Vista West",
+      "Michael McClure house",
       "1235 Masonic Ave",
       "Sid Vicious house",
       "Amoeba Music",
+      "Booksmith",
       "Roberts Hardware",
+      "Citrus Club",
       "Cha-Cha-Cha",
       "Pork Store Cafe",
       "Squat &amp; Gobble",
@@ -5795,9 +5799,6 @@ LIMIT 3;</code></pre>
       "Club Deluxe",
       "Gold Cane",
       "Hobson's Choice",
-      "Michael McClure house",
-      "Booksmith",
-      "Citrus Club",
       "Kezar Pub &amp; Restaurant",
       "Magnolia",
       "Trax",
@@ -5812,23 +5813,116 @@ LIMIT 3;</code></pre>
     }
   },
   {
-    "neighbors": [],
-    "landmark": "'The Argyll Arms Hotel",
+    "neighbors": [
+      "Capitol Records Building",
+      "Los Angeles Fire Department Hollywood Museum 27",
+      "Walk of Fame",
+      "Amoeba Music",
+      "Palms Thai Restaurant",
+      "Sushi Ike",
+      "Katsuya",
+      "The Juice Fountain",
+      "Cat and Fiddle",
+      "Cinespace",
+      "The Well",
+      "Velvet Margarita Cantina",
+      "Yai"
+    ],
+    "landmark": "101 Coffee Shop",
     "location": {
-      "lat": 56.31552,
-      "lon": -6.23594,
+      "lat": 34.105411,
+      "lon": -118.323841,
       "accuracy": "APPROXIMATE"
     }
   },
   {
     "neighbors": [
-      "Bank of Scotland"
+      "The Art Institute of California &amp;mdash; San Francisco",
+      "John Pence Gallery",
+      "Luggage Store Gallery",
+      "United Nations Plaza",
+      "Alcazar Theater",
+      "Federal Office Building",
+      "San Francisco Public Library - Main Library",
+      "Glide Memorial Church",
+      "St. Boniface",
+      "CounterPULSE Theater",
+      "EXIT Theatre",
+      "Golden Gate Theater",
+      "The Orpheum Theater",
+      "Warfield Theater",
+      "Kayo Books",
+      "Napa Valley Winery Exchange",
+      "Chutney",
+      "Joey's Laundry",
+      "Olympic Flames Cafe",
+      "Pakwan",
+      "Shalimar",
+      "Kim Thanh",
+      "Grand Cafe",
+      "Market Street Grill",
+      "Millennium Restaurant",
+      "21 Club",
+      "Bourbon and Branch",
+      "The Brown Jug",
+      "The Owl Tree",
+      "Tradition",
+      "Union Square Sports Bar",
+      "Aunt Charlie's Lounge",
+      "Farm:Table",
+      "Moscone Center",
+      "Charles Looff Carousel",
+      "Metreon",
+      "Yerba Buena Center for the Arts",
+      "Yerba Buena Gardens",
+      "Children's Creativity Museum",
+      "SOMArts Cultural Center",
+      "San Francisco Museum of Modern Art (SFMOMA)",
+      "Cartoon Art Museum",
+      "California Historical Society Museum",
+      "Museum of the African Diaspora",
+      "Contemporary Jewish Museum",
+      "Intersection for the Arts",
+      "Yerba Buena Bowling Center",
+      "Yerba Buena Ice Skating Center",
+      "General Bead",
+      "Podesta Baldocchi",
+      "Westfield San Francisco Centre",
+      "Brainwash",
+      "Dottie's True Blue Cafe",
+      "Canton Chinese &amp; Dim Sum Restaurant",
+      "Manora's Thai Cuisine",
+      "Thirsty Bear Brewing Company",
+      "City Beer Store &amp; Tasting Bar",
+      "Hotel Utah Saloon",
+      "Jillians",
+      "Press Club",
+      "The Cat Club",
+      "DNA Lounge",
+      "The End Up",
+      "Mezzanine",
+      "The Stud",
+      "Fraenkel Gallery",
+      "Union Square",
+      "TIX Bay Area",
+      "Curran Theater",
+      "Geary Theater",
+      "Phoenix Theater",
+      "Britex",
+      "San Francisco Art Exchange",
+      "Bangkok Noodles",
+      "First Crush",
+      "John's Grill",
+      "Little Delhi",
+      "Puccini &amp; Pinetti",
+      "Lefty O'Doul's",
+      "Ruby Skye"
     ],
-    "landmark": "'Visit the Hut of the Shadows and other End of the Road sculptures",
+    "landmark": "1015",
     "location": {
-      "lat": 57.6104,
-      "lon": -7.1532,
-      "accuracy": "RANGE_INTERPOLATED"
+      "lat": 37.7781,
+      "lon": -122.4058,
+      "accuracy": "ROOFTOP"
     }
   }
 ]</code></pre>
@@ -6079,7 +6173,7 @@ hotels that it has.</p>
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ht.city, ht.state, COUNT(*) AS num_hotels
 FROM hotel ht
 GROUP BY ht.city, ht.state
-HAVING COUNT(*) &gt; 40;</code></pre>
+HAVING COUNT(*) &gt; 30;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6101,9 +6195,19 @@ The query result will contain one such object per city/state pair.</p>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
+    "num_hotels": 36,
+    "city": "Birmingham",
+    "state": null
+  },
+  {
     "num_hotels": 67,
     "city": "London",
     "state": null
+  },
+  {
+    "num_hotels": 35,
+    "city": "Los Angeles",
+    "state": "California"
   },
   {
     "num_hotels": 62,
@@ -6139,7 +6243,7 @@ with sort-based methods being used by default and a hint being available to sugg
 FROM hotel ht
 /*+ hash */
 GROUP BY ht.city, ht.state
-HAVING COUNT(*) &gt; 40;</code></pre>
+HAVING COUNT(*) &gt; 30;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6164,9 +6268,19 @@ HAVING COUNT(*) &gt; 40;</code></pre>
     "state": "California"
   },
   {
+    "num_hotels": 35,
+    "city": "Los Angeles",
+    "state": "California"
+  },
+  {
     "num_hotels": 48,
     "city": "San Diego",
     "state": "California"
+  },
+  {
+    "num_hotels": 36,
+    "city": "Birmingham",
+    "state": null
   }
 ]</code></pre>
 </div>
