@@ -1980,8 +1980,17 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
+<span class="in-toggle" data-depth="2"></span>
 <a class="nav-link" href="fts-creating-indexes.html">Creating Indexes</a>
 </span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="3">
+
+<span class="nav-line "  data-depth="3">
+<a class="nav-link" href="fts-accessing-managing-full-text-indexes.html">Accessing and Managing Full Text Indexes</a>
+</span>
+</li>
+</ul>
 </li>
 <li class="nav-item " data-depth="2">
 
@@ -3549,6 +3558,27 @@ server
 
 <span class="nav-line "  data-depth="4">
 <span class="in-toggle" data-depth="4"></span>
+<a class="nav-link" href="../rest-api/rest-statistics.html">Getting Cluster Statistics</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../rest-api/rest-statistics-single.html">Getting a Single Statistic</a>
+</span>
+</li>
+<li class="nav-item " data-depth="5">
+
+<span class="nav-line "  data-depth="5">
+<a class="nav-link" href="../rest-api/rest-statistics-multiple.html">Getting Multiple Statistics</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<span class="in-toggle" data-depth="4"></span>
 <a class="nav-link" href="../rest-api/rest-cluster-autofailover-intro.html">Managing Auto-Failover</a>
 </span>
 <ul class="nav-list">
@@ -4439,8 +4469,71 @@ server
 <li class="nav-item  is-inactive " data-depth="1">
 
 <span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
 <a class="nav-link" href="../metrics-reference/metrics-reference.html">Metrics Reference</a>
 </span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/data-service-metrics.html">Data Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/query-service-metrics.html">Query Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/index-service-metrics.html">Index Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/search-service-metrics.html">Search Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/eventing-service-metrics.html">Eventing Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/analytics-service-metrics.html">Analytics Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/backup-service-metrics.html">Backup Service Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/ns-server-metrics.html">ns_server Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/xdcr-metrics.html">XDCR Metrics</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../metrics-reference/all-services-metrics.html">Metrics for All Services</a>
+</span>
+</li>
+</ul>
 </li>
 <li class="nav-item  is-inactive " data-depth="1">
 
@@ -4889,10 +4982,20 @@ The <code>highlight</code> object contains two fields:</p>
 </dd>
 <dt class="hdlist1">Fields</dt>
 <dd>
-<p>This object contains an array of field names which must be loaded and returned with the query response.
-If you store a field and want it returned with the result, you must name the field here.
-The field names are specified as string values.
-While there is no field name pattern matching available, you can use an asterisk "*" to specify that all the fields must be loaded and returned with the response.</p>
+<p>This object contains an array of field names which must be loaded and returned with the query response. These field names are the fields from the documents, which are residing in the collections. For example, "airportname" and "country" fields from the "airport" collection.
+If you store a field and want it returned with the result, you must name the field here. The field names are specified as string values. While there is no field name pattern matching available, you can use an asterisk "*" to specify that all the fields must be loaded and returned with the response.</p>
+<div class="listingblock">
+<div class="content">
+<pre>curl -XPOST -H "Content-Type: application/json" -u username:password http://localhost:8094/api/index//query -d
+'{
+  "query": {
+           "query": "united"
+           },
+           "collections":["airport"],
+           "fields":["airportname","country"]
+}'</pre>
+</div>
+</div>
 </dd>
 <dt class="hdlist1">Facets</dt>
 <dd>
@@ -4997,6 +5100,57 @@ The text strings contain the "<code class="code">&lt;mark&gt;</code>" tags surro
 <p>This object returns the value of the field that was matched.
 However, unlike the Fragments field, this does not have any tags to render highlighting.</p>
 </dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>"hits": [
+    {
+      "index": "FTS_5be67d63d7a24d51_6ddbfb54",
+      "id": "airport_3451",
+      "score": 1.500578279895648,
+      "sort": [
+        "_score"
+      ],
+      "fields": {
+        "_$c": "airport",
+        "airportname": "Wendover",
+        "country": "United States"
+      }
+    },
+    {
+      "index": "FTS_5be67d63d7a24d51_6ddbfb54",
+      "id": "airport_474",
+      "score": 1.500578279895648,
+      "sort": [
+        "_score"
+      ],
+      "fields": {
+        "_$c": "airport",
+        "airportname": "Wolverhampton",
+        "country": "United Kingdom"
+      }
+    },
+    {
+      "index": "FTS_5be67d63d7a24d51_6ddbfb54",
+      "id": "airport_538",
+      "score": 1.500578279895648,
+      "sort": [
+        "_score"
+      ],
+      "fields": {
+        "_$c": "airport",
+        "airportname": "Benbecula",
+        "country": "United Kingdom"
+      }
+    },</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where, <strong>$c</strong> indicates the source collection name for each hit.</p>
+</div>
+<div class="dlist">
+<dl>
 <dt class="hdlist1">Sort</dt>
 <dd>
 <p>This field contains an array of one or more values that were used to sort the search results.
