@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Restoring with cbrestore | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-6139/server/6.6/cli/cbtools/guides/cbrestore-guide.html">
+<link rel="stylesheet" href="../../../../../_/css/site.css">
+<script src="../../../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="The cbrestore command enables the restoration of data that was backed up using the cbbackup command into a bucket on a new cluster">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="6.6">
+<meta name="generator" content="Antora 3.0.0-alpha.5">
+<link rel="icon" href="../../../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://docs.couchbase.com">
+                    <img src="../../../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-6139/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../../home/cloud.html">
+                      Cloud
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      Tutorials
+                      <span class="arrow">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a href="https://cloud.couchbase.com/sign-up" class="free-trial-link" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  <i class="fas fa-cloud"></i>
+                  Free Trial
+                </a>
+                <a class="btn btn-primary try-btn"  onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                </a>
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbase/couchbase-cli/docs/modules/cli/pages/cbtools/guides/cbrestore-guide.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../../../index.html">server</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Restoring with cbrestore</h1>
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+The <code class="cmd">cbrestore</code> command enables the restoration of data that was backed up using the <code class="cmd">cbbackup</code> command into a bucket on a new cluster.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>When restoring a backup, you have to select the appropriate restore sequence based on the type of restore you are performing.
+The available methods when restoring a cluster depend on the method used to back up the cluster.</p>
+</div>
+<div class="paragraph">
+<p>If <code class="cmd">cbbackup</code> was used to backup the bucket data, you could restore back to a cluster with the same or different configuration.
+This is because <code class="cmd">cbbackup</code> stores information about the stored bucket data in a format that enables it to be restored back into a bucket on a new cluster.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the information was backed up using a direct file copy, then you must restore the information back to an identical cluster.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code class="cmd">cbrestore</code> command takes the information that has been backed up via the <code class="cmd">cbbackup</code>&gt; command and streams the stored data into a cluster.
+The cluster configuration does not have to match the one used when the data was backed up.
+It can be used when transferring information to a new cluster or updated or expanded version of the existing cluster in the event of disaster recovery.</p>
+</div>
+<div class="paragraph">
+<p>Because the data can be flexibly restored, it provides for a number of different scenarios to be executed on the data that has been backed up:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Restoring data into a cluster of a different size and configuration.</p>
+</li>
+<li>
+<p>Transferring or restoring data into a different bucket on the same or different cluster.</p>
+</li>
+<li>
+<p>Restoring a selected portion of the data into a new or different cluster, or the same cluster but a different bucket.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The basic format of the <code class="cmd">cbrestore</code> command is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cbrestore [options] [source] [destination]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">[options]</dt>
+<dd>
+<p>Options specifying how the information should be restored into the cluster.
+Common options include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>--bucket-source</code></p>
+<div class="paragraph">
+<p>Specify the name of the bucket data to be read from the backup data that will be restored.</p>
+</div>
+</li>
+<li>
+<p><code>--bucket-destination</code></p>
+<div class="paragraph">
+<p>Specify the name of the bucket the data will be written to.
+If this option is not specified, the data will be written to a bucket with the same name as the source bucket.</p>
+</div>
+</li>
+<li>
+<p><code>--add</code></p>
+<div class="paragraph">
+<p>Use <code>--add</code> instead of <code>--set</code> to avoid overwriting the existing items in the destination.</p>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">[source]</dt>
+<dd>
+<p>The backup directory specified to <code>cbbackup</code> where the backup data was stored.</p>
+</dd>
+<dt class="hdlist1">[destination]</dt>
+<dd>
+<p>The REST API URL of a node within the cluster where the information will be restored.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The <code class="cmd">cbrestore</code> command restores only a single bucket of data at a time.
+If you have created a backup of an entire cluster (such as all buckets), then you must restore each bucket individually back to the cluster.
+All destination buckets must already exist since <code class="cmd">cbrestore</code> does not create or configure destination buckets for you.</p>
+</div>
+<div class="paragraph">
+<p>For example, to restore a single bucket of data to a cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cbrestore \
+    /backups/backup-2012-05-10 \
+    http://Administrator:password@HOST:8091 \
+    --bucket-source=XXX
+    [####################] 100.0% (231726/231726 msgs)
+    bucket: default, msgs transferred...
+    :                total |       last |    per sec
+    batch :                  232 |        232 |       33.1
+    byte  :             10247683 |   10247683 |  1462020.7
+    msg   :               231726 |     231726 |    33060.0
+    done</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To restore the bucket data to a different bucket on the cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cbrestore \
+    /backups/backup-2012-05-10 \
+    http://Administrator:password@HOST:8091 \
+    --bucket-source=XXX \
+    --bucket-destination=YYY
+    [####################] 100.0% (231726/231726 msgs)
+    bucket: default, msgs transferred...
+    :                total |       last |    per sec
+    batch :                  232 |        232 |       33.1
+    byte  :             10247683 |   10247683 |  1462020.7
+    msg   :               231726 |     231726 |    33060.0
+    done</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>msg</code> count in this case is the number of documents restored back to the bucket in the cluster.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="filtering-keys-during-restore"><a class="anchor" href="#filtering-keys-during-restore"></a>Filtering keys during restore</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code class="cmd">cbrestore</code> command includes support for filtering the keys that are restored to the database from the files that were created during backup.
+This is in addition to the filtering support available during backup).</p>
+</div>
+<div class="paragraph">
+<p>The specification is in the form of a regular expression supplied as an option to the <code class="cmd">cbrestore</code> command.
+For example, to restore information to a bucket only where the keys have an <code>object</code> prefix:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cbrestore /backups/backup-20120501 http://HOST:8091 \
+    -u Administrator -p password \
+    -b default \
+    -k '^object.*'
+    2013-02-18 10:39:09,476: w0 skipping msg with key: sales_7597_3783_6
+    ...
+    2013-02-18 10:39:09,476: w0 skipping msg with key: sales_5575_3699_6
+    2013-02-18 10:39:09,476: w0 skipping msg with key: sales_7597_3840_6
+    [                    ] 0.0% (0/231726 msgs)
+    bucket: default, msgs transferred...
+    :                total |       last |    per sec
+    batch :                    1 |          1 |        0.1
+    byte  :                    0 |          0 |        0.0
+    msg   :                    0 |          0 |        0.0
+    done</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This copies only the keys matching the specified prefix into the <code class="var">default</code> bucket.
+For each key skipped, an information message is provided.
+The remaining output shows the records transferred and summary as normal.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="restoring-using-file-copies"><a class="anchor" href="#restoring-using-file-copies"></a>Restoring using file copies</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To restore the information to the same cluster with the same configuration, shut down your entire cluster while you restore the data and then restart the cluster again.
+In this case, you are replacing the entire cluster data and configuration with the backed up version of the data files, and then restarting the cluster with the saved version of the cluster files.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Make sure that any restoration of files also sets the proper ownership of those files to the Couchbase user.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When restoring data back in the same cluster, verify the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Backup and restore must use the same version of Couchbase Server.</p>
+</li>
+<li>
+<p>The cluster must contain the same number of nodes.</p>
+</li>
+<li>
+<p>Each node must have the same IP address or hostname it was configured with when the cluster was backed up.</p>
+</li>
+<li>
+<p>All <code>config.dat</code> configuration files as well as all database files must be restored to their original locations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The steps required to complete the restore process are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Stop the Couchbase Server service on all nodes.</p>
+</li>
+<li>
+<p>On each node, restore the database, <code>stats.json</code>, and configuration file <code>config.dat</code> from your backup copies for each node.</p>
+</li>
+<li>
+<p>Restart the service on each node.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../../../_/js/site.js"></script>
+<script async src="../../../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../../../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
