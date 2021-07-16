@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Getting a Single Statistic | Couchbase Docs (Staging)</title>
+<title>Getting Statistics from a Single Metric | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
@@ -4834,7 +4834,7 @@ server
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Getting a Single Statistic</h1>
+<h1 class="page">Getting Statistics from a Single Metric</h1>
 </div>
 <div class="contributor-list-box">
 <span class="last-commit-date" id="commitdate">    </span>
@@ -4844,7 +4844,7 @@ server
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The REST API allows individual cluster-statistics to be retrieved, from one or more nodes.
+The REST API allows cluster-statistics to be retrieved from a single metric.
 </blockquote>
 </div>
 </div>
@@ -4854,7 +4854,7 @@ The REST API allows individual cluster-statistics to be retrieved, from one or m
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>GET /pools/default/stats/range/&lt;metric_name&gt;/&lt;function-expression&gt;</pre>
+<pre>GET /pools/default/stats/range/&lt;metric_name&gt;/[function-expression]</pre>
 </div>
 </div>
 </div>
@@ -4863,7 +4863,11 @@ The REST API allows individual cluster-statistics to be retrieved, from one or m
 <h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This method and URI allow an individual cluster-statistic to be retrieved, based on the specification of a metric, and a function that determines the nature of the statistic to be derived from the metric.</p>
+<p>This method and URI allow cluster-statistics to be retrieved, based on the specification of a single metric.
+Optionally, the cluster-statistics can be further defined through the specifying of a <em>function</em>; and/or <em>labels</em> with values.</p>
+</div>
+<div class="paragraph">
+<p>An instance of <em>Prometheus</em> runs on each node of the cluster; and the metrics for each node are duly stored in that node&#8217;s instance of Prometheus.</p>
 </div>
 </div>
 </div>
@@ -4874,24 +4878,33 @@ The REST API allows individual cluster-statistics to be retrieved, from one or m
 <div class="content">
 <pre>curl -X GET -u &lt;username:password&gt; \
 http://&lt;ip-address-or-domain-name&gt;:&lt;port-number&gt;/pools/default/stats/range/&lt;metric-name&gt;/
-  &lt;function-expression&gt;</pre>
+  [function-expression]</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>function-expression</code> must take the following form:</p>
+<p>When present, the optional <code>function-expression</code> should take the following form:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>[&lt;function&gt;...]?[&lt;label&gt;=&lt;val&gt;&amp;...]</pre>
+<pre>[[&lt;function&gt;?][&lt;label&gt;=&lt;val&gt;&amp;]*]</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This syntax is described in the subsections immediately below.</p>
+<p>As this indicates, any number of <code>&lt;label&gt;=&lt;val&gt;</code> pairs can be specified, with or without a preceding <code>&lt;function&gt;</code>.
+If a function is specified, it is applied to all statistics; if none is specified, all statistics are returned unmodified.</p>
+</div>
+<div class="paragraph">
+<p>A <code>&lt;function&gt;</code> can be specified with or without one or more <code>&lt;label&gt;=&lt;val&gt;</code> pairs.
+If a <code>&lt;function&gt;</code> and at least one <code>&lt;label&gt;=&lt;val&gt;</code> pair are specified, the <code>&lt;function&gt;</code> must be followed with the <code>?</code> character.
+If multiple <code>&lt;label&gt;=&lt;val&gt;</code> pairs are specified, each is separated from the next with the <code>&amp;</code> character.</p>
+</div>
+<div class="paragraph">
+<p>All syntactic elements are described in the subsections immediately below.</p>
 </div>
 <div class="sect2">
 <h3 id="function"><a class="anchor" href="#function"></a><code>function</code></h3>
 <div class="paragraph">
-<p>The <code>function</code> parameter can be specified as follows:</p>
+<p>The optional <code>function</code> parameter can be specified as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4902,20 +4915,26 @@ http://&lt;ip-address-or-domain-name&gt;:&lt;port-number&gt;/pools/default/stats
 <ul>
 <li>
 <p><code>rate</code>.
-The per-second average rate of increase of the time series in the range vector.
-Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for.
-Also, the calculation extrapolates to the ends of the time range, allowing for missed scrapes or imperfect alignment of scrape cycles with the range&#8217;s time period.</p>
+The per-second average rate of increase of the time series, over the time window used when retrieving the time series.
+If the time window is not explicitly specified, it defaults to 1 minute (see the description of the optional timeWindow parameter).</p>
+<div class="paragraph">
+<p>The <code>rate</code> function exposed by this API is the same as the Prometheus <code>rate</code> function.</p>
+</div>
 </li>
 <li>
 <p><code>irate</code>.
 The per-second instant rate of increase of the time series in the range vector.
-This is based on the last two data points. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for.</p>
+This is based on the last two data points.</p>
+<div class="paragraph">
+<p>The <code>irate</code> function exposed by this API is the same as the Prometheus <code>irate</code> function.</p>
+</div>
 </li>
 <li>
 <p><code>increase</code>.
-The increase in the time series in the range vector.
-Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for.
-The increase is extrapolated to cover the full time range as specified in the range vector selector, so that it is possible to get a non-integer result even if a counter increases only by integer increments.</p>
+The increase in the time series in the range vector.</p>
+<div class="paragraph">
+<p>The <code>increase</code> function exposed by this API is the same as the Prometheus <code>increase</code> function.</p>
+</div>
 </li>
 <li>
 <p><code>avg_over_time</code>.
@@ -4966,9 +4985,15 @@ The number of results to be displayed per page.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="label-and-value"><a class="anchor" href="#label-and-value"></a><code>label</code> and <code>value</code></h3>
+<h3 id="label-and-val"><a class="anchor" href="#label-and-val"></a><code>label</code> and <code>val</code></h3>
 <div class="paragraph">
-<p>The possible specifications of <code>label</code>, and their associated possible values, are as follows.</p>
+<p>Supported <em>labels</em> are of two kinds; which are <em>general</em> and <em>Couchbase-specific</em>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="general-labels"><a class="anchor" href="#general-labels"></a>General Labels</h3>
+<div class="paragraph">
+<p>The possible specifications and associated values, are as follows.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -4997,11 +5022,6 @@ A specific node that is to be queried.
 If none is specified, all are queried.</p>
 </li>
 <li>
-<p><code>bucket</code>.
-A specific bucket that is to be queried.
-If none is specified, all are queried.</p>
-</li>
-<li>
 <p><code>aggregationFunction</code>.
 Whether and how aggregation of retrieved statistics is to be performed.
 Possible values are <code>max</code>, <code>min</code>, <code>sum</code>, and <code>avg</code>.
@@ -5022,6 +5042,41 @@ The default is <code>5</code> minutes.</p>
 Whether to align timestamps so that each is a multiple of <code>10</code> milliseconds.
 The value can be <code>true</code> or <code>false</code> (which is the default).
 For example, if the value is <code>false</code>, consecutive timestamps might be <code>1617274978</code>, <code>1617274988</code>, and <code>1617274998</code>; whereas if the value is <code>true</code>, they might be <code>1617275000</code>, <code>1617275010</code>, and <code>1617275020</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="couchbase-specific-labels"><a class="anchor" href="#couchbase-specific-labels"></a>Couchbase-Specific Labels</h3>
+<div class="paragraph">
+<p>The possible specifications and associated values, are as follows.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>bucket</code>.
+A specific bucket that is to be queried.
+If none is specified, all are queried.</p>
+</li>
+<li>
+<p><code>scope</code>.
+A specific scope that is to be queried.
+If none is specified, all are queried.</p>
+</li>
+<li>
+<p><code>collection</code>.
+A specific collection that is to be queried.
+If none is specified, all are queried.</p>
+</li>
+<li>
+<p><code>index</code>.
+A specific index that is to be queried.
+If none is specified, all are queried.</p>
+</li>
+<li>
+<p><code>connection_type</code>.
+A specific connection-type that is to be queried.
+If none is specified, all are queried.</p>
 </li>
 </ul>
 </div>
