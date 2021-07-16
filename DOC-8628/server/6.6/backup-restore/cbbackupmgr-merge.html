@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>cbbackupmgr merge | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-8628/server/6.6/backup-restore/cbbackupmgr-merge.html">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="Merges two or more backups together">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="6.6">
+<meta name="generator" content="Antora 3.0.0-alpha.5">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://docs.couchbase.com">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-8628/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/cloud.html">
+                      Cloud
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      Tutorials
+                      <span class="arrow">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a href="https://cloud.couchbase.com/sign-up" class="free-trial-link" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  <i class="fas fa-cloud"></i>
+                  Free Trial
+                </a>
+                <a class="btn btn-primary try-btn"  onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                </a>
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<nav class="nav">
+</nav>
+<aside class="toc sidebar">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbase/backup/docs/modules/backup-restore/pages/cbbackupmgr-merge.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../index.html">server</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">cbbackupmgr merge</h1>
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Merges two or more backups together</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="synopsis"><a class="anchor" href="#synopsis"></a>SYNOPSIS</h2>
+<div class="sectionbody">
+<div class="verseblock">
+<pre class="content">cbbackupmgr merge [--archive &lt;archive_dir&gt;] [--repo &lt;repo_name&gt;]
+                  [--start &lt;backup&gt;] [--end &lt;backup&gt;] [--threads &lt;num&gt;]
+                  [--date-range &lt;range&gt;] [--no-progress-bar]</pre>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="description"><a class="anchor" href="#description"></a>DESCRIPTION</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The merge command is used in order to merge two or more backups together. Since
+cbbackupmgr is a utility that always takes incremental backups it is necessary
+to reclaim disk space from time to time. Merging data will deduplicate similar
+keys in backup files being merged together in order to create a single smaller
+backup file. Doing merges should replace the full backup step by taking multiple
+incremental backups of a Couchbase cluster and converting them into a single
+full backup. Since this process takes place in the backup archive there is no
+cluster overhead to merging data together. See
+<a href="cbbackupmgr-strategies.html" class="page">cbbackupmgr-strategies</a> for suggestions on using the merge command
+in your backup process.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="options"><a class="anchor" href="#options"></a>OPTIONS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Below are a list of required parameters for the merge command.</p>
+</div>
+<div class="sect2">
+<h3 id="required"><a class="anchor" href="#required"></a>Required</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">-a,--archive &lt;archive_dir&gt;</dt>
+<dd>
+<p>The archive directory to merge data in.</p>
+</dd>
+<dt class="hdlist1">-r,--repo &lt;repo_name&gt;</dt>
+<dd>
+<p>The name of the backup repository to merge data in.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="optional"><a class="anchor" href="#optional"></a>Optional</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">--start &lt;backup&gt;</dt>
+<dd>
+<p>The name of the first backup to be merged or an index value which references
+an incremental backup. Valid index values are any positive integer,
+"oldest", and "latest". If a positive integer is used then it should
+reference the index of the incremental backup starting from the oldest to
+the most recent backup. For example, "1" corresponds to the oldest backup,
+"2" corresponds to the second oldest backup, and so on. Specifying "oldest"
+means that the index of the oldest backup should be used and specifying
+"latest" means the index of the most recent backup should be used.</p>
+</dd>
+<dt class="hdlist1">--end &lt;backup&gt;</dt>
+<dd>
+<p>The name of the last backup to be merged or an index value which references
+an incremental backup. Valid index values are any positive integer,
+"oldest", and "latest". If a positive integer is used then it should
+reference the index of the incremental backup starting from the oldest to
+the most recent backup. For example, "1" corresponds to the oldest backup,
+"2" corresponds to the second oldest backup, and so on. Specifying "oldest"
+means that the index of the oldest backup should be used and specifying
+"latest" means the index of the most recent backup should be used.</p>
+</dd>
+<dt class="hdlist1">--date-range &lt;range&gt;</dt>
+<dd>
+<p>This flag takes a comma separated range of
+start backup day to merge and end backup to merge (inclusive).
+The accepted formats are <code>dd-mm-yy</code>, backup directory name or backup
+index, with the first backup being number 0. To read more about format
+go to the section BACKUP RANGES.</p>
+</dd>
+<dt class="hdlist1">-t,--threads &lt;num&gt;</dt>
+<dd>
+<p>Specifies the number of concurrent vBuckets that will be merged at a time.
+Increasing the threads will make the merge faster but will also increase the
+resource used by the client. This parameter defaults to 1 but it is
+recommended to increase it to match the number of CPUs in the client machine.</p>
+</dd>
+<dt class="hdlist1">--no-progress-bar</dt>
+<dd>
+<p>By default, a progress bar is printed to stdout so that the user can see how
+long the merge is expected to take, the amount of data that is being transferred
+per second, and the amount of data that has been merged. Specifying this flag
+disables the progress bar and is useful when running automated jobs.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="backup-ranges"><a class="anchor" href="#backup-ranges"></a>BACKUP RANGES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The merge command accepts a pair of dates, indices or backup directory names using
+the <code>--backups</code> argument  which can be used to refine which backups in the
+repository to merge.</p>
+</div>
+<div class="paragraph">
+<p>When given the backup range '0,5' merge will merge all of the backups in chronological
+order starting from the first backup, finishing with the fifth backup.</p>
+</div>
+<div class="paragraph">
+<p>When given the backup range '20-08-2019,23-08-2019' merge will merge all the backups
+which fall within these two dates (inclusive). Note that the format must be 'day-month-year'
+this means that '01-30-19' is an invalid date and will be rejected by merge.</p>
+</div>
+<div class="paragraph">
+<p>Merge also accepts a backup range using the names of backups e.g. '2019-08-23T09_36_56.957232625Z'.
+Therefore, given the backup range '2019-08-20T11_39_34.232308323Z,2019-08-23T09_36_56.957232625Z'
+merge will merge all backups which fall within these two backups.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>EXAMPLES</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to merge data, you need to have a backup repository with at least two
+backups. Below is an example of merging a backup repository named "example" that
+has two backups in it. The first backup contains the initial dataset. The second
+backup was taken after four items were updated.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ cbbackupmgr list -a /data/backups
+
+Size      Items          Name
+148.70MB  -              /
+148.70MB  -              + example
+98.66MB   -                  + 2016-03-01T16_27_10.093782029-08_00
+98.66MB   -                      + travel-sample
+300B      0                          bucket-config.json
+98.66MB   31592                      + data
+98.66MB   31592                          shard_0.fdb
+2B        0                          full-text.json
+4B        0                          gsi.json
+1.72KB    1                          views.json
+50.04MB   -                  + 2016-03-01T16_27_51.349151165-08_00
+50.04MB   -                      + travel-sample
+300B      0                          bucket-config.json
+50.04MB   4                          + data
+50.04MB   4                              shard_0.fdb
+2B        0                          full-text.json
+4B        0                          gsi.json
+1.72KB    1                          views.json
+
+$ cbbackupmgr merge -a /tmp/backup -r example \
+--start 2016-03-01T16_27_10.093782029-08_00 \
+--end 2016-03-01T16_27_51.349151165-08_00
+
+$ cbbackupmgr list -a /tmp/backup
+Size      Items          Name
+98.84MB   -              /
+98.84MB   -              + example
+98.84MB   -                  + 2016-03-01T16_27_51.349151165-08_00
+98.84MB   -                      + travel-sample
+300B      0                          bucket-config.json
+98.84MB   31592                      + data
+98.84MB   31592                          shard_0.fdb
+2B        0                          full-text.json
+4B        0                          gsi.json
+ 1.72KB    1                          views.json</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Upon completion of the merge the number of items in the backup files is the
+same. This is because the keys in the second backup were also contained in the
+first backup, but the keys in the second backup contained newer values and
+overwrote the keys in the first backup during the merge. The timestamp of the
+backup folder is also the same as the timestamp of the latest backup because the
+new backup is a snapshot of the cluster at that point in time.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="discussion"><a class="anchor" href="#discussion"></a>DISCUSSION</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is important that internally the merge command is able to merge backups
+together without corrupting the backup archive or leaving it in an intermediate
+state. In order to ensure this behavior cbbackupmgr always creates a new backup
+and completely merges all data before removing any backup files. When a merge is
+started a .merge_status file is created in the backup repository to track the
+merge progress. cbbackupmgr then copies the first backup to the .merge folder
+and begins merging the other backups into .merge folder. After each backup is
+merged the .merge_status file is updated to track the merge progress. if all
+backups are merged together successfully, cbbackupmgr will start deleting the
+old backups and then copy the fully merged backup into a folder containing the
+same name as the backup specified by the --end flag. If the cbbackupmgr utility
+fails during this process, then the merge will either be completed or the
+partial merge files will be removed from the backup repository during the next
+invocation of the cbbackupmgr.</p>
+</div>
+<div class="paragraph">
+<p>Since the merge command creates a new backup file before it removes the old ones
+it is necessary to have at least as much free space as the backups that are to
+be merge together.</p>
+</div>
+<div class="paragraph">
+<p>For more information on suggestions for how to use the merge command in your
+backup process see <a href="cbbackupmgr-strategies.html" class="page">cbbackupmgr-strategies</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="environment-and-configuration-variables"><a class="anchor" href="#environment-and-configuration-variables"></a>ENVIRONMENT AND CONFIGURATION VARIABLES</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">CB_ARCHIVE_PATH</dt>
+<dd>
+<p>Specifies the path to the backup archive. If the archive path is supplied as
+a command line argument then this value is overridden.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="files"><a class="anchor" href="#files"></a>FILES</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">.merge_status</dt>
+<dd>
+<p>File storing information on the progress of the merge.</p>
+</dd>
+<dt class="hdlist1">.merge</dt>
+<dd>
+<p>Directory storing intermediate merge data.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>SEE ALSO</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="cbbackupmgr-list.html" class="page">cbbackupmgr-list</a>,
+<a href="cbbackupmgr-strategies.html" class="page">cbbackupmgr-strategies</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cbbackupmgr"><a class="anchor" href="#cbbackupmgr"></a>CBBACKUPMGR</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Part of the <a href="cbbackupmgr.html" class="page">cbbackupmgr</a> suite</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
