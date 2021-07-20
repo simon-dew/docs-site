@@ -5037,54 +5037,6 @@ For more information, refer to <a href="../../manage/monitor/monitoring-n1ql-que
 <p>The worked example assumes that the supplied <code>travel-sample</code> bucket is installed.
 Refer to <a href="../../manage/manage-settings/install-sample-buckets.html" class="page">Sample Buckets</a> for installation details.</p>
 </div>
-<h5 id="durability" class="discrete">Durability</h5>
-<div class="paragraph">
-<p>In order to meet transaction durability requirements, the bucket must be replicated to at least one other Data node.
-If the bucket is not replicated to any other data nodes, you must turn off replication for this bucket to be able to commit the transaction.</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset1_couchbase-web-console"></a>Couchbase Web Console</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_couchbase-web-console">
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>In the Couchbase Web Console, click the <strong>Buckets</strong> menu title.</p>
-</li>
-<li>
-<p>Click <strong>travel-sample</strong> to expand the options for the <code>travel-sample</code> bucket.</p>
-</li>
-<li>
-<p>In the <strong>travel-sample</strong> bucket options, click <b class="button">Edit</b>.</p>
-</li>
-<li>
-<p>When the Edit Bucket Settings window appears, click <strong>Advanced bucket settings</strong> to expand the options.</p>
-</li>
-<li>
-<p>Under <strong>Replicas</strong>, make sure the <strong>Enable</strong> check box is empty.
-If it isn&#8217;t, click the check box to clear it.</p>
-</li>
-<li>
-<p>Choose <b class="button">Save Changes</b> to save the changes.</p>
-</li>
-<li>
-<p>You now need to rebalance the servers.
-Click the <strong>Servers</strong> menu title.</p>
-</li>
-<li>
-<p>Click <b class="button">Rebalance</b> and wait for the rebalance to finish.</p>
-</li>
-</ol>
-</div>
-</div>
-</div>
-</div>
 <h5 id="keyspace" class="discrete">Keyspace</h5>
 <div class="paragraph">
 <p>For the purposes of this worked example, you must create a temporary keyspace and set the query context.</p>
@@ -5093,15 +5045,15 @@ Click the <strong>Servers</strong> menu title.</p>
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset2_query-workbench"></a>Query Workbench</p>
+<p><a id="tabset1_query-workbench"></a>Query Workbench</p>
 </li>
 <li>
-<p><a id="tabset2_cbq-shell"></a>CBQ Shell</p>
+<p><a id="tabset1_cbq-shell"></a>CBQ Shell</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset2_query-workbench">
+<div class="tab-pane" aria-labelledby="tabset1_query-workbench">
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -5133,7 +5085,7 @@ CREATE COLLECTION `travel-sample`.`transaction`.test;</code></pre>
 </ol>
 </div>
 </div>
-<div class="tab-pane" aria-labelledby="tabset2_cbq-shell">
+<div class="tab-pane" aria-labelledby="tabset1_cbq-shell">
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -5169,21 +5121,22 @@ CREATE COLLECTION `travel-sample`.`transaction`.test;</code></pre>
 </div>
 <h5 id="parameters" class="discrete">Parameters</h5>
 <div class="paragraph">
-<p>If necessary, set the transaction parameters for this worked example.</p>
+<p>If necessary, set the transaction parameters for this worked example.
+In particular, you will turn off durability for the purposes of this example, in order to make sure that there are no problems meeting the transaction durability requirements.</p>
 </div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset3_query-workbench"></a>Query Workbench</p>
+<p><a id="tabset2_query-workbench"></a>Query Workbench</p>
 </li>
 <li>
-<p><a id="tabset3_cbq-shell"></a>CBQ Shell</p>
+<p><a id="tabset2_cbq-shell"></a>CBQ Shell</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset3_query-workbench">
+<div class="tab-pane" aria-labelledby="tabset2_query-workbench">
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -5196,7 +5149,10 @@ CREATE COLLECTION `travel-sample`.`transaction`.test;</code></pre>
 <p>In the <strong>Transaction Timeout</strong> box, enter <code>120</code>.</p>
 </li>
 <li>
-<p>In the <strong>Named Parameters</strong> section, make sure there is no named parameter called <code>durability_level</code>, so that the durability level defaults to <code>"majority"</code>.</p>
+<p>In the <strong>Named Parameters</strong> section, click the <b class="button">+</b> button to add a named parameter.</p>
+</li>
+<li>
+<p>When the new named parameter appears, enter <code>durability_level</code> in the <strong>name</strong> box and <code>"none"</code> (with double quotes) in the <strong>value</strong> box.</p>
 </li>
 <li>
 <p>Choose <b class="button">Save Preferences</b> to save the preferences and return to the Query Workbench.</p>
@@ -5204,15 +5160,15 @@ CREATE COLLECTION `travel-sample`.`transaction`.test;</code></pre>
 </ol>
 </div>
 </div>
-<div class="tab-pane" aria-labelledby="tabset3_cbq-shell">
+<div class="tab-pane" aria-labelledby="tabset2_cbq-shell">
 <div class="paragraph">
-<p>Set the following parameters.</p>
+<p>Enter the following parameters.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">\SET -txtimeout "2m"; <i class="conum" data-value="1"></i><b>(1)</b>
 \SET -scan_consistency "not_bounded"; <i class="conum" data-value="2"></i><b>(2)</b>
-\SET -durability_level "majority"; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+\SET -durability_level "none"; <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -5496,7 +5452,7 @@ If you are using the cbq shell, the results are formatted differently, but conta
   "query_context": "`travel-sample`.`transaction`",
   "txtimeout": "2m",
   "scan_consistency": "request_plus",
-  "durability_level": "majority"
+  "durability_level": "none"
 }'</code></pre>
 </div>
 </div>
