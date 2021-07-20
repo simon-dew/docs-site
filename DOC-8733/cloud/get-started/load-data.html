@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Interact with Data in Your Cluster | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-8733/cloud/get-started/load-data.html">
+<link rel="stylesheet" href="../../_/css/site.css">
+<script src="../../_/js/vendor/jquery.js"></script>
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+<meta name="dcterms.subject" content="cloud">
+<meta name="dcterms.identifier" content="master">
+<meta name="generator" content="Antora 3.0.0-alpha.5">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://docs.couchbase.com">
+                    <img src="../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-8733/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/cloud.html">
+                      Cloud
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      Tutorials
+                      <span class="arrow">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a href="https://cloud.couchbase.com/sign-up" class="free-trial-link" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  <i class="fas fa-cloud"></i>
+                  Free Trial
+                </a>
+                <a class="btn btn-primary try-btn"  onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                </a>
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="left-sidebar-menu">
+<div class="version-control-box">
+<div class="component-frame">
+<div class="frame-icon">
+<img src="../../_/img/server-icon.png" alt="">
+</div>
+<div class="frame-body">
+<h4 class="title"><span class="">Couchbase Cloud</span></h4>
+<a class="frame-link component" href="../index.html"></a>
+</div>
+</div>
+</div>
+<div class="nav-menu">
+<ul class="nav-list">
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<a class="nav-link" href="../index.html">Couchbase Cloud Home</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../release-notes/release-notes.html">Release Notes</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="nav-text "><a href="https://www.couchbase.com/products/cloud/faq" target="_blank" rel="noopener">FAQ ↗️</a></span>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Get Started</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="get-started.html">Start Here</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="create-account.html">Create an Account</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="deploy-first-cluster.html">Deploy Your First Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="configure-cluster-access.html">Configure Access to Your Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="connect-to-cluster.html">Connect to Your Cluster</a>
+</span>
+</li>
+<li class="nav-item is-current-page is-active is-active-depth-2  " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="load-data.html">Interact with Data in Your Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="decommission-resources.html">Remove Cloud Resources and Close Your Account</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Organizations &amp; Access</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../organizations/organizations.html">Organizations &amp; Users</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../organizations/manage-organizations.html">Manage Organizations</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../organizations/manage-organization-users.html">Manage Users</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../organizations/organization-user-roles.html">Organization Roles</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../projects/projects.html">Projects</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../projects/manage-projects.html">Manage Projects</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../projects/project-roles.html">Project Roles</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../organizations/manage-account.html">Manage Your Couchbase Cloud Account</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Billing</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../billing/billing.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../billing/manage-billing.html">Manage Billing</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="nav-text "><a href="https://www.couchbase.com/pricing" target="_blank" rel="noopener">Pricing Page ↗️</a></span>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Clouds</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clouds/clouds.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clouds/manage-clouds.html">Connect &amp; Manage Clouds</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clouds/cloud-providers.html">Cloud Provider Requirements</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Clusters</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clusters/clusters.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<span class="nav-text ">Manage Clusters</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/create-cluster.html">Create a Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/modify-cluster.html">Modify a Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/connect-self-managed-cluster.html">Connect a Self-Managed Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/delete-cluster.html">Delete a Cluster</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clusters/sizing.html">Cluster Sizing</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clusters/scale-cluster.html">Cluster Scaling</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/data-service/data-service.html">Data Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/data-service/manage-buckets.html">Manage Buckets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/data-service/manage-documents.html">Manage Documents</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/query-service/query-service.html">Query Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/query-service/query-workbench.html">Query Workbench</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/index-service/index-service.html">Index Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/index-service/manage-indexes.html">Manage Indexes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/search-service/search-service.html">Search Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/search-service/manage-full-text-indexes.html">Manage Full Text Indexes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/analytics-service/analytics-service.html">Analytics Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/analytics-service/analytics-workbench.html">Analytics Workbench</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/analytics-service/analytics-links.html">Analytics Links</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/analytics-service/analytics-monitor.html">Analytics Monitor</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/xdcr/xdcr.html">Replication (XDCR)</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/xdcr/manage-xdcr-replications.html">Manage Replications</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../clusters/backup-restore.html">Backup &amp; Restore</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/manage-backup.html">Manage Backups</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../clusters/manage-restore.html">Restore a Backup</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Security &amp; Networking</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../security/allow-ip-address.html">Configure Allowed IPs</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../security/manage-database-users.html">Configure Database Users</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Reference</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../reference/sdk-compatibility.html">SDK Compatibility</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../reference/browser-compatibility.html">Supported Browsers</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Support</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../support/support.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../support/manage-support.html">Request Support</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../support/feedback.html">Provide Feedback</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<a href="#" class="menu-expand-toggle"> <span>Navigation</span> <i class="fas fa-times-circle"></i> <i class="fas fa-chevron-circle-left"></i></a>
+</div></nav>
+<aside class="toc sidebar">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbaselabs/project-avengers/docs/public/modules/get-started/pages/load-data.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../index.html">Couchbase Cloud</a></li>
+<li class="crumb">Get Started</li>
+<li class="crumb"><a href="load-data.html">Interact with Data in Your Cluster</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Interact with Data in Your Cluster</h1>
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+There are several ways to insert and interact with data in a cluster.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The procedures on this page assume that you&#8217;ve completed all of the previous <a href="get-started.html" class="page">Getting Started</a> steps.
+In particular, it&#8217;s important that you have followed the instructions in <a href="configure-cluster-access.html" class="page">Configure Access to Your Cluster</a> for granting yourself database permissions.
+If your user account doesn&#8217;t have an associated database user entity for the cluster that you are using, then you won&#8217;t be able to perform several of the procedures described on this page, such as viewing and querying documents.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="load-sample-data"><a class="anchor" href="#load-sample-data"></a>Load Sample Data</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A quick way to start interacting with data in your cluster is to load one or more <em>sample buckets</em>.
+Sample buckets contain example data, as well as example indexes, for your experimentation.</p>
+</div>
+<div class="paragraph">
+<p>Sample buckets can be found under each cluster&#8217;s <strong class="ui">Tools &gt; Import</strong> tab.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/cluster-sample-data.png" alt="The cluster&#8217;s 'Tools &gt; Import' tab, with the 'Sample Data' section highlighted.">
+</div>
+</div>
+<div class="paragraph">
+<p>Click <b class="button">Import</b> next to any of the available sample buckets to load them into your cluster.
+(Note that it may take some time for a sample bucket to load and show up in the relevant areas of the Couchbase Cloud UI.)</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s recommended that you at least start with the <strong class="ui">Travel Sample</strong> bucket, since many of the examples in the documentation will act on this bucket.
+If your cluster is running the <a href="../clusters/index-service/index-service.html" class="page"><em>Index Service</em></a>, this sample bucket will automatically create indexes on the bucket data, which in turn makes it convenient to test out the features of the <a href="../clusters/query-service/query-service.html" class="page"><em>Query Service</em></a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-sample-buckets"><a class="anchor" href="#view-sample-buckets"></a>View Sample Buckets</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Couchbase, <em>buckets</em> serve as the mechanism for storing data, and are the principle component of the <a href="../clusters/data-service/data-service.html" class="page">Data Service</a> that runs on every cluster.
+Buckets must be created before you can store any data on a cluster.</p>
+</div>
+<div class="paragraph">
+<p>All of the buckets on a cluster can be viewed from the cluster&#8217;s <strong class="ui">Buckets</strong> tab.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/cluster-buckets-tab-all-sample-buckets.png" alt="The cluster&#8217;s 'Buckets' tab, showing multiple sample buckets, as well as the default bucket.">
+</div>
+</div>
+<div class="paragraph">
+<p>If you deployed any of the sample buckets, you can inspect them here alongside the <a href="#default-bucket">default bucket</a> (as well as any other buckets you create).
+You can check that a sample bucket has finished loading by inspecting the <strong class="ui">Items</strong> column to see that it has populated with a non-zero number.</p>
+</div>
+<div class="paragraph">
+<p>For more information about interacting with buckets, refer to <a href="../clusters/data-service/manage-buckets.html" class="page">Manage Buckets</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="default-bucket"><a class="anchor" href="#default-bucket"></a>About the Default Bucket</h3>
+<div class="paragraph">
+<p>Couchbase Cloud creates a small, empty bucket named <code>couchbasecloudbucket</code> on every deployed cluster to act as the default bucket.
+This bucket can be used for immediate experimentation with Couchbase features, including inserting and modifying data via the SDK.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-sample-indexes"><a class="anchor" href="#view-sample-indexes"></a>View Sample Indexes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Couchbase, <em>primary</em> and <em>global secondary</em> indexes&#8201;&#8212;&#8201;also known as just <em>indexes</em>&#8201;&#8212;&#8201;are predefined subsets of bucket-data created by the <a href="../clusters/index-service/index-service.html" class="page">Index Service</a>.
+These indexes can then be queried by the <a href="../clusters/query-service/query-service.html" class="page">Query Service</a> by means of the N1QL query language.</p>
+</div>
+<div class="paragraph">
+<p>All of the indexes in a cluster can be viewed under the cluster&#8217;s <strong class="ui">Tools &gt; Indexes</strong> tab.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/cluster-indexes-tab-all-sample-buckets.png" alt="The cluster&#8217;s 'Tools &gt; Indexes' tab showing multiple indexes on the Travel Sample bucket.">
+</div>
+</div>
+<div class="paragraph">
+<p>Normally, a N1QL <a href="#server:n1ql:n1ql-language-reference/createindex.adoc" class="page unresolved">CREATE INDEX</a> statement is required to create an index.
+However, some of the sample buckets, such as <strong class="ui">Travel Sample</strong>, come with index definitions that are automatically used to build indexes on the sample data (which can be seen in the image above).
+Once the <strong class="ui">Status</strong> for each index displays as <strong class="ui">Ready</strong>, the indexes can be used to assist with different types of sample queries.</p>
+</div>
+<div class="paragraph">
+<p>For more information about viewing and interacting with indexes, refer to <a href="../clusters/index-service/index-service.html" class="page">Index Service</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-sample-data"><a class="anchor" href="#query-sample-data"></a>Query Sample Data</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>On clusters running the <a href="../clusters/query-service/query-service.html" class="page">Query Service</a>, the Couchbase Cloud UI provides an interactive query tool called the <strong class="ui">Query Workbench</strong>.
+Using the Query Workbench, you can conveniently explore data, create, edit, run, and save <a href="#server:n1ql:n1ql-language-reference/index.adoc" class="page unresolved">N1QL queries</a>, view and save query results, and explore the document structures in a bucket&#8201;&#8212;&#8201;all in a single window.</p>
+</div>
+<div class="paragraph">
+<p>The Query Workbench is available under each cluster&#8217;s <strong class="ui">Tools &gt; Query Workbench</strong> tab.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/cluster-query-workbench.png" alt="The cluster&#8217;s 'Tools &gt; Query Workbench' tab.">
+</div>
+</div>
+<div class="paragraph">
+<p>If you loaded the <strong class="ui">Travel Sample</strong> bucket, you can try out the Query Workbench by entering the following N1QL query into the <strong class="ui">Query Editor</strong>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM `travel-sample` WHERE type="airport" LIMIT 1;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When executed, this query returns a maximum of one airport document, and lists all of the fields that it contains.
+To execute the query, type <kbd>Return</kbd> or click <b class="button">Execute</b>.
+The results are displayed in the <strong class="ui">Query Results</strong> field:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/query-workbench-run-query.png" alt="The cluster&#8217;s Query Workbench screen showing an executed query and its results.">
+</div>
+</div>
+<div class="paragraph">
+<p>To learn more about using the Query Workbench, refer to <a href="../clusters/query-service/query-workbench.html" class="page">Query Workbench</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-and-edit-sample-data-directly"><a class="anchor" href="#view-and-edit-sample-data-directly"></a>View and Edit Sample Data Directly</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can directly view, create, and edit individual bucket documents under each cluster&#8217;s <strong class="ui">Tools &gt; Documents</strong> tab.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/cluster-documents-tab.png" alt="The cluster&#8217;s 'Tools &gt; Documents' tab.">
+</div>
+</div>
+<div class="paragraph">
+<p>To view or edit the same document that was queried in the previous section:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click the <strong class="ui">Bucket</strong> drop-down menu and select <code><strong>travel-sample</strong></code>.</p>
+</li>
+<li>
+<p>In the <strong class="ui">Document ID</strong> field, enter <code>airport_1254</code> and click <b class="button">Retrieve Docs</b>.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/document-editor-results.png" alt="The cluster&#8217;s 'Tools &gt; Documents' tab showing the document with ID 'airport_1254' as the only search result.">
+</div>
+</div>
+</li>
+<li>
+<p>In the <strong>Results</strong> table, click on the document to open it in the <strong>Document</strong> fly-out menu.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/document-editor.png" alt="The 'Document' fly-out menu for 'airport_1254'." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>From here you can make direct edits to the document.
+To save any edits, click <b class="button">Save</b>.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For more information about using the document viewer, refer to <a href="../clusters/data-service/manage-documents.html" class="page">Manage Documents</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-data-with-the-sdk"><a class="anchor" href="#view-data-with-the-sdk"></a>View Data with the SDK</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase SDKs allow you to interact programmatically with the Data, Query, and other Couchbase services provided by the cluster, to create applications.
+Our <a href="#server:sdk:overview.adoc" class="page unresolved">SDK documentation</a> contains practical examples for all of the SDKs.</p>
+</div>
+<div class="paragraph">
+<p>Here is a snippet of Node.js code demonstrating iterating over the results of a query against the Travel Sample bucket:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">Unresolved include directive in modules/get-started/pages/load-data.adoc - include::3.0@nodejs-sdk:devguide:example$nodejs/n1ql-queries.js[]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="explore-couchbase-cloud"><a class="anchor" href="#explore-couchbase-cloud"></a>Explore Couchbase Cloud</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Congratulations!
+You&#8217;ve successfully deployed and connected to a cluster, and started interacting with data.</p>
+</div>
+<div class="paragraph">
+<p>The Couchbase Cloud documentation <a href="../index.html" class="page">landing page</a> is a good resource for exploring additional features, but the following topics also provide a good starting point:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../organizations/manage-organization-users.html" class="page">Invite more users to your organization</a></p>
+</li>
+<li>
+<p><a href="../clusters/scale-cluster.html" class="page">Scale your cluster</a></p>
+</li>
+<li>
+<p><a href="../clusters/xdcr/xdcr.html" class="page">Replicate cluster data</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
