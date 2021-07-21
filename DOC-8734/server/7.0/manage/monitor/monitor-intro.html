@@ -6,7 +6,7 @@
 <title>Monitor | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="Monitoring is a critical element for a successful deployment.">
+<meta name="description" content="Monitoring of Couchbase Server can be performed by means of Couchbase Web Console, the CLI, and the REST API.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0">
@@ -1078,36 +1078,6 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="monitoring-stats-configuration.html">Manage Monitoring Options</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="ui-monitoring-statistics.html">Monitor with the UI</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="monitoring-cli.html">Monitor with cbstats</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="monitoring-rest.html">Monitor with REST</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="xdcr-monitor-timestamp-conflict-resolution.html">Monitor XDCR Timestamp-based Conflict Resolution</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
 <a class="nav-link" href="monitoring-n1ql-query.html">Monitor Queries</a>
 </span>
 </li>
@@ -1115,6 +1085,12 @@ server
 
 <span class="nav-line "  data-depth="2">
 <a class="nav-link" href="monitoring-indexes.html">Monitor Indexes</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="xdcr-monitor-timestamp-conflict-resolution.html">Monitor Clock Drift</a>
 </span>
 </li>
 </ul>
@@ -1158,8 +1134,29 @@ server
 <li class="nav-item  is-inactive " data-depth="1">
 
 <span class="nav-line "  data-depth="1">
-<a class="nav-link" href="../../sdk/overview.html">SDKs</a>
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../../../home/sdk.html">SDKs</a>
 </span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#sdk-extensions::distributed-acid-transactions.adoc">Distributed ACID Transactions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#sdk-extensions::field-level-encryption.adoc">Field Level Encryption</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#sdk-extensions::response-time-observability.adoc">Response Time Observability</a>
+</span>
+</li>
+</ul>
 </li>
 <li class="nav-item  is-inactive " data-depth="1">
 
@@ -4841,38 +4838,77 @@ server
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Monitoring is a critical element for a successful deployment.
+Monitoring of Couchbase Server can be performed by means of Couchbase Web Console, the CLI, and the REST API.
 </blockquote>
 </div>
 <div class="paragraph">
-<p>This section provides an overview of the different monitoring capabilities available in Couchbase Server explains how to use them to learn more about cluster status, performance metrics, and other operational parameters.</p>
+<p>This page summarizes the options available for monitoring Couchbase Server; and provides links to more detailed interface-descriptions.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="statistics-monitoring-methods"><a class="anchor" href="#statistics-monitoring-methods"></a>Statistics monitoring methods</h2>
+<h2 id="monitoring-with-the-ui"><a class="anchor" href="#monitoring-with-the-ui"></a>Monitoring with the UI</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase Server provides different methods for collecting data about the state of a running cluster:</p>
+<p>Couchbase-Server statistics can be monitored by means of Couchbase Web Console.</p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Couchbase Server features a rich, web-based administration console for monitoring data collected from running deployments and providing visual and email-based alerts based on that data.</p>
 <div class="paragraph">
-<p>See the section <a href="../manage-settings/configure-alerts.html" class="page">Email Alerts</a> for more details.</p>
+<p>Users with the <strong>Full Admin</strong> or <strong>Bucket Admin</strong> role can assemble statistics as <em>groups</em> of <em>charts</em>, on the <strong>Dashboard</strong> of Couchbase Web Console.
+This is visible by default after login; and can at any time be displayed by left-clicking on the <strong>Dashboard</strong> tab, in the left-hand navigation bar:</p>
 </div>
-</li>
-<li>
-<p>Couchbase Server also provides a REST interface that can be queried for access to current and historic statistics that the cluster stores.</p>
+<div id="access-dashboard" class="imageblock text-left">
+<div class="content">
+<img src="../_images/manage-statistics/DBaccessDB.png" alt="DBaccessDB" width="100">
+</div>
+</div>
 <div class="paragraph">
-<p>See <a href="../../rest-api/rest-cluster-email-notifications.html" class="page">Setting Email Notifications</a> to configure email alerts with the REST API.</p>
+<p>Initially, prior to any definitions having been made, the <strong>Dashboard</strong> appears as follows:</p>
 </div>
-</li>
-<li>
-<p>In addition to the previously listed methods, Couchbase Server stores per node statistics that can be polled through a client that uses the binary protocol or with the <a href="../../cli/cbstats-intro.html" class="page">cbstats</a> utility.</p>
-</li>
-</ol>
+<div id="dashboard-initial-appearance" class="imageblock text-left">
+<div class="content">
+<img src="../_images/manage-statistics/DBblankInitial.png" alt="DBblankInitial" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>From this point, charts can be assembled interactively, and statistics for Couchbase Server and all services thereby monitored.
+For step-by-step instructions, see <a href="../manage-statistics/manage-statistics.html" class="page">Manage Statistics</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="monitoring-with-cbstats"><a class="anchor" href="#monitoring-with-cbstats"></a>Monitoring with <code>cbstats</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>cbstats</code> tool provides Data-Service statistics, for an individual, specified node.
+The complete interface for <code>cbstats</code> is documented in <a href="../../cli/cbstats-intro.html" class="page">cbstats</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="monitoring-with-the-rest-api"><a class="anchor" href="#monitoring-with-the-rest-api"></a>Monitoring with the REST API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Server provides a REST API for <a href="../../rest-api/rest-statistics.html" class="page">Getting Cluster Statistics</a>.
+Statistics are retrieved based on the specification of one or more <em>metrics</em>.
+Optionally, the statistics can be further defined through the specifying of a <em>function</em>; and/or <em>labels</em> with values.
+An instance of <em>Prometheus</em> runs on each node of the cluster; and the metrics for each node are duly stored in that node’s instance of Prometheus.</p>
+</div>
+<div class="paragraph">
+<p>For a complete lists of metrics, see the <a href="#metrics-reference/metrics-reference.adoc" class="page unresolved">Metrics Reference</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="additional-monitoring-options"><a class="anchor" href="#additional-monitoring-options"></a>Additional Monitoring Options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Statistics for the Index Service can be managed by means of Couchbase Web Console: this is described in <a href="monitoring-indexes.html" class="page">Monitor Indexes</a>.</p>
+</div>
+<div class="paragraph">
+<p>The monitoring of statistics related to the Query Service is described in <a href="monitoring-n1ql-query.html" class="page">Monitor Queries</a>.</p>
+</div>
+<div class="paragraph">
+<p>The progressive desynchronization of nodes whose clock have been previously synchronized can be monitored; as described in <a href="xdcr-monitor-timestamp-conflict-resolution.html" class="page">Monitor Clock Drift</a>.</p>
 </div>
 </div>
 </div>

@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Monitor XDCR Timestamp-based Conflict Resolution | Couchbase Docs (Staging)</title>
+<title>Monitor Clock Drift | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="Various aspects of XDCR timestamp-based conflict resolution should be monotired.">
+<meta name="description" content="The progressive desynchronization of nodes can be monitored.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0">
@@ -1078,36 +1078,6 @@ server
 <li class="nav-item " data-depth="2">
 
 <span class="nav-line "  data-depth="2">
-<a class="nav-link" href="monitoring-stats-configuration.html">Manage Monitoring Options</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="ui-monitoring-statistics.html">Monitor with the UI</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="monitoring-cli.html">Monitor with cbstats</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="monitoring-rest.html">Monitor with REST</a>
-</span>
-</li>
-<li class="nav-item is-current-page is-active is-active-depth-2  " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
-<a class="nav-link" href="xdcr-monitor-timestamp-conflict-resolution.html">Monitor XDCR Timestamp-based Conflict Resolution</a>
-</span>
-</li>
-<li class="nav-item " data-depth="2">
-
-<span class="nav-line "  data-depth="2">
 <a class="nav-link" href="monitoring-n1ql-query.html">Monitor Queries</a>
 </span>
 </li>
@@ -1115,6 +1085,12 @@ server
 
 <span class="nav-line "  data-depth="2">
 <a class="nav-link" href="monitoring-indexes.html">Monitor Indexes</a>
+</span>
+</li>
+<li class="nav-item is-current-page is-active is-active-depth-2  " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="xdcr-monitor-timestamp-conflict-resolution.html">Monitor Clock Drift</a>
 </span>
 </li>
 </ul>
@@ -1158,8 +1134,29 @@ server
 <li class="nav-item  is-inactive " data-depth="1">
 
 <span class="nav-line "  data-depth="1">
-<a class="nav-link" href="../../sdk/overview.html">SDKs</a>
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../../../home/sdk.html">SDKs</a>
 </span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#sdk-extensions::distributed-acid-transactions.adoc">Distributed ACID Transactions</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#sdk-extensions::field-level-encryption.adoc">Field Level Encryption</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="#sdk-extensions::response-time-observability.adoc">Response Time Observability</a>
+</span>
+</li>
+</ul>
 </li>
 <li class="nav-item  is-inactive " data-depth="1">
 
@@ -4826,13 +4823,13 @@ server
 <li class="crumb"><a href="../../introduction/intro.html">server</a></li>
 <li class="crumb">Manage</li>
 <li class="crumb"><a href="monitor-intro.html">Monitor</a></li>
-<li class="crumb"><a href="xdcr-monitor-timestamp-conflict-resolution.html">Monitor XDCR Timestamp-based Conflict Resolution</a></li>
+<li class="crumb"><a href="xdcr-monitor-timestamp-conflict-resolution.html">Monitor Clock Drift</a></li>
 </ul>
 </nav>
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Monitor XDCR Timestamp-based Conflict Resolution</h1>
+<h1 class="page">Monitor Clock Drift</h1>
 </div>
 <div class="contributor-list-box">
 <span class="last-commit-date" id="commitdate">    </span>
@@ -4841,121 +4838,120 @@ server
 </div><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Various aspects of XDCR timestamp-based conflict resolution should be monotired. This can be achieved by means of both Couchbase Web Console and
-the <a href="../../cli/cbstats-intro.html" class="page">cbstats</a> command.</p>
-</div>
-<div class="paragraph">
-<p>The primary monitoring feature on the Web Console -&gt; Data Buckets page are graphs which display an average time drift for the cluster nodes.
-This data is displayed in two graphs, one showing the drift for replica vBuckets and the other shows drift for the active vBuckets.
-A single cluster calculates drift during document replication, each replica vBucket calculates drift as it receives data from its active peer.
-When a cluster is the destination for XDCR traffic, active vBuckets will calculate drift from their remote cluster peers.</p>
-</div>
-<div class="paragraph">
-<p>It is normal for a cluster with closely synchronized clocks to show some drift; in general it will be showing how long it took a mutation to be replicated and should remain steady.
-It is also normal for the active vBucket drift to be zero if no XDCR relationship exists (or if no XDCR traffic is flowing).</p>
-</div>
-<div class="paragraph">
-<p>The Web Console -&gt; Data Buckets page graphs the following statistics related to XDCR and timestamp-based conflict resolution:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Incoming XDCR ops/sec.</p>
-</li>
-<li>
-<p>Average active vBucket drift per mutation in seconds - Graph shows the bucket’s <code>ep_active_hlc_drift</code> statistic.</p>
-</li>
-<li>
-<p>Average replica vBucket drift per mutation in seconds - Graph shows the bucket’s <code>ep_replica_hlc_drift</code> statistic</p>
-</li>
-<li>
-<p>Active vBucket ahead exceptions - Graph shows how many mutations have a drift greater than the vBucket’s drift ahead threshold.</p>
-</li>
-<li>
-<p>Active vBucket behind exceptions - Graph shows how many mutations have a negative drift less than the vBucket’s drift behind threshold.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For more detailed information and to view the statistics used by the Web Console, many more statistics can be viewed using the <code>cbstats</code> utility.</p>
-</div>
-<div class="paragraph">
-<p>The most detailed information is stored per vBucket and accessed via <a href="../../cli/cbstats/cbstats-vbucket.html" class="page">cbstats vbucket-details</a>.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>max_cas</code> - the vBucket’s current maximum hybrid logical clock timestamp.
-In general, this statistic shows the value issued to the last mutation or in certain cases the largest timestamp the vBucket has received (when the received timestamp is ahead of the local clock).</p>
-</li>
-<li>
-<p><code>max_cas_str</code> - is the <code>max_cas</code> displayed as a human readable ISO-8601 timestamp (UTC).</p>
-</li>
-<li>
-<p><code>total_abs_drift</code> - "Total Absolute Drift" is the accumulated drift observed by the vBucket.
-Drift is always accumulated as an absolute value.</p>
-</li>
-<li>
-<p><code>total_abs_drift_count</code> - how many updates have been applied to <code>total_abs_drift</code>, for the purpose of average or rate calculations.</p>
-</li>
-<li>
-<p><code>drift_ahead_threshold</code> - the threshold at which positive drift will trigger an update to <code>drift_ahead_exceeded</code>.
-The value is displayed in nanoseconds.</p>
-</li>
-<li>
-<p><code>drift_behind_threshold</code> - the threshold at which positive drift will trigger an update to <code>drift_behind_exceeded</code>.
-The value is displayed in nanoseconds as a positive value, but is converted to a negative value for actual exception checks.</p>
-</li>
-<li>
-<p><code>drift_ahead_threshold_exceeded</code> - How many mutations have been observed with a drift above the <code>drift_ahead_threshold</code>.</p>
-</li>
-<li>
-<p><code>drift_behind_threshold_exceeded</code> - How many mutations have been observed with a drift below the <code>drift_behind_threshold</code>.</p>
-</li>
-<li>
-<p><code>logical_clock_ticks</code> - Stores how many times the hybrid logical clock has had to increment the logical clock.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Some of the detailed vBucket statistics are summarized in the bucket statistics, accessed using <a href="../../cli/cbstats/cbstats-all.html" class="page">cbstats all</a>.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>ep_active_hlc_drift</code> - The sum of <code>total_abs_drift</code> for the node’s active vBuckets.</p>
-</li>
-<li>
-<p><code>ep_active_hlc_drift_count</code> - The sum of <code>total_abs_drift_count</code> for the node’s active vBuckets.</p>
-</li>
-<li>
-<p><code>ep_replica_hlc_drift</code> - The sum of <code>total_abs_drift</code> for the node’s active vBuckets.</p>
-</li>
-<li>
-<p><code>ep_replica_hlc_drift_count</code> - The sum of <code>total_abs_drift_count</code> for the node’s active vBuckets.</p>
-</li>
-<li>
-<p><code>ep_active_ahead_exceptions</code> - The sum of <code>drift_ahead_exceeded</code> for the node’s active vBuckets.</p>
-</li>
-<li>
-<p><code>ep_active_behind_exceptions</code> - The sum of <code>drift_behind_exceeded</code> for the node’s active vBuckets.</p>
-</li>
-<li>
-<p><code>ep_replica_ahead_exceptions</code> - The sum of <code>drift_ahead_exceeded</code> for the node’s replica vBuckets.</p>
-</li>
-<li>
-<p><code>ep_replica_behind_exceptions</code> - The sum of <code>drift_behind_exceeded</code> for the node’s replica vBuckets.</p>
-</li>
-</ul>
+<p>The progressive desynchronization of nodes can be monitored.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="what-happens-when-your-physical-clocks-are-no-longer-in-sync"><a class="anchor" href="#what-happens-when-your-physical-clocks-are-no-longer-in-sync"></a>What Happens When Your Physical Clocks Are No Longer in Sync</h2>
+<h2 id="understanding-clock-drift"><a class="anchor" href="#understanding-clock-drift"></a>Understanding Clock Drift</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>If your physical clocks are drifting ahead and the drift is larger than the threshold of 5 seconds (5000 milliseconds), then an alert is raised on the destination cluster with the following message: "<code class="out">[&lt;DATE&gt;] - Remote or replica mutation received for bucket "&lt;BUCKET&gt;" on node "&lt;IP&gt;" with timestamp more than 5000 milliseconds ahead of local clock.
+<p>In a production environment, the clock of each individual node within a Couchbase-Server cluster should be synchronized with a reference clock, provided by an NTP server.
+This is described in <a href="../../install/synchronize-clocks-using-ntp.html" class="page">Clock Sync with NTP</a>.
+Over time, progressive <em>desynchronization</em> may occur: this is referred to as <a href="https://en.wikipedia.org/wiki/Clock_drift" target="_blank" rel="noopener">Clock Drift</a>, or more simply, <em>drift</em>.</p>
+</div>
+<div class="paragraph">
+<p>During <a href="../../learn/clusters-and-availability/replication-architecture.html" class="page">Intra-Cluster Replication</a>, each replica vBucket calculates drift; when it receives updates from the corresponding active vBucket, located on a separate node.</p>
+</div>
+<div class="paragraph">
+<p>During <a href="../../learn/clusters-and-availability/xdcr-overview.html" class="page">XDCR</a>, each active vBucket on the target cluster calculates drift; when it receives updates from its corresponding active vBucket, located on the source cluster.
+If drift is greater than 5 seconds (5000 milliseconds), an alert is raised on the destination cluster; with the following message: "<code class="out">[&lt;DATE&gt;] - Remote or replica mutation received for bucket "&lt;BUCKET&gt;" on node "&lt;IP&gt;" with timestamp more than 5000 milliseconds ahead of local clock.
 Please ensure that NTP is set up correctly on all nodes across the replication topology and clocks are synchronized.</code>"</p>
+</div>
+<div class="paragraph">
+<p>Drift can be monitored by means of the <a href="#cli:cbstats/cbstats-intro.adoc" class="page unresolved">cbstats</a> tool, using the <code>vbucket-details</code> and <code>all</code> commands; as described below.</p>
+</div>
+<div class="sect2">
+<h3 id="cbstats-vbucket-details"><a class="anchor" href="#cbstats-vbucket-details"></a><a href="../../cli/cbstats/cbstats-vbucket-details.html" class="page">cbstats vbucket-details</a></h3>
+<div class="paragraph">
+<p>The following drift-related statistics are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>max_cas</code>.
+The vBucket’s current maximum hybrid logical clock timestamp.
+In general, this statistic shows the value issued to the last mutation or in certain cases the largest timestamp the vBucket has received (when the received timestamp is ahead of the local clock).</p>
+</li>
+<li>
+<p><code>max_cas_str</code>.
+This is <code>max_cas</code>, displayed as a human-readable ISO-8601 timestamp (UTC).</p>
+</li>
+<li>
+<p><code>total_abs_drift</code>.
+"Total Absolute Drift" is the accumulated drift observed by the vBucket.
+Drift is always accumulated as an absolute value.</p>
+</li>
+<li>
+<p><code>total_abs_drift_count</code> .
+The number of updates applied to <code>total_abs_drift</code>, for the purpose of average or rate calculations.</p>
+</li>
+<li>
+<p><code>drift_ahead_threshold</code>.
+The threshold at which positive drift triggers an update to <code>drift_ahead_exceeded</code>.
+The value is displayed in nanoseconds.</p>
+</li>
+<li>
+<p><code>drift_behind_threshold</code>.
+The threshold at which positive drift triggers an update to <code>drift_behind_exceeded</code>.
+The value is displayed in nanoseconds as a positive value, but is converted to a negative value for actual exception checks.</p>
+</li>
+<li>
+<p><code>drift_ahead_threshold_exceeded</code>.
+How many mutations have been observed with a drift above the <code>drift_ahead_threshold</code>.</p>
+</li>
+<li>
+<p><code>drift_behind_threshold_exceeded</code>.
+How many mutations have been observed with a drift below the <code>drift_behind_threshold</code>.</p>
+</li>
+<li>
+<p><code>logical_clock_ticks</code>.
+How many times the hybrid logical clock has had to increment the logical clock.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cbstats-all"><a class="anchor" href="#cbstats-all"></a><a href="../../cli/cbstats/cbstats-all.html" class="page">cbstats all</a></h3>
+<div class="paragraph">
+<p>The following drift-related statistics are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ep_active_hlc_drift</code>.
+The sum of <code>total_abs_drift</code> for the node’s active vBuckets.</p>
+</li>
+<li>
+<p><code>ep_active_hlc_drift_count</code>.
+The sum of <code>total_abs_drift_count</code> for the node’s active vBuckets.</p>
+</li>
+<li>
+<p><code>ep_replica_hlc_drift</code>.
+The sum of <code>total_abs_drift</code> for the node’s active vBuckets.</p>
+</li>
+<li>
+<p><code>ep_replica_hlc_drift_count</code>.
+The sum of <code>total_abs_drift_count</code> for the node’s active vBuckets.</p>
+</li>
+<li>
+<p><code>ep_active_ahead_exceptions</code>.
+The sum of <code>drift_ahead_exceeded</code> for the node’s active vBuckets.</p>
+</li>
+<li>
+<p><code>ep_active_behind_exceptions</code>.
+The sum of <code>drift_behind_exceeded</code> for the node’s active vBuckets.</p>
+</li>
+<li>
+<p><code>ep_replica_ahead_exceptions</code>.
+The sum of <code>drift_ahead_exceeded</code> for the node’s replica vBuckets.</p>
+</li>
+<li>
+<p><code>ep_replica_behind_exceptions</code>.
+The sum of <code>drift_behind_exceeded</code> for the node’s replica vBuckets.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
