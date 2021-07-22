@@ -1,0 +1,2900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Manage Full Text Indexes | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-8629/cloud/clusters/search-service/manage-full-text-indexes.html">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+<meta name="dcterms.subject" content="cloud">
+<meta name="dcterms.identifier" content="master">
+<meta name="generator" content="Antora 3.0.0-alpha.5">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://docs.couchbase.com">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-8629/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/cloud.html">
+                      Cloud
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      Tutorials
+                      <span class="arrow">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a href="https://cloud.couchbase.com/sign-up" class="free-trial-link" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  <i class="fas fa-cloud"></i>
+                  Free Trial
+                </a>
+                <a class="btn btn-primary try-btn"  onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                </a>
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<nav class="nav">
+<div class="left-sidebar-menu">
+<div class="version-control-box">
+<div class="component-frame">
+<div class="frame-icon">
+<img src="../../../_/img/server-icon.png" alt="">
+</div>
+<div class="frame-body">
+<h4 class="title"><span class="">Couchbase Cloud</span></h4>
+<a class="frame-link component" href="../../index.html"></a>
+</div>
+</div>
+</div>
+<div class="nav-menu">
+<ul class="nav-list">
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<a class="nav-link" href="../../index.html">Couchbase Cloud Home</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../release-notes/release-notes.html">Release Notes</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="nav-text "><a href="https://www.couchbase.com/products/cloud/faq" target="_blank" rel="noopener">FAQ ↗️</a></span>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Get Started</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/get-started.html">Start Here</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/create-account.html">Create an Account</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/deploy-first-cluster.html">Deploy Your First Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/configure-cluster-access.html">Configure Access to Your Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/connect-to-cluster.html">Connect to Your Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/load-data.html">Interact with Data in Your Cluster</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../get-started/decommission-resources.html">Remove Cloud Resources and Close Your Account</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Organizations &amp; Access</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../organizations/organizations.html">Organizations &amp; Users</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../organizations/manage-organizations.html">Manage Organizations</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../organizations/manage-organization-users.html">Manage Users</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../organizations/organization-user-roles.html">Organization Roles</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../../projects/projects.html">Projects</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../projects/manage-projects.html">Manage Projects</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../../projects/project-roles.html">Project Roles</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../organizations/manage-account.html">Manage Your Couchbase Cloud Account</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Billing</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../billing/billing.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../billing/manage-billing.html">Manage Billing</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="nav-text "><a href="https://www.couchbase.com/pricing" target="_blank" rel="noopener">Pricing Page ↗️</a></span>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Clouds</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../clouds/clouds.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../clouds/manage-clouds.html">Connect &amp; Manage Clouds</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../clouds/cloud-providers.html">Cloud Provider Requirements</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Clusters</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../clusters.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<span class="nav-text ">Manage Clusters</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../create-cluster.html">Create a Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../modify-cluster.html">Modify a Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../connect-self-managed-cluster.html">Connect a Self-Managed Cluster</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../delete-cluster.html">Delete a Cluster</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../sizing.html">Cluster Sizing</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../scale-cluster.html">Cluster Scaling</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../data-service/data-service.html">Data Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data-service/manage-buckets.html">Manage Buckets</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../data-service/manage-documents.html">Manage Documents</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../query-service/query-service.html">Query Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../query-service/query-workbench.html">Query Workbench</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../index-service/index-service.html">Index Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../index-service/manage-indexes.html">Manage Indexes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item is-current-path is-active is-active-depth-2  " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="search-service.html">Search Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item is-current-page is-active is-active-depth-2  " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="manage-full-text-indexes.html">Manage Full Text Indexes</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../analytics-service/analytics-service.html">Analytics Service</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../analytics-service/analytics-workbench.html">Analytics Workbench</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../analytics-service/analytics-links.html">Analytics Links</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../analytics-service/analytics-monitor.html">Analytics Monitor</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../xdcr/xdcr.html">Replication (XDCR)</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../xdcr/manage-xdcr-replications.html">Manage Replications</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<span class="in-toggle" data-depth="1"></span>
+<a class="nav-link" href="../backup-restore.html">Backup &amp; Restore</a>
+</span>
+<ul class="nav-list">
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../manage-backup.html">Manage Backups</a>
+</span>
+</li>
+<li class="nav-item " data-depth="2">
+
+<span class="nav-line "  data-depth="2">
+<a class="nav-link" href="../manage-restore.html">Restore a Backup</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Security &amp; Networking</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../security/allow-ip-address.html">Configure Allowed IPs</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../security/manage-database-users.html">Configure Database Users</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Reference</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../reference/sdk-compatibility.html">SDK Compatibility</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../reference/browser-compatibility.html">Supported Browsers</a>
+</span>
+</li>
+</ul>
+</li>
+<li class="nav-item " data-depth="0">
+
+<span class="nav-line "  data-depth="0">
+<span class="in-toggle" data-depth="0"></span>
+<span class="nav-text ">Support</span>
+</span>
+<ul class="nav-list">
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../support/support.html">Overview</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../support/manage-support.html">Request Support</a>
+</span>
+</li>
+<li class="nav-item  is-inactive " data-depth="1">
+
+<span class="nav-line "  data-depth="1">
+<a class="nav-link" href="../../support/feedback.html">Provide Feedback</a>
+</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<a href="#" class="menu-expand-toggle"> <span>Navigation</span> <i class="fas fa-times-circle"></i> <i class="fas fa-chevron-circle-left"></i></a>
+</div></nav>
+<aside class="toc sidebar">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbaselabs/project-avengers/docs/public/modules/clusters/pages/search-service/manage-full-text-indexes.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../../index.html">Couchbase Cloud</a></li>
+<li class="crumb">Clusters</li>
+<li class="crumb"><a href="search-service.html">Search Service</a></li>
+<li class="crumb"><a href="manage-full-text-indexes.html">Manage Full Text Indexes</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Manage Full Text Indexes</h1>
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Full text searches are supported by specially purposed indexes, which can be created and managed from the Couchbase Cloud UI.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Every Full Text Search is performed on a user-created <em>Full Text Index</em>, which contains the targets on which searches are to be performed: these targets are values derived from the textual and other contents of documents within a specified bucket.</p>
+</div>
+<div class="paragraph">
+<p>Index-creation is configurable, and can be highly selective: documents can be user-grouped into different <em>types</em> (for example, <code>airline</code> documents versus <code>hotel</code> documents), based on the document-IDs or the values of a designated document-field; and each document-type can be assigned its own index-mapping.
+Each index-mapping in turn can be assigned its own <em>analyzers</em>, can be applied to a specific subset of document-fields, and can be explicitly included in or excluded from the index.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="accessing-full-text-indexes-in-the-couchbase-cloud-ui"><a class="anchor" href="#accessing-full-text-indexes-in-the-couchbase-cloud-ui"></a>Accessing Full Text Indexes in the Couchbase Cloud UI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If a cluster is running the <a href="search-service.html" class="page">Search Service</a>, Full Text Indexes can be accessed under the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.
+(Full Text Indexes are different from the <em>Global</em> indexes that are accessed under the <strong class="ui">Tools &gt; Indexes</strong> tab.)</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/cluster-full-text-search-tab.png" alt="The cluster&#8217;s 'Tools &gt; Full Text Search' tab.">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to access Full Text Indexes in the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.</p>
+<div class="paragraph">
+<p>Without a database user, the <strong class="ui">Tools &gt; Full Text Search</strong> tab will display a message saying that you don&#8217;t have the proper permissions to access Full Text Indexes.</p>
+</div>
+<div class="paragraph">
+<p>In addition, only Full Text Indexes on buckets for which the database user has at least <a href="../../security/manage-database-users.html#database-role-read" class="page"><code><strong>Read</strong></code></a> permissions will appear in the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</div>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="index-summary"><a class="anchor" href="#index-summary"></a>Index Summary</h3>
+<div class="paragraph">
+<p>A cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab shows a summary of all the Full Text Indexes on the cluster.
+The summary is displayed in table format, with sortable columns and a row for each index.</p>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Full Text Indexes</strong> list displays the following information about each index:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Index Name</dt>
+<dd>
+<p>The name of the Full Text Index.</p>
+</dd>
+<dt class="hdlist1">Bucket</dt>
+<dd>
+<p>The bucket for which the Full Text Index was created.</p>
+</dd>
+<dt class="hdlist1">Doc Count</dt>
+<dd>
+<p>Number of documents <em>examined</em> while building the index.
+(Note that this is not a reflection of the number of documents in the index.)</p>
+</dd>
+<dt class="hdlist1">Indexing Progress</dt>
+<dd>
+<p>The build-progress of the index.
+When 100% is reached, the index build is considered complete.
+An index can be searched as soon as it&#8217;s created, but only partial results can be expected until the index build is complete.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Indexing progress is determined by <code>index_doc_count</code> / <code>source_doc_count</code>, with <code>index_doc_count</code> being retrieved from the Search Service endpoint and <code>source_doc_count</code> being retrieved from a Data Service endpoint.
+In the event that one or more Data Service nodes in the cluster become unavailable and/or become failed over, the indexing progress may show a value greater than 100% since <code>source_doc_count</code> for the bucket would be missing some active partitions.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-full-text-index"><a class="anchor" href="#create-full-text-index"></a>Create a Full Text Index</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can also create a Full Text Index by <a href="#import-full-text-index">importing a JSON-formatted index definition</a>.
+This can be helpful if you want to create a new index that is very similar to an existing index, or if you want to re-create an index from another cluster.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to create a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which you are creating the index.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Go to the <strong class="ui">Clusters</strong> tab in the main navigation.</p>
+</li>
+<li>
+<p>Find and click on the cluster that contains the bucket on which you plan to create a Full Text Index.</p>
+<div class="paragraph">
+<p>This opens the cluster with its <strong class="ui">Overview</strong> tab selected.</p>
+</div>
+</li>
+<li>
+<p>Click the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Click <b class="button">Add Index</b>.</p>
+<div class="paragraph">
+<p>This opens the <strong class="ui">Add Index</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-index-flyout.png" alt="The 'Add Index' fly-out menu." width="500">
+</div>
+</div>
+</li>
+<li>
+<p>Specify a name for the index.</p>
+<div class="paragraph">
+<p>In the <strong class="ui">Name</strong> field, enter a unique name for the index.
+Only alphanumeric characters, hyphens, and underscores are allowed for Full Text Index names.
+Note also that the first character of the name must be an alphabetic character.</p>
+</div>
+</li>
+<li>
+<p>Use the <strong class="ui">Bucket</strong> dropdown menu to select the bucket on which the index is to be created.</p>
+</li>
+<li>
+<p>Click <b class="button">Continue to configuration</b>.</p>
+<div class="paragraph">
+<p>The fly-out menu closes and the index&#8217;s configuration screen appears.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-index-configuration-page-new.png" alt="The configuration page of a Full Text Index.">
+</div>
+</div>
+</li>
+<li>
+<p>Configure the index.</p>
+<div class="paragraph">
+<p>From the index&#8217;s configuration page, you can begin configuring various settings for the index.
+Note that the index can actually be saved as-is at this point, because it is technically valid with just a name and a specified bucket.
+However, since a default <em>type mapping</em> is not included as part of the configuration, saving the index will not result in any content being indexed (and thus no documents will be returned if you try to <a href="#query-full-text-index">perform a search</a>).</p>
+</div>
+<div class="paragraph">
+<p>You can review the other sections on this page for explanations of the various Full Text Index settings:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#specifying-type-identifiers">Specifying Type Identifiers</a></p>
+</li>
+<li>
+<p><a href="#specifying-analyzer-defaults">Specifying Analyzer Defaults</a></p>
+</li>
+<li>
+<p><a href="#specifying-type-mappings">Specifying Type Mappings</a></p>
+</li>
+<li>
+<p><a href="#specifying-fields">Specifying Fields</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#inserting-a-child-field">Inserting a Child Field</a></p>
+</li>
+<li>
+<p><a href="#inserting-a-child-mapping">Inserting a Child Mapping</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="#creating-analyzers">Creating Analyzers</a></p>
+</li>
+<li>
+<p><a href="#adding-custom-filters">Adding Custom Filters</a></p>
+</li>
+<li>
+<p><a href="#date-time-parsers">Date/Time Parsers</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Index</b>.</p>
+<div class="paragraph">
+<p>The fly-out menu closes and the new index appears in the <strong class="ui">Full Text Indexes</strong> section.
+Note the percentage figure in the <strong class="ui">Indexing Progress</strong> column.
+This figure is incremented in correspondence with the build-progress of the index.
+When 100% is reached, the index build is considered complete.
+An index can be searched as soon as it&#8217;s created, but only partial results can be expected until the index build is complete.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>After creating the index, you can return to the index&#8217;s configuration page to modify the index&#8217;s configuration settings, as well as take actions such as searching the index, monitoring index statistics, and copying the index definition.
+Refer to the section <a href="#modify-full-text-index">View and Modify a Full Text Index</a> for more information.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="import-full-text-index"><a class="anchor" href="#import-full-text-index"></a>Import a Full Text Index</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can create a Full Text Index by importing a JSON-formatted index definition.
+This can be helpful if you want to do things like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone an index from the same cluster</p>
+</li>
+<li>
+<p>Re-create an index from another cluster, such as another cluster in Couchbase Cloud or a self-managed Couchbase Server cluster</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to import a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which you are creating the index.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Go to the <strong class="ui">Clusters</strong> tab in the main navigation.</p>
+</li>
+<li>
+<p>Find and click on the cluster that contains the bucket on which you plan to import the Full Text Index.</p>
+<div class="paragraph">
+<p>This opens the cluster with its <strong class="ui">Overview</strong> tab selected.</p>
+</div>
+</li>
+<li>
+<p>Click the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>(Optional) Copy the index definition of an existing index.</p>
+<div class="paragraph">
+<p>To copy the definition of an existing index on the cluster, find the index that you wish to copy in the <strong class="ui">Full Text Indexes</strong> section, and click on the index&#8217;s name.
+This opens the index&#8217;s configuration page.
+From there, click <b class="button">Copy Index to Clipboard</b>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can also copy an index definition from Couchbase Server.
+In the Couchbase Web Console, start by going to the <strong class="ui">Search</strong> tab in the left-hand navigation.
+Find and click on the index that you wish to copy, and in the expanded configuration menu, click <strong class="ui">Show index definition JSON</strong>.
+Copy the index definition by clicking <b class="button">Copy to Clipboard</b>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-copy-index-definition-couchbase-web-console.png" alt="The 'Search' tab of the Couchbase Web Console, showing an index with the 'Show index definition JSON' panel expanded.">
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>From the <strong class="ui">Tools &gt; Full Text Search</strong> tab, click <b class="button">Import Index</b>.</p>
+<div class="paragraph">
+<p>This opens the <strong class="ui">Import FTS Index</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-import-index-flyout.png" alt="The 'Import FTS Index' fly-out menu." width="500">
+</div>
+</div>
+</li>
+<li>
+<p>Specify a name for the index.</p>
+<div class="paragraph">
+<p>In the <strong class="ui">Index Name</strong> field, enter a unique name for the index.
+Only alphanumeric characters, hyphens, and underscores are allowed for Full Text Index names.
+Note also that the first character of the name must be an alphabetic character.</p>
+</div>
+</li>
+<li>
+<p>Use the <strong class="ui">Bucket</strong> dropdown menu to select the bucket on which the index is to be created.</p>
+</li>
+<li>
+<p>In the code editor field, enter or paste the index definition.</p>
+<div class="paragraph">
+<p>Note that the <code>"name"</code> and <code>"sourceName"</code> values in any imported index definition will be overridden by what was specified for <strong class="ui">Index Name</strong> and <strong class="ui">Bucket</strong> in the previous steps.</p>
+</div>
+</li>
+<li>
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create</b>.</p>
+<div class="paragraph">
+<p>The fly-out menu closes and the new index appears in the <strong class="ui">Full Text Indexes</strong> section.
+Note the percentage figure in the <strong class="ui">Indexing Progress</strong> column.
+This figure is incremented in correspondence with the build-progress of the index.
+When 100% is reached, the index build is considered complete.
+An index can be searched as soon as it&#8217;s created, but only partial results can be expected until the index build is complete.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>After importing an index, you can <a href="#modify-full-text-index">view and modify its configuration</a> from the index&#8217;s configuration page.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="modify-full-text-index"><a class="anchor" href="#modify-full-text-index"></a>View and Modify a Full Text Index</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The procedure in this section describes how to access the configuration page of a Full Text Index.
+From this page you can view and/or modify the index&#8217;s configuration settings, as well as take actions such as searching the index, monitoring index statistics, and copying the index definition.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to view or modify a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>To simply <em>view</em> the index and its configuration, the database user must have <a href="../../security/manage-database-users.html#database-role-read" class="page"><code><strong>Read</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+<li>
+<p>To <em>modify</em> the index&#8217;s configuration, the database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Go to the <strong class="ui">Clusters</strong> tab in the main navigation.</p>
+</li>
+<li>
+<p>Find and click on the cluster that contains the Full Text Index that you wish to view/modify.</p>
+<div class="paragraph">
+<p>This opens the cluster with its <strong class="ui">Overview</strong> tab selected.</p>
+</div>
+</li>
+<li>
+<p>Click the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Find and click on the index that you wish to view/modify.</p>
+<div class="paragraph">
+<p>This opens the index&#8217;s configuration page.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-index-configuration-page.png" alt="The configuration page of a Full Text Index.">
+</div>
+</div>
+</li>
+<li>
+<p>After making modifications to the index configuration, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page to commit the new configuration and to begin re-building the index.</p>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+When making changes to the index configuration, those changes are only saved in browser memory until the <b class="button">Save Index</b> button is clicked.
+Only after this button is clicked will the new configuration be committed and the index re-built.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The buttons in the upper-right side of the index&#8217;s configuration page allow you to do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><b class="button">Search Index</b>: Opens the <strong class="ui">Search</strong> fly-out menu, which allows you to <a href="#query-full-text-index">search the current index</a>.</p>
+</li>
+<li>
+<p><b class="button">Stats</b>: Opens the <strong class="ui">Stats</strong> fly-out menu, which allows you to <a href="#view-full-text-index-statistics">view the statistics of the current index</a>.</p>
+</li>
+<li>
+<p><b class="button">Copy Index to Clipboard</b>: Copies the JSON-formatted index definition of the current index.
+The copied index definition can be used to <a href="#import-full-text-index">import a duplicate Full Text Index</a> on the same or different cluster.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Index Details</strong> section contains the following expandable panels:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">General</strong>: Expanding the panel displays the <strong class="ui">Name</strong> of the index, and the <strong class="ui">Bucket</strong> on which the index is built.
+Clicking <strong class="ui">Edit</strong> allows you to change the value of the <strong class="ui">Bucket</strong> field, thus allowing you to change the bucket on which the index is built.</p>
+</li>
+<li>
+<p><strong class="ui">Type Identifier</strong>: Expanding this panel displays the <em>type identifier</em> configuration of the index.
+Clicking <strong class="ui">Edit Type Identifier</strong> allows you to <a href="#specifying-type-identifiers">specify the type identifier</a> for the index.</p>
+</li>
+<li>
+<p><strong class="ui">Analyzer Defaults</strong>: Expanding this panel displays the currently-configured analyzer default settings for the index.
+Clicking <strong class="ui">Edit Analyzer Defaults</strong> allows you to <a href="#specifying-analyzer-defaults">specify the analyzer defaults</a> for the index.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Index Settings</strong> section displays controls for the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Type Mappings</strong>: Expanding this panel displays any <em>type mappings</em> that are currently configured for the index.
+Clicking <strong class="ui">Add Mapping</strong> allows you to specify a new type mapping for the index.
+Clicking the vertical ellipses next to an existing type mapping displays options to edit or delete the type mapping, along with options to <a href="#specifying-fields">insert child mappings and child fields</a>.
+Refer to the section <a href="#specifying-type-mappings">Specifying Type Mappings</a> for more information.</p>
+</li>
+<li>
+<p><strong class="ui">Analyzers</strong>: Expanding this panel displays any <em>analyzers</em> that are currently configured for the index.
+Clicking <strong class="ui">Add Analyzer</strong> allows you to create a new analyzer for the index.
+Clicking the vertical ellipses next to an existing analyzer displays options to edit or delete the analyzer.
+Refer to the section <a href="#creating-analyzers">Creating Analyzers</a> for more information.</p>
+</li>
+<li>
+<p><strong class="ui">Custom Filters</strong>: Expanding this panel displays any <em>custom filters</em> that are currently configured for the index.
+Refer to the section <a href="#adding-custom-filters">Adding Custom Filters</a> for more information about adding and managing the various custom filters.</p>
+</li>
+<li>
+<p><strong class="ui">Date/Time Parsers</strong>: Expanding this panel displays any <em>date/time parsers</em> that are currently configured for the index.
+Clicking <strong class="ui">Add Date/Time Parser</strong> allows you to create a new date/time parser for the index.
+Clicking the vertical ellipses next to an existing date/time parser displays options to edit or delete the date/time parser.
+Refer to the section <a href="#date-time-parsers">Date/Time Parsers</a> for more information.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delete-full-text-index"><a class="anchor" href="#delete-full-text-index"></a>Delete a Full Text Index</h2>
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to delete a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Go to the <strong class="ui">Clusters</strong> tab in the main navigation.</p>
+</li>
+<li>
+<p>Find and click on the cluster that contains the Full Text Index that you wish to delete.</p>
+<div class="paragraph">
+<p>This opens the cluster with its <strong class="ui">Overview</strong> tab selected.</p>
+</div>
+</li>
+<li>
+<p>Click the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Find the index that you wish to delete, and click the Trash icon at the end of the row on the right side.</p>
+</li>
+<li>
+<p>When prompted to confirm the deletion, click <b class="button">Confirm</b>.</p>
+<div class="paragraph">
+<p>The index is deleted and removed from the list of indexes on the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Deleting a bucket also deletes any Full Text Indexes configured on that bucket.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-full-text-index"><a class="anchor" href="#query-full-text-index"></a>Search a Full Text Index</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Within the Couchbase Cloud UI, you can query a Full Text Index and receive detailed results in a visual format.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Full Text Indexes that are created through the Couchbase Cloud UI do not have a default <a href="#specifying-type-mappings">type mapping</a>.
+Searching a Full Text Index will not return any results until you <a href="#modify-full-text-index">modify the index configuration</a> to add a type mapping.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to search a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read" class="page"><code><strong>Read</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Go to the <strong class="ui">Clusters</strong> tab in the main navigation.</p>
+</li>
+<li>
+<p>Find and click on the cluster that contains the Full Text Index that you wish to search.</p>
+<div class="paragraph">
+<p>This opens the cluster with its <strong class="ui">Overview</strong> tab selected.</p>
+</div>
+</li>
+<li>
+<p>Click the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Find and click on the index that you wish to search.</p>
+<div class="paragraph">
+<p>This opens the index&#8217;s configuration page.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-index-configuration-page.png" alt="The configuration page of a Full Text Index.">
+</div>
+</div>
+</li>
+<li>
+<p>Click <b class="button">Search Index</b>.</p>
+<div class="paragraph">
+<p>This opens the <strong class="ui">Search</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-search-index-flyout.png" alt="The 'Search' fly-out menu." width="500">
+</div>
+</div>
+</li>
+<li>
+<p>To perform a query, simply type a term into the <strong class="ui">Search</strong> field and click <b class="button">Search</b>.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A term without any other syntax is interpreted as a <em>match query</em> for the term in the default field.
+The default field is <code>_all</code>.
+For example, <code>pool</code> performs a <a href="#server:fts:fts-query-types.adoc#match-query" class="page unresolved">match query</a> for the term <code>pool</code>.
+Refer to the section <a href="#advanced-search-settings">Advanced Searches</a> for additional information about using queries.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Results appear under the <strong class="ui">Search</strong> field, featuring documents that contain the specified term:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-search-index-flyout-results.png" alt="The 'Search' fly-out menu showing a query for 'restaurant'." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>Results are paginated with 10 results per page.
+The total number of documents matching the search is displayed at the top-right of the results alongside the amount of time it took for the Search Service to execute the search on the cluster (otherwise known as <a href="#view-full-text-index-statistics">query latency</a>).</p>
+</div>
+<div class="paragraph">
+<p>Clicking on any of the displayed document IDs opens the <strong class="ui">Document</strong> fly-out menu, featuring the entire contents of the document:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-search-index-document-flyout.png" alt="The 'Document' fly-out menu that appears after clicking the document ID of the top search result from the previous image." width="500">
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="advanced-search-settings"><a class="anchor" href="#advanced-search-settings"></a>Advanced Searches</h3>
+<div class="paragraph">
+<p>When <a href="#query-full-text-index">performing a search</a>, you can expand the <strong class="ui">Settings</strong> panel at the top of the <strong class="ui">Search</strong> fly-out menu to reveal additional advanced settings:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-search-index-flyout-settings-expanded.png" alt="The 'Search' fly-out menu with the 'Settings' panel expanded." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The interactive fields and checkboxes are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Set consistency level to <code>at_plus</code></strong>: When checked, bounded consistency is implemented for the query.
+The request includes a <code>scan_vector</code> parameter and value, which is used as a lower bound, allowing you to implement Read-Your-Own-Writes (RYOW).
+Specify the value of the <code>scan_vector</code> parameter in the <strong class="ui">Consistency Vectors</strong> field.
+For more information, refer to the page <a href="#server:fts:fts-queries.adoc#scan-consistency" class="page unresolved">Understanding Queries</a> in the Couchbase Server documentation.</p>
+</li>
+<li>
+<p><strong class="ui">Timeout (ms)</strong>: The amount of time that the Search Service will allow the query to run, specified in milliseconds.
+If the query time reaches the specified timeout value, only partial results are returned.</p>
+</li>
+<li>
+<p><strong class="ui">Consistency Vectors</strong>: The value of the <code>scan_vector</code> parameter.</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>Scan vectors are built of two-element [<code class="var">value</code>, <code class="var">guard</code>] entries:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code class="var">value</code>: a vBucket&#8217;s sequence number (a JSON number)</p>
+</li>
+<li>
+<p><code class="var">guard</code>: a vBucket&#8217;s UUID (a string)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Scan vectors have two forms:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Full scan vector</strong>: an array of [<code class="var">value</code>, <code class="var">guard</code>] entries, giving an entry for every vBucket in the system.</p>
+</li>
+<li>
+<p><strong>Sparse scan vectors</strong>: an object providing entries for specific vBuckets, mapping a vBucket number (a string) to each [<code class="var">value</code>, <code class="var">guard</code>] entry.</p>
+<div class="listingblock">
+<div class="title">Example of a Sparse Scan Vector</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">{ "5 ": [5409393,"VB5ID"], "19": [47574574, "VB19ID"] }</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Any configuration changes made within the <strong class="ui">Settings</strong> panel are applied to the next query that executes in the <strong class="ui">Search</strong> field.</p>
+</div>
+<div class="paragraph">
+<p>The configurable options in the <strong class="ui">Settings</strong> panel are essentially a convenient user interface for applying some of the common features available in the <em>query string syntax</em>.
+The <strong class="ui">Search</strong> field supports full query string queries, which can be used in conjunction with, or in place of, the configuration in the <strong class="ui">Settings</strong> panel.
+For an explanation of the supported query syntax, you can click <strong class="ui">query syntax help</strong> underneath the <strong class="ui">Search</strong> field, which opens the page <a href="#server:fts:query-string-queries.adoc" class="page unresolved">server:fts:query-string-queries.adoc</a> in the Couchbase Server documentation.
+Note that a Query String Query is the only type of query that can be executed by the <strong class="ui">Search</strong> field.</p>
+</div>
+<div class="paragraph">
+<p>After executing a search, note the <strong class="ui">Show Scoring</strong> checkbox that appears above the search results.
+When this is checked, scores for each document are provided:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-search-index-flyout-results-scoring.png" alt="The 'Search' fly-out menu showing a query for 'restaurant' with the 'Show Scoring' checkbox selected." width="500">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="view-full-text-index-statistics"><a class="anchor" href="#view-full-text-index-statistics"></a>View Full Text Index Statistics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Within the Couchbase Cloud UI, you can view statistics for a specific Full Text Index.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to view the statistics for a particular Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to the cluster&#8217;s <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Go to the <strong class="ui">Clusters</strong> tab in the main navigation.</p>
+</li>
+<li>
+<p>Find and click on the cluster that contains the Full Text Index whose statistics you wish to view.</p>
+<div class="paragraph">
+<p>This opens the cluster with its <strong class="ui">Overview</strong> tab selected.</p>
+</div>
+</li>
+<li>
+<p>Click the <strong class="ui">Tools &gt; Full Text Search</strong> tab.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Find and click on the index whose statistics you wish to view.</p>
+<div class="paragraph">
+<p>This opens the index&#8217;s configuration page.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-index-configuration-page.png" alt="The configuration page of a Full Text Index.">
+</div>
+</div>
+</li>
+<li>
+<p>Click <b class="button">Stats</b>.</p>
+<div class="paragraph">
+<p>This opens the index&#8217;s <strong class="ui">Stats</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-index-stats-flyout.png" alt="The index&#8217;s 'Stats' fly-out menu." width="500">
+</div>
+</div>
+</li>
+<li>
+<p>(Optional) Use the <strong class="ui">Past</strong> dropdown menu to change the time interval over which the statistics are displayed.
+This can be <code>Minute</code>, <code>Hour</code>, <code>Day</code>, <code>Week</code>, or <code>Month</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The index&#8217;s <strong class="ui">Stats</strong> fly-out menu displays several statistics related to the current index:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Disk Used</dt>
+<dd>
+<p>The amount of disk used by the Full Text Index.</p>
+</dd>
+<dt class="hdlist1">Doc Count</dt>
+<dd>
+<p>The number of documents <em>examined</em> while building the index.
+(Note that this is not a reflection of the number of documents in the index.)</p>
+</dd>
+<dt class="hdlist1">Query Error Rate</dt>
+<dd>
+<p>The rate of query errors: Errors due to query rejection (high memory usage) or due to internal errors.</p>
+</dd>
+<dt class="hdlist1">Query Latency</dt>
+<dd>
+<p>The average time to answer Search queries after they reach the Search Service on the cluster.</p>
+</dd>
+<dt class="hdlist1">Slow Queries</dt>
+<dd>
+<p>The number of Search queries that took five seconds or greater.</p>
+</dd>
+<dt class="hdlist1">Total Queries</dt>
+<dd>
+<p>The number of Search queries executed per node.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-type-identifiers"><a class="anchor" href="#specifying-type-identifiers"></a>Specifying Type Identifiers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <em>type identifier</em> allows the documents in a bucket to be identified by the index according to their <em>type</em>.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to specify the type identifier for a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The type identifier can be viewed and modified from the <a href="#modify-full-text-index">index&#8217;s configuration page</a>, under the <strong class="ui">Index Details</strong> section.
+The type identifier configuration of the current index can be displayed by expanding the <strong class="ui">Type Identifier</strong> panel.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-identifier-panel.png" alt="The 'Type Identifier' panel showing the default configuration." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>The current type identifier is listed to the left, with the specified value listed to the right.</p>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Edit Type Identifier</strong> opens the <strong class="ui">Type Identifier</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-identifier-flyout.png" alt="The 'Type Identifier' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>Three options are provided, each of which gives the index a particular way of determining the type of each document in the bucket:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">JSON Type Field</strong>: The name of a document-field.
+The value specified for this field is used by the index to determine the type of the document.
+The default value is <code>type</code>: meaning that the index searches for a field in each document whose name is <code>type</code>.
+Each document that contains a field with that name is duly included in the index, with the value of the field specifying the type of the document.
+Note that the value cannot be an array or JSON object.</p>
+</li>
+<li>
+<p><strong class="ui">Doc ID up to Separator</strong>: The characters in the ID of each document, up to but not including the separator.
+For example, if the document&#8217;s ID is <code>hotel_10123</code>, the value <code>hotel</code> is determined by the index to be the type of the document.
+The value entered into the field should be the separator-character used in the ID: for example, <code>_</code>, if that character is the underscore.</p>
+</li>
+<li>
+<p><strong class="ui">Doc ID with Regex</strong>: A regular expression that is applied by the index to the ID of each document.
+The resulting value is determined to be the type of the document.
+(This option may be used when the targeted document-subset contains neither a suitable <strong>JSON Type Field</strong> nor an ID that follows a naming convention suitable for <strong>Doc ID up to Separator</strong>.)
+The value entered into the field should be the regular expression to be used.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After modifying the type identifier and its associated value, click <b class="button">Update Type Identifier</b> to save the configuration.
+The fly-out menu closes, and the new type identifier configuration is displayed in the <strong class="ui">Type Identifier</strong> panel.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new type identifier configuration is only saved in browser memory.
+To commit the new type identifier configuration (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-analyzer-defaults"><a class="anchor" href="#specifying-analyzer-defaults"></a>Specifying Analyzer Defaults</h2>
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to specify analyzer defaults for a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Analyzer defaults can be viewed and modified from the <a href="#modify-full-text-index">index&#8217;s configuration page</a>, under the <strong class="ui">Index Details</strong> section.
+The analyzer defaults of the current index can be displayed by expanding the <strong class="ui">Analyzer Defaults</strong> panel.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-analyzer-defaults-panel.png" alt="The 'Analyzer Defaults' panel showing the default configuration." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Edit Analyzer Defaults</strong> opens the <strong class="ui">Analyzer Defaults</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-analyzer-defaults-flyout.png" alt="The 'Analyzer Defaults' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The following interactive fields are displayed:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Default Analyzer</strong>: The default analyzer to be used for this bucket.
+The default value is <code>standard</code>.
+Clicking the dropdown menu displays a list of available options.</p>
+</li>
+<li>
+<p><strong class="ui">Default Date/Time Parser</strong>: The default date/time parser to be used for this bucket.
+The default value is <code>dateTimeOptional</code>.
+Clicking the dropdown menu displays a list of available options.</p>
+</li>
+<li>
+<p><strong class="ui">Store Dynamic Fields</strong>: When checked, ensures inclusion of field-content in returned results.
+When unchecked, no such inclusion occurs.</p>
+</li>
+<li>
+<p><strong class="ui">Index Dynamic Fields</strong>: When checked, ensures dynamic fields are indexed.
+When unchecked, they are not indexed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After modifying the analyzer defaults, click <b class="button">Update Analyzer Defaults</b> to save the configuration.
+The fly-out menu closes, and the new analyzer defaults are displayed in the <strong class="ui">Analyzer Defaults</strong> panel.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new analyzer defaults configuration is only saved in browser memory.
+To commit the new analyzer defaults (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-type-mappings"><a class="anchor" href="#specifying-type-mappings"></a>Specifying Type Mappings</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Whereas a <a href="#specifying-type-identifiers"><em>type identifer</em></a> tells the index how to determine the position in each document of the characters that specify the document&#8217;s type, a <em>type mapping</em> specifies the characters themselves.
+Thus, if <strong>Doc ID up to separator</strong> is used as a type identifier, and the underscore is specified as the separator-character, a type mapping of <em>hotel</em> ensures that <code>hotel_10123</code>, rather than <code>airline_10</code>, is indexed.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to specify a type mapping for a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Type mappings can be viewed and modified from the <a href="#modify-full-text-index">index&#8217;s configuration page</a>, under the <strong class="ui">Index Settings</strong> section.
+Any type mappings that are configured for the current index can be viewed by expanding the <strong class="ui">Type Mappings</strong> panel.
+If no type mappings have been configured for the index, the <strong class="ui">Type Mappings</strong> panel will be empty.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-empty.png" alt="The 'Type Mappings' panel showing no existing type mappings." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Add Mapping</strong> opens the <strong class="ui">Add Mapping</strong> fly-out menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-mapping-flyout.png" alt="The 'Add Mapping' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>When the <strong class="ui">Enabled</strong> checkbox is selected, documents that correspond to the type mapping are included in the index.
+Conversely, if the <strong class="ui">Enabled</strong> checkbox is <em>unselected</em>, documents that correspond to the type mapping are <em>not</em> included in the index.</p>
+</div>
+<div class="paragraph">
+<p>To specify a type mapping, enter an appropriate string (for example, <code>hotel</code>) into the <strong class="ui">Name</strong> field.
+Note the <strong class="ui">Only index specified fields</strong> checkbox: if this is checked, only user-specified fields from the document are included in the index.
+(For an example, refer to the section <a href="#specifying-fields">Specifying Fields</a>.)</p>
+</div>
+<div class="paragraph">
+<p>Each type mapping can be either <em>dynamic</em>, meaning that all fields are considered available for indexing; or <em>only index specified fields</em>, meaning that only fields specified by the user are indexed.
+Leaving <strong class="ui">Only index specified fields</strong> unselected means that the type mapping will be dynamic.
+For information on how values are data-typed when dynamic mapping is specified, refer to the section <a href="#document-fields-and-data-types">Document-Fields and Data-Types</a>.</p>
+</div>
+<div class="paragraph">
+<p>Optionally, the <strong class="ui">Default Analyzer</strong> dropdown menu can be used to specify an <em>analyzer</em> for the type mapping.
+For all queries that do indeed support use of an analyzer, the specified analyzer will be applied, rather than the default analyzer (which is itself specified in the <strong class="ui">Analyzer Defaults</strong> panel, as described in the <a href="#specifying-analyzer-defaults">Specifying Analyzer Defaults</a> section).
+The default value, <code>inherit</code>, means that the type mapping inherits the default analyzer.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-mapping-flyout-select-analyzer.png" alt="The 'Add Mapping' fly-out menu showing the expanded 'Default Analyzer' dropdown menu." width="500">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Custom analyzers can be created and stored for the index that is being defined (refer to the section <a href="#creating-analyzers">Creating Analyzers</a>).
+On creation, all custom analyzers are available for association with a type mapping, and so appear in the dropdown menu shown above.</p>
+</div>
+<div class="paragraph">
+<p>Additional information on analyzers can also be found on the page <a href="#server:fts:fts-using-analyzers.adoc" class="page unresolved">server:fts:fts-using-analyzers.adoc</a> in the Couchbase Server documentation.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Mapping</b> to save the type mapping.
+The fly-out menu closes and the new type mapping is displayed in the <strong class="ui">Type Mappings</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-single-mapping.png" alt="The 'Type Mappings' panel showing the newly created type mapping." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new type mapping is only saved in browser memory.
+To commit the new type mapping (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a type mapping, you can click on its associated vertical ellipses to display a dropdown menu that contains additional options.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-specify-fields.png" alt="The dropdown menu that appears after clicking the associated vertical ellipses of a particular type mapping." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Edit Mapping</strong> and <strong class="ui">Delete Type Mapping</strong> options can be used to correspondingly edit or delete the type mapping.
+The <strong class="ui">Insert Child Mapping</strong> and <strong class="ui">Insert Child Field</strong> options  can be used to <a href="#specifying-fields">specify fields</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="specifying-fields"><a class="anchor" href="#specifying-fields"></a>Specifying Fields</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Full Text Index can be defined not only to include (or exclude) documents of a certain <em>type</em>, but also to include (or exclude) specified <em>fields</em> within each of the typed documents.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to specify fields (inserting a child mapping and inserting a child field) for a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To specify a field, start by clicking the vertical ellipses next to the desired type mapping.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-specify-fields.png" alt="The dropdown menu that appears after clicking the associated vertical ellipses of a type mapping." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>In the menu that appears, select one of the following options for specifying fields:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Insert Child Mapping</strong></p>
+<div class="paragraph">
+<p>Refer to the section <a href="#inserting-a-child-mapping">Inserting a Child Mapping</a>.</p>
+</div>
+</li>
+<li>
+<p><strong class="ui">Insert Child Field</strong></p>
+<div class="paragraph">
+<p>Refer to the section <a href="#inserting-a-child-field">Inserting a Child Field</a>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="inserting-a-child-mapping"><a class="anchor" href="#inserting-a-child-mapping"></a>Inserting a Child Mapping</h3>
+<div class="paragraph">
+<p>When <a href="#specifying-fields">specifying fields</a>, the <strong class="ui">Insert Child Mapping</strong> option allows you to specify a document-field whose value is a JSON object.
+Selecting this option opens the <strong class="ui">Add Child Mapping</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-child-mapping-flyout.png" alt="The 'Add Child Mapping' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The interactive fields and checkboxes are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Enabled</strong>: When this checkbox is selected, documents that correspond to the child mapping are included in the index.
+When this checkbox is <em>unselected</em>, documents that correspond to the child mapping are <em>not</em> included in the index.</p>
+</li>
+<li>
+<p><strong class="ui">Name</strong>: The name of a field whose value is a JSON object.</p>
+</li>
+<li>
+<p><strong class="ui">Default Analyzer</strong>: Optionally specify an <em>analyzer</em> for the child mapping.
+For all queries that do indeed support use of an analyzer, the specified analyzer will be applied, rather than the default analyzer (which is itself specified in the <strong class="ui">Analyzer Defaults</strong> panel, as described in the <a href="#specifying-analyzer-defaults">Specifying Analyzer Defaults</a> section).
+The default value, <code>inherit</code>, means that the type mapping inherits the default analyzer.</p>
+</li>
+<li>
+<p><strong class="ui">Only index specified fields</strong>: When checked, only fields explicitly specified are added to the index.
+Note that the JSON object specified as the value for <strong class="ui">Name</strong> has multiple fields of its own.
+Checking this box ensures that all or a subset of these can be selected for indexing.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Child Mapping</b> to save the child mapping.
+The fly-out menu closes and the new child mapping is displayed as part of the parent type mapping as follows (note that <code>reviews</code> is a field within the <code>hotel</code>-type documents of the <code>travel-sample</code> bucket whose value is a JSON object):</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-single-mapping-child-mapping.png" alt="The 'Type Mappings' section showing a single type mapping with a single child mapping." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new child mapping is only saved in browser memory.
+To commit the new child mapping (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a child mapping, you can click on its associated vertical ellipses to display a dropdown menu that contains additional options.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-specify-child-mapping-specify-fields.png" alt="The dropdown menu that appears after clicking the associated vertical ellipses of a child mapping." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Edit Mapping</strong> and <strong class="ui">Delete Type Mapping</strong> options can be used to correspondingly edit or delete the child mapping.
+However, note that the <strong class="ui">Insert Child Mapping</strong> and <strong class="ui">Insert Child Field</strong> options are also present.
+The reason these options are present is because, in this example, <code>reviews</code> is an object that contains child-fields; which can now themselves be individually indexed.
+Inserting a <a href="#inserting-a-child-field">child field</a>, such as <code>content</code>, can be specified:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-single-mapping-child-mapping-child-field.png" alt="The 'Type Mappings' section showing a type mapping with a child mapping that itself has a child field defined." width="700">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="inserting-a-child-field"><a class="anchor" href="#inserting-a-child-field"></a>Inserting a Child Field</h3>
+<div class="paragraph">
+<p>When <a href="#specifying-fields">specifying fields</a>, the <strong class="ui">Insert Child Field</strong> option allows a field to be individually included for (or excluded from) indexing, provided that it contains a single value or an array, rather than a JSON object..
+Selecting this option opens the <strong class="ui">Add Child Field</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-child-field-flyout.png" alt="The 'Add Child Field' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The interactive fields and checkboxes are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Field</strong>: The name of any field within the document that contains a single value or an array, rather than a JSON object.</p>
+</li>
+<li>
+<p><strong class="ui">Type</strong>: The <em>data-type</em> of the value of the field.
+This can be <code>text</code>, <code>number</code>, <code>datetime</code>, <code>boolean</code>, <code>disabled</code>, or <code>geopoint</code>; and can be selected from the field&#8217;s dropdown menu.</p>
+</li>
+<li>
+<p><strong class="ui">Searchable As</strong>: Typically identical to the <strong class="ui">Field</strong> (and dynamically supplied during text-input of the <strong class="ui">Field</strong>-value).
+This can be modified, to indicate an alternative field-name, whose associated value thereby becomes included in the indexed content, rather than that associated with the field-name specified in <strong class="ui">Field</strong>.</p>
+</li>
+<li>
+<p><strong class="ui">Analyzer</strong>: An analyzer optionally to be used for the field.
+The list of available analyzers can be displayed by means of the field&#8217;s dropdown menu, and so selected from.</p>
+</li>
+<li>
+<p><strong class="ui">Index</strong>: When checked, the field is indexed; when unchecked, the field is not indexed.
+This may be used, therefore, to explicitly remove an already-defined field from the index.</p>
+</li>
+<li>
+<p><strong class="ui">Store</strong>: When checked, the field-content is included in the set of values returned from a search; when unchecked, the field-content is not so included.
+Note that inclusion of field-content specifically permits <em>highlighting</em> of results, so that matched expressions can be easily seen; and generally assists in debugging procedures.
+However, it also results in larger indexes and longer processing-times.</p>
+</li>
+<li>
+<p><strong class="ui">Include in <em>&#95;all</em> field</strong>: When checked, the field is included in the definition of <strong class="ui">&#95;all</strong>, which is the field specified by default in the <strong class="ui">Advanced Options</strong> panel.
+When unchecked, the field is not so included.
+Inclusion means that when <em>query strings</em> are used to specify searches, the text in the current field is searchable without the field-name requiring a prefix (thus, a search on <code>description:modern</code> can be accomplished simply by specifying <code>modern</code>).</p>
+</li>
+<li>
+<p><strong class="ui">Include term vectors</strong>: When checked, term vectors are included.
+When unchecked, term vectors are not included.
+Term vectors are the locations of terms in a particular field.
+Certain kinds of functionality (such as highlighting, and phrase search) require term vectors.
+Inclusion of term vectors results in larger indexes and correspondingly slower index build-times.</p>
+</li>
+<li>
+<p><strong class="ui">Docvalues</strong>: When checked, the <em>value</em> for each instance of the field is itself included in the index.
+This provides essential support for <a href="#server:fts:fts-response-object-schema.adoc#search-facets" class="page unresolved">Search Facets</a>, and for the sorting of search results based on field values: refer to <a href="#server:fts:fts-sorting.adoc" class="page unresolved">server:fts:fts-sorting.adoc</a> in the Couchbase Server documentation.
+Note that whenever this checkbox is checked, the resulting index will be correspondingly larger.
+If it is <em>unchecked</em>, the values are <em>not</em> added to the index; and in consequence, neither Search Facets nor value-based result-sorting is supported.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that when the value of the specified field is an array, the array-values are all indexed and searched individually: no special configuration is required.</p>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Child Mapping</b> to save the child field.
+The fly-out menu closes and the new child field is displayed as part of the parent type mapping as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-single-mapping-child-field.png" alt="The 'Type Mappings' section showing a single type mapping with a single child field." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new child field is only saved in browser memory.
+To commit the new child field (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a child field, you can click on its associated vertical ellipses to display a dropdown menu that contains additional options.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-type-mappings-edit-child-field.png" alt="The 'Type Mappings' section showing the expanded menu after clicking the vertical ellipses next to a particular child field." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Edit Mapping</strong> and <strong class="ui">Delete Type Mapping</strong> options can be used to correspondingly edit or delete the child field.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="creating-analyzers"><a class="anchor" href="#creating-analyzers"></a>Creating Analyzers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Analyzers increase search-awareness by transforming input text into token-streams, which permit the management of richer and more finely controlled forms of text-matching.
+An analyzer consists of modules, each of which performs a particular role in the transformation (for example, removing undesirable characters; transforming standard words into <em>stemmed</em> or otherwise modified forms, referred to as <em>tokens</em>; and performing miscellaneous post-processing activities).
+For more information on analyzers, refer to the page <a href="#server:fts:fts-using-analyzers.adoc" class="page unresolved">server:fts:fts-using-analyzers.adoc</a> in the Couchbase Server documentation.</p>
+</div>
+<div class="paragraph">
+<p>A default selection of analyzers is made available from the <strong class="ui">Default Analyzer</strong> dropdown menu when <a href="#specifying-type-mappings">specifying a type mapping</a>.
+Additional analyzers can be custom-created, by means of the <strong class="ui">Analyzers</strong> panel, located under the <strong class="ui">Index Settings</strong> section of the
+<a href="#modify-full-text-index">index&#8217;s configuration page</a>.
+Any custom analyzers that are configured for the current index can be viewed by expanding the <strong class="ui">Analyzers</strong> panel.
+If no custom analyzers have been configured for the index, the <strong class="ui">Analyzers</strong> panel will be empty.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-analyzers-empty.png" alt="The 'Analyzers' panel showing no existing analyzers." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to create a custom analyzer for a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To create a new custom analyzer, click <strong class="ui">Add Analyzer</strong>.
+This opens the <strong class="ui">Add Custom Analyzer</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-custom-analyzer-flyout.png" alt="The 'Add Custom Analyzer' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The fly-out menu contains four interactive fields.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Name</strong>: A suitable, user-defined name for the analyzer.</p>
+</li>
+<li>
+<p><strong class="ui">Character Filters</strong>: One or more of the available character filters.
+A character filter strips out undesirable characters from input: for example, the <code>html</code> character filter removes HTML tags, and indexes HTML text-content alone.</p>
+<div class="paragraph">
+<p>To add a character filter, click inside the <strong class="ui">Character Filters</strong> field and then select from the list of available character filters that appears.
+Multiple character filters are supported, including <a href="#character-filters">custom character filters</a>.</p>
+</div>
+<div class="paragraph">
+<p>For an explanation of character filters, refer to the relevant section on the page <a href="#server:fts:fts-using-analyzers.adoc#character-filters" class="page unresolved">Understanding Analyzers</a> in the Couchbase Server documentation.</p>
+</div>
+</li>
+<li>
+<p><strong class="ui">Tokenizer</strong>: One of the available tokenizers.
+A tokenizer splits input-strings into individual <em>tokens</em>, which together are made into a <em>token stream</em>.
+Typically, a token is established for each word.
+The default value is <code>unicode</code>.</p>
+<div class="paragraph">
+<p>Use the dropdown menu to select from the list of available tokenizers.</p>
+</div>
+<div class="paragraph">
+<p>For more information on tokenizers, refer to the relevant section on the page <a href="#server:fts:fts-using-analyzers.adoc#tokenizers" class="page unresolved">Understanding Analyzers</a>.</p>
+</div>
+</li>
+<li>
+<p><strong class="ui">Token Filter</strong>: One or more of the available token filters.
+When specified, token filters are chained together, to perform additional post-processing on the token stream.</p>
+<div class="paragraph">
+<p>To add a token filter, click inside the <strong class="ui">Token Filters</strong> field and then select from the list of available token filters that appears.
+Multiple token filters are supported.</p>
+</div>
+<div class="paragraph">
+<p>For more information on token filters, refer to the relevant section on the page <a href="#server:fts:fts-using-analyzers.adoc#token-filters" class="page unresolved">Understanding Analyzers</a> in the Couchbase Server documentation.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Analyzer</b> to save the custom analyzer.
+The fly-out menu closes and the new custom analyzer is displayed in the <strong class="ui">Analyzer</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-analyzers-single-analyzer.png" alt="The 'Analyzers' panel showing the newly created custom analyzer." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new custom analyzer is only saved in browser memory.
+To commit the new custom analyzer (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a custom analyzer, you can click on its associated vertical ellipses to display a dropdown menu that contains additional options.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-analyzers-modify.png" alt="The dropdown menu that appears after clicking the associated vertical ellipses of a particular analyzer." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong class="ui">Edit Analyzer</strong> and <strong class="ui">Delete Analyzer</strong> options can be used to correspondingly edit or delete the custom analyzer.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="adding-custom-filters"><a class="anchor" href="#adding-custom-filters"></a>Adding Custom Filters</h2>
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to add a custom filter to a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><em>Custom filters</em> can be viewed and modified from the <a href="#modify-full-text-index">index&#8217;s configuration page</a>, under the <strong class="ui">Index Settings</strong> section.
+Any custom filters that are configured for the current index can be viewed by expanding the <strong class="ui">Custom Filters</strong> panel.
+If no custom filters have been configured for the index, the <strong class="ui">Custom Filters</strong> panel will be empty.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-empty.png" alt="The 'Custom Filters' panel showing no existing custom filters." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>The following four options are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#character-filters">Character Filters</a></p>
+</li>
+<li>
+<p><a href="#tokenizers">Tokenizers</a></p>
+</li>
+<li>
+<p><a href="#token-filters">Token Filters</a></p>
+</li>
+<li>
+<p><a href="#wordlists">Wordlists</a></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="character-filters"><a class="anchor" href="#character-filters"></a>Character Filters</h3>
+<div class="paragraph">
+<p>Creating a custom <em>character filter</em> adds the filter to the list of those available for inclusion in <a href="#creating-analyzers">custom analyzers</a>.</p>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Add Character Filter</strong> opens the <strong class="ui">Add Character Filter</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-add-character-filter-flyout.png" alt="The 'Add Character Filter' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The following interactive fields are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Name</strong>: A suitable, user-defined name for the new character filter.</p>
+</li>
+<li>
+<p><strong class="ui">Type</strong>: The type of filtering to be performed.
+Use the dropdown menu to select from the list of available types.
+The default value is <code>regexp</code>.</p>
+</li>
+<li>
+<p><strong class="ui">Regular Expression</strong>: The specific <em>regular expression</em> that the new character filter is to apply.
+Character-strings that match the expression will be affected, others will not.</p>
+</li>
+<li>
+<p><strong class="ui">Replacement</strong>: The replacement text that will be substituted for each character-string match returned by the regular expression.
+If no replacement text is specified, the matched character-string will be omitted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Character Filter</b> to save the new custom character filter.
+The fly-out menu closes and the new character filter is displayed in the <strong class="ui">Custom Filters &gt; Character Filters</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-single-character-filter.png" alt="The 'Custom Filters &gt; Character Filters' panel showing the newly created custom filter." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, the defined character filter can be used for deleting leading whitespace.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new custom character filter is only saved in browser memory.
+To commit the new character filter (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a custom character filter, you can click on its associated vertical ellipses to display a dropdown menu that contains the options <strong class="ui">Edit Character Filter</strong> and <strong class="ui">Delete Character Filter</strong>, which can be used to edit or delete the character filter, respectively.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="tokenizers"><a class="anchor" href="#tokenizers"></a>Tokenizers</h3>
+<div class="paragraph">
+<p>Creating a custom <em>tokenizer</em> adds the tokenizer to the list of those available for inclusion in <a href="#creating-analyzers">custom analyzers</a>.</p>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Add Tokenizer</strong> opens the <strong class="ui">Add Tokenizer</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-add-tokenizer-flyout.png" alt="The 'Add Tokenizer' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The following interactive fields are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Name</strong>: A suitable, user-defined name for the new tokenizer.</p>
+</li>
+<li>
+<p><strong class="ui">Type</strong>: The process used in tokenizing.
+The default value is <code>regexp</code>.</p>
+<div class="paragraph">
+<p>Use the dropdown menu if you wish to select from the list of additional types.</p>
+</div>
+<div class="paragraph">
+<p>Note that type-selection determines which interactive fields appear in the <strong class="ui">Add Tokenizer</strong> fly-out menu, following <strong class="ui">Name</strong> and <strong class="ui">Type</strong>.
+For descriptions, refer to the relevant section on the page <a href="#server:fts:fts-using-analyzers.adoc#tokenizers" class="page unresolved">Understanding Analyzers</a> in the Couchbase Server documentation.</p>
+</div>
+</li>
+<li>
+<p><strong class="ui">Regular Expression</strong>: The specific <em>regular expression</em> used by the tokenizing process.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Tokenizer</b> to save the new custom tokenizer.
+The fly-out menu closes and the new tokenizer is displayed in the <strong class="ui">Custom Filters &gt; Tokenizers</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-single-tokenizer.png" alt="The 'Custom Filters &gt; Tokenizers' panel showing the newly created tokenizer." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, the defined tokenizer can be used for removing uppercase characters.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new custom tokenizer is only saved in browser memory.
+To commit the new tokenizer (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a custom tokenizer, you can click on its associated vertical ellipses to display a dropdown menu that contains the options <strong class="ui">Edit Tokenizer</strong> and <strong class="ui">Delete Tokenizer</strong>, which can be used to edit or delete the tokenizer, respectively.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="token-filters"><a class="anchor" href="#token-filters"></a>Token Filters</h3>
+<div class="paragraph">
+<p>Creating a custom <em>token filter</em> adds the filter to the list of those available for inclusion in <a href="#creating-analyzers">custom analyzers</a>.</p>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Add Token Filter</strong> opens the <strong class="ui">Add Token Filter</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-add-token-filter-flyout.png" alt="The 'Add Token Filter' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The following interactive fields are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Name</strong>: A suitable, user-defined name for the new token filter.</p>
+</li>
+<li>
+<p><strong class="ui">Type</strong>: The type of post-processing to be provided by the new token filter.
+The default is <code>length</code>, which creates tokens whose minimum number of characters is specified by the integer provided in the <strong class="ui">Min</strong> field, and whose maximum by the integer provided in the <strong class="ui">Max</strong>.</p>
+<div class="paragraph">
+<p>Use the dropdown menu if you wish to select from the list of additional post-processing types.</p>
+</div>
+<div class="paragraph">
+<p>Note that type-selection determines which interactive fields appear in the <strong class="ui">Add Token Filter</strong> fly-out menu, following <strong class="ui">Name</strong> and <strong class="ui">Type</strong>.
+Changing the type-selection will change the interactive fields that follow.
+For descriptions, refer to the relevant section on the page <a href="#server:fts:fts-using-analyzers.adoc#token-filters" class="page unresolved">Understanding Analyzers</a> in the Couchbase Server documentation.</p>
+</div>
+</li>
+<li>
+<p><strong class="ui">Min</strong>: The minimum length of the token, in characters.
+The default value is <code>3</code>.</p>
+<div class="paragraph">
+<p>Note that this interactive field is displayed when the <strong class="ui">Type</strong> field is set to <code>length</code>, and may not appear, or be replaced, when other types are specified.</p>
+</div>
+</li>
+<li>
+<p><strong class="ui">Max</strong>: The maximum length of the token, in characters.
+The default value is <code>255</code>.</p>
+<div class="paragraph">
+<p>Note that this interactive field is displayed when the <strong class="ui">Type</strong> field is set to <code>length</code>, and may not appear, or be replaced, when other types are specified.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Token Filter</b> to save the new custom token filter.
+The fly-out menu closes and the new token filter is displayed in the <strong class="ui">Custom Filters &gt; Token Filters</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-single-token-filter.png" alt="The 'Custom Filters &gt; Token Filters' panel showing the newly created token filter." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, the defined token filter can be used to restrict token-length to a minimum of 3, and a maximum of 255 characters.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new custom token filter is only saved in browser memory.
+To commit the new token filter (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a custom token filter, you can click on its associated vertical ellipses to display a dropdown menu that contains the options <strong class="ui">Edit Token Filter</strong> and <strong class="ui">Delete Token Filter</strong>, which can be used to edit or delete the token filter, respectively.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="wordlists"><a class="anchor" href="#wordlists"></a>Wordlists</h3>
+<div class="paragraph">
+<p>Creating a <em>wordlist</em> adds a list of words to be removed from the current search.</p>
+</div>
+<div class="paragraph">
+<p>Clicking <strong class="ui">Add Wordlist</strong> opens the <strong class="ui">Add Wordlist</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-add-wordlist-flyout.png" alt="The 'Add Wordlist' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The following interactive fields are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Name</strong>: A suitable, user-defined name for the new wordlist.</p>
+</li>
+<li>
+<p><strong class="ui">Words</strong>: The list of words that comprise the wordlist.</p>
+<div class="paragraph">
+<p>To add a word, click inside the <strong class="ui">Words</strong> field and enter the desired word.
+Finish adding the word by pressing <kbd>Return</kbd>.
+Continue adding as many words as desired.</p>
+</div>
+<div class="paragraph">
+<p>To remove a word, click the <strong class="ui">X</strong> icon next to the word that you wish to remove.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Wordlist</b> to save the new wordlist.
+The fly-out menu closes and the new wordlist is displayed in the <strong class="ui">Custom Filters &gt; Wordlists</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-custom-filters-single-wordlist.png" alt="The 'Custom Filters &gt; Wordlists' panel showing the newly created wordlist." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new wordlist is only saved in browser memory.
+To commit the new wordlist (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a wordlist, you can click on its associated vertical ellipses to display a dropdown menu that contains the options <strong class="ui">Edit Wordlist</strong> and <strong class="ui">Delete Wordlist</strong>, which can be used to edit or delete the wordlist, respectively.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="date-time-parsers"><a class="anchor" href="#date-time-parsers"></a>Date/Time Parsers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Custom <em>date/time parsers</em> can be specified, to allow matches to be made across date/time formats.</p>
+</div>
+<div class="paragraph">
+<p>The Search Service expects dates to be in the format specified by <a href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank" rel="noopener">RFC-3339</a>, which is a specific profile of <a href="https://en.wikipedia.org/wiki/ISO_8601" target="_blank" rel="noopener">ISO-8601</a>.
+Since Search queries need to specify dates in RFC-3339 format, the dates that that are stored in Full Text Indexes also need to be in RFC-3339 format.</p>
+</div>
+<div class="paragraph">
+<p>A date/time parser tells the Search Service ahead of time what the date/time layout of a field will be.
+If the <strong class="ui">Type</strong> of a <a href="#inserting-a-child-field">child field</a> is set to <code>datetime</code>, and the time layout(s) found in that field is not in RFC-3339 format, then you can specify a custom date/time parser that contains the layouts that the Search Service is to expect.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Permissions Required</div>
+<div class="paragraph">
+<p>In order to add a custom date/time parser to a Full Text Index via the Couchbase Cloud UI, the following permissions are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You must have <a href="../../projects/project-roles.html#project-role-view" class="page"><code><strong>Project View</strong></code></a> privileges for the project that contains the cluster.</p>
+</li>
+<li>
+<p>You must have a <a href="../../security/manage-database-users.html" class="page">database user</a> associated with your organization user account.
+The database user must have <a href="../../security/manage-database-users.html#database-role-read-write" class="page"><code><strong>Read/Write</strong></code></a> permissions for the bucket on which the index was created.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Date/time parsers can be viewed and modified from the <a href="#modify-full-text-index">index&#8217;s configuration page</a>, under the <strong class="ui">Index Settings</strong> section.
+Any date/time parsers that are configured for the current index can be viewed by expanding the <strong class="ui">Date/Time Parsers</strong> panel.
+If no date/time parsers have been configured for the index, the <strong class="ui">Date/Time Parsers</strong> panel will be empty.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-date-time-parsers-empty.png" alt="The 'Date/Time Parsers' panel showing no existing date/time parsers." width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>To create a new date/time parser, click <strong class="ui">Add Date/Time Parser</strong>.
+This opens the <strong class="ui">Add Date/Time Parser</strong> fly-out menu:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-add-date-time-parser-flyout.png" alt="The 'Add Date/Time Parser' fly-out menu." width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>The following interactive fields are provided:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong class="ui">Name</strong>: A suitable, user-defined name for the new date/time parser.</p>
+</li>
+<li>
+<p><strong class="ui">Layouts</strong>: The date/time layout(s) of the field within the document.</p>
+<div class="paragraph">
+<p>To add a layout, click inside the <strong class="ui">Layouts</strong> field and enter the expected date/time layout.
+Finish adding the layout by pressing <kbd>Return</kbd>.
+Continue adding as many layouts as desired.</p>
+</div>
+<div class="paragraph">
+<p>The most straightforward approach is to copy and paste a date/time value from the intended field of an example document in the bucket.
+If the date/time values for that field have more than one layout across documents, then copy and paste examples of each possible layout.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Search Service uses the the <a href="http://golang.org/pkg/time/" target="_blank" rel="noopener">Go time package</a> to automatically analyze the layouts that are entered in the <strong class="ui">Layouts</strong> field.
+It then determines, internally, how those layouts will be converted to RFC-3339 format.
+How, and whether, a layout can be converted by the Search Service is determined by <a href="http://golang.org/pkg/time/#Parse" target="_blank" rel="noopener">func Parse</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To remove a layout, click the <strong class="ui">X</strong> icon next to the layout that you wish to remove.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;re satisfied with the configuration, click <b class="button">Create Date/Time Parser</b> to save the new date/time parser.
+The fly-out menu closes and the new date/time parser is displayed in the <strong class="ui">Date/Time Parsers</strong> panel as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/fts-date-time-parsers-single-parser.png" alt="The 'Date/Time Parsers' panel showing the newly created date/time parser." width="700">
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The new date/time parser is only saved in browser memory.
+To commit the new date/time parser (along with any other settings modifications), and to begin re-building the index, click <b class="button">Save Index</b> at the bottom of the index&#8217;s configuration page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating a date/time parser, you can click on its associated vertical ellipses to display a dropdown menu that contains the options <strong class="ui">Edit Date/Time Parser</strong> and <strong class="ui">Delete Date/Time Parser</strong>, which can be used to edit or delete the date/time parser, respectively.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="document-fields-and-data-types"><a class="anchor" href="#document-fields-and-data-types"></a>Document-Fields and Data-Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>During index creation, for each document-field for which the data-type has not been explicitly specified (which is to say, <strong>text</strong>, <strong>number</strong>, <strong>datetime</strong>, <strong>boolean</strong>, <strong>disabled</strong>, or <strong>geopoint</strong>), the field-value is examined, and the best-possible determination made, as follows:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type of JSON value</th>
+<th class="tableblock halign-left valign-top">Indexed as...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String containing a date</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Date</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String (not containing a date)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Note that the indexer attempts to parse String date-values as dates, and indexes them as such if the operation succeeds.
+Note, however, that on query-execution, Full Text Search expects dates to be in the format specified by <a href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank" rel="noopener">RFC-3339</a>, which is a specific profile of ISO-8601.</p>
+</div>
+<div class="paragraph">
+<p>Note also that String values such as <code>7</code> or <code>true</code> are not respectively indexed as numbers or Booleans: they remain as Strings.</p>
+</div>
+<div class="paragraph">
+<p>The number-type is modeled as a 64-bit floating-point value internally.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
