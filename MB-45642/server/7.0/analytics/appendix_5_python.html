@@ -5270,7 +5270,7 @@ Python code can be bound as a function. However, to achieve the best performance
 <div class="paragraph">
 <p>Python UDFs are run as the same user as the Couchbase Analytics process itself. To enable maximum flexibility for cases
 where specialized hardware (e.g. GPUs) might be needed for the function, no additional sandboxing or other code and
-process isolation techniques are used. This is similar to an unfenced external function in traditional RDBMS systems.</p>
+process isolation techniques are used. This is similar to an unfenced external function in a traditional RDBMS.</p>
 </div>
 <div class="paragraph">
 <p>Therefore any code that is part of a Library should be very carefully vetted for
@@ -5313,7 +5313,7 @@ of the object will greatly increase the performance of the function.</p>
 <p>For each function invoked during a query, there will be an independent instance of the function per data partition. This
 means that the function must not assume there is any global state or that it can assume things about the layout
 of the data. The execution of the function will be parallel to the same degree as the level of data parallelism in the
-cluster.</p>
+cluster (e.g. the number of Analytics data partitions)</p>
 </div>
 <div class="paragraph">
 <p>After initialization, the function bound in the N1QL for Analytics function definition is called once per tuple during the query
@@ -5382,6 +5382,11 @@ For example, to target a Linux x86 platform for scikit-learn with Python 3.9, th
 <pre>shiv -o lib.pyz --site-packages . --platform manylinux2010_x86_64 --python-version 39 --only-binary=:all: scikit-learn</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The maximum allowed size of an uploaded library is determined by the <code>maxWebRequestSize</code> parameter value in the Analytics
+Service configuration. If the crafted library is very large (512MB or more), this limit may need to be reconfigured to
+a higher value.</p>
+</div>
 </div>
 </div>
 </div>
@@ -5438,6 +5443,16 @@ permission <code>cluster.admin.diag!write</code>, which is normally only availab
 This request must also originate locally from a node that is running Analytics. Upload requests from non-local origins
 are blocked for security purposes. See the <a href="rest-library.html">Analytics Library REST API</a> for complete details.</p>
 </div>
+<div class="literalblock">
+<div class="content">
+<pre>curl -X POST -u couchbase:couchbase -F "type=python" -F "data=@./lib.pyz" localhost:8095/analytics/library/Default/pylib</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This request uploads and extracts the library across all nodes in the cluster, using a 2 phase commit protocol to ensure
+that each node has the complete library. Therefore it may take some time to return, dependent on the size of the uploaded
+library. Once a <code>200 OK</code> has been returned by the server, the upload is complete and the library is ready to use.</p>
+</div>
 <div class="paragraph">
 <p>With the library deployed, you can define a function within it for use. For example, to expose the Python function
 <code>sentiment</code> in the module <code>sentiment_mod</code> in the class <code>sent_model</code>, the DDL would be as follows:</p>
@@ -5465,7 +5480,7 @@ If a function is not deterministic then it should be declared as such by using a
 </div>
 <div class="paragraph">
 <p>With the function now defined, it can then be used as any other scalar Analytics function would be.
-For more details, see <a href="9_udf.html">User-Defined Functions</a> for details of the N1QL for Analytics syntax for creating external functions.</p>
+See <a href="9_udf.html">User-Defined Functions</a> for details of the N1QL for Analytics syntax for creating external functions.</p>
 </div>
 </div>
 </div>
