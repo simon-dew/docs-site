@@ -2886,7 +2886,7 @@ Couchbase Server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="manage-datasets.html">Managing Datasets</a>
+<a class="nav-link" href="manage-datasets.html">Managing Collections</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -4606,6 +4606,12 @@ Couchbase Server
 <a class="nav-link" href="rest-links.html">Analytics Links REST API</a>
 </span>
 </li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="rest-library.html">Analytics Library REST API</a>
+</span>
+</li>
 </ul>
 </li>
 <li class="nav-item " data-depth="3">
@@ -5264,6 +5270,15 @@ to set the default scope for the statement immediately following.</p>
 <div class="title">Example</div>
 <div class="content">
 <pre>USE Commerce;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, use the <strong>query context</strong> drop-down list at the top right of the Query Editor to select <code>Commerce</code> as
+the default scope for the following examples.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/workbench-context-set.png" alt="The query context drop-down menu with 'Commerce' selected">
 </div>
 </div>
 <div class="paragraph">
@@ -6285,8 +6300,8 @@ ORDER BY c.custid;</pre>
 <div class="literalblock">
 <div class="content">
 <pre>FROM orders AS o
-WHERE get_year(date(o.order_date)) = 2020
-GROUP BY get_month(date(o.order_date)) AS month
+WHERE DATE_PART_STR(o.order_date, "year") = 2020
+GROUP BY DATE_PART_STR(o.order_date, "month") AS month
 SELECT month, COUNT(*) AS order_count
 ORDER BY order_count DESC, month DESC
 LIMIT 3;</pre>
@@ -6598,7 +6613,7 @@ the <code>CUBE</code> subclause returns a grand total and subtotals for every po
 FROM customers AS c INNER JOIN orders AS o ON c.custid = o.custid
 LET address_line = SPLIT(c.address.city, ","),
     customer_region = TRIM(address_line[1]),
-    order_month = get_month(date(o.order_date))
+    order_month = DATE_PART_STR(o.order_date, "month")
 GROUP BY CUBE(customer_region, order_month)
 ORDER BY customer_region ASC, order_month ASC;</pre>
 </div>
@@ -7317,7 +7332,7 @@ SELECT VALUE c.custid;</pre>
 <div class="content">
 <pre>WITH order_revenue AS
     (FROM orders AS o, o.items AS i
-    WHERE get_year(date(o.order_date)) = 2020
+    WHERE DATE_PART_STR(o.order_date, "year") = 2020
     GROUP BY o.orderno
     SELECT o.orderno, SUM(i.qty * i.price) AS revenue
   )

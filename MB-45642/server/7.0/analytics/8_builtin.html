@@ -2886,7 +2886,7 @@ Couchbase Server
 <li class="nav-item " data-depth="3">
 
 <span class="nav-line "  data-depth="3">
-<a class="nav-link" href="manage-datasets.html">Managing Datasets</a>
+<a class="nav-link" href="manage-datasets.html">Managing Collections</a>
 </span>
 </li>
 <li class="nav-item " data-depth="3">
@@ -4606,6 +4606,12 @@ Couchbase Server
 <a class="nav-link" href="rest-links.html">Analytics Links REST API</a>
 </span>
 </li>
+<li class="nav-item " data-depth="4">
+
+<span class="nav-line "  data-depth="4">
+<a class="nav-link" href="rest-library.html">Analytics Library REST API</a>
+</span>
+</li>
 </ul>
 </li>
 <li class="nav-item " data-depth="3">
@@ -5253,7 +5259,7 @@ Couchbase Server
 </div><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Some of the examples in this section assume that you are using an Analytics scope called <code>TinySocial</code>.
+<p>Some of the examples in this section assume that you are using an Analytics scope called <code>Commerce</code>.
 Refer to <a href="appendix_4_examples.html">Appendix 4: Example Data</a> to install this example data.</p>
 </div>
 <div class="paragraph">
@@ -5263,7 +5269,16 @@ to set the default scope for the statement immediately following.</p>
 <div class="literalblock">
 <div class="title">Example</div>
 <div class="content">
-<pre>USE TinySocial;</pre>
+<pre>USE Commerce;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, use the <strong>query context</strong> drop-down list at the top right of the Query Editor to select <code>Commerce</code> as
+the default scope for the following examples.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/workbench-context-set.png" alt="The query context drop-down menu with 'Commerce' selected">
 </div>
 </div>
 </div>
@@ -16798,11 +16813,11 @@ For details of the schema, refer to the N1QL for Query
 <li>
 <p>Example 2:</p>
 <div class="paragraph">
-<p>Infer the schema of the <code>GleambookMessages</code> collection using a subquery.</p>
+<p>Infer the schema of the <code>customers</code> collection using a subquery.</p>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>array_infer_schema((SELECT VALUE m FROM GleambookMessages as m), {"similarity_metric": 0.6});</pre>
+<pre>array_infer_schema((SELECT VALUE c FROM customers as c), {"num_sample_values": 3});</pre>
 </div>
 </div>
 </li>
@@ -16817,80 +16832,89 @@ For details of the schema, refer to the N1QL for Query
     "type": "object",
     "Flavor": "",
     "properties": {
-      "authorId": {
+      "address": {
         "#docs": 7,
         "%docs": 100,
-        "type": "number",
+        "type": "object",
         "samples": [
-          1,
-          2
-        ]
+          {
+            "street": "690 River St.",
+            "city": "Hanover, MA",
+            "zipcode": "02340"
+          },
+          {
+            "street": "201 Main St.",
+            "city": "St. Louis, MO",
+            "zipcode": "63101"
+          },
+          {
+            "street": "120 Harbor Blvd.",
+            "city": "Boston, MA",
+            "zipcode": "02115"
+          }
+        ],
+        "properties": {
+          "city": {
+            "#docs": 7,
+            "%docs": 100,
+            "type": "string",
+            "samples": [
+              "Boston, MA",
+              "Hanover, MA",
+              "St. Louis, MO"
+            ]
+          },
+          "street": {
+            "#docs": 7,
+            "%docs": 100,
+            "type": "string",
+            "samples": [
+              "201 Main St.",
+              "690 River St.",
+              "120 Harbor Blvd."
+            ]
+          },
+          "zipcode": {
+            "#docs": 6,
+            "%docs": 85.71428571428571,
+            "type": "string",
+            "samples": [
+              "02115",
+              "02340",
+              "63101"
+            ]
+          }
+        }
       },
-      "inResponseTo": {
-        "#docs": 7,
-        "%docs": 100,
-        "type": "number",
-        "samples": [
-          1,
-          2,
-          4,
-          11,
-          12
-        ]
-      },
-      "message": {
+      "custid": {
         "#docs": 7,
         "%docs": 100,
         "type": "string",
         "samples": [
-          " like ccast the 3G is awesome:)",
-          " like product-y the plan is amazing",
-          " can't stand acast its plan is terrible",
-          " dislike x-phone its touch-screen is horrible",
-          " can't stand product-w the touch-screen is terrible"
+          "C13",
+          "C25",
+          "C37"
         ]
       },
-      "messageId": {
+      "name": {
         "#docs": 7,
         "%docs": 100,
+        "type": "string",
+        "samples": [
+          "T. Cody",
+          "T. Henry",
+          "M. Sinclair"
+        ]
+      },
+      "rating": {
+        "#docs": 6,
+        "%docs": 85.71428571428571,
         "type": "number",
         "samples": [
-          2,
-          3,
-          8,
-          10,
-          11
+          640,
+          690,
+          750
         ]
-      },
-      "senderLocation": {
-        "#docs": 7,
-        "%docs": 100,
-        "type": "array",
-        "samples": [
-          [
-            38.97,
-            77.49
-          ],
-          [
-            40.33,
-            80.87
-          ],
-          [
-            41.66,
-            80.87
-          ],
-          [
-            42.5,
-            70.01
-          ],
-          [
-            48.09,
-            81.01
-          ]
-        ],
-        "maxItems": 2,
-        "minItems": 2,
-        "items": "double"
       }
     }
   }
@@ -16900,8 +16924,9 @@ For details of the schema, refer to the N1QL for Query
 <div class="paragraph">
 <p>The function detects that this collection has only one flavor of document.
   All documents are objects, and each document has the following properties:
-  <code>authorId</code> (number), <code>inResponseTo</code> (number), <code>message</code> (string),
-  <code>messageId</code> (number), and <code>senderLocation</code> (array).</p>
+  <code>custid</code> (string), <code>name</code> (string), <code>rating</code> (number), and <code>address</code> (object),
+  which in turn contains the properties <code>city</code> (string), <code>street</code> (string),
+  and <code>zipcode</code> (string).</p>
 </div>
 </li>
 </ul>
