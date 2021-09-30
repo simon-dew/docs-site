@@ -5045,21 +5045,7 @@ System.out.println(result.rowsAsObject());</code></pre>
 <div class="tab-pane" aria-labelledby="tabset1_node-js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/140e8bb810a6c7c324fa2fcbd04853cef1b0e060/modules/devguide/examples/nodejs/n1ql-queries-scoped.js">var couchbase = require('couchbase');
-
-const cluster = new couchbase.Cluster(
-  'couchbase://localhost',
-  { username: 'Administrator', password: 'password' }
-)
-const bucket = cluster.bucket("travel-sample");
-
-
-async function start() {
-  console.log('start')
-}
-
-// #tag::queryscope[]
-const scope = bucket.scope("inventory");
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/140e8bb810a6c7c324fa2fcbd04853cef1b0e060/modules/devguide/examples/nodejs/n1ql-queries-scoped.js#L15-L30">const scope = bucket.scope("inventory");
 
 async function queryScope() {
   const query = `
@@ -5074,70 +5060,7 @@ async function queryScope() {
   } catch (error) {
     console.error('Query failed: ', error)
   }
-}
-// #end::queryscope[]
-
-// #tag::queryplaceholders[]
-async function queryPlaceholders() {
-  const query = `
-  SELECT airportname, city FROM \`travel-sample\`.inventory.airport
-  WHERE city=$1
-  `;
-  const options = { parameters: ['San Jose'] }
-
-  try {
-    let result = await cluster.query(query, options)
-    console.log("Result:", result)
-    return result
-  } catch (error) {
-    console.error('Query failed: ', error)
-  }
-}
-// #end::queryplaceholders[]
-
-// #tag::queryresults[]
-async function queryResults() {
-  const query = `
-  SELECT airportname, city FROM \`travel-sample\`.inventory.airport
-  WHERE tz LIKE '%Los_Angeles'
-    AND airportname LIKE '%Intl';
-  `
-  try {
-    let results = await cluster.query(query);
-    results.rows.forEach((row) =&gt; {
-      console.log('Query row: ', row)
-    })
-    return results
-  } catch (error) {
-    console.error('Query failed: ', error)
-  }
-}
-// #end::queryresults[]
-
-// #tag::querynamed[]
-async function queryNamed() {
-  const query = `
-    SELECT airportname, city FROM \`travel-sample\`.inventory.airport
-    WHERE city=$CITY;
-  `
-  const options = { parameters: { CITY: 'Reno' } }
-
-  try {
-    let result = await cluster.query(query, options)
-    console.log("Result:", result)
-    return result
-  } catch (error) {
-    console.error('Query failed: ', error)
-  }
-}
-// #end::querynamed[]
-
-start()
-  .then(queryScope)
-  .then(queryPlaceholders)
-  .then(queryNamed)
-  .then(queryResults)
-  .then(process.exit);</code></pre>
+}</code></pre>
 </div>
 </div>
 </div>
