@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/server/current/n1ql/n1ql-language-reference/unnest.html">
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="The &lt;code&gt;UNNEST&lt;/code&gt; clause creates an input object by flattening an array in the parent document.">
+<meta name="description" content="The UNNEST clause creates an input object by flattening an array in the parent document.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0">
@@ -967,6 +967,11 @@
     <a class="menu_title menu_link" href="../../guides/intro.html">Overview</a>
   </span>
 </li>
+<li class="menu_list" data-depth="1">
+  <span class="menu_line">
+    <span class="menu_title menu_text">Key-Value Operations</span>
+  </span>
+</li>
 <li class="menu_list is-parent closed" data-depth="1">
   <span class="menu_line">
     <span class="in-toggle"></span>
@@ -986,30 +991,53 @@
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <span class="menu_title menu_text">Querying Across Relationships</span>
+    <a class="menu_title menu_link" href="../../guides/join.html">Querying Across Relationships</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <span class="menu_title menu_text">Deep Traversal for Nested Documents</span>
+    <a class="menu_title menu_link" href="../../guides/nest-unnest.html">Deep Traversal for Nested Documents</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <span class="menu_title menu_text">Grouping and Aggregation</span>
+    <a class="menu_title menu_link" href="../../guides/group-agg.html">Grouping and Aggregation</a>
   </span>
 </li>
 </ul>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <span class="menu_title menu_text">Manipulate Data</span>
+    <span class="menu_title menu_text">Indexes</span>
   </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <span class="menu_title menu_text">Indexes</span>
+    <span class="menu_title menu_text">Prepared Statements</span>
   </span>
+</li>
+<li class="menu_list is-parent closed" data-depth="2">
+  <span class="menu_line">
+    <span class="in-toggle"></span>
+    <span class="menu_title menu_text">Manipulate Data</span>
+  </span>
+<ul class="menu_row">
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <span class="menu_title menu_text">Create Data</span>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <span class="menu_title menu_text">Update Data</span>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <span class="menu_title menu_text">Delete Data</span>
+  </span>
+</li>
+</ul>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4929,7 +4957,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The <code>UNNEST</code> clause creates an input object by flattening an array in the parent document.
+The UNNEST clause creates an input object by flattening an array in the parent document.
 </blockquote>
 </div>
 </div>
@@ -5122,7 +5150,7 @@ If you assign an alias to the path, the <code>AS</code> keyword may be omitted.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT sched
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.n1ql">SELECT sched
 FROM `travel-sample`.inventory.route
 UNNEST schedule sched
 WHERE  sched.day = 1
@@ -5132,7 +5160,7 @@ LIMIT 3;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.jsonc">[
   {
     "sched": {
       "day": 1,
@@ -5158,11 +5186,11 @@ LIMIT 3;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Another way to get similar results is by using a Collection Operator to find array items that meet our criteria:</p>
+<p>Another way to get similar results is by using a quantified expression to find array items that meet our criteria:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT ARRAY item FOR item IN schedule WHEN item.day = 1 END AS Monday_flights
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest-array.n1ql">SELECT ARRAY item FOR item IN schedule WHEN item.day = 1 END AS Monday_flights
 FROM `travel-sample`.inventory.route
 WHERE ANY item IN schedule SATISFIES item.day = 1 END
 LIMIT 3;</code></pre>
@@ -5173,7 +5201,7 @@ LIMIT 3;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest-array.jsonc">[
   {
     "Monday_flights": [
       {
@@ -5255,7 +5283,7 @@ LIMIT 3;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT RAW r.author
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest-raw.n1ql">SELECT RAW r.author
 FROM `travel-sample`.inventory.hotel
 UNNEST reviews AS r
 WHERE r.ratings.Rooms &lt; 2
@@ -5265,7 +5293,7 @@ LIMIT 4;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest-raw.jsonc">[
   "Kayli Cronin",
   "Shanelle Streich",
   "Catharine Funk",
