@@ -4964,8 +4964,7 @@ How to join data sources for a N1QL selection query, and how to use subqueries.
 <h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <a href="../n1ql/query.html" class="page">Query Service</a> enables you to create, read, update, and delete data by means of <a href="../n1ql/n1ql-language-reference/index.html" class="page">N1QL</a>, the Couchbase Server query language.
-To read data from a data source using N1QL, you must use a selection query; that is, a query using the <code>SELECT</code> statement.</p>
+<p>You can use a <em>join</em> to read objects from one data source (the <em>left-hand side</em> of the join), combine them with corresponding objects from another data source (the <em>right-hand side</em> of the join), and return the joined objects.</p>
 </div>
 </div>
 </div>
@@ -5006,45 +5005,360 @@ To read data from a data source using N1QL, you must use a selection query; that
 </div>
 </div>
 <div class="sect1">
-<h2 id="ansi-joins"><a class="anchor" href="#ansi-joins"></a>ANSI Joins</h2>
+<h2 id="creating-a-join"><a class="anchor" href="#creating-a-join"></a>Creating a Join</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ANSI Joins are the closest to standard SQL syntax.
-They enable you to get fields from one join arbitrary fields.
-ANSI Joins can be chained together.</p>
+<p>N1QL offers several types of join syntax.
+This guide focuses on ANSI join, which is the recommended join syntax.
+It enables you to join one keyspace to another using arbitrary fields.</p>
 </div>
 <div class="paragraph">
-<p>To get all the</p>
+<p>To create a join:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use the FROM clause to specify the data source on the left-hand side of the join.
+This may be a keyspace identifier, a subquery, or a subquery.</p>
+</li>
+<li>
+<p>Use the JOIN clause to specify the data source on the right-hand side of the join.
+For ANSI joins, this may be a keyspace identifier, a subquery, or a generic expression.</p>
+</li>
+<li>
+<p>Use the ON keyword to specify the join predicate.
+This is a condition that must be met to join an object on the right-hand side to an object on the left-hand side.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To use a <a href="../learn/data/data.html#keys" class="page">document key</a> in the join predicate, use the META() function to return the <code>id</code> field from the document metadata.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For example, the following query selects a route and the associated airline.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/guides/examples/query/ansi-join-example.n1ql">SELECT *
+FROM `travel-sample`.inventory.route r <i class="conum" data-value="1"></i><b>(1)</b>
+JOIN `travel-sample`.inventory.airline a <i class="conum" data-value="2"></i><b>(2)</b>
+ON r.airlineid = META(a).id <i class="conum" data-value="3"></i><b>(3)</b>
+LIMIT 1;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>route</code> keyspace is the left-hand side of the join.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>airline</code> keyspace is the right-hand side of the join.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>airlineid</code> field on the left-hand side must be equal to the document key on the right-hand side.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/join.html#section_ek1_jnx_1db" class="page">ANSI JOIN Clause</a>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="lookup-joins"><a class="anchor" href="#lookup-joins"></a>Lookup Joins</h2>
+<h2 id="join-types"><a class="anchor" href="#join-types"></a>Join Types</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="inner"><a class="anchor" href="#inner"></a>Inner</h3>
-
+<div class="paragraph">
+<p>ANSI joins support three types of join: <em>inner joins</em>, <em>left outer joins</em>, and <em>right outer joins</em>.</p>
 </div>
 <div class="sect2">
-<h3 id="left-outer"><a class="anchor" href="#left-outer"></a>Left Outer</h3>
-
+<h3 id="inner-joins"><a class="anchor" href="#inner-joins"></a>Inner Joins</h3>
+<div class="paragraph">
+<p>The default join is an inner join.
+An inner join returns joined objects <em>only</em> where a source object from the left-hand side of the join matches a source object from the right-hand side of the join.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/inner-join.png" alt="Inner join: the result contains only matching objects from the left-hand side and right-hand side">
+</div>
+</div>
+<div class="paragraph">
+<p>To create an inner join, omit the join type, or optionally include the <code>INNER</code> keyword before the JOIN clause.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following query lists all the source airports and airlines that fly into San Francisco.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-inner.n1ql">SELECT route.airlineid, airline.name, route.sourceairport, route.destinationairport
+FROM `travel-sample`.inventory.route
+INNER JOIN `travel-sample`.inventory.airline
+ON route.airlineid = META(airline).id
+WHERE route.destinationairport = "SFO"
+ORDER BY route.sourceairport;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-inner.jsonc">[
+  {
+    "airlineid": "airline_5209",
+    "destinationairport": "SFO",
+    "name": "United Airlines",
+    "sourceairport": "ABQ"
+  },
+  {
+    "airlineid": "airline_5209",
+    "destinationairport": "SFO",
+    "name": "United Airlines",
+    "sourceairport": "ACV"
+  },
+  {
+    "airlineid": "airline_5209",
+    "destinationairport": "SFO",
+    "name": "United Airlines",
+    "sourceairport": "AKL"
+  },
+  // ...</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="right-outer"><a class="anchor" href="#right-outer"></a>Right Outer</h3>
-
+<h3 id="left-outer-joins"><a class="anchor" href="#left-outer-joins"></a>Left Outer Joins</h3>
+<div class="paragraph">
+<p>A left outer join returns joined objects using all the source objects from the left-hand side of the join, but only including source objects from the right-hand side of the join if they match.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/left-join.png" alt="Left outer join: the result contains all objects from the left-hand side, and only matching objects from the right-hand side">
+</div>
+</div>
+<div class="paragraph">
+<p>To create a left outer join, include the <code>LEFT</code> or <code>LEFT OUTER</code> keywords before the JOIN clause.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following query lists all airports in the United States, and for each airport gives the first listed landmark in the same city, if any.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-left.n1ql">SELECT DISTINCT  MIN(aport.airportname) AS Airport__Name,
+                 MIN(aport.tz) AS Airport__Time,
+                 MIN(lmark.name) AS Landmark_Name
+FROM `travel-sample`.inventory.airport aport <i class="conum" data-value="1"></i><b>(1)</b>
+LEFT JOIN `travel-sample`.inventory.landmark lmark <i class="conum" data-value="2"></i><b>(2)</b>
+  ON aport.city = lmark.city
+  AND lmark.country = "United States"
+GROUP BY aport.airportname
+ORDER BY aport.airportname
+LIMIT 4;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>airport</code> keyspace is on the left-hand side of the join.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>landmark</code> keyspace is on the right-hand side of the join.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-left.jsonc">[
+  {
+    "Airport__Name": "Abbeville",
+    "Airport__Time": "Europe/Paris",
+    "Landmark_Name": null
+  },
+  {
+    "Airport__Name": "Aberdeen Regional Airport",
+    "Airport__Time": "America/Chicago",
+    "Landmark_Name": null
+  },
+  {
+    "Airport__Name": "Abilene Rgnl",
+    "Airport__Time": "America/Chicago",
+    "Landmark_Name": null
+  },
+  {
+    "Airport__Name": "Abraham Lincoln Capital",
+    "Airport__Time": "America/Chicago",
+    "Landmark_Name": null
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="right-outer-joins"><a class="anchor" href="#right-outer-joins"></a>Right Outer Joins</h3>
+<div class="paragraph">
+<p>A right outer join returns joined objects using all the source objects from the right-hand side of the join, but only including source objects from the left-hand side of the join if they match.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/right-join.png" alt="Right outer join: the result contains only matching objects from the left-hand side, and all objects from the right-hand side">
+</div>
+</div>
+<div class="paragraph">
+<p>To create a right outer join, include the <code>RIGHT</code> or <code>RIGHT OUTER</code> keywords before the JOIN clause.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following query lists all landmarks in the United States, and for each landmark gives the first listed airport in the same city, if any.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-right.n1ql">SELECT DISTINCT MIN(aport.airportname) AS Airport__Name,
+                MIN(aport.tz) AS Airport__Time,
+                MIN(lmark.name) AS Landmark_Name,
+FROM `travel-sample`.inventory.airport aport <i class="conum" data-value="1"></i><b>(1)</b>
+RIGHT JOIN `travel-sample`.inventory.landmark lmark <i class="conum" data-value="2"></i><b>(2)</b>
+  ON aport.city = lmark.city
+  AND aport.country = "United States"
+GROUP BY lmark.name
+ORDER BY lmark.name
+LIMIT 4;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>airport</code> keyspace is on the left-hand side of the join.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>landmark</code> keyspace is on the right-hand side of the join.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-right.jsonc">[
+  {
+    "Airport__Name": "San Francisco Intl",
+    "Airport__Time": "America/Los_Angeles",
+    "Landmark_Name": "&amp;quot;Hippie Temptation&amp;quot; house"
+  },
+  {
+    "Airport__Name": null,
+    "Airport__Time": null,
+    "Landmark_Name": "'The Argyll Arms Hotel"
+  },
+  {
+    "Airport__Name": null,
+    "Airport__Time": null,
+    "Landmark_Name": "'Visit the Hut of the Shadows and other End of the Road sculptures"
+  },
+  {
+    "Airport__Name": "London-Corbin Airport-MaGee Field",
+    "Airport__Time": "America/New_York",
+    "Landmark_Name": "02 Shepherd's Bush Empire"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="index-joins"><a class="anchor" href="#index-joins"></a>Index Joins</h2>
+<h2 id="legacy-join-syntax"><a class="anchor" href="#legacy-join-syntax"></a>Legacy Join Syntax</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>N1QL also provides two legacy syntaxes for joins.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <em>lookup join</em> uses a foreign key field on the left-hand side of the join with the primary document key on the right-hand side of the join.
+For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/join.html#lookup-join-clause" class="page">Lookup JOIN Clause</a>.</p>
+</li>
+<li>
+<p>An <em>index join</em> uses the primary document key on the left-hand side of the join with a foreign key field on the right-hand side of the join.
+For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/join.html#index-join-clause" class="page">Index JOIN Clause</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Lookup joins and index joins only support inner and left outer joins.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="subqueries"><a class="anchor" href="#subqueries"></a>Subqueries</h2>
+<h2 id="recursive-joins"><a class="anchor" href="#recursive-joins"></a>Recursive Joins</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>To recurse joins, nests, and unnests, use the right-hand side of one JOIN, NEST, or UNNEST clause as the left-hand side of the next.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following query joins routes to airports by destination airport, and then nests landmarks in the same city as each airport.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">SELECT *
+FROM `travel-sample`.inventory.route AS rte <i class="conum" data-value="1"></i><b>(1)</b>
+JOIN `travel-sample`.inventory.airport AS apt <i class="conum" data-value="2"></i><b>(2)</b>
+  ON rte.destinationairport = apt.faa
+NEST `travel-sample`.inventory.landmark AS lmk <i class="conum" data-value="3"></i><b>(3)</b>
+  ON apt.city = lmk.city
+LIMIT 5;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>route</code> keyspace is on the left-hand side of the join</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>airport</code> keyspace is on the right-hand side of the join and the left-hand side of the nest</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>landmark</code> keyspace is on the right-hand side of the nest</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/join.html#section_nkd_3nx_1db" class="page">FROM Term</a>.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5053,7 +5367,7 @@ ANSI Joins can be chained together.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#">Querying Across Relationships</a></p>
+<p><a href="nest-unnest.html" class="page">Deep Traversal for Nested Documents</a></p>
 </li>
 </ul>
 </div>

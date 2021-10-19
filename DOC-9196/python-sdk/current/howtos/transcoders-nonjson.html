@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/python-sdk/current/howtos/transcoders-nonjson.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="The Java SDK supports common JSON document requirements out-of-the-box.">
+<meta name="description" content="The Python SDK supports common JSON document requirements out-of-the-box.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="python-sdk">
 <meta name="dcterms.identifier" content="3.2">
@@ -1398,6 +1398,11 @@
     <a class="menu_title menu_link" href="concurrent-document-mutations.html">Concurrent Document Mutations</a>
   </span>
 </li>
+<li class="menu_list is-current-page" data-depth="1">
+  <span class="menu_line">
+    <a class="menu_title menu_link is-current-page" href="transcoders-nonjson.html">Transcoders &amp; Non-JSON</a>
+  </span>
+</li>
 <li class="menu_list" data-depth="1">
   <span class="menu_line">
     <a class="menu_title menu_link" href="working-with-collections.html">Working with Collections</a>
@@ -1772,7 +1777,8 @@
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
 <li class="crumb"><a href="../hello-world/overview.html">Python SDK</a></li>
-<li class="crumb"><a href="transcoders-nonjson.html">Transcoders &amp; Non-JSON Documents</a></li>
+<li class="crumb">Advanced Data Operations</li>
+<li class="crumb"><a href="transcoders-nonjson.html">Transcoders &amp; Non-JSON</a></li>
 </ul>
 </nav>
 </div>
@@ -1788,23 +1794,34 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The Java SDK supports common JSON document requirements out-of-the-box.
+The Python SDK supports common JSON document requirements out-of-the-box.
 Custom transcoders and serializers provide support for applications needing to perform advanced operations, including supporting non-JSON data.
 </blockquote>
 </div>
 <div class="paragraph">
-<p>The Java SDK uses the concepts of transcoders and serializers, which are used whenever data is sent to or retrieved from Couchbase Server.</p>
+<p>The Python SDK uses the concepts of transcoders and serializers, which are used whenever data is sent to or retrieved from Couchbase Server.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Transcoders are only available for the Couchbase Python Client version <code>3.2.2</code> or later.  Also, transcoders are only available to key value operations.
+Operations using search, analytics, query, or views will use the <a href="https://docs.python.org/3.8/library/json.html">Python Standard Libary json package</a> for serializing and deserializing data.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>When sending data to Couchbase, the SDK passes the Object being sent to a transcoder.
-The transcoder can either reject the Object as being unsupported, or convert it into a <code>byte[]</code> and a Common Flag.
-The Common Flag specifies whether the data is JSON, a non-JSON string, or raw binary data.
-It may, but does not have to, use a serializer to perform the byte conversion.</p>
+The transcoder can either reject the Object as being unsupported, or convert it into a <code>bytes</code> object and a Common Flag.
+The Common Flag specifies whether the data is JSON, a non-JSON string, or raw binary data.</p>
 </div>
 <div class="paragraph">
-<p>On retrieving data from Couchbase, the fetched <code>byte[]</code> and Common Flag are passed to a transcoder.
-The transcoder converts the bytes into a concrete class (the application specifies the required type) if possible.
-It may use a serializer for this.</p>
+<p>On retrieving data from Couchbase, the fetched <code>bytes</code> object and Common Flag are passed to a transcoder.
+The transcoder converts the bytes into an object (the application specifies the required object) if possible.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1825,21 +1842,21 @@ The information in this page is only needed if the application has an advanced u
 <h2 id="default-behaviour"><a class="anchor" href="#default-behaviour"></a>Default Behaviour</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <code>ClusterEnvironment</code> contains a global transcoder and serializer, which by default are  <code>JsonTranscoder</code> and <code>DefaultJsonSerializer</code>.</p>
+<p>The <code>ClusterOptions</code> contains a global transcoder, which by default is a <code>JSONTranscoder</code>.</p>
 </div>
 <div class="paragraph">
-<p><code>DefaultJsonSerializer</code> uses the high-performance JSON library <a href="https://github.com/FasterXML/jackson">Jackson</a> for serializing and deserializing byte arrays to and from concrete objects.</p>
+<p><code>JSONTranscoder</code> uses the <a href="https://docs.python.org/3.8/library/json.html">Python Standard Libary json package</a> for serializing and deserializing data.</p>
 </div>
 <div class="paragraph">
-<p>On sending data to Couchbase, <code>JsonTranscoder</code> will send Objects to its serializer (<code>DefaultJsonSerializer</code> by default) to convert into a <code>byte[]</code>.
+<p>On sending data to Couchbase, <code>JsonTranscoder</code> will send Objects to its serializer to convert into a <code>bytes</code> object.
 The serialized bytes are then sent to the Couchbase Server, along with a Common Flag of JSON.</p>
 </div>
 <div class="paragraph">
-<p><code>JsonTranscoder</code> will pass any Object to its serializer, apart from a <code>byte[]</code>.
-It will reject this with an InvalidArgumentException, as it is ambiguous how it should be handled.</p>
+<p><code>JSONTranscoder</code> will pass any object to its serializer, apart from a <code>bytes</code> or <code>bytearray</code> object.
+It will reject this with an <code>ValueFormatException</code>, as it is ambiguous how it should be handled.</p>
 </div>
 <div class="paragraph">
-<p>On retrieving data from Couchbase, <code>JsonTranscoder</code> passes the fetched <code>byte[]</code> and Common Flag to its serializer (<code>DefaultJsonSerializer</code> by default) to convert into a concrete class.</p>
+<p>On retrieving data from Couchbase, <code>JSONTranscoder</code> passes the fetched <code>bytes</code> object and Common Flag to its serializer to convert into a concrete object.</p>
 </div>
 <div class="paragraph">
 <p>This table summarizes that information, and this more concise form will be used to describe the other transcoders included in the SDK.</p>
@@ -1859,24 +1876,336 @@ It will reject this with an InvalidArgumentException, as it is ambiguous how it 
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">str</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Results of serializer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">byte[]</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">InvalidArgumentException</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bytes/bytearray</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ValueFormatException</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Other <code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">other</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Results of serializer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rawjsontranscoder"><a class="anchor" href="#rawjsontranscoder"></a>RawJSONTranscoder</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>For now, see the <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/api/transcoder.html">API documentation</a> for further details.</p>
+<p>The <code>RawJSONTranscoder</code> provides the ability for the application to explicitly specify that the data they are storing or retrieving is JSON.
+This transcoder does not use a serializer, and always performs straight pass through of the data to the server.
+This enables the application to avoid unnecessary parsing costs when they are certain they are using JSON data.</p>
+</div>
+<div class="paragraph">
+<p>It only accepts <code>str</code> and <code>bytes</code> or <code>bytearray</code> objects.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Item</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Common Flag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">str</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Passthrough</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bytes/bytearray</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Passthrough</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Other</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ValueFormatException</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>This transcoder is particularly useful when working with third-party JSON libraries.
+Here we want to use <a href="https://pypi.org/project/orjson">orjson</a> for serialization, instead of the default json package:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/ea479e3d9b840d196d05bb3f2b572b81d89c90c8/modules/howtos/examples/transcoders.py#L26-L34">transcoder = RawJSONTranscoder()
+user = {"name": "John Smith", "age": 27}
+
+data = orjson.dumps(user)
+try:
+    _ = collection.upsert(
+        "john-smith", data, UpsertOptions(transcoder=transcoder))
+except (ValueFormatException, CouchbaseException) as ex:
+    traceback.print_exc()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since orjson has already done the serialization work, we don&#8217;t want to use the default <code>JSONTranscoder</code>, as this will run the provided string needlessly through <code>json.loads</code>.
+Instead, <code>RawJSONTranscoder</code> is used, which just passes through the serialized bytes, and stores them in Couchbase with the JSON Common Flag set.</p>
+</div>
+<div class="paragraph">
+<p>Similarly, the same transcoder is used on reading the document, so the raw bytes can be retrieved in a string without going through <code>json.dumps</code>.
+orjson can then be used for the deserialization.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/ea479e3d9b840d196d05bb3f2b572b81d89c90c8/modules/howtos/examples/transcoders.py#L38-L44">try:
+    get_result = collection.get("john-smith", GetOptions(transcoder=transcoder))
+except (ValueFormatException, CouchbaseException) as ex:
+    traceback.print_exc()
+
+decoded = orjson.loads(get_result.content)
+assert decoded == user</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="non-json-transcoders"><a class="anchor" href="#non-json-transcoders"></a>Non-JSON Transcoders</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is most common to store JSON with Couchbase.
+However, it is possible to store non-JSON documents, such as raw binary data.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+It&#8217;s important to note that the Couchbase Data Platform includes multiple components other than the Key-Value store&#8201;&#8212;&#8201;including N1QL (Query) and its indexes, FTS (Search), analytics, and eventing&#8201;&#8212;&#8201;and these are optimized for JSON and will either ignore or provide limited functionality with non-JSON documents.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Also note that some simple data types can be stored directly as JSON, without recourse to non-JSON transcoding.
+A valid JSON document can be a simple integer (<code>42</code>), string (<code>"hello"</code>), array (<code>[1,2,3]</code>), boolean (<code>true</code>, <code>false</code>) and the JSON <code>null</code> value.</p>
+</div>
+<div class="sect2">
+<h3 id="rawstringtranscoder"><a class="anchor" href="#rawstringtranscoder"></a>RawStringTranscoder</h3>
+<div class="paragraph">
+<p>The <code>RawStringTranscoder</code> provides the ability for the user to explicitly store and retrieve raw string data with Couchbase.
+It can be used to avoid the overhead of storing the string as JSON, which requires two bytes for double quotes, plus potentially more for escaping characters.</p>
+</div>
+<div class="paragraph">
+<p>Note that this transcoder does not accept a serializer, and always performs straight passthrough of the data to the server.  It only accepts str objects.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Item</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Common Flag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">str</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Passthrough</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bytes/bytearray</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ValueFormatException</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">other</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ValueFormatException</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Here’s an example of using the <code>RawStringTranscoder</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/ea479e3d9b840d196d05bb3f2b572b81d89c90c8/modules/howtos/examples/transcoders.py#L48-L59">transcoder = RawStringTranscoder()
+input_str = "Hello, World!"
+
+try:
+    _ = collection.upsert(
+        "key", input_str, UpsertOptions(transcoder=transcoder))
+
+    get_result = collection.get("key", GetOptions(transcoder=transcoder))
+except (ValueFormatException, CouchbaseException) as ex:
+    traceback.print_exc()
+
+assert get_result.content == input_str</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rawbinarytranscoder"><a class="anchor" href="#rawbinarytranscoder"></a>RawBinaryTranscoder</h3>
+<div class="paragraph">
+<p>The <code>RawBinaryTranscoder</code> provides the ability for the user to explicitly store and retrieve raw byte data to Couchbase.
+The transcoder does not perform any form of real transcoding, and does not take a serializer, but rather passes the data through and assigns the appropriate binary Common Flag.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Item</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Common Flag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">str</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ValueFormatException</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bytes/bytearray</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Passthrough</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binary</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">other</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ValueFormatException</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Here’s an example of using the <code>RawBinaryTranscoder</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/ea479e3d9b840d196d05bb3f2b572b81d89c90c8/modules/howtos/examples/transcoders.py#L63-L74">transcoder = RawBinaryTranscoder()
+input_bytes = bytes("Hello, World!", "utf-8")
+
+try:
+    _ = collection.upsert(
+        "key", input_bytes, UpsertOptions(transcoder=transcoder))
+
+    get_result = collection.get("key", GetOptions(transcoder=transcoder))
+except (ValueFormatException, CouchbaseException) as ex:
+    traceback.print_exc()
+
+assert get_result.content == input_bytes</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-transcoders"><a class="anchor" href="#custom-transcoders"></a>Custom Transcoders</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>More advanced transcoding needs can be accomplished if the application implements their own transcoders and serializers.</p>
+</div>
+<div class="sect2">
+<h3 id="creating-a-custom-transcoder"><a class="anchor" href="#creating-a-custom-transcoder"></a>Creating a Custom Transcoder</h3>
+<div class="paragraph">
+<p>Let’s look at a more complex example: encoding the JSON alternative, <a href="https://msgpack.org">MessagePack</a>.
+MessagePack is a compact binary data representation which is custom to our needs, so it should be stored with our with own Common Flag.
+The Common Flag is chosen by the transcoder, and none of the existing transcoders matches our needs (<code>RawBinaryTranscoder</code> does set the binary flag, but it passes data through directly rather than using a serializer, which could also cause issues if you access data through different SDKs).
+So we need to write one.</p>
+</div>
+<div class="paragraph">
+<p>We create a transcoder that uses the <code>msgpack.packb</code>/<code>msgpack.unpackb</code> methods, and sets the our own Common Flag when storing the data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/ea479e3d9b840d196d05bb3f2b572b81d89c90c8/modules/howtos/examples/transcoders.py#L79-L107">class MessagePackTranscoder(Transcoder):
+    _CUSTOM_FLAGS = (1 &lt;&lt; 24) | (ord("M") &lt;&lt; 16) | (ord("P") &lt;&lt; 8) | (ord("K") &lt;&lt; 0)
+
+    def encode_value(self,  # type: "MessagePackTranscoder"
+                     value  # type: Any
+                     ) -&gt; Tuple[bytes, int]:
+
+        try:
+            packed = msgpack.packb(value)
+            return packed, self._CUSTOM_FLAGS
+        except Exception as ex:
+            # Implement custom exception handling
+            print("Exception: {}".format(ex))
+            raise
+
+    def decode_value(self,  # type: "MessagePackTranscoder"
+                     value,  # type: bytes
+                     flags  # type: int
+                     ) -&gt; bytes:
+
+        if flags != self._CUSTOM_FLAGS:
+            raise ValueError("Unexpected flags value.")
+
+        try:
+            return msgpack.unpackb(value)
+        except Exception as ex:
+            # Implement custom exception handling
+            print("Exception: {}".format(ex))
+            raise</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note the use of a private property <code>_CUSTOM_FLAGS</code>.
+We are setting the flags to our own value so that our data cannot be misread by any other SDK accessing the data.
+We&#8217;d have to implement our transcoder in those SDKs too.
+The <code>(1 &lt;&lt; 24)</code> value actually corresponds to an internal SDK flag signifying that the datatype is private, we then encode our own <code>MPK</code> flag into it.</p>
+</div>
+<div class="paragraph">
+<p>Now we can use the new transcoder to seamlessly store MessagePack data in Couchbase Server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/ea479e3d9b840d196d05bb3f2b572b81d89c90c8/modules/howtos/examples/transcoders.py#L112-L123">transcoder = MessagePackTranscoder()
+user = {"name": "John Smith", "age": 27}
+
+try:
+    _ = collection.upsert(
+        "mpk_key", user, UpsertOptions(transcoder=transcoder))
+
+    get_result = collection.get("mpk_key", GetOptions(transcoder=transcoder))
+except (ValueFormatException, CouchbaseException) as ex:
+    traceback.print_exc()
+
+assert get_result.content == user</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See the <a href="https://github.com/msgpack/msgpack-python">msgpack-python docs</a> for further details on what the package can do.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="further-reading"><a class="anchor" href="#further-reading"></a>Further reading</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>If you want to work with binary documents and our Search service, you might like to take a look at <a href="https://github.com/khanium/couchbase-fts-binary" class="bare">https://github.com/khanium/couchbase-fts-binary</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>

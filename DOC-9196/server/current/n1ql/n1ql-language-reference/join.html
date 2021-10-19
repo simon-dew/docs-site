@@ -5286,7 +5286,7 @@ This expression may contain fields, constant expressions, or any complex N1QL ex
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-inner.n1ql">SELECT route.airlineid, airline.name, route.sourceairport, route.destinationairport
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-inner.n1ql">SELECT route.airlineid, airline.name, route.sourceairport, route.destinationairport
 FROM `travel-sample`.inventory.route
 INNER JOIN `travel-sample`.inventory.airline
 ON route.airlineid = META(airline).id
@@ -5297,7 +5297,7 @@ ORDER BY route.sourceairport;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-inner.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-inner.jsonc">[
   {
     "airlineid": "airline_5209",
     "destinationairport": "SFO",
@@ -5319,6 +5319,9 @@ ORDER BY route.sourceairport;</code></pre>
   // ...</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The INNER JOIN only returns results where a left-side document matches a right-side document.</p>
+</div>
 </div>
 </div>
 <div id="ANSI-Join-Example-2" class="exampleblock">
@@ -5329,11 +5332,11 @@ ORDER BY route.sourceairport;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-left.n1ql">SELECT DISTINCT  MIN(aport.airportname) AS Airport__Name,
-                 MIN(lmark.name) AS Landmark_Name,
-                 MIN(aport.tz) AS Landmark_Time
-FROM `travel-sample`.inventory.airport aport
-LEFT JOIN `travel-sample`.inventory.landmark lmark
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-left.n1ql">SELECT DISTINCT  MIN(aport.airportname) AS Airport__Name,
+                 MIN(aport.tz) AS Airport__Time,
+                 MIN(lmark.name) AS Landmark_Name
+FROM `travel-sample`.inventory.airport aport <i class="conum" data-value="1"></i><b>(1)</b>
+LEFT JOIN `travel-sample`.inventory.landmark lmark <i class="conum" data-value="2"></i><b>(2)</b>
   ON aport.city = lmark.city
   AND lmark.country = "United States"
 GROUP BY aport.airportname
@@ -5341,32 +5344,47 @@ ORDER BY aport.airportname
 LIMIT 4;</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>airport</code> keyspace is on the left-hand side of the join</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>landmark</code> keyspace is on the right-hand side of the join</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-left.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-left.jsonc">[
   {
-    "Airport__Name": "San Francisco Intl",
-    "Landmark_Name": "&amp;quot;Hippie Temptation&amp;quot; house",
-    "Landmark_Time": "America/Los_Angeles"
+    "Airport__Name": "Abbeville",
+    "Airport__Time": "Europe/Paris",
+    "Landmark_Name": null
   },
   {
-    "Airport__Name": "Los Angeles Intl",
-    "Landmark_Name": "101 Coffee Shop",
-    "Landmark_Time": "America/Los_Angeles"
+    "Airport__Name": "Aberdeen Regional Airport",
+    "Airport__Time": "America/Chicago",
+    "Landmark_Name": null
   },
   {
-    "Airport__Name": "San Francisco Intl",
-    "Landmark_Name": "1015",
-    "Landmark_Time": "America/Los_Angeles"
+    "Airport__Name": "Abilene Rgnl",
+    "Airport__Time": "America/Chicago",
+    "Landmark_Name": null
   },
   {
-    "Airport__Name": "San Francisco Intl",
-    "Landmark_Name": "1235 Masonic Ave",
-    "Landmark_Time": "America/Los_Angeles"
-  },
-  // ...</code></pre>
+    "Airport__Name": "Abraham Lincoln Capital",
+    "Airport__Time": "America/Chicago",
+    "Landmark_Name": null
+  }
+]</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>The LEFT OUTER JOIN lists all the left-side results, even if there are no matching right-side documents, as indicated by the results in which the fields from the <code>landmark</code> keyspace are null or missing.</p>
 </div>
 </div>
 </div>
@@ -5376,25 +5394,13 @@ LIMIT 4;</code></pre>
 <div class="paragraph">
 <p>List the airports and landmarks in the same city, ordered by the landmarks.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The LEFT OUTER JOIN will list all left-side results regardless of matching right-side documents; while the RIGHT OUTER JOIN will list all right-side results regardless of matching left-side documents.
-</td>
-</tr>
-</table>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-right.n1ql">SELECT DISTINCT MIN(aport.airportname) AS Airport__Name,
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-right.n1ql">SELECT DISTINCT MIN(aport.airportname) AS Airport__Name,
+                MIN(aport.tz) AS Airport__Time,
                 MIN(lmark.name) AS Landmark_Name,
-                MIN(aport.tz) AS Landmark_Time
-FROM `travel-sample`.inventory.airport aport
-RIGHT JOIN `travel-sample`.inventory.landmark lmark
+FROM `travel-sample`.inventory.airport aport <i class="conum" data-value="1"></i><b>(1)</b>
+RIGHT JOIN `travel-sample`.inventory.landmark lmark <i class="conum" data-value="2"></i><b>(2)</b>
   ON aport.city = lmark.city
   AND aport.country = "United States"
 GROUP BY lmark.name
@@ -5402,32 +5408,47 @@ ORDER BY lmark.name
 LIMIT 4;</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>airport</code> keyspace is on the left-hand side of the join</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>landmark</code> keyspace is on the right-hand side of the join</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-right.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-right.jsonc">[
   {
     "Airport__Name": "San Francisco Intl",
-    "Landmark_Name": "&amp;quot;Hippie Temptation&amp;quot; house",
-    "Landmark_Time": "America/Los_Angeles"
+    "Airport__Time": "America/Los_Angeles",
+    "Landmark_Name": "&amp;quot;Hippie Temptation&amp;quot; house"
+  },
+  {
+    "Airport__Name": null,
+    "Airport__Time": null,
+    "Landmark_Name": "'The Argyll Arms Hotel"
+  },
+  {
+    "Airport__Name": null,
+    "Airport__Time": null,
+    "Landmark_Name": "'Visit the Hut of the Shadows and other End of the Road sculptures"
   },
   {
     "Airport__Name": "London-Corbin Airport-MaGee Field",
-    "Landmark_Name": "02 Shepherd's Bush Empire",
-    "Landmark_Time": "America/New_York"
-  },
-  {
-    "Airport__Name": "Los Angeles Intl",
-    "Landmark_Name": "101 Coffee Shop",
-    "Landmark_Time": "America/Los_Angeles"
-  },
-  {
-    "Airport__Name": "San Francisco Intl",
-    "Landmark_Name": "1015",
-    "Landmark_Time": "America/Los_Angeles"
+    "Airport__Time": "America/New_York",
+    "Landmark_Name": "02 Shepherd's Bush Empire"
   }
 ]</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>The RIGHT OUTER JOIN lists all the right-side results, even if there are no matching left-side documents, as indicated by the results in which the fields from the <code>airport</code> keyspace are null or missing.</p>
 </div>
 </div>
 </div>
@@ -5444,14 +5465,14 @@ This index has <code>sourceairport</code> as its leading key.</p>
 <div class="listingblock">
 <div class="title">Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-cover.n1ql#L2-L3">CREATE INDEX def_inventory_route_sourceairport
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-cover.n1ql#L2-L3">CREATE INDEX def_inventory_route_sourceairport
 ON `travel-sample`.inventory.route (sourceairport);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-cover.n1ql#L12-L17">SELECT META(route).id route_id, route.airline, route.destinationairport
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-cover.n1ql#L12-L17">SELECT META(route).id route_id, route.airline, route.destinationairport
 FROM `travel-sample`.inventory.airport
 JOIN `travel-sample`.inventory.route
   ON route.sourceairport = airport.faa
@@ -5462,7 +5483,7 @@ ORDER BY route_id;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-cover.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-cover.jsonc">[
   {
     "airline": "AH",
     "destinationairport": "ALG",
@@ -5489,7 +5510,7 @@ ORDER BY route_id;</code></pre>
 <div class="listingblock">
 <div class="title">Covering Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-cover.n1ql#L7-L8">CREATE INDEX idx_route_src_dst_airline
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-cover.n1ql#L7-L8">CREATE INDEX idx_route_src_dst_airline
 ON `travel-sample`.inventory.route (sourceairport, destinationairport, airline);</code></pre>
 </div>
 </div>
@@ -5650,7 +5671,7 @@ However, when you assign an alias to the generic expression, the <code>AS</code>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-sub.n1ql">SELECT DISTINCT subquery.destinationairport
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-sub.n1ql">SELECT DISTINCT subquery.destinationairport
 FROM `travel-sample`.inventory.airport
 JOIN (
   SELECT destinationairport, sourceairport
@@ -5663,7 +5684,7 @@ WHERE airport.city = "San Francisco";</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-sub.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-sub.jsonc">[
   {
     "destinationairport": "HKG"
   },
@@ -5692,7 +5713,7 @@ WHERE airport.city = "San Francisco";</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-expr.n1ql">SELECT DISTINCT expression.destinationairport
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-expr.n1ql">SELECT DISTINCT expression.destinationairport
 FROM `travel-sample`.inventory.airport JOIN [
   {"destinationairport": "KEF", "sourceairport": "SFO", "type": "route"},
   {"destinationairport": "KEF", "sourceairport": "LHR", "type": "route"}
@@ -5704,7 +5725,7 @@ WHERE airport.city = "San Francisco";</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-join-expr.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/ansi-join-expr.jsonc">[
   {
     "destinationairport": "KEF"
   }
@@ -6326,8 +6347,13 @@ WHERE b1.c11 = 10
 <div class="sect2">
 <h3 id="purpose-3"><a class="anchor" href="#purpose-3"></a>Purpose</h3>
 <div class="paragraph">
-<p>Lookup joins allow only left-to-right joins, which means the ON KEYS expression must produce a document key which is then used to retrieve documents from the right-hand side keyspace.
+<p>A <em>lookup join</em> is a legacy syntax for joins.
+It enables you to join a foreign key field on the left-hand side of the join with the primary <a href="../../learn/data/data.html#keys" class="page">document key</a> on the right-hand side of the join.
 Couchbase Server version 4.1 and earlier supported only lookup joins.</p>
+</div>
+<div class="paragraph">
+<p>In the join predicate for a lookup join, the <code>ON KEYS</code> expression must refer to the foreign key in the left-hand side keyspace.
+This is then used to retrieve documents from the right-hand side keyspace.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6434,13 +6460,13 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>ON KEYS</code> expression produces a document key or array of document keys for the right-hand side of the lookup join.</p>
+<p>The <code>ON KEYS</code> expression produces a document key or array of document keys, which is used to retrieve documents from the right-hand side keyspace.</p>
 </div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">expr</dt>
 <dd>
-<p>[Required] String or expression representing the primary keys of the documents for the right-hand side keyspace.</p>
+<p>[Required] String or expression representing the foreign key in the left-hand side keyspace.</p>
 </dd>
 </dl>
 </div>
@@ -6474,7 +6500,7 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/lookup-join-1.n1ql">SELECT DISTINCT route.destinationairport, route.stops, route.airline,
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/lookup-join-1.n1ql">SELECT DISTINCT route.destinationairport, route.stops, route.airline,
   airline.name, airline.callsign
 FROM `travel-sample`.inventory.route
   JOIN `travel-sample`.inventory.airline
@@ -6487,7 +6513,7 @@ LIMIT 4;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/lookup-join-1.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/lookup-join-1.jsonc">[
   {
     "airline": "B6",
     "callsign": "JETBLUE",
@@ -6529,7 +6555,7 @@ LIMIT 4;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/lookup-join-2.n1ql">SELECT DISTINCT airline.name, route.schedule
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/lookup-join-2.n1ql">SELECT DISTINCT airline.name, route.schedule
 FROM `travel-sample`.inventory.route
   JOIN `travel-sample`.inventory.airline
   ON KEYS route.airlineid
@@ -6541,7 +6567,7 @@ AND airline.callsign = "JETBLUE";</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/lookup-join-2.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/lookup-join-2.jsonc">[
   {
     "name": "JetBlue Airways",
     "schedule": [
@@ -6686,8 +6712,15 @@ AND airline.callsign = "JETBLUE";</code></pre>
 <div class="sect2">
 <h3 id="purpose-4"><a class="anchor" href="#purpose-4"></a>Purpose</h3>
 <div class="paragraph">
-<p>Index JOINs allow you to flip the direction of your join clause.
-When Lookup JOINs cannot efficiently join left-hand side documents with right-to-left joins, and your situation cannot be flipped because your predicate needs to be on the left-hand side (such as <a href="#Lookup-JOIN-Example-1">Example 12</a> above where airline documents have no reference to route documents), then Index JOINs can be used efficiently without making a Cartesian product of all route documents.</p>
+<p>An <em>index join</em> is another legacy syntax for joins which reverses the direction of a lookup join.
+It enables you to join the primary <a href="../../learn/data/data.html#keys" class="page">document key</a> on the left-hand side of the join with a foreign key field on the right-hand side of the join.</p>
+</div>
+<div class="paragraph">
+<p>You can use an index join when a lookup join would be inefficient, and you need to flip the relationship so the join predicate is on the right-hand side of the join.</p>
+</div>
+<div class="paragraph">
+<p>For index joins, the syntax uses <code>ON KEY &#8230;&#8203; FOR</code> (singular) instead of <code>ON KEYS</code> (plural).
+This is because an index join&#8217;s <code>ON KEY &#8230;&#8203; FOR</code> expression produces a single scalar value; whereas a lookup join&#8217;s <code>ON KEYS</code> expression can produce either a single scalar or an array of scalar values.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -6696,8 +6729,7 @@ When Lookup JOINs cannot efficiently join left-hand side documents with right-to
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-For index joins, the syntax uses <code>ON KEY</code> (singular) instead of <code>ON KEYS</code> (plural).
-This is because an Index JOIN&#8217;s <code>ON KEY</code> expression must produce a scalar value; whereas a Lookup JOIN&#8217;s <code>ON KEYS</code> expression can produce either a scalar or an array value.
+An index join requires an inverse index on the foreign key in the keyspace on the right-hand side of the join.
 </td>
 </tr>
 </table>
@@ -6842,7 +6874,7 @@ If you assign an alias to the keyspace reference, the <code>AS</code> keyword ma
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/index-join.n1ql#L2-L8">SELECT DISTINCT route.destinationairport, route.stops, route.airline,
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/index-join.n1ql#L2-L8">SELECT DISTINCT route.destinationairport, route.stops, route.airline,
   airline.name, airline.callsign
 FROM `travel-sample`.inventory.route
   JOIN `travel-sample`.inventory.airline
@@ -6866,19 +6898,19 @@ LIMIT 4;</code></pre>
 <div class="listingblock">
 <div class="title">Required Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/index-join.n1ql#L12">CREATE INDEX route_airlineid ON `travel-sample`.inventory.route(airlineid);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/index-join.n1ql#L12">CREATE INDEX route_airlineid ON `travel-sample`.inventory.route(airlineid);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Optional Index</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/index-join.n1ql#L16">CREATE INDEX airline_icao ON `travel-sample`.inventory.airline(icao);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/index-join.n1ql#L16">CREATE INDEX airline_icao ON `travel-sample`.inventory.airline(icao);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/index-join.n1ql#L20-L23">SELECT * FROM `travel-sample`.inventory.airline
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/select/index-join.n1ql#L20-L23">SELECT * FROM `travel-sample`.inventory.airline
   JOIN `travel-sample`.inventory.route
   ON KEY route.airlineid FOR airline
 WHERE airline.icao = "SWA";</code></pre>
