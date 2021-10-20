@@ -3736,6 +3736,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3849,7 +3854,7 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4546,11 +4551,6 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="4">
-  <span class="menu_line">
     <a class="menu_title menu_link" href="../../rest-api/rest-secret-mgmt.html">Secret Management API</a>
   </span>
 </li>
@@ -5113,48 +5113,15 @@ If you <em>do</em> wish to use a fully qualified hostname, you <em>must</em> spe
 For information on naming, see <a href="../../learn/clusters-and-availability/nodes.html#naming-clusters-and-nodes" class="page">Naming Clusters and Nodes</a>.</p>
 </li>
 <li>
-<p><strong>use IPv6 addresses</strong>: Check the checkbox to use the IPv6 address family for the cluster.</p>
+<p><strong>enable node encryption</strong>: Check the checkbox to enable <em>node-to-node</em> encryption for the cluster.
+Use of IP address families and node-to-node encryption is described in <a href="../../learn/clusters-and-availability/node-to-node-encryption.html" class="page">Node-to-Node Encryption</a>.</p>
 </li>
 <li>
-<p><strong>enable node encryption</strong>: Check the checkbox to enable <em>node-to-node</em> encryption for the cluster.</p>
-<div class="paragraph">
-<p>Use of IP address families and node-to-node encryption is described in <a href="../../learn/clusters-and-availability/node-to-node-encryption.html" class="page">Node-to-Node Encryption</a>.</p>
-</div>
-</li>
-<li>
-<p><strong>Data Disk Path</strong>: Enter the location on the current node where the database files will be stored.
-An OS-specific default is provided.
-The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
-</li>
-<li>
-<p><strong>Indexes Disk Path</strong>: Enter the location on the current node where indexes will be stored.
-An OS-specific default is provided.
-The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
-<div class="paragraph">
-<p>Note that for a production environment, it is recommended that data and indexes should <em>not</em> share the same location.</p>
-</div>
-</li>
-<li>
-<p><strong>Eventing Disk Path</strong>: Enter the location on the current node where Eventing data will be stored.
-An OS-specific default is provided.
-The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
-</li>
-<li>
-<p><strong>Analytics Disk Paths</strong>: Enter the location on the current node where indexes will be stored.
-An OS-specific default is provided.
-The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
-<div class="paragraph">
-<p>You can enter more than one location to store Analytics data.
-Click <strong>+</strong> to specify an additional location for Analytics data, or click <strong>-</strong> to remove a location.</p>
-</div>
-</li>
-<li>
-<p><strong>Java Runtime Path</strong>: If desired, enter the location for an alternative Java Runtime Environment (JRE) on the current node that you want to use for the Analytics Service.</p>
-<div class="paragraph">
-<p>Couchbase Server is supplied with an OpenJDK-based JRE.
-If no location is specified, the supplied JRE is used.
-For a list of compatible Java Runtime Environments, refer to <a href="../../install/install-environments.html" class="page">Additional Requirements</a>.</p>
-</div>
+<p><strong>IP Family Preference</strong>: Select the appropriate radio-button.
+If <strong>IPv4</strong> or <strong>IPv6</strong> is selected, the corresponding address family is required, but the other supported address family can also be used.
+(This is the default setting, with the IPv4 address family being required.)
+If <strong>IPv4-only</strong> or <strong>IPv6-only</strong> is selected, only the corresponding address family can be used.
+(Note that the <strong>IPv4-only</strong> and <strong>IPv6-only</strong> options are available only with Couchbase Server Version 7.0.2 and later.)</p>
 </li>
 <li>
 <p><strong>Service Memory Quotas</strong>: A series of fields that allows you to specify how much memory should be allocated to each service you select for both the current node and for each node you may subsequently add to the cluster.
@@ -5167,7 +5134,8 @@ The sum of all quotas must be within the total amount of available RAM for the c
 <ul>
 <li>
 <p><strong>Data Service</strong>: Since you are starting a new cluster, the Data Service (which is essential for the cluster) has been allocated with its checkbox disabled.
-The default, minimum quota of 256 MiB is provided: this can be increased, if appropriate.</p>
+The default, minimum quota of 256 MiB is provided: this can be increased, if appropriate.
+(Note that to use the <code>travel-sample</code> bucket for experimentation, a minimum of 512 MiB should be allocated: see <a href="../manage-settings/install-sample-buckets.html" class="page">Sample Buckets</a>).</p>
 </li>
 <li>
 <p><strong>Index Service</strong>: Selection and RAM-allocation to support <em>Global Secondary Indexes</em>.
@@ -5206,8 +5174,43 @@ If your memory allocation is excessive, a notification warns you, and you must l
 </div>
 </li>
 <li>
+<p><strong>Data Disk Path</strong>: Enter the location on the current node where the database files will be stored.
+An OS-specific default is provided.
+The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
+</li>
+<li>
 <p><strong>Index Storage Setting</strong>: If the Index Service has been selected, either <strong>Standard Global Secondary</strong> Indexes or <strong>Memory-Optimized</strong> Global Secondary Indexes can be chosen here, by means of radio buttons.
 See <a href="../../learn/services-and-indexes/indexes/global-secondary-indexes.html" class="page">Global Secondary Indexes</a>, for details.</p>
+</li>
+<li>
+<p><strong>Indexes Disk Path</strong>: Enter the location on the current node where indexes will be stored.
+An OS-specific default is provided.
+The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
+<div class="paragraph">
+<p>Note that for a production environment, it is recommended that data and indexes should <em>not</em> share the same location.</p>
+</div>
+</li>
+<li>
+<p><strong>Eventing Disk Path</strong>: Enter the location on the current node where Eventing data will be stored.
+An OS-specific default is provided.
+The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
+</li>
+<li>
+<p><strong>Analytics Disk Paths</strong>: Enter the location on the current node where indexes will be stored.
+An OS-specific default is provided.
+The read-only <strong>Free</strong> field shows the current amount of free space for this location.</p>
+<div class="paragraph">
+<p>You can enter more than one location to store Analytics data.
+Click <strong>+</strong> to specify an additional location for Analytics data, or click <strong>-</strong> to remove a location.</p>
+</div>
+</li>
+<li>
+<p><strong>Java Runtime Path</strong>: If desired, enter the location for an alternative Java Runtime Environment (JRE) on the current node that you want to use for the Analytics Service.</p>
+<div class="paragraph">
+<p>Couchbase Server is supplied with an OpenJDK-based JRE.
+If no location is specified, the supplied JRE is used.
+For a list of compatible Java Runtime Environments, refer to <a href="../../install/install-environments.html" class="page">Additional Requirements</a>.</p>
+</div>
 </li>
 </ul>
 </div>

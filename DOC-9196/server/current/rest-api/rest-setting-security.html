@@ -3737,6 +3737,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3850,7 +3855,7 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link" href="rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4545,11 +4550,6 @@
     <a class="menu_title menu_link is-current-page" href="rest-setting-security.html">Configure On-the-Wire Security</a>
   </span>
 </li>
-<li class="menu_list is-current-page" data-depth="4">
-  <span class="menu_line">
-    <a class="menu_title menu_link is-current-page" href="rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
     <a class="menu_title menu_link" href="rest-secret-mgmt.html">Secret Management API</a>
@@ -4979,7 +4979,8 @@ POST /settings/security/[service-name]</pre>
 <div class="paragraph">
 <p>Allows settings to be established for the use of encryption.
 This includes the encryption <em>level</em>, for node-to-node encryption within the cluster;
-UI disablement over insecure connections; TLS minimum version; and a list of accepted cipher suites.</p>
+UI disablement over insecure connections; TLS minimum version; and a list of accepted cipher suites.
+Additionally, secure communication by means of TLS can be <em>enforced</em> across the cluster.</p>
 </div>
 </div>
 </div>
@@ -4996,7 +4997,7 @@ curl -X POST -u &lt;administrator&gt;:&lt;password&gt;
   -d disableUIOverHttp=&lt;true|false&gt;
   -d disableUIOverHttps=&lt;true|false&gt;
   -d disableWWWAuthenticate=&lt;true|false&gt;
-  -d clusterEncryptionLevel=&lt;all|control&gt;
+  -d clusterEncryptionLevel=&lt;all|control|strict&gt;
   -d tlsMinVersion=&lt;tlsv1|tlsv1.1|tlsv1.2|tlsv1.3&gt;
   -d honorCipherOrder=&lt;true|false&gt;
   -d cipherSuites=&lt;list-of-accepted-cipher-suites&gt;</pre>
@@ -5033,10 +5034,26 @@ This parameter can only be set globally.</p>
 </li>
 <li>
 <p><code>clusterEncryptionLevel</code>.
-Controls the level of encryption imposed on inter-node communications within the cluster.
-Can be either <code>control</code> (meaning that only server-management information is passed in encrypted form) or <code>all</code> (meaning that all information, including data handled by services, is passed in encrypted form).
-This can only be set after cluster encryption has been enabled: see <a href="../manage/manage-nodes/apply-node-to-node-encryption.html" class="page">Manage Node-to-Node Encryption</a>.
-This parameter can only be set globally.</p>
+Controls the level of encryption imposed on cluster-communications.
+This can only be set after cluster encryption has been enabled (see <a href="../manage/manage-nodes/apply-node-to-node-encryption.html" class="page">Manage Node-to-Node Encryption</a>) and can only be set globally.
+Its value can be any of the following:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>control</code>, meaning that server-management information passed between nodes is passed in encrypted form.</p>
+</li>
+<li>
+<p><code>all</code>, meaning that all information passed between nodes, including data handled by services, is passed in encrypted form.</p>
+</li>
+<li>
+<p><code>strict</code>, meaning <code>all</code> with only encrypted communication permitted between nodes and between the cluster and external clients.
+Note, however, that after <code>strict</code> has been specified, communication that occurs entirely on a single node using the <em>loopback</em> interface (whereby the machine is identified as either <code>localhost</code> or <code>127.0.0.1</code>) is still permitted in non-encrypted form.</p>
+<div class="paragraph">
+<p>Before applying <code>strict</code>, see <a href="#enforcing-tls">Enforcing TLS</a>, below.</p>
+</div>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p><code>tlsMinVersion</code>.
@@ -5070,6 +5087,48 @@ If the parameter is set globally, each listed cipher-suite can be used by a give
 <div class="paragraph">
 <p>For an explanation of the relationships between per service and global settings, see <a href="../learn/security/on-the-wire-security.html" class="page">On-the-Wire Security</a>.</p>
 </div>
+<div class="sect2">
+<h3 id="enforcing-tls"><a class="anchor" href="#enforcing-tls"></a>Enforcing TLS</h3>
+<div class="paragraph">
+<p>Before applying the <code>strict</code> value to the <code>clusterEncryptionLevel</code> parameter:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pause all Eventing functions on the node.
+(Resume them only after <code>strict</code> has been applied.)
+See <a href="../eventing/eventing-lifecycle.html" class="page">The Eventing Lifecycle</a>.</p>
+</li>
+<li>
+<p>Ensure all client applications and scripts are able to connect with TLS.</p>
+</li>
+<li>
+<p>Ensure node-to-node encryption is enabled (see <a href="../manage/manage-nodes/apply-node-to-node-encryption.html" class="page">Manage Node-to-Node Encryption</a>).</p>
+</li>
+<li>
+<p>Ensure all XDCR replications are configured as fully secure (see <a href="../manage/manage-xdcr/enable-full-secure-replication.html" class="page">Enable Fully Secure Replications</a>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once <code>strict</code> has been applied:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Previously paused Eventing functions can be resumed.</p>
+</li>
+<li>
+<p>The Eventing Service debugger port (9140) is not available (since non-TLS only).
+See <a href="../install/install-ports.html" class="page">Couchbase Server Ports</a>.</p>
+</li>
+<li>
+<p>The node cannot be added to a Version 6.0.x cluster.
+See <a href="../install/upgrade-cluster-online.html#tls-address-family-restriction-and-node-addition" class="page">TLS, Address-Family Restriction, and Node Addition</a>.</p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5095,7 +5154,7 @@ For example, a call that incorrectly specifies every significant parameter-value
     "honorCipherOrder - Accepted values are 'true' and 'false'.",
     "cipherSuites - Invalid format. Expecting a list of ciphers.",
     "tlsMinVersion - Supported TLS versions are tlsv1.3, tlsv1.2, tlsv1.1, tlsv1",
-    "clusterEncryptionLevel - Cluster encryption level must be one of ['control', 'all'].",
+    "clusterEncryptionLevel - Cluster encryption level must be one of [\"control\",\"all\",\"strict\"]",,
     "disableUIOverHttps - Accepted values are 'true' and 'false'.",
     "disableUIOverHttp - Accepted values are 'true' and 'false'.",
     "disableWWWAuthenticate - Accepted values are 'true' and 'false'."

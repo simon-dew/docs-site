@@ -3737,6 +3737,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3850,7 +3855,7 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4547,11 +4552,6 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="4">
-  <span class="menu_line">
     <a class="menu_title menu_link" href="../../rest-api/rest-secret-mgmt.html">Secret Management API</a>
   </span>
 </li>
@@ -5023,7 +5023,7 @@ Implicit replication always occurs, therefore, between the default collection on
 <li>
 <p>In this example, the source bucket contains a scope named <code>ScopeA</code>, within which a collection named <code>CollectionA</code> exists.
 The target bucket also contains <code>CollectionA</code> within <code>ScopeA</code>.
-Therefore, since source and target buckets contain the identical keyspace, <code>ScopeA.CollectionA</code>, implicit replication occurs automatically between <code>ScopeA.CollectionA</code> on the source, and <code>ScopeACollectionA</code> on the target.</p>
+Therefore, since source and target buckets contain the identical keyspace, <code>ScopeA.CollectionA</code>, implicit replication occurs automatically between <code>ScopeA.CollectionA</code> on the source, and <code>ScopeA.CollectionA</code> on the target.</p>
 <div class="paragraph">
 <p>(Note that XDCR does not automatically create scopes or collections.
 Therefore, for an implicit mapping to be achieved, identical keyspaces must be created by the administrator.)</p>
@@ -5032,7 +5032,7 @@ Therefore, for an implicit mapping to be achieved, identical keyspaces must be c
 <li>
 <p>Within <code>ScopeA</code> in the source bucket, a collection named <code>CollectionB</code> exists.
 The target bucket also contains <code>CollectionB</code> within <code>ScopeA</code>.
-Therefore, since source and target buckets contain the identical keyspace, <code>ScopeA.CollectionB</code>, implicit replication occurs automatically between <code>ScopeA.CollectionB</code> on the source, and <code>ScopeACollectionB</code> on the target.</p>
+Therefore, since source and target buckets contain the identical keyspace, <code>ScopeA.CollectionB</code>, implicit replication occurs automatically between <code>ScopeA.CollectionB</code> on the source, and <code>ScopeA.CollectionB</code> on the target.</p>
 </li>
 <li>
 <p>The source bucket contains a scope named <code>ScopeB</code>, within which a collection named <code>CollectionA</code> exists.
@@ -5420,6 +5420,24 @@ For example, the rule <code>{"city=\"San Francisco\"":"California.SanFrancisco"}
 If a second migration-rule, specifying a different target collection, attempts to migrate data from the same <code>_default</code> collection as does the first migration-rule, an error is generated.
 (This is the case regardless of whether a filter expression is specified for the second migration-rule.)</p>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1 0-server-versions">
+<h2 id="xdcr-scopes-and-collections-and-pre-7"><a class="anchor" href="#xdcr-scopes-and-collections-and-pre-7"></a>XDCR, Scopes and Collections, and Pre-7.0 Server-Versions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Replications can be defined to proceed from specified scopes and collections only after the source cluster has been completely upgraded to at least Couchbase Server Version 7.0.</p>
+</div>
+<div class="paragraph">
+<p>During the upgrade of a pre-7.0 <em>online</em> source cluster (see <a href="../../install/upgrade-cluster-online.html" class="page">Upgrade an Online Cluster</a>), any previously commenced replications (that is, replications commenced when the source cluster consisted entirely of nodes running a pre-7.0 version of Couchbase Server) continue.
+Note that during such an upgrade, if the upgrade is to Version 7.0 (and no higher), while the replications proceed, statistics for the source cluster may be inaccurate, log messages may show innocuous errors (such as <code>StatsMgr: error from getting high seqno</code>), and system activity may be marginally higher than usual.</p>
+</div>
+<div class="paragraph">
+<p>Following an upgrade from a pre-7.0 version to a version that is 7.0 or higher, each pre-existing replication continues, and is recognized as proceeding from the <code>_default</code> scope and collection of its source bucket.
+From this point, replications from administrator-defined scopes and collections can only be created when the target cluster is in each case running at least Version 7.0.
+If the target cluster is running a pre-7.0 version, replications can only be created from the <code>_default</code> scope and collection of their source-bucket.
+Note that if such replications are indeed created, should a source bucket&#8217;s <code>_default</code> collection be deleted, any corresponding replication is automatically paused, and an error message is duly provided in the <strong>Logs</strong> area of Couchbase Web Console.</p>
 </div>
 </div>
 </div>

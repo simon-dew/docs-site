@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/server/current/manage/manage-xdcr/create-xdcr-reference.html">
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="To perform Cross Datacenter Replication (XDCR), you start by creating a &lt;em&gt;reference&lt;/em&gt; to the remote cluster and bucket that will receive the replicated data.">
+<meta name="description" content="To perform Cross Datacenter Replication (XDCR), you start by creating a &lt;em&gt;reference&lt;/em&gt; to the target cluster and bucket that will receive the replicated data.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0">
@@ -3737,6 +3737,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3850,7 +3855,7 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4547,11 +4552,6 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="4">
-  <span class="menu_line">
     <a class="menu_title menu_link" href="../../rest-api/rest-secret-mgmt.html">Secret Management API</a>
   </span>
 </li>
@@ -4954,7 +4954,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-To perform Cross Datacenter Replication (XDCR), you start by creating a <em>reference</em> to the remote cluster and bucket that will receive the replicated data.
+To perform Cross Datacenter Replication (XDCR), you start by creating a <em>reference</em> to the target cluster and bucket that will receive the replicated data.
 </blockquote>
 </div>
 </div>
@@ -4963,19 +4963,21 @@ To perform Cross Datacenter Replication (XDCR), you start by creating a <em>refe
 <h2 id="understanding-references"><a class="anchor" href="#understanding-references"></a>Understanding References</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A <em>reference</em> is the registration, on the local cluster, of details that identify a remote cluster as a suitable target for XDCR replication.
+<p>A <em>reference</em> is the registration, on the local cluster, of details that identify a target cluster for XDCR replication.
 The reference must contain the following details:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The name of the remote cluster.</p>
+<p>The name of the target cluster.</p>
 </li>
 <li>
-<p>The IP address or hostname of a node within the remote cluster.</p>
+<p>The IP address or hostname of a node within the target cluster.
+Note if the target cluster has an <em>alternate address</em>, this address can be used to identify the target cluster.
+See <a href="../../learn/clusters-and-availability/connectivity.html#alternate-addresses" class="page">Alternate Addresses</a>.</p>
 </li>
 <li>
-<p>A username and password, associated on the remote cluster with a role that allows one or more buckets to receive documents from an XDCR replication.
+<p>A username and password, associated on the target cluster with a role that allows one or more buckets to receive documents from an XDCR replication.
 The possible roles are <em>Full</em>, and <em>XDCR Inbound</em> (either for the individual bucket that will later be specified as the target bucket for the replication, or for all buckets on the target cluster).</p>
 <div class="paragraph">
 <p>Note that the administrator setting up XDCR must have the <em>Full Admin</em>, <em>Cluster Admin</em> or <em>XDCR Admin</em> role, on the source cluster.</p>
@@ -5086,7 +5088,8 @@ The list, which is designed to show the name and IP address or hostname of each 
 </div>
 </li>
 <li>
-<p>For <strong>Cluster Name</strong> and <strong>IP/Hostname</strong>, specify the IP address of the second cluster, which is <code>10.144.210.102</code>.
+<p>For <strong>Cluster Name</strong>, provide a name for the target cluster: this name is for use on the <em>source</em> cluster only, and so need not be identical to any name defined on the <em>target</em> cluster.
+For <strong>IP/Hostname</strong>, specify the IP address (if appropriate, the <em>alternate address</em>), the hostname, or the <em>fully qualified domain-name</em> of the target cluster: in this case, the IP address <code>10.144.210.102</code> is to be used.
 (Note that if the IPv6 address family were being used, the IP address would need to be enclosed in square brackets.)
 For <strong>Username</strong> and <strong>Password</strong>, specify those stated above.
 Do not, for the current example, check the <code>Enable Secure Connection</code> checkbox.

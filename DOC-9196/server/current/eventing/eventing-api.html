@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/server/current/eventing/eventing-api.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="The Eventing REST API, available by default at port 8096, provides the methods available to work with Couchbase Eventing Functions.">
+<meta name="description" content="The Eventing REST API, available by default at port 8096, provides the methods available to work with and manipulate Couchbase Eventing Functions.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0">
@@ -3737,6 +3737,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3850,7 +3855,7 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../rest-api/rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link" href="../rest-api/rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4547,11 +4552,6 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../rest-api/rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="4">
-  <span class="menu_line">
     <a class="menu_title menu_link" href="../rest-api/rest-secret-mgmt.html">Secret Management API</a>
   </span>
 </li>
@@ -4958,7 +4958,7 @@
 <span  id="otherContributor"> + </span>
 </div><div class="quoteblock abstract">
 <blockquote>
-The Eventing REST API, available by default at port 8096, provides the methods available to work with Couchbase Eventing Functions.
+The Eventing REST API, available by default at port 8096, provides the methods available to work with and manipulate Couchbase Eventing Functions.
 </blockquote>
 </div>
 <div class="admonitionblock note">
@@ -4968,7 +4968,7 @@ The Eventing REST API, available by default at port 8096, provides the methods a
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The Eventing Functions REST API endpoints on this page are supported, as long as the content of the handler body is not created or modified externally (as the internal format of the body is not yet standardized).
+Changes to the Eventing Function definition files made outside of this REST API or the interactive UI are only supported for version 7.0 (and above) if the Eventing schemas located in <a href="https://github.com/couchbase/eventing/tree/master/parser" class="bare">https://github.com/couchbase/eventing/tree/master/parser</a> are adhered to.
 </td>
 </tr>
 </table>
@@ -5152,8 +5152,8 @@ Note if any Function&#8217;s language_compatibility field is missing the value w
 <p>View a definition of a Function.
 Provides a listing of a complete Function definition available in the cluster.
 The Function could be in any state: deployed, undeployed, or paused.
-If saved to a file the function definition can be imputed into the cluster or a different cluster.
-However any changes to the function definition made to the file outside the UI are discouraged and not supported.</p>
+If saved to a file the function definition can be imported into the cluster or a different cluster.
+However any changes to the function definition made to the file outside the UI are discouraged.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -5185,8 +5185,8 @@ However any changes to the function definition made to the file outside the UI a
 <p>View definitions of all Functions.
 Provides an array of definitions of all Functions available in the cluster.
 The Functions could be in any state: deployed, undeployed, or paused.
-If saved to a file the function definitions can be imputed into the cluster or a different cluster.
-However any changes to the function definition made to the file outside the UI are discouraged and not supported.</p>
+If saved to a file the function definitions can be imported into the cluster or a different cluster.
+However any changes to the function definition made to the file outside the UI are discouraged.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -5208,6 +5208,38 @@ However any changes to the function definition made to the file outside the UI a
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions -o array_of_functions.json</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/export</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>This is a convenience method to export all function definitions.
+Exported functions are always set to undeployed state at the time of export, regardless of the state in the cluster at time of export.
+If saved to a file the function definitions can be imputed into the cluster or a different cluster.
+However any changes to the function definition made to the file outside the UI are discouraged.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to standard out):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/export</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to file):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/export -o array_of_functions.json</code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -5234,7 +5266,7 @@ WARNING: Use this API with caution as it is irreversible.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">DELETE</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions</em></p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Deletes multiple Functions from the cluster.
+<p>Deletes multiple Functions (<strong>as in all Functions</strong>) from the cluster.
 WARNING: Use this API with caution as it is irreversible.</p>
 </div></div></td>
 </tr>
@@ -5251,10 +5283,400 @@ WARNING: Use this API with caution as it is irreversible.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Export or return the full definition for one Eventing Function in the cluster.  The definition can be subsequently imported.
+However any changes to the function definition made to the file outside the UI are discouraged.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to standard out):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to file):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings -o [sample_name].json</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Updates an undeployed or paused function with the provided setting.
+Note settings can only be altered when the function is paused or undeployed, attempting to adjust a deployed function will result in an error.
+During an edit, settings provided are merged. Unspecified attributes retain their prior values.
+Note that you must always specify <strong>deployment_status</strong> (deployed/undeployed) and <strong>processing_status</strong> (paused/not-paused) when using this REST endpoint to update any option or set of options.</p>
+</div>
+<div class="paragraph">
+<p>The current values of <strong>deployment_status</strong> and <strong>processing_status</strong> can be queried via <em>api/v1/status</em> or <em>api/v1/status/[sample_name]</em></p>
+</div>
+<div class="paragraph">
+<p>By adjusting <strong>deployment_status</strong> and <strong>processing_status</strong> this command can also deploy or resume a function, however it cannot pause or undeploy a function.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (alter worker_count):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false,"worker_count":6}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (alter app_log_max_files and app_log_max_size) <em>this function is currently undeployed</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false,"app_log_max_files":5,"app_log_max_size":10485760}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (alter timer_context_size) <em>this function is currently paused</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":true,"processing_status":false,"timer_context_size":2048}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (alter worker_count AND resume) <em>this function is currently paused</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":true,"processing_status":true,"worker_count":8}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/config</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Export or return the configuration of the source keyspace and the eventing storage (metadata) keyspace for one Eventing Function in the cluster.  The definition can be subsequently imported.
+However any changes to the function definition made to the file outside the UI are discouraged.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to standard out):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/config</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to file):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/config -o [sample_name].json</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/config</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Import the configuration and alter the source keyspace and the eventing storage (metadata) keyspace for one Eventing Function in the cluster.
+You can only change these values if a function is in the undeployed state and the two keyspaces exist.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (alter source and eventing storage keyspaces):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/config -d '{ "source_bucket": "bulk", "cust01": "orders", "source_collection": "customer01", "metadata_bucket": "rr100", "metadata_scope": "eventing", "metadata_collection": "metadata" }'</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (alter source and eventing storage keyspaces from a file):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/config -d @./[sample_name].json</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/appcode</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Export only the JavaScript code for one Eventing Function in the cluster.
+Note the JavaScript is not escaped (unlike /api/v1/functions/[function_name]) and the code is runnable in other environments.
+The JavaScript code can be subsequently imported.
+However any changes to the function definition made to the file outside the UI are discouraged.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to standard out):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/appcode</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (to file):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/appcode -o [sample_name].json</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/appcode</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Import only the JavaScript code for one Eventing Function in the cluster.
+Note the JavaScript supplied is not escaped (unlike /api/v1/functions/[function_name]) and could come from other environments.
+It is highly recommended that you use the flag <strong>--data-binary</strong> or <strong>--upload-file</strong> when importing your JavaScript "appcode" fragments
+to avoid potential encoding issues due to string escaping.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (import and replace JavaScript):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST http://Administrator:password@192.168.1.5:8096/api/v1/functions/aa/appcode --data-binary 'function OnUpdate(doc, meta) { log("id",meta.id); }'</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (import and replace JavaScript from a file, do not use <strong>-d</strong>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/import --data-binary @./[sample_name].json</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/import --upload-file ./[sample_name].json</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Eventing Status API (advanced)</caption>
+<colgroup>
+<col style="width: 6.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 60.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Method</th>
+<th class="tableblock halign-left valign-top"><strong>URI Path</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/status</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns a list (array) of all Eventing Functions showing their corresponding <strong>composite_status</strong>.
+A Function&#8217;s status can have one of the following values - <em>undeployed</em>, <em>deploying</em>, <em>deployed</em>, <em>undeploying</em>, <em>paused</em>, and '<em>pausing</em>.
+Note, there is no value of <em>resuming</em> when resuming a paused Eventing Function the <strong>composite_status</strong> will return <em>deploying</em> until it reaches the <em>deployed</em> state.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (status):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/status</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/status/[sample_name]</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns a specific Eventing Functions showing its corresponding <strong>composite_status</strong>.
+It can have one of the following values - <em>undeployed</em>, <em>deploying</em>, <em>deployed</em>, <em>undeploying</em>, <em>paused</em>, and '<em>pausing</em>.
+Note, there is no value of <em>resuming</em> when resuming a paused Eventing Function the <strong>composite_status</strong> will return <em>deploying</em> until it reaches the <em>deployed</em> state.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (status):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/status/[sample_name]</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Eventing List API (advanced)</caption>
+<colgroup>
+<col style="width: 6.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 60.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Method</th>
+<th class="tableblock halign-left valign-top"><strong>URI Path</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/list/functions</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns a list (array) of the names of all Eventing Functions in the cluster.
+The returned list can also be filtered by the following: <strong>deployed</strong> status <em>true</em> or <em>false</em> (in this case paused is considered deployed),
+<strong>source_bucket</strong> filter by the bucket with the listen to keyspace, and <strong>function_type</strong> <em>notsbm</em> or <em>sbm</em> (the later if the functions that modifies its own listen to keyspace).</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (list):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/list/functions</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/list/functions/query?deployed=true</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns a list (array) of the names of all deployed (or paused) Eventing Functions in the cluster.
+Note, if we had specified <em>deployed=false</em> we would get all undeployed functions.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (status):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/list/functions/query?deployed=true</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/list/functions/query?source_bucket=[bucket_name]</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns a list (array) of the names of Eventing Functions in the cluster that have a source keyspace under a particular bucket.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (status):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/list/functions/query?source_bucket=[bucket_name]</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/list/functions/query?function_type=sbm</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns a list (array) of the names of Eventing Functions in the cluster that modify their own a source keyspace.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API (status):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/list/functions/query?function_type=sbm</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Eventing Global Config API (advanced)</caption>
+<colgroup>
+<col style="width: 6.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 60.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Method</th>
+<th class="tableblock halign-left valign-top"><strong>URI Path</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/config</em></p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>List global configuration.
-The response shows all global Eventing settings.</p>
+The response shows all global Eventing settings.  There are currently just two settings:
+<strong>enable_debugger</strong> (default value of false) and <strong>ram_quota</strong> (default value of 256 MB).
+Both of these settings can also be adjusted via the UI.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -5289,177 +5711,20 @@ The response indicates whether the Eventing service must be restarted for the ne
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Export or return the full definition for one Eventing Function in the cluster.  The definition can be subsequently imported.
-However any changes to the function definition made to the file outside the UI are discouraged and not supported.</p>
-</div></div></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API (to standard out):</p>
+<p>Sample API (alter enable_debugger):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API (to file):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings -o [sample_name].json</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Updates an undeployed Function with the provided setting. Do not update settings for a deployed or paused function.
-During an edit, settings provided are merged. Unspecified attributes retain their prior values.
-Note that you must always specify deployment_status (deployed/undeployed) and processing_status (paused/not-paused)
-when using this REST endpoint to update any option or set of options.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API (alter worker_count):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false,"worker_count":6}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API (alter app_log_max_files and app_log_max_size):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false,"app_log_max_files":5,"app_log_max_size":10485760}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API (alter timer_context_size):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false,"timer_context_size":2048}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/status</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Returns a list (arrary) of all Eventing Functions showing their corresponding <strong>composite_status</strong>.
-It can have one of the following values - <em>undeployed</em>, <em>deploying</em>, <em>deployed</em>, <em>undeploying</em>, <em>paused</em>, and '<em>pausing</em>.
-Note, there is no value of <em>resuming</em> when resuming a paused Eventing Function the <strong>composite_status</strong> will return <em>deploying</em> until it reaches the <em>deployed</em> state.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API (status):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/api/v1/status</code></pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"enable_debugger": true}' http://Administrator:password@192.168.1.5:8096/api/v1/config</code></pre>
 </div>
 </div></div></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Eventing Functions API (deprecated activation/deactivation)</caption>
-<colgroup>
-<col style="width: 6.6666%;">
-<col style="width: 33.3333%;">
-<col style="width: 60.0001%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">HTTP Method</th>
-<th class="tableblock halign-left valign-top"><strong>URI Path</strong></th>
-<th class="tableblock halign-left valign-top"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Deploys an undeployed Function or resumes a paused function from its paused DCP checkpoint.  Deprecated, see (basic activation/deactivation) for preferred invocation.
-A deploy/resume CURL example is provided for reference.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":true,"processing_status":true}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Undeploys a Function. Deprecated, see (basic activation/deactivation) for preferred invocation.
-An undeploy CURL example is provided for reference.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Pauses a Function and creates a DCP checkpoint such that on a subsequent resume no mutations will be lost.
-Deprecated, see (basic activation/deactivation) for preferred invocation.
-A pause CURL example is provided for reference.</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
-<p>Sample API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":true,"processing_status":false}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
-</div>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Eventing Statistics API</caption>
+<caption class="title">Table 6. Eventing Statistics API</caption>
 <colgroup>
 <col style="width: 6.6666%;">
 <col style="width: 33.3333%;">
@@ -5572,6 +5837,81 @@ This will return the subset of statistics for the node.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XGET http://Administrator:password@192.168.1.5:8096/getFailureStats?name=[function_name]</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. Eventing Functions API (<strong>deprecated activation/deactivation</strong>)</caption>
+<colgroup>
+<col style="width: 6.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 60.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP Method</th>
+<th class="tableblock halign-left valign-top"><strong>URI Path</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Deploys an undeployed Function or resumes a paused function from its paused DCP checkpoint.  Deprecated, see (basic activation/deactivation) for preferred invocation.
+A deploy/resume CURL example is provided for reference.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":true,"processing_status":true}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Undeploys a Function. Deprecated, see (basic activation/deactivation) for preferred invocation.
+An undeploy CURL example is provided for reference.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":false,"processing_status":false}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em class="path">/api/v1/functions/[function_name]/settings</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Pauses a Function and creates a DCP checkpoint such that on a subsequent resume no mutations will be lost.
+Deprecated, see (basic activation/deactivation) for preferred invocation.
+A pause CURL example is provided for reference.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><div class="content"><div class="paragraph">
+<p>Sample API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">curl -XPOST -d '{"deployment_status":true,"processing_status":false}' http://Administrator:password@192.168.1.5:8096/api/v1/functions/[sample_name]/settings</code></pre>
 </div>
 </div></div></td>
 </tr>

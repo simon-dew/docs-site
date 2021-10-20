@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
-<title>Viewing Internal Settings | Couchbase Docs (Staging)</title>
+<title>Managing Internal Settings | Couchbase Docs (Staging)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/server/current/rest-api/rest-get-internal-setting.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="Internal settings change cluster behavior and are used for Couchbase use only.">
+<meta name="description" content="Couchbase-Server internal settings can be retrieved and modified..">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0">
@@ -3737,6 +3737,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3850,7 +3855,7 @@
 </li>
 <li class="menu_list is-current-page" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link is-current-page" href="rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link is-current-page" href="rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4547,11 +4552,6 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="4">
-  <span class="menu_line">
     <a class="menu_title menu_link" href="rest-secret-mgmt.html">Secret Management API</a>
   </span>
 </li>
@@ -4940,13 +4940,13 @@
 <li class="crumb"><a href="rest-intro.html">REST API Reference</a></li>
 <li class="crumb"><a href="rest-endpoints-all.html">REST API endpoint list</a></li>
 <li class="crumb"><a href="rest-cluster-intro.html">Cluster API</a></li>
-<li class="crumb"><a href="rest-get-internal-setting.html">Viewing Internal Settings</a></li>
+<li class="crumb"><a href="rest-get-internal-setting.html">Managing Internal Settings</a></li>
 </ul>
 </nav>
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Viewing Internal Settings</h1>
+<h1 class="page">Managing Internal Settings</h1>
 </div>
 <div class="contributor-list-box">
 <span class="last-commit-date" id="commitdate">    </span>
@@ -4956,8 +4956,24 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Internal settings change cluster behavior and are used for Couchbase use only.
+Couchbase-Server internal settings can be retrieved and modified..
 </blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="http-methods-and-uris"><a class="anchor" href="#http-methods-and-uris"></a>HTTP methods and URIs</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>GET /internalSettings
+
+POST /internalSettings
+
+GET /settings/maxParallelIndexers
+
+POST /settings/maxParallelIndexers</pre>
+</div>
 </div>
 </div>
 </div>
@@ -4965,327 +4981,166 @@ Internal settings change cluster behavior and are used for Couchbase use only.
 <h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>These internal settings change cluster behavior, performance, and timing and are exposed only via the REST API.
-The <code>/internalSettings</code> parameters are implemented on the server level.</p>
+<p>Couchbase-Server internal settings can be inspected and modified, in order to control cluster-performance.</p>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-The settings detailed on this page are meant for performance tuning.
-Rigorous and careful testing of any changes to these settings should be made in a non-production environment that is representative, in load and scale, of production data before implementing in production.
-Incorrect settings can cause severe impacts to cluster performance or operation due to resource consumption.
-Couchbase makes no recommendations for tuning beyond the default settings.
-Any changes to these settings not explicitly recommended by Couchbase Employees are not supported by Couchbase.
-</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The Maximum Parallel Indexer setting can also be implemented on the global level via <code>/settings/maxParallelIndexers globalValue</code>.
-</td>
-</tr>
-</table>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 13.1061%;">
-<col style="width: 38.0078%;">
-<col style="width: 48.8861%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">HTTP</th>
-<th class="tableblock halign-left valign-top">URI</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/internalSettings</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves Couchbase internal settings.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/settings/maxParallelIndexers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieves the global and node-specific parallel indexer configuration.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/settings/maxParallelIndexers globalValue</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets and retrieves the new global and node-specific parallel indexer configuration.
-Value range: 1 to 1024.
-Default: 4</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 <div class="sect1">
-<h2 id="response-codes"><a class="anchor" href="#response-codes"></a>Response codes</h2>
+<h2 id="curl-syntax"><a class="anchor" href="#curl-syntax"></a>Curl Syntax</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>HTTP/1.1 200 OK
-HTTP/1.1 500 Internal Server Error</pre>
+<pre>curl -u &lt;username&gt;:&lt;password&gt; -X GET \
+  http://&lt;ip-address-or-domain-name&gt;:8091/internalSettings
+
+  curl -u &lt;username&gt;:&lt;password&gt; -X POST \
+    http://&lt;ip-address-or-domain-name&gt;:8091/internalSettings
+      [-d &lt;internalSetting&gt;=&lt;value&gt;]*
+
+curl -u &lt;username&gt;:&lt;password&gt; -X GET \
+  http://&lt;ip-address-or-domain-name&gt;:8091/internalSettings/maxParallelIndexers
+
+curl -u &lt;username&gt;:&lt;password&gt; -X POST \
+  http://&lt;ip-address-or-domain-name&gt;:8091/internalSettings/maxParallelIndexers
+    -d globalValue=&lt;value&gt;</pre>
 </div>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Getting internal settings</dt>
-<dd>
-<p>Couchbase internal settings are retrieved with the <code>GET /internalSettings</code> HTTP method and URI.</p>
-</dd>
-<dt class="hdlist1">HTTP method and URI</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>GET /internalSettings</pre>
+<div class="paragraph">
+<p>The <code>/internalSettings/maxParallelIndexers</code> URI relates to <em>View</em> index configuration only.
+Note that it does <em>not</em> apply to the <em>GSI</em> indexes provided by the Index Service.
+When <code>POST</code> is used with this URI, the <code>integer-value</code> specified by means of the <code>globalValue</code> parameter must be between <code>1</code> and <code>1024</code>.
+The default is <code>4</code>.</p>
 </div>
-</div>
-</dd>
-<dt class="hdlist1">Syntax</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>curl --username=ADMIN --password=PASSWORD HOST:PORT/internalSettings</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Example</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>curl -u Administrator:password1 http://10.4.2.4:8091/internalSettings</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Response</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre> {
-       "capiRequestLimit": "",
-       "dropRequestMemoryThresholdMiB": "",
-       "indexAwareRebalanceDisabled": false,
-       "maxBucketCount": 10,
-       "maxParallelIndexers": 4,
-       "maxParallelReplicaIndexers": 2,
-       "rebalanceIgnoreViewCompactions": false,
-       "rebalanceIndexPausingDisabled": false,
-       "rebalanceIndexWaitingDisabled": false,
-       "rebalanceMovesBeforeCompaction": 64,
-       "rebalanceMovesPerNode": 1,
-       "restRequestLimit": "",
-       "xdcrAnticipatoryDelay": 0,
-       "xdcrCheckpointInterval": 1800,
-       "xdcrDocBatchSizeKb": 2048,
-       "xdcrFailureRestartInterval": 30,
-       "xdcrMaxConcurrentReps": 16,
-       "xdcrOptimisticReplicationThreshold": 256,
-       "xdcrWorkerBatchSize": 500
-       }</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The following internal parameters are deprecated.
-Use the equivalent parameter in <code>/settings/replications</code> instead.
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>xdcrCheckpointInterval
-           xdcrDocBatchSizeKb
-           xdcrFailureRestartInterval
-           xdcrMaxConcurrentReps
-           xdcrOptimisticReplicationThreshold
-           xdcrWorkerBatchSize</pre>
-</div>
-</div>
-</dd>
-</dl>
+<div class="paragraph">
+<p>All commands require either the Full Admin or Cluster Admin role.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="changing-internal-settings"><a class="anchor" href="#changing-internal-settings"></a>Changing internal settings</h2>
+<h2 id="responses"><a class="anchor" href="#responses"></a>Responses</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase internal settings are changed with the <code>POST /internalSettings</code> HTTP method and URI.</p>
+<p>If successful, <code>GET</code> and <code>POST</code> commands return <code>200 OK</code>; and a JSON object containing all current <em>general</em> internal settings.</p>
 </div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">HTTP method and URI</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>POST /internalSettings</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Syntax</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X POST
-       http://[admin]:[password]@[localhost]:8091/internalSettings -d [parameter]</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Example</dt>
-<dd>
-<p>For example, to update the maximum number of buckets:</p>
-<div class="listingblock">
-<div class="content">
-<pre>curl -v -X POST \
-          http://Administrator:password@10.5.2.117:8091/internalSettings -d maxBucketCount=15</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Response</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>* About to connect() to 10.5.2.117 port 8091 (#0)
-           *   Trying 10.5.2.117... connected
-           * Connected to 10.5.2.117 (10.5.2.117) port 8091 (#0)
-           * Server auth using Basic with user 'Administrator'
-           &gt; POST /internalSettings HTTP/1.1
-           &gt; Authorization: Basic QWRtaW5pc3RyYXRvcjpwYXNzd29yZA==
-           &gt; User-Agent: curl/7.21.4 (x86_64-unknown-linux-gnu) libcurl/7.21.4 OpenSSL/0.9.8b zlib/1.2.3
-           &gt; Host: 10.5.2.117:8091
-           &gt; Accept: */*
-           &gt; Content-Length: 17
-           &gt; Content-Type: application/x-www-form-urlencoded
-
-           HTTP/1.1 200 OK
-           Server: Couchbase Server
-           Pragma: no-cache
-           Date: Tue, 09 Sep 2014 01:01:57 GMT
-           Content-Type: application/json
-           Content-Length: 2
-           Cache-Control: no-cache
-
-           * Connection #0 to host 10.5.2.117 left intact
-           * Closing connection #0</pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="setting-maximum-parallel-indexers"><a class="anchor" href="#setting-maximum-parallel-indexers"></a>Setting maximum parallel indexers</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase internal settings for the maximum parallel View indexers are retrieved and changed with the <code>GET</code> and <code>POST</code> <code>/settings/maxParallelIndexers</code> HTTP methods and URI.</p>
+<p>Failure to authenticate returns <code>401 Unauthorized</code>.
+A URI featuring an incorrect hostname or port returns <code>404 Object Not Found</code> and an object containing an error message.
+For example:</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-This setting only applies to View indexes and no the Indexing Service for Global Secondary Indexes (GSI).
-</td>
-</tr>
-</table>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">HTTP method and URI</dt>
-<dd>
-<p>To set the Maximum Parallel Indexer parameter on the global level, use the <code>/settings/maxParallelIndexers</code> URI and <code>globalValue</code> parameter.
-The value range is 1 to 1024.
-Default: 4.
-The results provide the global and node-specific parallel indexer configuration.</p>
-<div class="listingblock">
-<div class="content">
-<pre>GET /settings/maxParallelIndexers
-           POST /settings/maxParallelIndexers globalValue</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Syntax</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre>// Example via browser
-       http://[localhost]:8091/settings/maxParallelIndexers
-
-       // Example via curl
-       curl -u [admin]:[password] http://[localhost]:8091/settings/maxParallelIndexers</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Example: GET</dt>
-<dd>
-<p>To view the current setting:</p>
-<div class="listingblock">
-<div class="content">
-<pre>curl -u Administrator:password http://10.5.2.117:8091/settings/maxParallelIndexers</pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">Response</dt>
-<dd>
 <div class="listingblock">
 <div class="content">
 <pre>{
-         "globalValue": 4,
-         "nodes": {
-         "ns_1@10.5.2.117": 4
-         }
-         }</pre>
+  "error": "not_found",
+  "reason": "missing"
+}</pre>
 </div>
 </div>
-</dd>
-<dt class="hdlist1">Example: POST</dt>
-<dd>
-<p>To change the setting, use the POST method with the <code>/settings/maxParallelIndexers</code> URI and <code>globalValue</code> parameter.
-Value range: 1 to 1024.
-Default: 4.</p>
+<div class="paragraph">
+<p>Incorrect specification of a setting-change returns <code>400 Bad Request</code> and an object containing an error message, such as the following:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>curl  -X POST -u Administrator:password \
-          http://10.5.2.117:8091/settings/maxParallelIndexers -d 'globalValue=8'</pre>
+<pre>{"errors":["Unknown key rebalanceMovesPerNoede"]}</pre>
 </div>
 </div>
-</dd>
-<dt class="hdlist1">Response</dt>
-<dd>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following example returns general internal settings for the cluster.
+Note that the output is piped to the <a href="https://stedolan.github.io/jq/" target="_blank" rel="noopener">jq</a> command, to facilitate readability.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -u Administrator:password -X GET http://10.144.210.101:8091/internalSettings | jq '.'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If successful, the command returns output such as the following:</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre>{
-          "globalValue": 8,
-           "nodes": {
-           "ns_1@10.5.2.117": 8
-           }
-           }</pre>
+ "indexAwareRebalanceDisabled": false,
+ "rebalanceIndexWaitingDisabled": false,
+ "rebalanceIndexPausingDisabled": false,
+ "rebalanceIgnoreViewCompactions": false,
+ "rebalanceMovesPerNode": 5,
+ "rebalanceMovesBeforeCompaction": 64,
+ "maxParallelIndexers": 4,
+ "maxParallelReplicaIndexers": 2,
+ "maxBucketCount": 30,
+ "gotraceback": "single",
+ "indexAutoFailoverDisabled": true,
+ "certUseSha1": false
+}</pre>
 </div>
 </div>
-</dd>
-</dl>
+<div class="paragraph">
+<p>To change a setting, use the <code>POST</code> method, specifying the setting as an argument, and specifying its new value.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -u Administrator:password -X POST http://10.144.210.101:8091/internalSettings -d rebalanceMovesPerNode=4</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If successful, the command returns <code>200 OK</code>, and an empty array.
+To check the result, use the <code>GET</code> method again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -u Administrator:password -X GET http://10.144.210.101:8091/internalSettings | jq '.' | grep rebalanceMovesPer</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This returns the following output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  "rebalanceMovesPerNode": 4,</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This confirms that the change was successful.</p>
+</div>
+<div class="paragraph">
+<p>To inspect the current setting for <code>maxParallelIndexers</code>, enter the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -u Administrator:password -X GET http://10.144.210.101:8091/settings/maxParallelIndexers</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If successful, this returns output such as the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{"globalValue":4,"nodes":{"ns_1@10.144.210.101":4}}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To change the value, specify the new value by means of the <code>globalValue</code> argument:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -u Administrator:password -X POST http://10.144.210.101:8091/settings/maxParallelIndexers -d globalValue=3</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output displays that the value has been successfully changed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{"globalValue":3,"nodes":{"ns_1@10.144.210.101":3}}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the value is thus established cluster-wide.</p>
 </div>
 </div>
 </div>

@@ -1832,7 +1832,7 @@ The Couchbase Node.js SDK enables you to interact with a Couchbase Server cluste
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/example-package.json">{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/example-package.json">{
   "name": "node-couchbase-project",
   "version": "1.0.0",
   "description": "",
@@ -1865,6 +1865,57 @@ The Couchbase Node.js SDK enables you to interact with a Couchbase Server cluste
 <div class="paragraph">
 <p>Information on new features, fixes, known issues, as well as information on how to install older release versions is in the <a href="../project-docs/sdk-release-notes.html" class="page">release notes</a>.</p>
 </div>
+<div class="sect2">
+<h3 id="typescript-support"><a class="anchor" href="#typescript-support"></a>TypeScript Support</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Follow this section only if you intend to use <code>TypeScript</code> instead of <code>JavaScript</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Since release 3.2, the Node.js SDK has added full support for the <a href="https://www.typescriptlang.org/">TypeScript</a> programming language.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ npm install -g typescript ts-node</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will install TypeScript globally on your machine and allow you to run commands with the <code>tsc</code> cli. You will have noticed that we also install <a href="https://typestrong.org/ts-node/">ts-node</a> which is a handy execution utility that will help us run the example later on.</p>
+</div>
+<div class="paragraph">
+<p>Before we can get started, run <code>tsc --init</code> in the <code>node-couchbase-project</code> directory
+to generate a <code>tsconfig.json</code> file. This will set you up with some initial configurations, which should suffice for our purposes.</p>
+</div>
+<div class="paragraph">
+<p>Should you wish to make changes in future you can simply edit the file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/example-tsconfig.json">{
+  "compilerOptions": {
+   "disableReferencedProjectLoad": true,             
+    "target": "es5",                                   
+    "module": "commonjs",                                
+    "esModuleInterop": true,                             
+    "forceConsistentCasingInFileNames": true,            
+    "strict": true,                                     
+    "skipLibCheck": true                                 
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the example above does not include the generated comments for readability.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1874,17 +1925,53 @@ The Couchbase Node.js SDK enables you to interact with a Couchbase Server cluste
 <p>At this point we want to transition from the terminal to your code editor of choice and point to the directory we have just created named <code>node-couchbase-project</code>.</p>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s now create an empty file named <code>index.js</code> and walk through step by step adding code to enable us to connect to a bucket, add a document and retrieve it using a key-value get operation:</p>
+<p>Let&#8217;s now create an empty file named <code>index.js</code>, or alternatively <code>index.ts</code> for TypeScript, and walk through step by step adding code to enable us to connect to a bucket, add a document and retrieve it using a key-value get operation:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset1_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L4-L10">const couchbase = require('couchbase')
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L4-L10">const couchbase = require('couchbase')
 
 async function main() {
   const cluster = await couchbase.connect('couchbase://localhost', {
     username: 'Administrator',
     password: 'password',
   })</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L4-L17">import {
+  Bucket,
+  Cluster,
+  Collection,
+  connect,
+  GetResult,
+  MutationResult,
+} from 'couchbase'
+
+async function main() {
+  const cluster: Cluster = await connect('couchbase://localhost', {
+    username: 'Administrator',
+    password: 'password',
+  })</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -1895,10 +1982,34 @@ async function main() {
 For the sake of this example, we are connecting to Couchbase using the <em>Full Admin</em> role created during the installation of our Couchbase Server.
 Since we are running this locally, we are using the Couchbase alias for localhost.</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset2_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L14-L15">  // get a reference to our bucket
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L14-L15">  // get a reference to our bucket
   const bucket = cluster.bucket('travel-sample')</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L21-L22">  // get a reference to our bucket
+  const bucket: Bucket = cluster.bucket('travel-sample')</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -1908,10 +2019,34 @@ Since we are running this locally, we are using the Couchbase alias for localhos
 <p>The 3.2 SDK is ready for the introduction of <a href="../concept-docs/collections.html" class="page">Collections</a> in the <a href="#{version-server}@server:introduction:whats-new.adoc#whats-new-server-700" class="page unresolved">7.0 release</a> of the Couchbase Data Platform.
 The latest release, Couchbase Server 7.0, brings Collections, allowing Documents to be grouped by purpose or theme, according to specified <em>Scope</em>.</p>
 </div>
-<div class="literalblock">
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset3_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset3_ts"></a>TS</p>
+</li>
+</ul>
+</div>
 <div class="content">
-<pre>// get a reference to a collection
-const collection = bucket.scope('inventory').collection('airline')</pre>
+<div class="tab-pane" aria-labelledby="tabset3_js">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L19-L20">  // get a reference to a collection
+  const collection = bucket.scope('inventory').collection('airline')</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset3_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L26-L27">  // get a reference to a collection
+  const collection: Collection = bucket.scope('inventory').collection('airline')</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -1926,33 +2061,109 @@ This feature was previously available as a <em>developer preview</em> from Couch
 </tr>
 </table>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset4_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset4_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset4_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L24-L25">  // get a reference to the default collection, required for older Couchbase server versions
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L24-L25">  // get a reference to the default collection, required for older Couchbase server versions
   const collection_default = bucket.defaultCollection()</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset4_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L31-L32">  // get a reference to the default collection, required for older Couchbase server versions
+  const collection_default: Collection = bucket.defaultCollection()</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>Let&#8217;s create a document in our application that we can add to our <code>travel-sample</code> bucket that conforms to the structure of a document of type <code>airline</code>.</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset5_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset5_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset5_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L29-L36">  const airline = {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L29-L36">  const airline = {
     type: 'airline',
     id: 8091,
     callsign: 'CBS',
-    iata: null,
-    icao: null,
+    iata: 'IATA',
+    icao: 'ICAO',
     name: 'Couchbase Airways',
   }</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset5_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L36-L52">  interface Document {
+    type: string
+    id: number
+    callsign: string
+    iata: string
+    icao: string
+    name: string
+  }
+
+  const airline: Document = {
+    type: 'airline',
+    id: 8091,
+    callsign: 'CBS',
+    iata: 'IATA',
+    icao: 'ICAO',
+    name: 'Couchbase Airways',
+  }</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>Now we will create a function that will take care of upserting that document. This function is of type <code>async</code> and simply awaits the result of the upsert and either logs out the result or error in our console:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset6_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset6_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset6_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L40-L50">  const upsertDocument = async (doc) =&gt; {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L40-L50">  const upsertDocument = async (doc) =&gt; {
     try {
       // key will equal: "airline_8091"
       const key = `${doc.type}_${doc.id}`
@@ -1965,20 +2176,76 @@ This feature was previously available as a <em>developer preview</em> from Couch
   }</code></pre>
 </div>
 </div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset6_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L56-L66">  const upsertDocument = async (doc: Document) =&gt; {
+    try {
+      // key will equal: "airline_8091"
+      const key: string = `${doc.type}_${doc.id}`
+      const result: MutationResult = await collection.upsert(key, doc)
+      console.log('Upsert Result: ')
+      console.log(result)
+    } catch (error) {
+      console.error(error)
+    }
+  }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="paragraph">
 <p>Now, we can simply call the <code>upsertDocument</code> function passing in our <code>airline</code> document:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset7_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset7_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset7_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L54">  await upsertDocument(airline)</code></pre>
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L54">  await upsertDocument(airline)</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset7_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L70">  await upsertDocument(airline)</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>We can turn around and retrieve that document using a key-value operation. Let&#8217;s create a function that takes a document key that is of type <code>async</code> and awaits the result of the get operation and either logs out the result or error in our console:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset8_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset8_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset8_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L58-L66">  const getAirlineByKey = async (key) =&gt; {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L58-L66">  const getAirlineByKey = async (key) =&gt; {
     try {
       const result = await collection.get(key)
       console.log('Get Result: ')
@@ -1989,33 +2256,132 @@ This feature was previously available as a <em>developer preview</em> from Couch
   }</code></pre>
 </div>
 </div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset8_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L74-L82">  const getAirlineByKey = async (key: string) =&gt; {
+    try {
+      const result: GetResult = await collection.get(key)
+      console.log('Get Result: ')
+      console.log(result)
+    } catch (error) {
+      console.error(error)
+    }
+  }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="paragraph">
 <p>KV Operations are described in detail on the <a href="../howtos/kv-operations.html" class="page">KV Operations page</a>.</p>
 </div>
 <div class="paragraph">
 <p>Now, we can simply call the <code>getAirlineByKey</code> function passing in our valid document key <code>airline_8091</code> and close our <code>main</code> function:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset9_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset9_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset9_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L70-L71">  await getAirlineByKey('airline_8091')
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L70-L71">  await getAirlineByKey('airline_8091')
 }</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset9_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L86-L87">  await getAirlineByKey('airline_8091')
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
 <p>To ensure that we can run the main function, we add this last line of code:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset10_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset10_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset10_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js#L75-L76">// Run the main function
-main().then(process.exit)</code></pre>
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js#L75-L81">// Run the main function
+main()
+  .catch((err) =&gt; {
+    console.log('ERR:', err)
+    process.exit(1)
+  })
+  .then(process.exit)</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset10_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts#L91-L97">// Run the main function
+main()
+  .catch((err) =&gt; {
+    console.log('ERR:', err)
+    process.exit(1)
+  })
+  .then(() =&gt; process.exit(0))</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
-<p>Now we can run our code using the following command:</p>
+<p>Now we can run our code:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset11_js"></a>JS</p>
+</li>
+<li>
+<p><a id="tabset11_ts"></a>TS</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset11_js">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">npm rebuild &amp;&amp; node index.js</code></pre>
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ node index.js</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset11_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ ts-node index.ts</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
@@ -2057,18 +2423,21 @@ GetResult {
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset1_local-couchbase-server"></a>Local Couchbase Server</p>
+<p><a id="tabset12_js"></a>JS</p>
 </li>
 <li>
-<p><a id="tabset1_couchbase-capella-sample"></a>Couchbase Capella Sample</p>
+<p><a id="tabset12_ts"></a>TS</p>
+</li>
+<li>
+<p><a id="tabset12_couchbase-capella-sample"></a>Couchbase Capella Sample</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_local-couchbase-server">
+<div class="tab-pane" aria-labelledby="tabset12_js">
 <div class="listingblock try-it">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/hello-world/examples/start-using.js">'use strict'
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.js">'use strict'
 
 const couchbase = require('couchbase')
 
@@ -2091,8 +2460,8 @@ async function main() {
     type: 'airline',
     id: 8091,
     callsign: 'CBS',
-    iata: null,
-    icao: null,
+    iata: 'IATA',
+    icao: 'ICAO',
     name: 'Couchbase Airways',
   }
 
@@ -2124,17 +2493,106 @@ async function main() {
 }
 
 // Run the main function
-main().then(process.exit)</code></pre>
+main()
+  .catch((err) =&gt; {
+    console.log('ERR:', err)
+    process.exit(1)
+  })
+  .then(process.exit)</code></pre>
 </div>
 </div>
 </div>
-<div class="tab-pane" aria-labelledby="tabset1_couchbase-capella-sample">
+<div class="tab-pane" aria-labelledby="tabset12_ts">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-typescript hljs" data-lang="typescript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/hello-world/examples/start-using.ts">'use strict'
+
+import {
+  Bucket,
+  Cluster,
+  Collection,
+  connect,
+  GetResult,
+  MutationResult,
+} from 'couchbase'
+
+async function main() {
+  const cluster: Cluster = await connect('couchbase://localhost', {
+    username: 'Administrator',
+    password: 'password',
+  })
+
+  // get a reference to our bucket
+  const bucket: Bucket = cluster.bucket('travel-sample')
+
+  // get a reference to a collection
+  const collection: Collection = bucket.scope('inventory').collection('airline')
+
+  // get a reference to the default collection, required for older Couchbase server versions
+  const collection_default: Collection = bucket.defaultCollection()
+
+  interface Document {
+    type: string
+    id: number
+    callsign: string
+    iata: string
+    icao: string
+    name: string
+  }
+
+  const airline: Document = {
+    type: 'airline',
+    id: 8091,
+    callsign: 'CBS',
+    iata: 'IATA',
+    icao: 'ICAO',
+    name: 'Couchbase Airways',
+  }
+
+  const upsertDocument = async (doc: Document) =&gt; {
+    try {
+      // key will equal: "airline_8091"
+      const key: string = `${doc.type}_${doc.id}`
+      const result: MutationResult = await collection.upsert(key, doc)
+      console.log('Upsert Result: ')
+      console.log(result)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  await upsertDocument(airline)
+
+  const getAirlineByKey = async (key: string) =&gt; {
+    try {
+      const result: GetResult = await collection.get(key)
+      console.log('Get Result: ')
+      console.log(result)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  await getAirlineByKey('airline_8091')
+}
+
+// Run the main function
+main()
+  .catch((err) =&gt; {
+    console.log('ERR:', err)
+    process.exit(1)
+  })
+  .then(() =&gt; process.exit(0))</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset12_couchbase-capella-sample">
 <div class="paragraph">
 <p>If you are connecting to <a href="https://docs.couchbase.com/cloud/index.html">Couchbase Capella</a>, be sure to get the correct endpoint as well as user, password, and <code>couchbasecloudbucket</code> &#8201;&#8212;&#8201;and see the <a href="#cloud-connections">Cloud section</a>, below.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/44c9dbe59ae9b7a36fb539b9181eb42db1c870c2/modules/devguide/examples/nodejs/cloud.js">var couchbase = require('couchbase')
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/2ebad082a521cf8695c97f6683331b2c10a0b70d/modules/devguide/examples/nodejs/cloud.js">var couchbase = require('couchbase')
 
 const clusterConnStr =
   'couchbases://cb.abcdefab-cdef-abcd-efab-cdefabcdef.dp.cloud.couchbase.com'

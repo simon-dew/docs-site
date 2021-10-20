@@ -3737,6 +3737,11 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="../cli/cbsummary.html">cbsummary</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="../cli/cbtools/cbtransfer.html">cbtransfer</a>
   </span>
 </li>
@@ -3850,7 +3855,7 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="rest-get-internal-setting.html">Viewing Internal Settings</a>
+    <a class="menu_title menu_link" href="rest-get-internal-setting.html">Managing Internal Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4547,11 +4552,6 @@
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="rest-setting-security.html">Manage Encryption Settings</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="4">
-  <span class="menu_line">
     <a class="menu_title menu_link" href="rest-secret-mgmt.html">Secret Management API</a>
   </span>
 </li>
@@ -4962,17 +4962,17 @@ XDCR advanced settings affect replications' behavior, performance, and timing.
 </div>
 </div>
 <div class="sect1">
-<h2 id="http-method-and-uri"><a class="anchor" href="#http-method-and-uri"></a>HTTP method and URI</h2>
+<h2 id="http-methods-and-uri"><a class="anchor" href="#http-methods-and-uri"></a>HTTP methods and URI</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
 <pre>POST /settings/replications/
 
-POST /settings/replications/[settings_URI]
+POST /settings/replications/&lt;settings_URI&gt;
 
 GET /settings/replications/
 
-GET /settings/replications/[settings_URI]</pre>
+GET /settings/replications/&lt;settings_URI&gt;</pre>
 </div>
 </div>
 </div>
@@ -4994,6 +4994,9 @@ If settings are specified for a particular replication, the specified settings o
 <div class="paragraph">
 <p>Used with the <code>GET</code> method, the URIs respectively retrieve global settings for <em>all</em> replications; and for <em>a specific</em> replication, which is referenced by its <code>settings_URI</code>.</p>
 </div>
+<div class="paragraph">
+<p>Each command requires the Full Admin, Cluster Admin, ReadOnly Admin, External User Security Admin, Local User Security Admin, Backup Full Admin, or XDCR Admin role.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5001,17 +5004,17 @@ If settings are specified for a particular replication, the specified settings o
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>curl -u [admin]:[password] -X POST \
-http://[localhost]:8091/settings/replications
+<pre>curl -u &lt;username&gt;:&lt;password&gt; -X POST \
+  http://&lt;ip-address-or-domain-name&gt;:8091/settings/replications
 
-curl -u [admin]:[password] -X POST \
-http://[localhost]:8091/settings/replications/[settings_URI]
+curl -u &lt;username&gt;:&lt;password&gt; -X POST \
+  http://&lt;ip-address-or-domain-name&gt;:8091/settings/replications/&lt;settings_URI&gt;
 
-curl -u [admin]:[password] -X GET \
-http://[localhost]:8091/settings/replications
+curl -u &lt;username&gt;:&lt;password&gt; -X GET \
+  http://&lt;ip-address-or-domain-name&gt;:8091/settings/replications
 
-curl -u [admin]:[password] -X GET \
-http://[localhost]:8091/settings/replications/[settings_URI]</pre>
+curl -u &lt;username&gt;:&lt;password&gt; -X GET \
+  http://&lt;ip-address-or-domain-name&gt;:8091/settings/replications/&lt;settings_URI&gt;</pre>
 </div>
 </div>
 </div>
@@ -5025,12 +5028,12 @@ Commands for establishing or retrieving either global settings or the settings f
 </div>
 <div class="paragraph">
 <p>Failure to authenticate returns <code>401 Unauthorized</code>.
-An URI featuring an incorrect hostname or port returns a <code>failure to connect</code> message.
-An incorrect <code>settings_URI</code> returns a <code>500 Internal Server Error</code>.</p>
+A URI featuring an incorrect hostname or port returns a <code>failure to connect</code> message.
+An incorrect <code>settings_URI</code> returns <code>400 Bad Request</code>, and an object such as <code>{"errors":{"_":"requested resource not found"}}</code>.</p>
 </div>
 <div class="paragraph">
 <p>An attempt to set a global-only setting for a specific replication returns <code>400 Bad Request</code>, and an object indicating which submitted parameters were incorrect.
-For example, the attempted use of <code>POST /settings/replications/[settings_URI]</code> to establish values for <code>goGC</code> and <code>goMaxProcs</code> returns the following:</p>
+For example, the attempted use of <code>POST /settings/replications/&lt;settings_URI&gt;</code> to establish values for <code>goGC</code> and <code>goMaxProcs</code> returns the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5054,11 +5057,12 @@ For example, the attempted use of <code>POST /settings/replications/[settings_UR
 <div class="sect2">
 <h3 id="get-settings-for-all-replications"><a class="anchor" href="#get-settings-for-all-replications"></a>Get Settings for All Replications</h3>
 <div class="paragraph">
-<p>The following example retrieves settings for all replications:</p>
+<p>The following example retrieves settings for all replications.
+Note that the output is piped to the <a href="https://stedolan.github.io/jq/" target="_blank" rel="noopener">jq</a> command, to facilitate readability:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>curl -u Administrator:password 10.5.2.54:8091/settings/replications</pre>
+<pre>curl -u Administrator:password -X GET http://10.144.210.101:8091/settings/replications | jq '.'</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5076,11 +5080,16 @@ For example, the attempted use of <code>POST /settings/replications/[settings_UR
   "filterDeletion": false,
   "filterExpiration": false,
   "goGC": 100,
-  "goMaxProcs": 5,
+  "goMaxProcs": 4,
+  "hlvPruningWindowSec": 259200,
+  "jsFunctionTimeoutMs": 20000,
   "logLevel": "Info",
+  "mergeFunctionMapping": {},
   "networkUsageLimit": 0,
   "optimisticReplicationThreshold": 256,
   "priority": "High",
+  "retryOnRemoteAuthErr": true,
+  "retryOnRemoteAuthErrMaxWaitSec": 3600,
   "sourceNozzlePerNode": 2,
   "statsInterval": 1000,
   "targetNozzlePerNode": 2,
@@ -5094,7 +5103,7 @@ For example, the attempted use of <code>POST /settings/replications/[settings_UR
 <div class="paragraph">
 <p>To reference a specific replication, the replication&#8217;s <code>settings_URI</code> must first be retrieved.
 Use the following call, which is explained in detail in <a href="rest-get-cluster-tasks.html" class="page">Getting Cluster Tasks</a>.
-Note that the call pipes output to the <a href="https://stedolan.github.io/jq/">jq</a> program, to facilitate the readability of output.</p>
+Note that the call pipes output to the <a href="https://stedolan.github.io/jq/" target="_blank" rel="noopener">jq</a> program, to facilitate the readability of output.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5109,47 +5118,32 @@ http://10.143.192.101:8091/pools/default/tasks | jq '.'</pre>
 <div class="content">
 <pre>[
   {
-    "statusId": "9dd69ac5b236b7d176540a7d797058a6",
+    "statusId": "2bbbeac0668c700f43ad694361e1a948",
     "type": "rebalance",
     "status": "notRunning",
     "statusIsStale": false,
-    "masterRequestTimedOut": false
+    "masterRequestTimedOut": false,
+    "lastReportURI": "/logs/rebalanceReport?reportID=8fccd4f0764db237f64487afe5f06bb7"
   },
   {
-    "cancelURI": "/controller/cancelXDCR/9c1eff7bd61abea11adacc447d34edcc%2Ftravel-sample%2Fts",
-    "settingsURI": "/settings/replications/9c1eff7bd61abea11adacc447d34edcc%2Ftravel-sample%2Fts",
+    "cancelURI": "/controller/cancelXDCR/c371211ec399a7b20acc1ea264f0841e%2Ftravel-sample%2Fts",
+    "settingsURI": "/settings/replications/c371211ec399a7b20acc1ea264f0841e%2Ftravel-sample%2Fts",
     "status": "running",
     "replicationType": "xmem",
     "continuous": true,
+    "filterBypassExpiry": false,
+    "filterDeletion": false,
+    "filterExpiration": false,
     "filterExpression": "",
-    "id": "9c1eff7bd61abea11adacc447d34edcc/travel-sample/ts",
+    "id": "c371211ec399a7b20acc1ea264f0841e/travel-sample/ts",
     "pauseRequested": false,
     "source": "travel-sample",
-    "target": "/remoteClusters/9c1eff7bd61abea11adacc447d34edcc/buckets/ts",
+    "target": "/remoteClusters/c371211ec399a7b20acc1ea264f0841e/buckets/ts",
     "type": "xdcr",
     "recommendedRefreshPeriod": 10,
     "changesLeft": 0,
-    "docsChecked": 0,
-    "docsWritten": 21130,
-    "maxVBReps": null,
-    "errors": []
-  },
-  {
-    "cancelURI": "/controller/cancelXDCR/9c1eff7bd61abea11adacc447d34edcc%2Ftravel-sample%2Fts2",
-    "settingsURI": "/settings/replications/9c1eff7bd61abea11adacc447d34edcc%2Ftravel-sample%2Fts2",
-    "status": "running",
-    "replicationType": "xmem",
-    "continuous": true,
-    "filterExpression": "",
-    "id": "9c1eff7bd61abea11adacc447d34edcc/travel-sample/ts2",
-    "pauseRequested": false,
-    "source": "travel-sample",
-    "target": "/remoteClusters/9c1eff7bd61abea11adacc447d34edcc/buckets/ts2",
-    "type": "xdcr",
-    "recommendedRefreshPeriod": 10,
-    "changesLeft": 0,
-    "docsChecked": 0,
-    "docsWritten": 21130,
+    "docsChecked": 84792,
+    "docsWritten": 0,
     "maxVBReps": null,
     "errors": []
   }
@@ -5157,15 +5151,15 @@ http://10.143.192.101:8091/pools/default/tasks | jq '.'</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>A <code>settings_URI</code> if provided for each of two ongoing replications, within the second and third members of the array.
-Each <code>settings_URI</code> can be used to retrieve information on its corresponding replication.</p>
+<p>A <code>settings_URI</code> if provided for the single ongoing replication, within the second member of the array.
+The <code>settings_URI</code> can be used to retrieve information on the corresponding replication.</p>
 </div>
 <div class="paragraph">
 <p>For example, enter the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>curl -X GET -u Administrator:password \ http://10.143.192.101:8091/settings/replications/9c1eff7bd61abea11adacc447d34edcc%2Ftravel-sample%2Fts | jq '.'</pre>
+<pre>curl -u Administrator:password -X GET http://10.144.210.101:8091/settings/replications/c371211ec399a7b20acc1ea264f0841e%2Ftravel-sample%2Fts | jq '.'</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5175,6 +5169,11 @@ Each <code>settings_URI</code> can be used to retrieve information on its corres
 <div class="content">
 <pre>{
   "checkpointInterval": 600,
+  "colMappingRules": {},
+  "collectionsExplicitMapping": false,
+  "collectionsMigrationMode": false,
+  "collectionsMirroringMode": false,
+  "collectionsOSOMode": true,
   "compressionType": "Auto",
   "desiredLatency": 50,
   "docBatchSizeKb": 2048,
@@ -5183,11 +5182,16 @@ Each <code>settings_URI</code> can be used to retrieve information on its corres
   "filterDeletion": false,
   "filterExpiration": false,
   "filterExpression": "",
+  "hlvPruningWindowSec": 259200,
+  "jsFunctionTimeoutMs": 20000,
   "logLevel": "Info",
+  "mergeFunctionMapping": {},
   "networkUsageLimit": 0,
   "optimisticReplicationThreshold": 256,
   "pauseRequested": false,
   "priority": "High",
+  "retryOnRemoteAuthErr": true,
+  "retryOnRemoteAuthErrMaxWaitSec": 3600,
   "sourceNozzlePerNode": 2,
   "statsInterval": 1000,
   "targetNozzlePerNode": 2,
@@ -5204,7 +5208,7 @@ Each <code>settings_URI</code> can be used to retrieve information on its corres
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>curl -v -X POST -u Administrator:password http://10.143.192.101:8091/settings/replications/9c1eff7bd61abea11adacc447d34edcc%2Ftravel-sample%2Fts -d checkpointInterval=700 | jq '.'</pre>
+<pre>curl -X POST -u Administrator:password http://10.144.210.101:8091/settings/replications/c371211ec399a7b20acc1ea264f0841e%2Ftravel-sample%2Fts -d checkpointInterval=700 | jq '.'</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5214,6 +5218,11 @@ Each <code>settings_URI</code> can be used to retrieve information on its corres
 <div class="content">
 <pre>{
   "checkpointInterval": 700,
+  "colMappingRules": {},
+  "collectionsExplicitMapping": false,
+  "collectionsMigrationMode": false,
+  "collectionsMirroringMode": false,
+  "collectionsOSOMode": true,
   "compressionType": "Auto",
   "desiredLatency": 50,
   "docBatchSizeKb": 2048,
@@ -5222,11 +5231,16 @@ Each <code>settings_URI</code> can be used to retrieve information on its corres
   "filterDeletion": false,
   "filterExpiration": false,
   "filterExpression": "",
+  "hlvPruningWindowSec": 259200,
+  "jsFunctionTimeoutMs": 20000,
   "logLevel": "Info",
+  "mergeFunctionMapping": {},
   "networkUsageLimit": 0,
   "optimisticReplicationThreshold": 256,
   "pauseRequested": false,
   "priority": "High",
+  "retryOnRemoteAuthErr": true,
+  "retryOnRemoteAuthErrMaxWaitSec": 3600,
   "sourceNozzlePerNode": 2,
   "statsInterval": 1000,
   "targetNozzlePerNode": 2,
@@ -5243,7 +5257,7 @@ Each <code>settings_URI</code> can be used to retrieve information on its corres
 <div class="sectionbody">
 <div class="paragraph">
 <p>The advanced settings for XDCR are as follows.
-Note that the subset of advanced settings that can be configured by means of Couchbase Web Console is provided at <a href="../xdcr-reference/xdcr-advanced-settings.html" class="page">XDCR Advanced Settings</a>.</p>
+The subset of advanced settings that can be configured by means of Couchbase Web Console is provided at <a href="../xdcr-reference/xdcr-advanced-settings.html" class="page">XDCR Advanced Settings</a>.</p>
 </div>
 <table id="table_xdcr_settings" class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. XDCR Advanced Settings</caption>
@@ -5262,16 +5276,43 @@ Note that the subset of advanced settings that can be configured by means of Cou
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>checkpointInterval</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer (60 to 14400).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: 600.
-The interval for checkpointing in seconds.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integer (60 to 14400)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: 600
+The interval for checkpointing in seconds.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>colMappingRules</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Collection-related rules according to which explicit mapping or migration is defined for the replication.
+See <a href="../learn/clusters-and-availability/xdcr-with-scopes-and-collections.html#rules-for-explicit-mappings" class="page">Rules for Explicit Mappings</a> and <a href="../learn/clusters-and-availability/xdcr-with-scopes-and-collections.html#rules-for-migration" class="page">Rules for Migration</a>.</p>
+<p class="tableblock">This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>collectionsExplicitMapping</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the replication uses explicit mapping: see <a href="../learn/clusters-and-availability/xdcr-with-scopes-and-collections.html#rules-for-explicit-mappings" class="page">Rules for Explicit Mappings</a>.</p>
+<p class="tableblock">This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>collectionsMigrationMode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the replication uses migration mode: see <a href="../learn/clusters-and-availability/xdcr-with-scopes-and-collections.html#migration" class="page">Migration</a>.</p>
+<p class="tableblock">This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>collectionsOSOMode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the replication optimizes performance; by streaming, from a source bucket, mutations that could be out of order, in terms of sequence-number.
+Default is true.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>compressionType</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: <code>Auto</code>.
 Specifies whether documents are to be compressed for XDCR, and if so, what compression type is to be used.
-For information, see <a href="../xdcr-reference/xdcr-advanced-settings.html#table-of-xdcr-advanced-settings" class="page">XDCR Advanced Settings</a>.</p></td>
+For information, see <a href="../xdcr-reference/xdcr-advanced-settings.html#table-of-xdcr-advanced-settings" class="page">XDCR Advanced Settings</a>.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>desiredLatency</code></p></td>
@@ -5280,40 +5321,46 @@ For information, see <a href="../xdcr-reference/xdcr-advanced-settings.html#tabl
 If Couchbase Server estimates that the time required is greater than that specified by <code>desiredLatency</code>, the replication is considered to be backlogged: XDCR therefore attempts to communicate with the Data Service, to establish a higher DCP priority for the replication, and thereby ensure swifter transmission of data.</p>
 <p class="tableblock">This setting applies only to high-priority replications, or to medium-priority replications that achieve high-priority status (see <a href="../learn/clusters-and-availability/xdcr-overview.html#xdcr-priority" class="page">XDCR Priority</a>).
 The default value is 50.
-The lower the value, the higher (potentially) the transmission rate, and the greater the load on the target cluster.</p></td>
+The lower the value, the higher (potentially) the transmission rate, and the greater the load on the target cluster.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>docBatchSizeKb</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (10 to 10000)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 2048.
-The size of a batch in kilobytes.</p></td>
+The size of a batch in kilobytes.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>failureRestartInterval</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (1 to 300)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 10.
-The number of seconds to wait after a failure before restarting replication.</p></td>
+The number of seconds to wait after a failure before restarting replication.
+This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>filterBypassExpiry</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.
 Whether a document&#8217;s TTL should be replicated with the document or not.
-A value of <code>true</code> means that the TTL is removed from the document.</p></td>
+A value of true means that the TTL is removed from the document.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>filterDeletion</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.
 Whether mutations corresponding to the deletion of documents on the source cluster should be either <em>filtered out</em> of the replication to the target cluster, or allowed to remain in.
-A value of <code>true</code> means that the mutation <em>is</em> filtered out, ensuring that it is <em>not</em> replicated to the target cluster; while a value of <code>false</code> means that the mutation is <em>not</em> filtered out, ensuring that it <em>is</em> replicated to the target cluster.</p></td>
+A value of true means that the mutation <em>is</em> filtered out, ensuring that it is <em>not</em> replicated to the target cluster; while a value of false means that the mutation is <em>not</em> filtered out, ensuring that it <em>is</em> replicated to the target cluster.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>filterExpiration</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.
 Whether mutations corresponding to the expiration of documents on the source cluster should be either <em>filtered out</em> of the replication to the target cluster, or allowed to remain in.
-A value of <code>true</code> means that the mutation <em>is</em> filtered out, ensuring that it is <em>not</em> replicated to the target cluster; while a value of <code>false</code> (the default) means that the mutation is <em>not</em> filtered out, ensuring that it <em>is</em> replicated to the target cluster.</p></td>
+A value of true means that the mutation <em>is</em> filtered out, ensuring that it is <em>not</em> replicated to the target cluster; while a value of false (the default) means that the mutation is <em>not</em> filtered out, ensuring that it <em>is</em> replicated to the target cluster.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>filterExpression</code></p></td>
@@ -5321,17 +5368,17 @@ A value of <code>true</code> means that the mutation <em>is</em> filtered out, e
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: null.
 A filter expression to be matched against the ids, field-names, values, and extended attributes of documents in the source bucket.
 Each document that produces a successful match is replicated; other documents are not replicated.
-For supported expressions, see <a href="../xdcr-reference/xdcr-filtering-reference-intro.html" class="page">XDCR Advanced Filtering Reference</a>.
-This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
+For supported expressions, see <a href="../xdcr-reference/xdcr-filtering-reference-intro.html" class="page">XDCR Advanced Filtering Reference</a>.</p>
+<p class="tableblock">This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>goGC</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Integer (0 to 100) or String (<code>off</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integer (0 to 100) or String ("off")</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 100.
-Rhe initial garbage collection target percentage for the replication.
+The initial garbage collection target percentage for the replication.
 A garbage collection is triggered when the ratio of freshly allocated data to live data remaining after the previous collection reaches this percentage.
-A value of <code>off</code> disables the garbage collector entirely.
-This setting is only returned when global settings are retrieved; and can only be set when global settings are set.
+A value of "off" disables the garbage collector entirely.</p>
+<p class="tableblock">This setting is only returned when global settings are retrieved; and can only be set when global settings are set.
 It cannot be set when an individual replication is created, or when its settings are modified.</p></td>
 </tr>
 <tr>
@@ -5339,15 +5386,38 @@ It cannot be set when an individual replication is created, or when its settings
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 4.
 The maximum number of threads used per node, to support XDCR.
-A greater number of threads increases parallelism, and may thereby produce enhanced XDCR performance.
-This setting is only returned when global settings are retrieved; and can only be set when global settings are set.
+A greater number of threads increases parallelism, and may thereby produce enhanced XDCR performance.</p>
+<p class="tableblock">This setting is only returned when global settings are retrieved; and can only be set when global settings are set.
 It cannot be set when an individual replication is created, or when its settings are modified.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hlvPruningWindowSec</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used in <em>custom conflict-resolution</em>, and available in Developer Preview Mode only.
+The integer specifies the duration, in seconds, of the time-window that starts when a remote cluster has modified the document that is currently being replicated.
+The remote cluster&#8217;s update is recorded in a <em>Hybrid Logical Vector</em> (HLV).
+If the specified time-window expires without further modification being made by the remote cluster, information about the remote cluster&#8217;s update is removed from the HLV.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jsFunctionTimeoutMs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used in <em>custom conflict-resolution</em>, and available in Developer Preview Mode only.
+Specifies the number of milliseconds that must elapse before the timeout of a JavaScript conflict-resolution function.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>logLevel</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: <code>Info</code>.
-The level of logging, such as <code>Error</code>/<code>Info</code>/<code>Debug</code>/<code>Trace</code>.</p></td>
+The level of logging, such as <code>Error</code>/<code>Info</code>/<code>Debug</code>/<code>Trace</code>.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mergeFunctionMapping</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This is available in Developer Preview Mode only.
+Each of the key-value pairs in the JSON object should map a collection-specifier (in the form <code>scope.collection</code>) to the name of a defined merge-function.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>networkUsageLimit</code></p></td>
@@ -5355,69 +5425,89 @@ The level of logging, such as <code>Error</code>/<code>Info</code>/<code>Debug</
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 0.
 Specifies the upper limit for network usage during replication, for the entire cluster, in MB per second.
 The default is 0, meaning no limit is applied.
-For information, see <a href="../xdcr-reference/xdcr-advanced-settings.html#table-of-xdcr-advanced-settings" class="page">XDCR Advanced Settings</a>.</p></td>
+For information, see <a href="../xdcr-reference/xdcr-advanced-settings.html#table-of-xdcr-advanced-settings" class="page">XDCR Advanced Settings</a>.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>optimisticReplicationThreshold</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (0 to (20*1024*1024))</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 256.
-Documents with sizes less than this threshold (in bytes) will be replicated optimistically.</p></td>
+Documents with sizes less than this threshold (in bytes) will be replicated optimistically.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>pauseRequested</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.
-Indicates whether the replication has been issued a pause request.
-This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
+Indicates whether the replication has been issued a pause request.</p>
+<p class="tableblock">This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>priority</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>High</code>, <code>Medium</code>, or <code>Low</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: <code>High</code>.
+<td class="tableblock halign-left valign-top"><p class="tableblock">High, Medium, or Low</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: High.
 Resource-allocation for the replication.
-For information, see <a href="../learn/clusters-and-availability/xdcr-overview.html#xdcr-priority" class="page">XDCR Priority</a>.</p></td>
+For information, see <a href="../learn/clusters-and-availability/xdcr-overview.html#xdcr-priority" class="page">XDCR Priority</a>.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>retryOnRemoteAuthErr</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean (true or false)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to retry connection for a replication that has failed due to a problem in authenticating with the target cluster.
+The default is true.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>retryOnRemoteAuthErrMaxWaitSec</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum number of seconds to wait before retrying a connection that failed due to a problem in authenticating with the target cluster.
+This only takes effect when <code>retryOnRemoteAuthErr</code> is true.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>sourceNozzlePerNode</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (1 to 100)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of nozzles that can be used for this replication per source cluster node.
-This together with <code>target_nozzle_per_node</code> controls the parallelism of the replication.</p></td>
+This together with <code>target_nozzle_per_node</code> controls the parallelism of the replication.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>statsInterval</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (200 to 600000)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 1000.
-The interval (in milliseconds) for statistics updates.</p></td>
+The interval (in milliseconds) for statistics updates.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>targetNozzlePerNode</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (1 to 100)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of outgoing nozzles per target node.
-This together with <code>source_nozzle_per_node</code> controls the parallelism of the replication.</p></td>
+This together with <code>source_nozzle_per_node</code> controls the parallelism of the replication.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">String (<code>capi</code> or <code>xmem</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: <code>xmem</code>.
-Note that <code>capi</code> and <code>xmem</code>, are respectively represented by <strong>Version 1</strong> and <strong>Version 2</strong>, in Couchbase Web Console.
-This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String "xmem"</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The replication type, which must be "xmem".</p>
+<p class="tableblock">This setting can only be established for and retrieved from an individual replication: it cannot be established or retrieved as part of global settings.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workerBatchSize</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integer (500 to 10000)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default: 500.
-The number of mutations in a batch.</p></td>
+The number of mutations in a batch.</p>
+<p class="tableblock">This setting can be established and retrieved either for an individual replication or globally.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <div class="sect1">
-<h2 id="see=also"><a class="anchor" href="#see=also"></a>See Also</h2>
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The REST call for creating a replication and specifying parameters is described in <a href="rest-xdcr-create-replication.html" class="page">Creating XDCR Replications</a>.
-An overview of XDCR is provided in <a href="#learn:clusters-and-availability/xdcr-overview">XDCR Overview</a>.
+An overview of XDCR is provided in <a href="../learn/clusters-and-availability/xdcr-overview.html" class="page">Cross Data Center Replication (XDCR)</a>.
 The subset of advanced settings that can be configured by means of Couchbase Web Console is provided at <a href="../xdcr-reference/xdcr-advanced-settings.html" class="page">XDCR Advanced Settings</a>.</p>
 </div>
 </div>
