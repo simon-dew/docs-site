@@ -4969,39 +4969,17 @@ Data is stored as JSON documents in keyspaces, rather than as rows in tables.
 This means that documents can contain arrays of embedded subdocuments.
 N1QL provides syntax which enables you to <em>nest</em> (create) or <em>unnest</em> (flatten) arrays of embedded documents in a query.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="before-you-begin"><a class="anchor" href="#before-you-begin"></a>Before You Begin</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="query-tools"><a class="anchor" href="#query-tools"></a>Query Tools</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Read the following for further information about the tools available for editing and executing queries:</p>
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
+Read the following for further information about the tools available for editing and executing queries:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p><a href="../tools/cbq-shell.html" class="page">cbq: The Command Line Shell for N1QL</a></p>
-<div class="literalblock">
-<div class="content">
-<pre>cbq&gt;</pre>
-</div>
-</div>
 </li>
 <li>
 <p><a href="../tools/query-workbench.html" class="page">Query Workbench</a></p>
-<div class="imageblock text-left">
-<div class="content">
-<img src="../manage/_images/manage-ui/queryTab.png" alt="queryTab" width="100">
-</div>
-</div>
 </li>
 </ul>
 </div>
@@ -5017,7 +4995,7 @@ However, in the resultset, the nested documents are embedded in an array within 
 <div class="paragraph">
 <p>N1QL offers several types of nest syntax.
 This guide focuses on ANSI nest, which is the recommended nest syntax.
-It enables you to nest objects from one keyspace within objects fom another using arbitrary fields.</p>
+It enables you to nest objects from one data source within objects from another, using arbitrary fields.</p>
 </div>
 <div class="paragraph">
 <p>To create a nest:</p>
@@ -5045,19 +5023,20 @@ This is a condition that must be met in order to nest an object on the right-han
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-To use a <a href="../learn/data/data.html#keys" class="page">document key</a> in the nest predicate, use the META() function to return the <code>id</code> field from the document metadata.
+To use a <a href="../learn/data/data.html#keys" class="page">document key</a> in the nest predicate, use the <a href="../n1ql/n1ql-language-reference/metafun.html#meta" class="page">META()</a> function to return the <code>id</code> field from the document metadata.
 </td>
 </tr>
 </table>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="paragraph">
 <p>For example, the following query selects a route and the associated airline.</p>
 </div>
-<div class="exampleblock">
-<div class="content">
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/query/ansi-nest-example.n1ql">SELECT *
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/query/ansi-nest-example.n1ql">SELECT *
 FROM `travel-sample`.inventory.route r <i class="conum" data-value="1"></i><b>(1)</b>
 NEST `travel-sample`.inventory.airline a <i class="conum" data-value="2"></i><b>(2)</b>
 ON r.airlineid = META(a).id <i class="conum" data-value="3"></i><b>(3)</b>
@@ -5081,6 +5060,19 @@ LIMIT 1;</code></pre>
 </table>
 </div>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Before running a query containing a nest, make sure all the required indexes exist.
+To check which indexes may be required, use the <a href="../n1ql/n1ql-language-reference/advise.html" class="page">Index Advisor</a>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/nest.html#section_tc1_nnx_1db" class="page">ANSI NEST Clause</a>.</p>
@@ -5108,14 +5100,15 @@ An inner nest returns nested objects <em>only</em> where a source object from th
 <div class="paragraph">
 <p>To create an inner nest, omit the nest type, or optionally include the <code>INNER</code> keyword before the NEST clause.</p>
 </div>
-<div class="paragraph">
-<p>For example, the following query lists only airports in Toulouse which have routes starting from them, and gives details of the routes.</p>
-</div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query lists only airports in Toulouse which have routes starting from them, and nests details of the routes.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/query/ansi-nest-inner.n1ql">SELECT *
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-nest-inner.n1ql">SELECT *
 FROM `travel-sample`.inventory.airport a
   INNER NEST `travel-sample`.inventory.route r
   ON a.faa = r.sourceairport
@@ -5126,7 +5119,7 @@ ORDER BY a.airportname;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/query/ansi-nest-inner.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-nest-inner.jsonc">[
   {
     "a": {
       "airportname": "Blagnac",
@@ -5151,8 +5144,19 @@ ORDER BY a.airportname;</code></pre>
         "distance": 787.299015326995,
         "equipment": "736",
         "id": 10265,
-
-// ...</code></pre>
+// ...
+      },
+      {
+        "airline": "AH",
+        "airlineid": "airline_794",
+        "destinationairport": "ORN",
+        "distance": 906.1483088609814,
+        "equipment": "736",
+        "id": 10266,
+// ...
+    ]
+  }
+]</code></pre>
 </div>
 </div>
 </div>
@@ -5171,14 +5175,15 @@ ORDER BY a.airportname;</code></pre>
 <div class="paragraph">
 <p>To create a left outer nest, include the <code>LEFT</code> or <code>LEFT OUTER</code> keywords before the NEST clause.</p>
 </div>
-<div class="paragraph">
-<p>For example, the following query lists all airports in Toulouse, and gives details any routes that start from each airport.</p>
-</div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query lists all airports in Toulouse, and nests details of any routes that start from each airport.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/query/ansi-nest-left.n1ql">SELECT *
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-nest-left.n1ql">SELECT *
 FROM `travel-sample`.inventory.airport a
   LEFT NEST `travel-sample`.inventory.route r
   ON a.faa = r.sourceairport
@@ -5189,7 +5194,7 @@ ORDER BY a.airportname;</code></pre>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/query/ansi-nest-left.jsonc">[
+<pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ansi-nest-left.jsonc">[
   {
     "a": {
       "airportname": "Blagnac",
@@ -5214,9 +5219,7 @@ ORDER BY a.airportname;</code></pre>
         "distance": 787.299015326995,
         "equipment": "736",
         "id": 10265,
-
-         // ...
-
+// ...
       }
     ]
   },
@@ -5236,7 +5239,7 @@ ORDER BY a.airportname;</code></pre>
       "type": "airport",
       "tz": "Europe/Paris"
     },
-    "r": []
+    "r": [] <i class="conum" data-value="1"></i><b>(1)</b>
   },
   {
     "a": {
@@ -5259,28 +5262,16 @@ ORDER BY a.airportname;</code></pre>
 ]</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If there is no corresponding data object on the right-hand side of the nest, fields from the right-hand side are missing or null.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="legacy-nest-syntax"><a class="anchor" href="#legacy-nest-syntax"></a>Legacy Nest Syntax</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>N1QL also provides two legacy syntaxes for nests.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>A <em>lookup nest</em> uses a foreign key field on the left-hand side of the nest and the primary document key on the right-hand side of the nest.
-For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/nest.html#nest" class="page">Lookup NEST Clause</a>.</p>
-</li>
-<li>
-<p>An <em>index join</em> uses the primary document key on the left-hand side of the nest and a foreign key field on the right-hand side of the nest.
-For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/nest.html#section_rgr_rnx_1db" class="page">Index NEST Clause</a>.</p>
-</li>
-</ul>
 </div>
 </div>
 </div>
@@ -5310,14 +5301,15 @@ In the resultset, the subdocuments are flattened and joined to the parent docume
 </li>
 </ol>
 </div>
-<div class="paragraph">
-<p>For example, the following query unnests the schedule data from within the route document to get a list of flights on Monday 1 (day <code>1</code>).</p>
-</div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query unnests the schedule data from within the route document to get details of flights on Monday (day <code>1</code>).</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.n1ql">SELECT sched
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.n1ql">SELECT route.sourceairport, route.destinationairport, sched.flight, sched.utc
 FROM `travel-sample`.inventory.route
 UNNEST schedule sched
 WHERE  sched.day = 1
@@ -5329,25 +5321,22 @@ LIMIT 3;</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.jsonc">[
   {
-    "sched": {
-      "day": 1,
-      "flight": "AF356",
-      "utc": "12:40:00"
-    }
+    "destinationairport": "MRS",
+    "flight": "AF356",
+    "sourceairport": "TLV",
+    "utc": "12:40:00"
   },
   {
-    "sched": {
-      "day": 1,
-      "flight": "AF480",
-      "utc": "08:58:00"
-    }
+    "destinationairport": "MRS",
+    "flight": "AF480",
+    "sourceairport": "TLV",
+    "utc": "08:58:00"
   },
   {
-    "sched": {
-      "day": 1,
-      "flight": "AF250",
-      "utc": "12:59:00"
-    }
+    "destinationairport": "MRS",
+    "flight": "AF250",
+    "sourceairport": "TLV",
+    "utc": "12:59:00"
   }
 ]</code></pre>
 </div>
@@ -5360,10 +5349,10 @@ LIMIT 3;</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="recursive-nests-and-unnests"><a class="anchor" href="#recursive-nests-and-unnests"></a>Recursive Nests and Unnests</h2>
+<h2 id="chaining-nests-and-unnests"><a class="anchor" href="#chaining-nests-and-unnests"></a>Chaining Nests and Unnests</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To recurse joins, nests, and unnests, use the right-hand side of one JOIN, NEST, or UNNEST clause as the left-hand side of the next.</p>
+<p>To chain joins, nests, and unnests, use the right-hand side of one JOIN, NEST, or UNNEST clause as the left-hand side of the next.</p>
 </div>
 <div class="paragraph">
 <p>For example, the following query joins routes to airports by destination airport, and then nests landmarks in the same city as each airport.</p>
@@ -5385,25 +5374,22 @@ LIMIT 5;</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>route</code> keyspace is on the left-hand side of the join</td>
+<td>The <code>route</code> keyspace is on the left-hand side of the join.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>airport</code> keyspace is on the right-hand side of the join and the left-hand side of the nest</td>
+<td>The <code>airport</code> keyspace is on the right-hand side of the join and the left-hand side of the nest.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <code>landmark</code> keyspace is on the right-hand side of the nest</td>
+<td>The <code>landmark</code> keyspace is on the right-hand side of the nest.</td>
 </tr>
 </table>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>For more information about recursive NEST clauses, refer to <a href="../n1ql/n1ql-language-reference/nest.html#from-term" class="page">FROM Term</a>.</p>
-</div>
-<div class="paragraph">
-<p>Similarly, for more information about recursive UNNEST clauses, refer to <a href="../n1ql/n1ql-language-reference/unnest.html#from-term" class="page">FROM Term</a>.</p>
+<p>For more information, refer to <a href="../n1ql/n1ql-language-reference/nest.html#from-term" class="page">FROM Term</a> for NEST clauses, and <a href="../n1ql/n1ql-language-reference/unnest.html#from-term" class="page">FROM Term</a> for UNNEST clauses.</p>
 </div>
 </div>
 </div>

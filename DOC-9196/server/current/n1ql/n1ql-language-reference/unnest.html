@@ -5146,11 +5146,11 @@ If you assign an alias to the path, the <code>AS</code> keyword may be omitted.<
 <div class="title">Example 1. UNNEST an array to select an item</div>
 <div class="content">
 <div class="paragraph">
-<p>In the <code>route</code> keyspace, flatten the schedule array to get a list of the flights on Monday (<code>1</code>).</p>
+<p>In the <code>route</code> keyspace, flatten the schedule array to get details of the flights on Monday (<code>1</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.n1ql">SELECT sched
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.n1ql">SELECT route.sourceairport, route.destinationairport, sched.flight, sched.utc
 FROM `travel-sample`.inventory.route
 UNNEST schedule sched
 WHERE  sched.day = 1
@@ -5162,25 +5162,22 @@ LIMIT 3;</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-JSON hljs" data-lang="JSON" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest.jsonc">[
   {
-    "sched": {
-      "day": 1,
-      "flight": "AF356",
-      "utc": "12:40:00"
-    }
+    "destinationairport": "MRS",
+    "flight": "AF356",
+    "sourceairport": "TLV",
+    "utc": "12:40:00"
   },
   {
-    "sched": {
-      "day": 1,
-      "flight": "AF480",
-      "utc": "08:58:00"
-    }
+    "destinationairport": "MRS",
+    "flight": "AF480",
+    "sourceairport": "TLV",
+    "utc": "08:58:00"
   },
   {
-    "sched": {
-      "day": 1,
-      "flight": "AF250",
-      "utc": "12:59:00"
-    }
+    "destinationairport": "MRS",
+    "flight": "AF250",
+    "sourceairport": "TLV",
+    "utc": "12:59:00"
   }
 ]</code></pre>
 </div>
@@ -5190,7 +5187,8 @@ LIMIT 3;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest-array.n1ql">SELECT ARRAY item FOR item IN schedule WHEN item.day = 1 END AS Monday_flights
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/unnest-array.n1ql">SELECT route.sourceairport, route.destinationairport,
+ARRAY item FOR item IN schedule WHEN item.day = 1 END AS Monday_flights
 FROM `travel-sample`.inventory.route
 WHERE ANY item IN schedule SATISFIES item.day = 1 END
 LIMIT 3;</code></pre>
@@ -5224,7 +5222,9 @@ LIMIT 3;</code></pre>
         "flight": "AF130",
         "utc": "04:45:00"
       }
-    ]
+    ],
+    "destinationairport": "MRS",
+    "sourceairport": "TLV"
   },
   {
     "Monday_flights": [
@@ -5253,7 +5253,9 @@ LIMIT 3;</code></pre>
         "flight": "AF756",
         "utc": "06:16:00"
       }
-    ]
+    ],
+    "destinationairport": "NCE",
+    "sourceairport": "TLV"
   },
   {
     "Monday_flights": [
@@ -5267,7 +5269,9 @@ LIMIT 3;</code></pre>
         "flight": "AF225",
         "utc": "16:05:00"
       }
-    ]
+    ],
+    "destinationairport": "CDG",
+    "sourceairport": "TNR"
   }
 ]</code></pre>
 </div>

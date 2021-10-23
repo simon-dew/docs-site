@@ -4967,39 +4967,17 @@ How to calculate aggregates and group the results.
 <p>You can use aggregate functions to perform calculations over multiple values.
 Grouping enables you to display the results in groups.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="before-you-begin"><a class="anchor" href="#before-you-begin"></a>Before You Begin</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="query-tools"><a class="anchor" href="#query-tools"></a>Query Tools</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Read the following for further information about the tools available for editing and executing queries:</p>
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
+Read the following for further information about the tools available for editing and executing queries:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p><a href="../tools/cbq-shell.html" class="page">cbq: The Command Line Shell for N1QL</a></p>
-<div class="literalblock">
-<div class="content">
-<pre>cbq&gt;</pre>
-</div>
-</div>
 </li>
 <li>
 <p><a href="../tools/query-workbench.html" class="page">Query Workbench</a></p>
-<div class="imageblock text-left">
-<div class="content">
-<img src="../manage/_images/manage-ui/queryTab.png" alt="queryTab" width="100">
-</div>
-</div>
 </li>
 </ul>
 </div>
@@ -5009,22 +4987,28 @@ Grouping enables you to display the results in groups.</p>
 <h2 id="aggregate-functions"><a class="anchor" href="#aggregate-functions"></a>Aggregate Functions</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To take multiple values from documents, perform calculations, and return a single value as the result, use an aggregate function.</p>
-</div>
-<div class="paragraph">
-<p>For example, the following query finds the average altitude of airports in the airport keyspace.</p>
+<p>To take multiple values from documents, perform calculations, and return a single value as the result, use an aggregate function, such as
+<a href="../n1ql/n1ql-language-reference/aggregatefun.html#avg" class="page">AVG()</a>,
+<a href="../n1ql/n1ql-language-reference/aggregatefun.html#count" class="page">COUNT()</a>,
+<a href="../n1ql/n1ql-language-reference/aggregatefun.html#min" class="page">MIN()</a>,
+<a href="../n1ql/n1ql-language-reference/aggregatefun.html#max" class="page">MAX()</a>, or
+<a href="../n1ql/n1ql-language-reference/aggregatefun.html#sum" class="page">SUM()</a>.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query finds the average altitude of airports in the airport keyspace.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT AVG(geo.alt) AS AverageAltitude FROM `travel-sample`.inventory.airport;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/avg.n1ql">SELECT AVG(geo.alt) AS AverageAltitude FROM `travel-sample`.inventory.airport;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/avg.jsonc">[
   {
     "AverageAltitude": 870.1651422764228
   }
@@ -5041,50 +5025,58 @@ Grouping enables you to display the results in groups.</p>
 <div class="paragraph">
 <p>To aggregate all values, omit the aggregate quantifier, or optionally include the <code>ALL</code> keyword before the function arguments.</p>
 </div>
-<div class="paragraph">
-<p>For example, the following query finds the average number of airline route stops.</p>
-</div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query finds the average number of stops per route.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT AVG(stops) FROM `travel-sample`.inventory.route AS AverageStops;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/avg-all.n1ql">SELECT AVG(ALL stops) AS AvgAllStops FROM `travel-sample`.inventory.route;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/avg-all.jsonc">[
   {
-    "AverageStops": 0.0002
+    "AvgAllStops": 0.0002
   }
 ]</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Results in 0.0002 since nearly all routes have 0 stops.</p>
 </div>
 </div>
 </div>
 <div class="paragraph">
 <p>To aggregate distinct values only, include the <code>DISTINCT</code> keyword before the function arguments.</p>
 </div>
-<div class="paragraph">
-<p>For example, the following query finds the average of distinct numbers of airline route stops.</p>
-</div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query finds the average of the distinct numbers of stops.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT AVG(DISTINCT stops) FROM `travel-sample`.inventory.route AS AverageStops;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/avg-distinct.n1ql">SELECT AVG(DISTINCT stops) AS AvgDistinctStops FROM `travel-sample`.inventory.route;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/avg-distinct.jsonc">[
   {
-    "AverageStops": 0.5
+    "AvgDistinctStops": 0.5
   }
 ]</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Results in 0.5 since the routes contain only 1 or 0 stops.</p>
 </div>
 </div>
 </div>
@@ -5097,21 +5089,22 @@ Grouping enables you to display the results in groups.</p>
 <div class="paragraph">
 <p>To filter the values used by an aggregate function, use the FILTER clause after the function.</p>
 </div>
+<div class="exampleblock">
+<div class="content">
 <div class="paragraph">
 <p>For example, the following query finds the minimum value of a string field, only including strings that start with <code>"A"</code> or greater.</p>
 </div>
-<div class="exampleblock">
-<div class="content">
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT MIN(name) FILTER (WHERE SUBSTR(name,0)&gt;="A") AS MinName
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/min-filter.n1ql">SELECT MIN(name) FILTER (WHERE SUBSTR(name,0)&gt;="A") AS MinName
 FROM `travel-sample`.inventory.hotel;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/min-filter.jsonc">[
   {
     "MinName": "AIRE NATURELLE LE GROZEAU Aire naturelle"
   }
@@ -5134,12 +5127,15 @@ FROM `travel-sample`.inventory.hotel;</code></pre>
 It is often more useful to group the documents (by a different field) and return the aggregate result for each group.</p>
 </div>
 <div class="paragraph">
-<p>To group the results of an aggregate query, use the GROUP BY clause.
-The following query groups unique landmarks by city.</p>
+<p>To group the results of an aggregate query, use the GROUP BY clause.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query groups unique landmarks by city.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/group-by.n1ql">SELECT city City, COUNT(DISTINCT name) LandmarkCount
 FROM `travel-sample`.inventory.landmark
@@ -5179,12 +5175,15 @@ LIMIT 4;</code></pre>
 <div class="sect2">
 <h3 id="filtering-the-groups"><a class="anchor" href="#filtering-the-groups"></a>Filtering the Groups</h3>
 <div class="paragraph">
-<p>To filter the groups by an aggregate function, use the HAVING clause within the GROUP BY clause.
-The following query groups unique landmarks by city, and specifies cities that have more than 180 landmarks.</p>
+<p>To filter the groups by an aggregate function, use the HAVING clause within the GROUP BY clause.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following query groups unique landmarks by city, and specifies cities that have more than 180 landmarks.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/group-by-having.n1ql">SELECT city City, COUNT(DISTINCT name) LandmarkCount
 FROM `travel-sample`.inventory.landmark
@@ -5224,12 +5223,15 @@ HAVING COUNT(DISTINCT name) &gt; 180;</code></pre>
 <div class="sect2">
 <h3 id="defining-an-expression-within-the-group-by-clause"><a class="anchor" href="#defining-an-expression-within-the-group-by-clause"></a>Defining an Expression within the GROUP BY Clause</h3>
 <div class="paragraph">
-<p>To define an expression for use within the GROUP BY clause, use the LETTING clause before the HAVING clause.
-The following clause uses an alias to define the minimum number of landmarks for each city.</p>
+<p>To define an expression for use within the GROUP BY clause, use the LETTING clause before the HAVING clause.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>For example, the following clause uses an expression to define the minimum number of landmarks for each city.</p>
+</div>
 <div class="listingblock">
+<div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/group-by-letting.n1ql">SELECT city City, COUNT(DISTINCT name) LandmarkCount
 FROM `travel-sample`.inventory.landmark
@@ -5258,18 +5260,6 @@ HAVING COUNT(DISTINCT name) &gt; MinimumThingsToSee;</code></pre>
 <div class="paragraph">
 <p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/groupby.html#letting-clause" class="page">LETTING Clause</a>.</p>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="next-steps"><a class="anchor" href="#next-steps"></a>Next Steps</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>Indexes</p>
-</li>
-</ul>
 </div>
 </div>
 </div>
