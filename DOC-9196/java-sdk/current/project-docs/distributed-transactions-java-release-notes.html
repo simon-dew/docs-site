@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
@@ -1714,7 +1715,9 @@
 </div>
   </div>
 </aside>
-<aside class="toc sidebar">
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
@@ -1806,8 +1809,100 @@ Couchbase Distributed ACID Transactions is distributed as a separate library for
 <h2 id="using-distributed-transactions"><a class="anchor" href="#using-distributed-transactions"></a>Using Distributed Transactions</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>See the <a href="../../../server/current/learn/data/transactions.html" class="page">Distributed ACID Transactions concept doc</a> in the server documentation for details of how Couchbase implements transactions.
+<p>See the <a href="../../../server/7.0/learn/data/transactions.html" class="page">Distributed ACID Transactions concept doc</a> in the server documentation for details of how Couchbase implements transactions.
 The <a href="../howtos/distributed-acid-transactions-from-the-sdk.html" class="page">Distributed Transactions HOWTO doc</a> walks you through all aspects of working with Distributed Transactions.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="distributed-transactions-java-1-2-2-29-october-2021"><a class="anchor" href="#distributed-transactions-java-1-2-2-29-october-2021"></a>Distributed Transactions Java 1.2.2 (29 October 2021)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This release has been tested with Couchbase Java SDK version 3.2.2 and requires version 3.1.5 or higher.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://docs.couchbase.com/sdk-api/couchbase-transactions-java-1.2.2/">JavaDocs</a></p>
+</div>
+<div class="sect2">
+<h3 id="interface-changes"><a class="anchor" href="#interface-changes"></a>Interface Changes</h3>
+<div class="paragraph">
+<p>Some interfaces that were in <code>@Stability.Volatile</code> or <code>@Stability.Uncommitted</code> have been modified:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-442">TXNJ-442</a>:
+<code>ReactiveQueryStatementTransactionResult</code> has been been renamed to <code>ReactiveSingleQueryTransactionResult</code>, consistent with the blocking API.
+This new interface added in 1.2.1 is marked at @Stability.Uncommitted, indicating that breakages - though unusual - are possible.</p>
+</li>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-445">TXNJ-445</a>:
+An overload <code>Mono&lt;ReactiveQueryResult&gt; query(final ReactiveScope scope, final String statement)</code> was added, to be consistent with the blocking API.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="bug-fixes"><a class="anchor" href="#bug-fixes"></a>Bug Fixes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-436">TXNJ-436</a>,
+<a href="https://issues.couchbase.com/browse/TXNJ-446">TXNJ-446</a>:
+Rollback and commit now consistently set <code>isDone</code> in queryMode, preventing implicit commit.</p>
+</li>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-444">TXNJ-444</a>:
+Fixed an incorrectly formatted error message that was causing a <code>MissingFormatArgumentException</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="distributed-transactions-java-1-2-2-29-october-2021-2"><a class="anchor" href="#distributed-transactions-java-1-2-2-29-october-2021-2"></a>Distributed Transactions Java 1.2.2 (29 October 2021)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This release has been tested with Couchbase Java SDK version 3.2.2 and requires version 3.1.5 or higher.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://docs.couchbase.com/sdk-api/couchbase-transactions-java-1.2.2/">JavaDocs</a></p>
+</div>
+<div class="sect2">
+<h3 id="interface-changes-2"><a class="anchor" href="#interface-changes-2"></a>Interface Changes</h3>
+<div class="paragraph">
+<p>Some interfaces that were in <code>@Stability.Volatile</code> or <code>@Stability.Uncommitted</code> have been modified:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-442">TXNJ-442</a>:
+<code>ReactiveQueryStatementTransactionResult</code> has been been renamed to <code>ReactiveSingleQueryTransactionResult</code>, consistent with the blocking API.
+This new interface added in 1.2.1 is marked at @Stability.Uncommitted, indicating that breakages - though unusual - are possible.</p>
+</li>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-445">TXNJ-445</a>:
+An overload <code>Mono&lt;ReactiveQueryResult&gt; query(final ReactiveScope scope, final String statement)</code> was added, to be consistent with the blocking API.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="bug-fixes-2"><a class="anchor" href="#bug-fixes-2"></a>Bug Fixes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-436">TXNJ-436</a>,
+<a href="https://issues.couchbase.com/browse/TXNJ-446">TXNJ-446</a>:
+Rollback and commit now consistently set <code>isDone</code> in queryMode, preventing implicit commit.</p>
+</li>
+<li>
+<p><a href="https://issues.couchbase.com/browse/TXNJ-444">TXNJ-444</a>:
+Fixed an incorrectly formatted error message that was causing a <code>MissingFormatArgumentException</code>.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -1826,7 +1921,7 @@ As this feature is so new, it remains at <code>@Stability.Uncommitted</code>.</p
 <p><a href="https://docs.couchbase.com/sdk-api/couchbase-transactions-java-1.2.1/">JavaDocs</a></p>
 </div>
 <div class="sect2">
-<h3 id="interface-changes"><a class="anchor" href="#interface-changes"></a>Interface Changes</h3>
+<h3 id="interface-changes-3"><a class="anchor" href="#interface-changes-3"></a>Interface Changes</h3>
 <div class="paragraph">
 <p>Some interfaces that were in @Stability.Volatile or @Stability.Uncommitted were modified:</p>
 </div>
@@ -1878,7 +1973,7 @@ Support for single query statement transactions added at <code>@Stability.Uncomm
 </div>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes"><a class="anchor" href="#bug-fixes"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-3"><a class="anchor" href="#bug-fixes-3"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1924,7 +2019,7 @@ Include the version of the transactions library in the logging.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-2"><a class="anchor" href="#bug-fixes-2"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-4"><a class="anchor" href="#bug-fixes-4"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1995,7 +2090,7 @@ Logging improvements and fixes.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-3"><a class="anchor" href="#bug-fixes-3"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-5"><a class="anchor" href="#bug-fixes-5"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2099,7 +2194,7 @@ It is recommended that you declare a dependency on this transactions release and
 <p><a href="https://docs.couchbase.com/sdk-api/couchbase-transactions-java-1.1.5/">JavaDocs</a></p>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-4"><a class="anchor" href="#bug-fixes-4"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-6"><a class="anchor" href="#bug-fixes-6"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2243,7 +2338,7 @@ This means that compatible cleanup clients can use the same durability level to 
 </div>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-5"><a class="anchor" href="#bug-fixes-5"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-7"><a class="anchor" href="#bug-fixes-7"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2286,7 +2381,7 @@ TransactionResult::attempts() is now deprecated and should no longer be used, as
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/b5a3eb9d0b01bea9b7194123cde88bcbe6ec4639/modules/project-docs/examples/Transactions.java#L91-L95">TransactionResult result = transactions.run((ctx) -&gt; {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3c794a72a48d9f77b5a602d9d5204e8bdc0abd01/modules/project-docs/examples/Transactions.java#L91-L95">TransactionResult result = transactions.run((ctx) -&gt; {
     ctx.insert(collection, "doc-a", aContent);
     ctx.query("INSERT INTO `travel-sample`.inventory.airport VALUES ('doc-b', " + bContent + ")");
     ctx.insert(collection, "doc-c", cContent);
@@ -2324,7 +2419,7 @@ Please take this opportunity to provide feedback on this feature, via either sup
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/b5a3eb9d0b01bea9b7194123cde88bcbe6ec4639/modules/project-docs/examples/Transactions.java#L103-L104">Transactions transactions = Transactions.create(cluster,
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3c794a72a48d9f77b5a602d9d5204e8bdc0abd01/modules/project-docs/examples/Transactions.java#L103-L104">Transactions transactions = Transactions.create(cluster,
         TransactionConfigBuilder.create().metadataCollection(metadataCollection));</code></pre>
 </div>
 </div>
@@ -2381,7 +2476,7 @@ Transaction metadata documents now have binary bodies (rather than empty JSON) t
 <p>This release of Couchbase Distributed ACID Transactions for Java includes multiple bug-fixes and improvements.</p>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-6"><a class="anchor" href="#bug-fixes-6"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-8"><a class="anchor" href="#bug-fixes-8"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2451,7 +2546,7 @@ Increase client record safety margin from 2 to 20 seconds.</p>
 It includes 2 bug-fixes.</p>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-7"><a class="anchor" href="#bug-fixes-7"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-9"><a class="anchor" href="#bug-fixes-9"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2648,7 +2743,7 @@ That was not being done, and now is.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="bug-fixes-8"><a class="anchor" href="#bug-fixes-8"></a>Bug Fixes</h3>
+<h3 id="bug-fixes-10"><a class="anchor" href="#bug-fixes-10"></a>Bug Fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -2757,7 +2852,7 @@ This should be used any time that the application needs all results of the trans
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/b5a3eb9d0b01bea9b7194123cde88bcbe6ec4639/modules/project-docs/examples/Transactions.java#L18-L33">// Imports required by this sample
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3c794a72a48d9f77b5a602d9d5204e8bdc0abd01/modules/project-docs/examples/Transactions.java#L18-L33">// Imports required by this sample
 import static com.couchbase.client.java.query.QueryOptions.queryOptions;
 
 import java.util.logging.Logger;
@@ -2777,7 +2872,7 @@ import com.couchbase.transactions.error.TransactionFailed;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/b5a3eb9d0b01bea9b7194123cde88bcbe6ec4639/modules/project-docs/examples/Transactions.java#L45-L78">try {
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3c794a72a48d9f77b5a602d9d5204e8bdc0abd01/modules/project-docs/examples/Transactions.java#L45-L78">try {
     TransactionResult result = transactions.run((ctx) -&gt; {
         // ... transactional code here ...
     });
@@ -3291,8 +3386,8 @@ OpenTracing removed from API&#8201;&#8212;&#8201;will be re-added when <em>OpenT
 </div>
 </template>
 <script id="site-script" src="../../../_/js/site.js"></script>
-<script async src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../../../_/js/vendor/fontawesome.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js"></script>
 <script async src="../../../_/js/vendor/highlight.js"></script>
 </body>
 </html>

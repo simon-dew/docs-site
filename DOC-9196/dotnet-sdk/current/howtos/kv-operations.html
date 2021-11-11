@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
@@ -9,7 +10,7 @@
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/dotnet-sdk/current/howtos/kv-operations.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="link:project-docs:partial$attributes.adoc[]">
+<meta name="description" content="Key Value Operations">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="dotnet-sdk">
 <meta name="dcterms.identifier" content="3.2">
@@ -1714,7 +1715,9 @@
 </div>
   </div>
 </aside>
-<aside class="toc sidebar">
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
@@ -1790,14 +1793,7 @@
 <span class="last-commit-date" id="commitdate">    </span>
 <ul id="contributorList"></ul>
 <span  id="otherContributor"> + </span>
-</div><div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="project-docs:partial$attributes.adoc" class="bare">project-docs:partial$attributes.adoc</a></p>
-</div>
-</div>
-</div>
-<div class="sect1">
+</div><div class="sect1">
 <h2 id="documents"><a class="anchor" href="#documents"></a>Documents</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1821,7 +1817,7 @@ Here is the <em>Insert</em> operation at its simplest:</p>
 <div class="listingblock">
 <div class="title">Insert</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L21-L27">var document = new {foo = "bar", bar = "foo"};
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L21-L27">var document = new {foo = "bar", bar = "foo"};
 try {
     var result = await collection.InsertAsync("document-key", document);
 }
@@ -1836,7 +1832,7 @@ catch (DocumentExistsException) {
 <div class="listingblock">
 <div class="title">Insert (with options)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L33-L46">try {
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L33-L46">try {
     var document = new {foo = "bar", bar = "foo"};
 
     var result = await collection.InsertAsync("document-key", document,
@@ -1865,7 +1861,7 @@ We will add to these options for the <em>Replace</em> example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L52-L64">var previousResult = await collection.GetAsync("document-key");
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L52-L64">var previousResult = await collection.GetAsync("document-key");
 var cas = previousResult.Cas;
 
 var document = new {foo = "bar", bar = "foo"};
@@ -1884,11 +1880,11 @@ var result = await collection.ReplaceAsync("document-key", document,
 <p>Expiration sets an explicit time to live (TTL) for a document.
 We&#8217;ll discuss modifying <code>Expiration</code> in more details <a href="#expiration-ttl">below</a>.
 For a discussion of item (Document) <em>vs</em> Bucket expiration, see the
-<a href="#{version-server}@server:learn:buckets-memory-and-storage/expiration.adoc#expiration-ttl" class="page unresolved">Expiration Overview page</a>.</p>
+<a href="#7.0@server:learn:buckets-memory-and-storage/expiration.adoc#expiration-ttl" class="page unresolved">Expiration Overview page</a>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L70-L78">var document = new { foo = "bar", bar = "foo" };
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L70-L78">var document = new { foo = "bar", bar = "foo" };
 var result = await collection.UpsertAsync("document-key", document,
     options =&gt;
     {
@@ -1936,7 +1932,7 @@ These trade offs, as well as which settings may be tuned, are discussed in the <
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L85-L93">var document = new { foo = "bar", bar = "foo" };
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L85-L93">var document = new { foo = "bar", bar = "foo" };
 var result = await collection.UpsertAsync("document-key", document,
     options =&gt;
     {
@@ -1981,7 +1977,7 @@ Where the number of operations or other circumstances make bandwidth a significa
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L104-L107">var previousResult = await collection.UpsertAsync("string-key", "string value");
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L104-L107">var previousResult = await collection.UpsertAsync("string-key", "string value");
 
 var result = await collection.GetAsync("string-key");
 var content = result.ContentAs&lt;String&gt;();</code></pre>
@@ -1993,7 +1989,7 @@ var content = result.ContentAs&lt;String&gt;();</code></pre>
 <div class="listingblock">
 <div class="title">Get (with options)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L113-L119">var result = await collection.GetAsync("string-key",
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L113-L119">var result = await collection.GetAsync("string-key",
     options =&gt;
     {
         options.Timeout(TimeSpan.FromSeconds(5));
@@ -2013,7 +2009,7 @@ var content = result.ContentAs&lt;string&gt;();</code></pre>
 <div class="listingblock">
 <div class="title">Remove (with options)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L182-L190">var previousResult = await collection.GetAsync("document-key");
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L182-L190">var previousResult = await collection.GetAsync("document-key");
 
 await collection.RemoveAsync("document-key",
     options =&gt;
@@ -2035,7 +2031,7 @@ Using <code>Touch()</code>, you can set expiration values on documents to handle
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L125">await collection.TouchAsync("document-key", TimeSpan.FromSeconds(10));</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L125">await collection.TouchAsync("document-key", TimeSpan.FromSeconds(10));</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2043,7 +2039,7 @@ Using <code>Touch()</code>, you can set expiration values on documents to handle
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L131-L136">await collection.TouchAsync("document-key", TimeSpan.FromSeconds(30),
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L131-L136">await collection.TouchAsync("document-key", TimeSpan.FromSeconds(30),
     options =&gt;
     {
         options.Timeout(TimeSpan.FromSeconds(5));
@@ -2051,8 +2047,19 @@ Using <code>Touch()</code>, you can set expiration values on documents to handle
 );</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Unresolved directive in kv-operations.adoc - include::{version-server}@sdk:shared:partial$documents.adoc[tag=exp-note]</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the absolute value of the expiry is less than 30 days (such as <code>60 * 60 * 24 * 30</code>), it is considered an <em>offset</em>.
+If the value is greater, it is considered an <em>absolute time stamp</em>.
+For more on expiration see the <a href="../concept-docs/documents.html#setting-document-expiration" class="page">expiration section</a> of our documents discussion doc.
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -2064,7 +2071,7 @@ Using <code>Touch()</code>, you can set expiration values on documents to handle
 If you are using the overloads that take <code>IDocument</code>, note that the <code>IDocument.Expiry</code> property assumes ms (milli-seconds), and is converted to seconds before being sent to the server.
 All other overloads take a <code>TimeSpan</code> or an <code>uint</code>, and assume an expiry in seconds
 A time of zero will set the document to never expire
-(a negative number will set expiry to immediate&#8201;&#8212;&#8201;creating a <a href="#{version-server}@server:learn:buckets-memory-and-storage/storage.adoc#tombstones" class="page unresolved">tombstone</a>).
+(a negative number will set expiry to immediate&#8201;&#8212;&#8201;creating a <a href="../../../server/7.0/learn/buckets-memory-and-storage/storage.html#tombstones" class="page">tombstone</a>).
 Values above 0ms but below 1000ms are rounded up to one second before being sent to the server&#8201;&#8212;&#8201;<em>if you are using .NET SDK 3.0.4 or later</em>.
 </td>
 </tr>
@@ -2081,14 +2088,14 @@ Values above 0ms but below 1000ms are rounded up to one second before being sent
 <div class="listingblock">
 <div class="title">Increment</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L142-L143">// increment binary value by 1, if document doesn’t exist, seed it at 1
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L142-L143">// increment binary value by 1, if document doesn’t exist, seed it at 1
 await collection.Binary.IncrementAsync("binary-key");</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Increment (with options)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L149-L156">await collection.Binary.IncrementAsync("binary-key",
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L149-L156">await collection.Binary.IncrementAsync("binary-key",
 options =&gt;
     {
         options.Delta(1);
@@ -2101,14 +2108,14 @@ options =&gt;
 <div class="listingblock">
 <div class="title">Decrement</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L162-L163">// decrement binary value by 1, if document doesn’t exist, seed it at 1
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L162-L163">// decrement binary value by 1, if document doesn’t exist, seed it at 1
 await collection.Binary.DecrementAsync("binary-key");</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Decrement (with options)</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L169-L176">await collection.Binary.DecrementAsync("binary-key",
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L169-L176">await collection.Binary.DecrementAsync("binary-key",
     options =&gt;
     {
         options.Delta(1);
@@ -2136,14 +2143,14 @@ Increment &amp; Decrement are considered part of the ‘binary’ API and as suc
 <h2 id="scoped-kv-operations"><a class="anchor" href="#scoped-kv-operations"></a>Scoped KV Operations</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>It is possible to perform scoped key value operations on named <a href="#{version-server}@server:learn:data/scopes-and-collections.adoc" class="page unresolved"><code>Collections</code></a> <em>with Couchbase Server release, 7.0</em>.</p>
+<p>It is possible to perform scoped key value operations on named <a href="../../../server/7.0/learn/data/scopes-and-collections.html" class="page"><code>Collections</code></a> <em>with Couchbase Server release, 7.0</em>.</p>
 </div>
 <div class="paragraph">
 <p>Here is an example showing an upsert in the <code>users</code> collection, which lives in the <code>travel-sample.tenant_agent_00</code> keyspace:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/43b26d57c9ae18d725f1d7734907a4b85fa338ff/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L198-L203">var agentScope = await bucket.ScopeAsync("tenant_agent_00");
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/3b7169b5b4758a8bf6cfad05389c6330b3f13b08/modules/howtos/examples/Couchbase.Examples/KvOperations.cs#L198-L203">var agentScope = await bucket.ScopeAsync("tenant_agent_00");
 var usersCollection = await agentScope.CollectionAsync("users");
 
 var content = new { name = "John Doe", preferred_email = "johndoe111@test123.test" };
@@ -2257,8 +2264,8 @@ var result = await usersCollection.UpsertAsync("user-key", content);</code></pre
 </div>
 </template>
 <script id="site-script" src="../../../_/js/site.js"></script>
-<script async src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../../../_/js/vendor/fontawesome.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js"></script>
 <script async src="../../../_/js/vendor/highlight.js"></script>
 </body>
 </html>
