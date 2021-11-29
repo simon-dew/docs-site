@@ -1829,27 +1829,24 @@ The <code>ErrorContext</code> provides extensive debugging information in JSON f
 <div class="sect1">
 <h2 id="shared-error-definitions"><a class="anchor" href="#shared-error-definitions"></a>Shared Error Definitions</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>ID Range: 1-99</p>
-</div>
 <div class="sect2">
-<h3 id="1-timeout"><a class="anchor" href="#1-timeout"></a># 1 Timeout</h3>
+<h3 id="timeout"><a class="anchor" href="#timeout"></a>Timeout</h3>
 <div class="paragraph">
 <p>Raised when a request cannot be completed until the user-defined timeout fires.</p>
 </div>
 <div class="paragraph">
-<p>Note, this is a base class for #13 and #14 (Ambiguous and Unambiguous).</p>
+<p>Note, this is a base class for <a href="#ambiguoustimeout">AmbiguousTimeout</a> and <a href="#unambiguoustimeout">UnambiguousTimeout</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="2-requestcanceled"><a class="anchor" href="#2-requestcanceled"></a># 2 RequestCanceled</h3>
+<h3 id="requestcanceled"><a class="anchor" href="#requestcanceled"></a>RequestCanceled</h3>
 <div class="paragraph">
 <p>Raised when a request is cancelled and cannot be resolved in a non-ambiguous way.
 Most likely the request is in-flight on the socket and the socket gets closed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="3-invalidargument"><a class="anchor" href="#3-invalidargument"></a># 3 InvalidArgument</h3>
+<h3 id="invalidargument"><a class="anchor" href="#invalidargument"></a>InvalidArgument</h3>
 <div class="paragraph">
 <p>Raised when it is unambiguously determined that the error was caused because of invalid arguments from the user.
 Usually only thrown directly when doing request arg validation on KV and sub-doc.
@@ -1857,78 +1854,134 @@ Also commonly used as a parent class for many service-specific exceptions (see b
 </div>
 </div>
 <div class="sect2">
-<h3 id="4-servicenotavailable"><a class="anchor" href="#4-servicenotavailable"></a># 4 ServiceNotAvailable</h3>
+<h3 id="servicenotavailable"><a class="anchor" href="#servicenotavailable"></a>ServiceNotAvailable</h3>
 <div class="paragraph">
 <p>Raised when it can be determined from the config unambiguously that a given service is not available.
 I.e. no query node in the config, or a memcached bucket is accessed and views or n1ql queries should be performed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="5-internalserverfailure"><a class="anchor" href="#5-internalserverfailure"></a># 5 InternalServerFailure</h3>
+<h3 id="internalserverfailure"><a class="anchor" href="#internalserverfailure"></a>InternalServerFailure</h3>
 <div class="paragraph">
-<p>Raised when:
-* Query: <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#5xxx-codes-exec" class="page">Error range 5xxx</a>.
-* Analytics: Error range <a href="../../../server/7.0/analytics/error-codes.html" class="page">25xxx</a>.
-* KV: error code ERR_INTERNAL (0x84).
-* Search: HTTP 500.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Query: <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#5xxx-codes-exec" class="page unresolved">Error range 5xxx</a>.</p>
+</li>
+<li>
+<p>Analytics: Error range <a href="../../../server/7.0/analytics/error-codes.html" class="page">25xxx</a>.</p>
+</li>
+<li>
+<p>KV: error code ERR_INTERNAL (0x84).</p>
+</li>
+<li>
+<p>Search: HTTP 500.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="6-authenticationfailure"><a class="anchor" href="#6-authenticationfailure"></a># 6 AuthenticationFailure</h3>
+<h3 id="authenticationfailure"><a class="anchor" href="#authenticationfailure"></a>AuthenticationFailure</h3>
 <div class="paragraph">
-<p>Raised when:
-* Query: <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#10xxx-codes-ds_auth" class="page">Error range 10xxx</a>.
-* Analytics: Error range <a href="../../../server/7.0/analytics/error-codes.html" class="page">20xxx</a>.
-* View: HTTP status 401.
-* KV: error code <code>ERR_ACCESS (0x24)</code>, <code>ERR_AUTH_ERROR (0x20)</code>, <code>AUTH_STALE (0x1f)</code>.
-* Search: HTTP status 401, 403.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Query: <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#10xxx-codes-ds_auth" class="page unresolved">Error range 10xxx</a>.</p>
+</li>
+<li>
+<p>Analytics: Error range <a href="../../../server/7.0/analytics/error-codes.html" class="page">20xxx</a>.</p>
+</li>
+<li>
+<p>View: HTTP status 401.</p>
+</li>
+<li>
+<p>KV: error code <code>ERR_ACCESS (0x24)</code>, <code>ERR_AUTH_ERROR (0x20)</code>, <code>AUTH_STALE (0x1f)</code>.</p>
+</li>
+<li>
+<p>Search: HTTP status 401, 403.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="7-temporaryfailure"><a class="anchor" href="#7-temporaryfailure"></a># 7 TemporaryFailure</h3>
+<h3 id="temporaryfailure"><a class="anchor" href="#temporaryfailure"></a>TemporaryFailure</h3>
 <div class="paragraph">
-<p>Raised when:
-* Analytics: Errors: <a href="../../../server/7.0/analytics/error-codes.html" class="page">23000, 23003</a>.
-* KV: Error code <code>ERR_TMPFAIL (0x86)</code>, <code>ERR_BUSY (0x85)</code> <code>ERR_OUT_OF_MEMORY (0x82)</code>, <code>ERR_NOT_INITIALIZED (0x25)</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Analytics: Errors: <a href="../../../server/7.0/analytics/error-codes.html" class="page">23000, 23003</a>.</p>
+</li>
+<li>
+<p>KV: Error code <code>ERR_TMPFAIL (0x86)</code>, <code>ERR_BUSY (0x85)</code> <code>ERR_OUT_OF_MEMORY (0x82)</code>, <code>ERR_NOT_INITIALIZED (0x25)</code>.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="8-parsingfailure"><a class="anchor" href="#8-parsingfailure"></a># 8 ParsingFailure</h3>
+<h3 id="parsingfailure"><a class="anchor" href="#parsingfailure"></a>ParsingFailure</h3>
 <div class="paragraph">
-<p>Raised when:
-* Query: <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#3xxx-codes-parse" class="page">code 3000</a>.
-* Analytics: code <a href="../../../server/7.0/analytics/error-codes.html" class="page">24000</a> raised.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Query: <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#3xxx-codes-parse" class="page unresolved">code 3000</a>.</p>
+</li>
+<li>
+<p>Analytics: code <a href="../../../server/7.0/analytics/error-codes.html" class="page">24000</a> raised.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="9-casmismatch"><a class="anchor" href="#9-casmismatch"></a># 9 CasMismatch</h3>
+<h3 id="casmismatch"><a class="anchor" href="#casmismatch"></a>CasMismatch</h3>
 <div class="paragraph">
-<p>Raised when:
-* KV: <code>ERR_EXISTS (0x02)</code> when replace or remove with CAS.
-* Query: <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#12xxx-codes-ds_cb" class="page">code 12009</a>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: <code>ERR_EXISTS (0x02)</code> when replace or remove with CAS.</p>
+</li>
+<li>
+<p>Query: <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#12xxx-codes-ds_cb" class="page unresolved">code 12009</a>.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="10-bucketnotfound"><a class="anchor" href="#10-bucketnotfound"></a># 10 BucketNotFound</h3>
+<h3 id="bucketnotfound"><a class="anchor" href="#bucketnotfound"></a>BucketNotFound</h3>
 <div class="paragraph">
 <p>Raised when a request is made but the current bucket is not found.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="11-collectionnotfound"><a class="anchor" href="#11-collectionnotfound"></a># 11 CollectionNotFound</h3>
+<h3 id="collectionnotfound"><a class="anchor" href="#collectionnotfound"></a>CollectionNotFound</h3>
 <div class="paragraph">
 <p>Raised when a request is made but the current collection (including scope) is not found.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="12-unsupportedoperation"><a class="anchor" href="#12-unsupportedoperation"></a># 12 UnsupportedOperation</h3>
+<h3 id="unsupportedoperation"><a class="anchor" href="#unsupportedoperation"></a>UnsupportedOperation</h3>
 <div class="paragraph">
-<p>Raised when:
-* KV: <code>0x81</code> (unknown command), <code>0x83</code> (not supported).</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: <code>0x81</code> (unknown command), <code>0x83</code> (not supported).</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="13-ambiguoustimeout"><a class="anchor" href="#13-ambiguoustimeout"></a># 13 AmbiguousTimeout</h3>
+<h3 id="ambiguoustimeout"><a class="anchor" href="#ambiguoustimeout"></a>AmbiguousTimeout</h3>
 <div class="paragraph">
 <p>Raised when a timeout occurs and we aren’t sure if the underlying operation has completed.
 This normally occurs because we sent the request to the server successfully, but timed out waiting for the response.
@@ -1936,37 +1989,55 @@ Note that idempotent operations should never return this, as they do not have am
 </div>
 </div>
 <div class="sect2">
-<h3 id="14-unambiguoustimeout"><a class="anchor" href="#14-unambiguoustimeout"></a># 14 UnambiguousTimeout</h3>
+<h3 id="unambiguoustimeout"><a class="anchor" href="#unambiguoustimeout"></a>UnambiguousTimeout</h3>
 <div class="paragraph">
 <p>Raised when a timeout occurs and we are confident that the operation could not have succeeded.
 This normally would occur because we received confident failures from the server, or never managed to successfully dispatch the operation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="15-featurenotavailable"><a class="anchor" href="#15-featurenotavailable"></a># 15 FeatureNotAvailable</h3>
+<h3 id="featurenotavailable"><a class="anchor" href="#featurenotavailable"></a>FeatureNotAvailable</h3>
 <div class="paragraph">
 <p>Raised when a feature which is not available was used.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="16-scopenotfound"><a class="anchor" href="#16-scopenotfound"></a># 16 ScopeNotFound</h3>
+<h3 id="scopenotfound"><a class="anchor" href="#scopenotfound"></a>ScopeNotFound</h3>
 <div class="paragraph">
 <p>Raised when a management API attempts to target a scope which does not exist.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="17-indexnotfound"><a class="anchor" href="#17-indexnotfound"></a># 17 IndexNotFound</h3>
+<h3 id="indexnotfound"><a class="anchor" href="#indexnotfound"></a>IndexNotFound</h3>
 <div class="paragraph">
-<p>Raised when:
-* Query:
-<strong> Codes <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#12xxx-codes-ds_cb" class="page">12004, 12016</a>.
-</strong> <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#5000-9999-codes-errors" class="page">Codes 5000</a> AND message contains index .+ not found.
-* Analytics: rised when <a href="../../../server/7.0/analytics/error-codes.html" class="page">24047</a> raised.
-* Search: Http status code 400 AND text contains "index not found".</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Query:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Codes <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#12xxx-codes-ds_cb" class="page unresolved">12004, 12016</a>.</p>
+</li>
+<li>
+<p><a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#5000-9999-codes-errors" class="page unresolved">Codes 5000</a> AND message contains <code>index .+ not found</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Analytics: rised when <a href="../../../server/7.0/analytics/error-codes.html" class="page">24047</a> raised.</p>
+</li>
+<li>
+<p>Search: Http status code 400 AND text contains "index not found".</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="18-indexexists"><a class="anchor" href="#18-indexexists"></a># 18 IndexExists</h3>
+<h3 id="indexexists"><a class="anchor" href="#indexexists"></a>IndexExists</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1974,10 +2045,10 @@ This normally would occur because we received confident failures from the server
 <div class="ulist">
 <ul>
 <li>
-<p><a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#5000-9999-codes-errors" class="page">Code 5000</a> AND message contains Index .+ already exist</p>
+<p><a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#5000-9999-codes-errors" class="page unresolved">Code 5000</a> AND message contains Index .+ already exist</p>
 </li>
 <li>
-<p><a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#4xxx-codes-plan" class="page">Code 4300</a> AND message contains index .+ already exist</p>
+<p><a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#4xxx-codes-plan" class="page unresolved">Code 4300</a> AND message contains index .+ already exist</p>
 </li>
 </ul>
 </div>
@@ -1989,13 +2060,13 @@ This normally would occur because we received confident failures from the server
 </div>
 </div>
 <div class="sect2">
-<h3 id="19-encodingfailure"><a class="anchor" href="#19-encodingfailure"></a># 19 EncodingFailure</h3>
+<h3 id="encodingfailure"><a class="anchor" href="#encodingfailure"></a>EncodingFailure</h3>
 <div class="paragraph">
 <p>Raised when encoding of a user object failed while trying to write it to the cluster.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="20-decodingfailure"><a class="anchor" href="#20-decodingfailure"></a># 20 DecodingFailure</h3>
+<h3 id="decodingfailure"><a class="anchor" href="#decodingfailure"></a>DecodingFailure</h3>
 <div class="paragraph">
 <p>Raised when decoding of the data into the user object failed.</p>
 </div>
@@ -2005,172 +2076,371 @@ This normally would occur because we received confident failures from the server
 <div class="sect1">
 <h2 id="keyvalue-error-definitions"><a class="anchor" href="#keyvalue-error-definitions"></a>KeyValue Error Definitions</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="documentnotfound"><a class="anchor" href="#documentnotfound"></a>DocumentNotFound</h3>
 <div class="paragraph">
-<p>ID Range 100 - 199</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0x01</code>.
+The document requested was not found on the server.</p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect2">
-<h3 id="101-documentnotfound"><a class="anchor" href="#101-documentnotfound"></a># 101 DocumentNotFound</h3>
-<div class="paragraph">
-<p>Raised when the document requested was not found on the server&#8201;&#8212;&#8201;KV Code <code>0x01</code>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="102-documentunretrievable"><a class="anchor" href="#102-documentunretrievable"></a># 102 DocumentUnretrievable</h3>
+<h3 id="documentunretrievable"><a class="anchor" href="#documentunretrievable"></a>DocumentUnretrievable</h3>
 <div class="paragraph">
 <p>Raised when in <code>getAnyReplica</code>, the <code>getAllReplicas</code> returns an empty stream because all the individual errors are dropped (i.e. all returned a <code>DocumentNotFound</code>).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="103-documentlocked"><a class="anchor" href="#103-documentlocked"></a># 103 DocumentLocked</h3>
+<h3 id="documentlocked"><a class="anchor" href="#documentlocked"></a>DocumentLocked</h3>
 <div class="paragraph">
-<p>Raised when the document requested was locked; KV Code <code>0x09</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0x09</code>.
+The document requested was locked.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="104-valuetoolarge"><a class="anchor" href="#104-valuetoolarge"></a># 104 ValueTooLarge</h3>
+<h3 id="valuetoolarge"><a class="anchor" href="#valuetoolarge"></a>ValueTooLarge</h3>
 <div class="paragraph">
-<p>Raised when the value that was sent was too large to store (typically &gt; 20MB); KV Code <code>0x03</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0x03</code>.
+The value that was sent was too large to store (typically &gt; 20MB).</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="105-documentexists"><a class="anchor" href="#105-documentexists"></a># 105 DocumentExists</h3>
+<h3 id="documentexists"><a class="anchor" href="#documentexists"></a>DocumentExists</h3>
 <div class="paragraph">
-<p>Raised when an operation which relies on the document not existing fails because the document existed; KV Code <code>0x02</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0x02</code>.
+An operation which relies on the document not existing fails because the document existed.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="107-durabilitylevelnotavailable"><a class="anchor" href="#107-durabilitylevelnotavailable"></a># 107 DurabilityLevelNotAvailable</h3>
+<h3 id="durabilitylevelnotavailable"><a class="anchor" href="#durabilitylevelnotavailable"></a>DurabilityLevelNotAvailable</h3>
 <div class="paragraph">
-<p>Raised when the specified durability level is invalid; KV Code <code>0xa0</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xa0</code>.
+The specified durability level is invalid.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="108-durabilityimpossible"><a class="anchor" href="#108-durabilityimpossible"></a># 108 DurabilityImpossible</h3>
+<h3 id="durabilityimpossible"><a class="anchor" href="#durabilityimpossible"></a>DurabilityImpossible</h3>
 <div class="paragraph">
-<p>Raised when the specified durability requirements are not currently possible (for example, there are an insufficient number of replicas online); KV Code <code>0xa1</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xa1</code>.
+The specified durability requirements are not currently possible (for example, there are an insufficient number of replicas online).</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="109-durabilityambiguous"><a class="anchor" href="#109-durabilityambiguous"></a># 109 DurabilityAmbiguous</h3>
+<h3 id="durabilityambiguous"><a class="anchor" href="#durabilityambiguous"></a>DurabilityAmbiguous</h3>
 <div class="paragraph">
-<p>Raised when
-A sync-write has not completed in the specified time and has an ambiguous result - it may have succeeded or failed, but the final result is not yet known.
-A SEQNO OBSERVE operation is performed and the vbucket UUID changes during polling.
-KV Code 0xa3</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xa3</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A sync-write has not completed in the specified time and has an ambiguous result -
+it may have succeeded or failed, but the final result is not yet known.</p>
+</li>
+<li>
+<p>A SEQNO OBSERVE operation is performed and the vbucket UUID changes during polling.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="110-durablewriteinprogress"><a class="anchor" href="#110-durablewriteinprogress"></a># 110 DurableWriteInProgress</h3>
+<h3 id="durablewriteinprogress"><a class="anchor" href="#durablewriteinprogress"></a>DurableWriteInProgress</h3>
 <div class="paragraph">
-<p>Raised when
-A durable write is attempted against a key which already has a pending durable write.
-KV Code 0xa2</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xa2</code>.
+A durable write is attempted against a key which already has a pending durable write.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="111-durablewriterecommitinprogress"><a class="anchor" href="#111-durablewriterecommitinprogress"></a># 111 DurableWriteReCommitInProgress</h3>
+<h3 id="durablewriterecommitinprogress"><a class="anchor" href="#durablewriterecommitinprogress"></a>DurableWriteReCommitInProgress</h3>
 <div class="paragraph">
-<p>Raised when
-The server is currently working to synchronize all replicas for previously performed durable operations (typically occurs after a rebalance).
-KV Code 0xa4</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xa4</code>.
+The server is currently working to synchronize all replicas for previously performed durable operations (typically occurs after a rebalance).</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="113-pathnotfound"><a class="anchor" href="#113-pathnotfound"></a># 113 PathNotFound</h3>
+<h3 id="pathnotfound"><a class="anchor" href="#pathnotfound"></a>PathNotFound</h3>
 <div class="paragraph">
-<p>Raised when the path provided for a sub-document operation was not found; KV Code <code>0xc0</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc0</code>.
+The path provided for a sub-document operation was not found.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="114-pathmismatch"><a class="anchor" href="#114-pathmismatch"></a># 114 PathMismatch</h3>
+<h3 id="pathmismatch"><a class="anchor" href="#pathmismatch"></a>PathMismatch</h3>
 <div class="paragraph">
-<p>The path provided for a sub-document operation did not match the actual structure of the document; KV Code <code>0xc1</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc1</code>.
+The path provided for a sub-document operation did not match the actual structure of the document.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="115-pathinvalid"><a class="anchor" href="#115-pathinvalid"></a># 115 PathInvalid</h3>
+<h3 id="pathinvalid"><a class="anchor" href="#pathinvalid"></a>PathInvalid</h3>
 <div class="paragraph">
-<p>Raised when the path provided for a sub-document operation was not syntactically correct; KV Code <code>0xc2</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc2</code>.
+The path provided for a sub-document operation was not syntactically correct.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="116-pathtoobig"><a class="anchor" href="#116-pathtoobig"></a># 116 PathTooBig</h3>
+<h3 id="pathtoobig"><a class="anchor" href="#pathtoobig"></a>PathTooBig</h3>
 <div class="paragraph">
-<p>Raised when the path provided for a sub-document operation is too long, or contains too many independent components; KV Code <code>0xc3</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc3</code>.
+The path provided for a sub-document operation is too long, or contains too many independent components.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="117-pathtoodeep"><a class="anchor" href="#117-pathtoodeep"></a># 117 PathTooDeep</h3>
+<h3 id="pathtoodeep"><a class="anchor" href="#pathtoodeep"></a>PathTooDeep</h3>
 <div class="paragraph">
-<p>Raised when the document contains too many levels to parse; KV Code <code>0xc4</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc4</code>.
+The document contains too many levels to parse.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="118-valuetoodeep"><a class="anchor" href="#118-valuetoodeep"></a># 118 ValueTooDeep</h3>
+<h3 id="valuetoodeep"><a class="anchor" href="#valuetoodeep"></a>ValueTooDeep</h3>
 <div class="paragraph">
-<p>Raised when the value provided, if inserted into the document, would cause the document to become too deep for the server to accept; KV Code <code>0xca</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xca</code>.
+The value provided, if inserted into the document, would cause the document to become too deep for the server to accept.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="119-valueinvalid"><a class="anchor" href="#119-valueinvalid"></a># 119 ValueInvalid</h3>
+<h3 id="valueinvalid"><a class="anchor" href="#valueinvalid"></a>ValueInvalid</h3>
 <div class="paragraph">
-<p>Raised when the value provided for a sub-document operation would invalidate the JSON structure of the document if inserted as requested; KV Code <code>0xc5</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc5</code>.
+The value provided for a sub-document operation would invalidate the JSON structure of the document if inserted as requested.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="120-documentnotjson"><a class="anchor" href="#120-documentnotjson"></a># 120 DocumentNotJson</h3>
+<h3 id="documentnotjson"><a class="anchor" href="#documentnotjson"></a>DocumentNotJson</h3>
 <div class="paragraph">
-<p>Raised when a Sub-Document operation is performed on a non-JSON document; KV Code <code>0xc6</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc6</code>.
+A Sub-Document operation is performed on a non-JSON document.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="121-numbertoobig"><a class="anchor" href="#121-numbertoobig"></a># 121 NumberTooBig</h3>
+<h3 id="numbertoobig"><a class="anchor" href="#numbertoobig"></a>NumberTooBig</h3>
 <div class="paragraph">
-<p>Raised when the existing number is outside the valid range for arithmetic operations; KV Code <code>0xc7</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc7</code>.
+The existing number is outside the valid range for arithmetic operations.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="122-deltainvalid"><a class="anchor" href="#122-deltainvalid"></a># 122 DeltaInvalid</h3>
+<h3 id="deltainvalid"><a class="anchor" href="#deltainvalid"></a>DeltaInvalid</h3>
 <div class="paragraph">
-<p>Raised when the delta value specified for an operation is too large; KV Code <code>0xc8</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc8</code>.
+The delta value specified for an operation is too large.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="123-pathexists"><a class="anchor" href="#123-pathexists"></a># 123 PathExists</h3>
+<h3 id="pathexists"><a class="anchor" href="#pathexists"></a>PathExists</h3>
 <div class="paragraph">
-<p>Raised when a sub-document operation which relies on a path not existing encountered a path which exists; KV Code <code>0xc9</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xc9</code>.
+A sub-document operation which relies on a path not existing encountered a path which exists.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="124-xattrunknownmacro"><a class="anchor" href="#124-xattrunknownmacro"></a># 124 XattrUnknownMacro</h3>
+<h3 id="xattrunknownmacro"><a class="anchor" href="#xattrunknownmacro"></a>XattrUnknownMacro</h3>
 <div class="paragraph">
-<p>Raised when a macro was used which the server did not understand; KV Code: <code>0xd0</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xd0</code>.
+A macro was used which the server did not understand.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="126-xattrinvalidkeycombo"><a class="anchor" href="#126-xattrinvalidkeycombo"></a># 126 XattrInvalidKeyCombo</h3>
+<h3 id="xattrinvalidkeycombo"><a class="anchor" href="#xattrinvalidkeycombo"></a>XattrInvalidKeyCombo</h3>
 <div class="paragraph">
-<p>Raised when a Sub-Document operation attempts to access multiple xattrs in one operation; KV Code: <code>0xcf</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xcf</code>.
+A Sub-Document operation attempts to access multiple xattrs in one operation.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="127-xattrunknownvirtualattribute"><a class="anchor" href="#127-xattrunknownvirtualattribute"></a># 127 XattrUnknownVirtualAttribute</h3>
+<h3 id="xattrunknownvirtualattribute"><a class="anchor" href="#xattrunknownvirtualattribute"></a>XattrUnknownVirtualAttribute</h3>
 <div class="paragraph">
-<p>Raised when a sub-document operation attempts to access a virtual attribute; KV Code: <code>0xd1</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xd1</code>.
+A sub-document operation attempts to access a virtual attribute.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="128-xattrcannotmodifyvirtualattribute"><a class="anchor" href="#128-xattrcannotmodifyvirtualattribute"></a># 128 XattrCannotModifyVirtualAttribute</h3>
+<h3 id="xattrcannotmodifyvirtualattribute"><a class="anchor" href="#xattrcannotmodifyvirtualattribute"></a>XattrCannotModifyVirtualAttribute</h3>
 <div class="paragraph">
-<p>Raised when a Sub-Document operation attempts to modify a virtual attribute; KV Code: <code>0xd2</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0xd2</code>.
+A Sub-Document operation attempts to modify a virtual attribute.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="130-xattrnoaccess"><a class="anchor" href="#130-xattrnoaccess"></a># 130 XattrNoAccess</h3>
+<h3 id="xattrnoaccess"><a class="anchor" href="#xattrnoaccess"></a>XattrNoAccess</h3>
 <div class="paragraph">
-<p>Raised when the user does not have permission to access the attribute.
-Occurs when the user attempts to read or write a system attribute (name starts with underscore) but does not have the <code>SystemXattrRead</code> / <code>SystemXattrWrite</code> permission.
-KV Code: <code>0x24</code>.</p>
+<p>Raised when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KV: Code <code>0x24</code>.
+The user does not have permission to access the attribute.
+Occurs when the user attempts to read or write a system attribute (name starts with underscore) but does not have the <code>SystemXattrRead</code> / <code>SystemXattrWrite</code> permission.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -2178,25 +2448,34 @@ KV Code: <code>0x24</code>.</p>
 <div class="sect1">
 <h2 id="query-error-definitions"><a class="anchor" href="#query-error-definitions"></a>Query Error Definitions</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>ID Range 200 - 299</p>
-</div>
 <div class="sect2">
-<h3 id="201-planningfailure"><a class="anchor" href="#201-planningfailure"></a># 201 PlanningFailure</h3>
-<div class="paragraph">
-<p>Query: Raised when code range <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#4xxx-codes-plan" class="page">4xxx</a> other than those explicitly covered.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="202-indexfailure"><a class="anchor" href="#202-indexfailure"></a># 202 IndexFailure</h3>
-<div class="paragraph">
-<p>Query: Raised when code range <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#12xxx-codes-ds_cb" class="page">12xxx</a> and <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#14xxx-codes-ds_gsi" class="page">14xxx</a> raised (other than 12004 and 12016).</p>
+<h3 id="planningfailure"><a class="anchor" href="#planningfailure"></a>PlanningFailure</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Query: Raised when code range <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#4xxx-codes-plan" class="page unresolved">4xxx</a> other than those explicitly covered.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="203-preparedstatementfailure"><a class="anchor" href="#203-preparedstatementfailure"></a># 203 PreparedStatementFailure</h3>
-<div class="paragraph">
-<p>Query: Raised when codes <a href="../../../server/7.0/n1ql/n1ql-language-reference/n1ql-error-codes.html#4xxx-codes-plan" class="page">4040, 4050, 4060, 4070, 4080, 4090</a>.</p>
+<h3 id="indexfailure"><a class="anchor" href="#indexfailure"></a>IndexFailure</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Query: Raised when code range <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#12xxx-codes-ds_cb" class="page unresolved">12xxx</a> and <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#14xxx-codes-ds_gsi" class="page unresolved">14xxx</a> raised (other than 12004 and 12016).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="preparedstatementfailure"><a class="anchor" href="#preparedstatementfailure"></a>PreparedStatementFailure</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Query: Raised when codes <a href="#7.0@server:n1ql:n1ql-language-reference/n1ql-error-codes.adoc#4xxx-codes-plan" class="page unresolved">4040, 4050, 4060, 4070, 4080, 4090</a>.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -2204,47 +2483,44 @@ KV Code: <code>0x24</code>.</p>
 <div class="sect1">
 <h2 id="analytics-error-definitions"><a class="anchor" href="#analytics-error-definitions"></a>Analytics Error Definitions</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>ID Range 300 - 399</p>
-</div>
 <div class="sect2">
-<h3 id="301-compilationfailure"><a class="anchor" href="#301-compilationfailure"></a># 301 CompilationFailure</h3>
+<h3 id="compilationfailure"><a class="anchor" href="#compilationfailure"></a>CompilationFailure</h3>
 <div class="paragraph">
 <p>Raised when error range <a href="../../../server/7.0/analytics/error-codes.html" class="page">24xxx</a> (excluded are specific codes in the errors below).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="302-jobqueuefull"><a class="anchor" href="#302-jobqueuefull"></a># 302 JobQueueFull</h3>
+<h3 id="jobqueuefull"><a class="anchor" href="#jobqueuefull"></a>JobQueueFull</h3>
 <div class="paragraph">
 <p>Raised when error code <a href="../../../server/7.0/analytics/error-codes.html" class="page">23007</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="303-datasetnotfound"><a class="anchor" href="#303-datasetnotfound"></a># 303 DatasetNotFound</h3>
+<h3 id="datasetnotfound"><a class="anchor" href="#datasetnotfound"></a>DatasetNotFound</h3>
 <div class="paragraph">
 <p>Raised when error codes <a href="../../../server/7.0/analytics/error-codes.html" class="page">24044, 24045, 24025</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="304-dataversenotfound"><a class="anchor" href="#304-dataversenotfound"></a># 304 DataverseNotFound</h3>
+<h3 id="dataversenotfound"><a class="anchor" href="#dataversenotfound"></a>DataverseNotFound</h3>
 <div class="paragraph">
 <p>Raised when error code <a href="../../../server/7.0/analytics/error-codes.html" class="page">24034</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="305-datasetexists"><a class="anchor" href="#305-datasetexists"></a># 305 DatasetExists</h3>
+<h3 id="datasetexists"><a class="anchor" href="#datasetexists"></a>DatasetExists</h3>
 <div class="paragraph">
 <p>Raised when <a href="../../../server/7.0/analytics/error-codes.html" class="page">24040</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="306-dataverseexists"><a class="anchor" href="#306-dataverseexists"></a># 306 DataverseExists</h3>
+<h3 id="dataverseexists"><a class="anchor" href="#dataverseexists"></a>DataverseExists</h3>
 <div class="paragraph">
 <p>Raised when <a href="../../../server/7.0/analytics/error-codes.html" class="page">24039</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="307-linknotfound"><a class="anchor" href="#307-linknotfound"></a># 307 LinkNotFound</h3>
+<h3 id="linknotfound"><a class="anchor" href="#linknotfound"></a>LinkNotFound</h3>
 <div class="paragraph">
 <p>Raised when <a href="../../../server/7.0/analytics/error-codes.html" class="page">24006</a>.</p>
 </div>
@@ -2255,9 +2531,6 @@ KV Code: <code>0x24</code>.</p>
 <h2 id="search-error-definition"><a class="anchor" href="#search-error-definition"></a>Search Error Definition</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ID Range 400 - 499</p>
-</div>
-<div class="paragraph">
 <p>There are no specific errors for Search; see the <a href="#shared-error-definitions">Shared Error Definitions section</a> for errors that apply to Search.</p>
 </div>
 </div>
@@ -2265,22 +2538,29 @@ KV Code: <code>0x24</code>.</p>
 <div class="sect1">
 <h2 id="view-error-definitions"><a class="anchor" href="#view-error-definitions"></a>View Error Definitions</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>ID Range 500 - 599</p>
-</div>
 <div class="sect2">
-<h3 id="501-viewnotfound"><a class="anchor" href="#501-viewnotfound"></a># 501 ViewNotFound</h3>
+<h3 id="viewnotfound"><a class="anchor" href="#viewnotfound"></a>ViewNotFound</h3>
 <div class="paragraph">
 <p>Raised when Http status code 404&#8201;&#8212;&#8201;reason or error contains “not_found”.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="502-designdocumentnotfound"><a class="anchor" href="#502-designdocumentnotfound"></a># 502 DesignDocumentNotFound</h3>
+<h3 id="designdocumentnotfound"><a class="anchor" href="#designdocumentnotfound"></a>DesignDocumentNotFound</h3>
 <div class="paragraph">
-<p>Raised on the Management APIs only when:
-* Getting a design document;
-* Dropping a design document;
-* And the server returns 404.</p>
+<p>Raised on the Management APIs only when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Getting a design document;</p>
+</li>
+<li>
+<p>Dropping a design document;</p>
+</li>
+<li>
+<p>And the server returns 404.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -2288,47 +2568,44 @@ KV Code: <code>0x24</code>.</p>
 <div class="sect1">
 <h2 id="management-api-error-definitions"><a class="anchor" href="#management-api-error-definitions"></a>Management API Error Definitions</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>ID Range 600 - 699</p>
-</div>
 <div class="sect2">
-<h3 id="601-collectionexists"><a class="anchor" href="#601-collectionexists"></a># 601 CollectionExists</h3>
+<h3 id="collectionexists"><a class="anchor" href="#collectionexists"></a>CollectionExists</h3>
 <div class="paragraph">
 <p>Raised from the collection management API.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="602-scopeexists"><a class="anchor" href="#602-scopeexists"></a># 602 ScopeExists</h3>
+<h3 id="scopeexists"><a class="anchor" href="#scopeexists"></a>ScopeExists</h3>
 <div class="paragraph">
 <p>Raised from the collection management API.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="603-usernotfound"><a class="anchor" href="#603-usernotfound"></a># 603 UserNotFound</h3>
+<h3 id="usernotfound"><a class="anchor" href="#usernotfound"></a>UserNotFound</h3>
 <div class="paragraph">
 <p>Raised from the user management API.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="604-groupnotfound"><a class="anchor" href="#604-groupnotfound"></a># 604 GroupNotFound</h3>
+<h3 id="groupnotfound"><a class="anchor" href="#groupnotfound"></a>GroupNotFound</h3>
 <div class="paragraph">
 <p>Raised from the user management API.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="605-bucketexists"><a class="anchor" href="#605-bucketexists"></a># 605 BucketExists</h3>
+<h3 id="bucketexists"><a class="anchor" href="#bucketexists"></a>BucketExists</h3>
 <div class="paragraph">
 <p>Raised from the bucket management API.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="606-userexists"><a class="anchor" href="#606-userexists"></a># 606 UserExists</h3>
+<h3 id="userexists"><a class="anchor" href="#userexists"></a>UserExists</h3>
 <div class="paragraph">
 <p>Raised from the user management API.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="607-bucketnotflushable"><a class="anchor" href="#607-bucketnotflushable"></a># 607 BucketNotFlushable</h3>
+<h3 id="bucketnotflushable"><a class="anchor" href="#bucketnotflushable"></a>BucketNotFlushable</h3>
 <div class="paragraph">
 <p>Raised from the bucket management API.</p>
 </div>
@@ -2339,59 +2616,56 @@ KV Code: <code>0x24</code>.</p>
 <h2 id="field-level-encryption-error-definitions"><a class="anchor" href="#field-level-encryption-error-definitions"></a>Field-Level Encryption Error Definitions</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ID Range 700 - 799</p>
-</div>
-<div class="paragraph">
 <p>Note, in SDK 3.0, Field Level Encryption is only available as a <a href="#3.0@java-sdk:howtos:encrypting-using-sdk.adoc" class="page unresolved">Developer Preview with the Java SDK</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="700-cryptoexception"><a class="anchor" href="#700-cryptoexception"></a># 700 CryptoException</h3>
+<h3 id="cryptoexception"><a class="anchor" href="#cryptoexception"></a>CryptoException</h3>
 <div class="paragraph">
 <p>Generic cryptography failure.
-Inherits from CouchbaseException (=== # 0).
+Inherits from <code>CouchbaseException</code>.
 Parent Type for all other Field-Level Encryption errors.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="701-encryptionfailure"><a class="anchor" href="#701-encryptionfailure"></a># 701 EncryptionFailure</h3>
+<h3 id="encryptionfailure"><a class="anchor" href="#encryptionfailure"></a>EncryptionFailure</h3>
 <div class="paragraph">
 <p>Raised by <code>CryptoManager.encrypt()</code> when encryption fails for any reason.
 Should have one of the other Field-Level Encryption errors as a cause.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="702-decryptionfailure"><a class="anchor" href="#702-decryptionfailure"></a># 702 DecryptionFailure</h3>
+<h3 id="decryptionfailure"><a class="anchor" href="#decryptionfailure"></a>DecryptionFailure</h3>
 <div class="paragraph">
 <p>Raised by <code>CryptoManager.decrypt()</code> when decryption fails for any reason.
 Should have one of the other Field-Level Encryption errors as a cause.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="703-cryptokeynotfound"><a class="anchor" href="#703-cryptokeynotfound"></a># 703 CryptoKeyNotFound</h3>
+<h3 id="cryptokeynotfound"><a class="anchor" href="#cryptokeynotfound"></a>CryptoKeyNotFound</h3>
 <div class="paragraph">
 <p>Raised when a crypto operation fails because a required key is missing.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="704-invalidcryptokey"><a class="anchor" href="#704-invalidcryptokey"></a># 704 InvalidCryptoKey</h3>
+<h3 id="invalidcryptokey"><a class="anchor" href="#invalidcryptokey"></a>InvalidCryptoKey</h3>
 <div class="paragraph">
 <p>Raised by an encrypter or decrypter when the key does not meet expectations (for example, if the key is the wrong size).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="705-decrypternotfound"><a class="anchor" href="#705-decrypternotfound"></a># 705 DecrypterNotFound</h3>
+<h3 id="decrypternotfound"><a class="anchor" href="#decrypternotfound"></a>DecrypterNotFound</h3>
 <div class="paragraph">
 <p>Raised when a message cannot be decrypted because there is no decrypter registered for the algorithm.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="706-encrypternotfound"><a class="anchor" href="#706-encrypternotfound"></a># 706 EncrypterNotFound</h3>
+<h3 id="encrypternotfound"><a class="anchor" href="#encrypternotfound"></a>EncrypterNotFound</h3>
 <div class="paragraph">
 <p>Raised when a message cannot be encrypted because there is no encrypter registered under the requested alias.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="707-invalidciphertext"><a class="anchor" href="#707-invalidciphertext"></a># 707 InvalidCiphertext</h3>
+<h3 id="invalidciphertext"><a class="anchor" href="#invalidciphertext"></a>InvalidCiphertext</h3>
 <div class="paragraph">
 <p>Raised when decryption fails due to malformed input, integrity check failure, etc.</p>
 </div>
