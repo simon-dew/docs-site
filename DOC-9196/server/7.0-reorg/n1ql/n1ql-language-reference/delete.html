@@ -982,7 +982,7 @@
 <li class="menu_list is-parent closed" data-depth="1">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <span class="menu_title menu_text">Query</span>
+    <a class="menu_title menu_link" href="../../guides/query.html">Query</a>
   </span>
 <ul class="menu_row">
 <li class="menu_list is-parent closed" data-depth="2">
@@ -1054,22 +1054,22 @@
 <li class="menu_list is-parent closed" data-depth="2">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <span class="menu_title menu_text">Manipulate Data</span>
+    <span class="menu_title menu_text">Manipulate Data with N1QL</span>
   </span>
 <ul class="menu_row">
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <span class="menu_title menu_text">Create Data</span>
+    <a class="menu_title menu_link" href="../../guides/insert.html">Inserting Data</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <span class="menu_title menu_text">Update Data</span>
+    <a class="menu_title menu_link" href="../../guides/update.html">Updating Data</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <span class="menu_title menu_text">Delete Data</span>
+    <a class="menu_title menu_link" href="../../guides/delete.html">Deleting Data</a>
   </span>
 </li>
 </ul>
@@ -2947,6 +2947,11 @@
     <a class="menu_title menu_link" href="../../cli/cbcollect-info-tool.html">cbcollect_info</a>
   </span>
 </li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../cli/cbdocloader-tool.html">cbdocloader</a>
+  </span>
+</li>
 <li class="menu_list is-parent closed" data-depth="2">
   <span class="menu_line">
     <span class="in-toggle"></span>
@@ -4685,7 +4690,7 @@ Refer to <a href="../../manage/manage-settings/install-sample-buckets.html" clas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`.inventory.hotel;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-all.n1ql">DELETE FROM `travel-sample`.inventory.hotel;</code></pre>
 </div>
 </div>
 </div>
@@ -4698,8 +4703,9 @@ Refer to <a href="../../manage/manage-settings/install-sample-buckets.html" clas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`.inventory.airport WHERE city
-IN (SELECT raw city FROM `beer-sample` WHERE city IS NOT MISSING);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-sub-other.n1ql">DELETE FROM `travel-sample`.inventory.airport
+WHERE city IN (SELECT raw city FROM `beer-sample` WHERE city IS NOT MISSING)
+RETURNING airportname;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4707,8 +4713,9 @@ IN (SELECT raw city FROM `beer-sample` WHERE city IS NOT MISSING);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`.inventory.airport
-WHERE city IN (SELECT RAW MAX(t.city) FROM `travel-sample`.inventory.airport AS t);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-sub-same.n1ql">DELETE FROM `travel-sample`.inventory.airport
+WHERE city IN (SELECT RAW MAX(t.city) FROM `travel-sample`.inventory.airport AS t)
+RETURNING airportname;</code></pre>
 </div>
 </div>
 </div>
@@ -4721,12 +4728,12 @@ WHERE city IN (SELECT RAW MAX(t.city) FROM `travel-sample`.inventory.airport AS 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`.inventory.hotel RETURNING *;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-all-return.n1ql">DELETE FROM `travel-sample`.inventory.hotel RETURNING *;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM `travel-sample`.inventory.hotel
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-filter-return.n1ql">DELETE FROM `travel-sample`.inventory.hotel
 WHERE city = "San Francisco"
 RETURNING meta().id;</code></pre>
 </div>
@@ -4737,53 +4744,30 @@ RETURNING meta().id;</code></pre>
 <div class="title">Example 4. Delete by key</div>
 <div class="content">
 <div class="paragraph">
-<p>This example deletes the document <code>product10</code>.</p>
+<p>This example deletes the document <code>airline_4444</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM product p USE KEYS "product10" RETURNING p</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-key.n1ql">DELETE FROM `travel-sample`.inventory.airline k
+USE KEYS "airline_4444"
+RETURNING k</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
-    {
-        "p": {
-            "categories": [
-                "Luggage"
-            ],
-            "color": "sky blue",
-            "dateAdded": "2014-05-06T15:52:18Z",
-            "dateModified": "2014-05-06T15:52:18Z",
-            "description": "This product is available on
-                \u003ca target=\"_blank\"
-                href=\"http://www.amazon.com/gp/product/
-                B005HNKFSM/ref=s9_hps_bw_g198_ir011?pf_rd_m=ATVPDKIKX0DER\
-                u0026pf_rd_s=merchandised-search-5\u0026pf_
-                rd_r=D182EDFE2F434403B401\u0026pf_rd_t=101\
-                u0026pf_rd_p=1486061902\u0026pf_rd_i=15743161
-                \"\u003eAmazon.com\u003c/a\u003e.",
-            "imageURL": "http://ecx.images-amazon.com/
-                images/I/51KiHy-Y-2L._SY220_.jpg",
-            "name": "Briggs \
-                u0026 Riley Luggage Executive Clamshell Backpack",
-            "productId": "product10",
-            "reviewList": [
-                "review47",
-                "review873",
-                "review1224",
-                "review2203",
-                "review2242",
-                "review6162",
-                "review6825",
-                "review7300",
-                "review9934"
-            ],
-            "type": "product",
-            "unitPrice": 231.2
-        }
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-key.jsonc">[
+  {
+    "k": {
+      "callsign": "MY-AIR",
+      "country": "United States",
+      "iata": "Z1",
+      "icao": "AQZ",
+      "name": "80-My Air",
+      "id": "4444",
+      "type": "airline"
     }
+  }
 ]</code></pre>
 </div>
 </div>
@@ -4793,22 +4777,22 @@ RETURNING meta().id;</code></pre>
 <div class="title">Example 5. Delete by filter</div>
 <div class="content">
 <div class="paragraph">
-<p>This example deletes any product that is priced at 5.25.</p>
+<p>This example deletes the airline with the callsign "AIR-X".</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">DELETE FROM product p
-WHERE p.unitPrice = 5.25
-RETURNING p.productId</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-filter.n1ql">DELETE FROM `travel-sample`.inventory.airline f
+WHERE f.callsign = "AIR-X"
+RETURNING f.id</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
-    {
-        "productId": "product99"
-    }
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/dml/delete-filter.jsonc">[
+  {
+    "id": "4445"
+  }
 ]</code></pre>
 </div>
 </div>

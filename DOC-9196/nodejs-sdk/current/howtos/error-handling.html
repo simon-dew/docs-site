@@ -1228,7 +1228,7 @@
 <ul class="menu_row">
 <li class="menu_list" data-depth="1">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="https://docs.couchbase.com/sdk-api/couchbase-node-client">API Reference</a>
+    <a class="menu_title menu_link" href="https://docs.couchbase.com/sdk-api/couchbase-node-client/modules.html">API Reference</a>
   </span>
 </li>
 <li class="menu_list" data-depth="1">
@@ -1810,12 +1810,12 @@ Errors are inevitable. The developer’s job is to be prepared for whatever is l
 <div class="sectionbody">
 <div class="paragraph">
 <p>The Node.js SDK works directly with the built in exception handling available in Javascript.
-This enables you to catch, interogate, and handle or log them and continue.
+This enables you to catch, interrogate, and handle or log them and continue.
 Depending on the type of the exception you catch, there are a number of properties which will be available to you.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/5222dd801dcb76afb7f142bf954079c5792853f1/modules/devguide/examples/nodejs/error-handling.js#L18-L22">  try {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L21-L25">  try {
     var result = await collection.get(docKey);
   } catch (e) {
     // we can handle any exceptions thrown here.
@@ -1836,11 +1836,11 @@ Here we will cover some of the most common errors.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/5222dd801dcb76afb7f142bf954079c5792853f1/modules/devguide/examples/nodejs/error-handling.js#L26-L32">  try {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L29-L35">  try {
     var result = await collection.get("key-which-does-not-exist");
   } catch (e) {
     if (e instanceof couchbase.DocumentNotFoundError) {
-      // we can decide what to do for a missing document here.
+      console.log("the document is missing")
     }
   }</code></pre>
 </div>
@@ -1850,11 +1850,11 @@ Here we will cover some of the most common errors.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/5222dd801dcb76afb7f142bf954079c5792853f1/modules/devguide/examples/nodejs/error-handling.js#L36-L42">  try {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L41-L47">  try {
     var result = await collection.insert("key-which-exists", "hello");
   } catch (e) {
     if (e instanceof couchbase.DocumentExistsError) {
-      // we can decide what to do for a missing document here.
+      console.log("document unexpectedly exists")
     }
   }</code></pre>
 </div>
@@ -1869,7 +1869,7 @@ If it has, it returns <code>CasMismatchError</code>, and the most appropriate re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/5222dd801dcb76afb7f142bf954079c5792853f1/modules/devguide/examples/nodejs/error-handling.js#L66-L86">  for (var retryNum = 0; retryNum &lt; 10; ++i) {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L71-L92">  for (var retryNum = 0; retryNum &lt; 10; ++i) {
     try {
       var result = await collection.get(docKey);
 
@@ -1882,7 +1882,8 @@ If it has, it returns <code>CasMismatchError</code>, and the most appropriate re
       break;
     } catch (e) {
       if (e instanceof couchbase.CasMismatchError) {
-        // we can simply try the cas operation again...
+        console.log("CAS mismatch")
+        // We could now re-fetch the document and try again
         continue;
       }
 
@@ -1915,31 +1916,31 @@ This similarly indicates that the operation may or may not have succeeded: thoug
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/5222dd801dcb76afb7f142bf954079c5792853f1/modules/devguide/examples/nodejs/error-handling.js#L90-L114">  for (var retryNum = 0; retryNum &lt; 10; ++i) {
-    try {
-      var result = await collection.insert(docKey, "some value", {
-        durabilityLevel: couchbase.DurabilityLevel.PersistToMajority,
-      });
-
-      // success!
-      break;
-    } catch (e) {
-      if (e instanceof couchbase.DocumentExistsError) {
-        if (retryNum &gt; 0) {
-          // If this is a retry and the document now exists, we can assume it was
-          // written successfully by a previously ambiguous error.
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L99-L123">    for (var retryNum = 0; retryNum &lt; 10; ++i) {
+      try {
+        var result = await collection.insert(docKey, "some value", {
+          durabilityLevel: couchbase.DurabilityLevel.PersistToMajority,
+        });
+  
+        // success!
+        break;
+      } catch (e) {
+        if (e instanceof couchbase.DocumentExistsError) {
+          if (retryNum &gt; 0) {
+            // If this is a retry and the document now exists, we can assume it was
+            // written successfully by a previously ambiguous error.
+            continue;
+          }
+        }
+        if (e instanceof couchbase.DurabilityAmbiguousError) {
+          // we can simply try the durable operation again...
           continue;
         }
+  
+        // if we ran into another kind of error, let's re-throw it...
+        throw e;
       }
-      if (e instanceof couchbase.DurabilityAmbiguousError) {
-        // we can simply try the durable operation again...
-        continue;
-      }
-
-      // if we ran into another kind of error, let's re-throw it...
-      throw e;
-    }
-  }</code></pre>
+    }</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1975,11 +1976,11 @@ For those that are not, such as a Sub-Document <code>arrayAppend</code> call, or
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/5222dd801dcb76afb7f142bf954079c5792853f1/modules/devguide/examples/nodejs/error-handling.js#L46-L62">  try {
-    var results = cluster.query("SELECT * FROM default");
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L51-L67">  try {
+    var results = cluster.query("SELECT * FROM `travel-sample`");
   } catch (e) {
     if (e instanceof couchbase.IndexFailureError) {
-      // our index probably did not exist, maybe we should create them?
+      console.log("index doesn't exist, do we need to create it")
     }
 
     if (e.context instanceof couchbase.QueryErrorContext) {
