@@ -6,10 +6,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
-<title>Untitled | Couchbase Docs (Staging)</title>
+<title>JSON Modelling | Couchbase Docs (Staging)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9196/java-sdk/current/howtos/json.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="The Java SDK supports multiple options for working with JSON.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 <meta name="dcterms.subject" content="java-sdk">
 <meta name="dcterms.identifier" content="3.2">
@@ -1716,7 +1717,7 @@
 </aside>
 <aside class="toc sidebar"
       data-title="Contents"
-      data-levels="1">
+      data-levels="2">
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
@@ -1779,17 +1780,528 @@
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
 <li class="crumb"><a href="../hello-world/overview.html">Java SDK</a></li>
+<li class="crumb"><a href="json.html">JSON Modelling</a></li>
 </ul>
 </nav>
 </div>
 <article class="doc">
+<div class="page-heading-title">
+<h1 class="page">JSON Modelling</h1>
+</div>
 <div class="contributor-list-box">
 <span class="last-commit-date" id="commitdate">    </span>
 <ul id="contributorList"></ul>
 <span  id="otherContributor"> + </span>
-</div><div class="literalblock">
+</div><div class="sect1">
+<h2 id="philosophy"><a class="anchor" href="#philosophy"></a>Philosophy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Couchbase Server is a key-value store that&#8217;s agnostic to what&#8217;s stored, but it&#8217;s very common to store JSON.</p>
+</div>
+<div class="paragraph">
+<p>The Java SDK has these main objectives for JSON:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Be usable 'out-of-the-box'.  A simple JSON library is included, so you can get started right away.  Bonus: it&#8217;s simple to use and very fast!</p>
+</li>
+<li>
+<p>Be agnostic.  Your application may already be using its own JSON representation, and it shouldn&#8217;t be forced to use the built-in JSON library.
+We use <a href="https://github.com/FasterXML/jackson">Jackson</a> internally, so if you&#8217;re already using that popular ecosystem&#8217;s annotations you&#8217;re set to go. But you&#8217;re never locked into it, and you can use other libraries like <a href="https://github.com/google/gson/">Gson</a> easily.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started"><a class="anchor" href="#getting-started"></a>Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The examples below assume you&#8217;re familiar with connecting to a Couchbase cluster using the Java SDK, and opening resources.  Please check out <a href="#hello-world:start-using-sdk">the Getting Started guide</a> for help with this.</p>
+</div>
+<div class="sect2">
+<h3 id="inserting-a-simple-object"><a class="anchor" href="#inserting-a-simple-object"></a>Inserting a simple object</h3>
+<div class="paragraph">
+<p>Let&#8217;s assume we have a very simple JSON structure we want to insert:</p>
+</div>
+<div class="listingblock">
 <div class="content">
-<pre>include::7.0@sdk:pages:partial$json.adoc[]</pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java#L158-L161">{ 
+  name: "Arthur",
+  number: 42
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once we&#8217;ve connected to a Couchbase server and the bucket, scope, and collection that we want to write to, we know that inserting is as simple as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java#L171">collection.upsert("arthur", json);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But how do we model that JSON object?</p>
+</div>
+<div class="paragraph">
+<p>We mentioned the simple JSON library that we ship with the SDK, and let&#8217;s look at this first:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">import com.couchbase.client.java.json.*;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">JsonObject json = JsonObject.create()
+  .put("name", "Arthur")
+  .put("number", 42);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="retrieving"><a class="anchor" href="#retrieving"></a>Retrieving</h3>
+<div class="paragraph">
+<p>Couchbase&#8217;s <code>Collection.get()</code> method returns a <code>GetResult</code> object, which can then be converted back into a <code>JsonObject</code>.
+In this example, we print the JSON back, and access one of the fields:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">JsonObject jsonResult = collection.get("arthur")
+  .contentAsObject();
+
+System.out.println(jsonResult);
+System.out.println(jsonResult.getString("name"));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="using-javas-map-data-structure"><a class="anchor" href="#using-javas-map-data-structure"></a>Using Java&#8217;s <code>Map</code> data structure</h3>
+<div class="paragraph">
+<p>The <code>JsonObject</code> is modelled on the classic Java <code>Map</code> data structure, and in fact is backed by one.
+So we can easily create an object from an existing Map:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">Map&lt;String, Object&gt; map = Map.of( // Java 9+ syntax
+  "name", "Arthur",
+  "number", 42);
+
+JsonObject json = JsonObject.from(map);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The resulting <code>JsonObject</code> can be inserted as normal.
+But most JSON serializers can handle simple objects like a Map already, and ours (backed by Jackson) is no different. So you can simply:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">collection.upsert("arthur", map);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the data is in Couchbase, it is stored in exactly the same way, that is to say, as the JSON representation we started this example with!</p>
+</div>
+<div class="paragraph">
+<p>So whether we inserted a Map or a JsonObject, we could retrieve it as a JsonObject&#8230;&#8203; or indeed a Map:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">Map&lt;String, Object&gt; result = collection.get("arthur")
+  .contentAs(Map.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>While you are free to use Map, this is capable of storing any valid Java value, including ones that can&#8217;t be represented as JSON. JsonObject offers validation to make sure that only the relevant <a href="#datatypes">datatypes</a> are stored, which will give you greater diagnostics and robustness.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="inserting-a-json-string-or-json-file"><a class="anchor" href="#inserting-a-json-string-or-json-file"></a>Inserting a JSON string or <code>.json</code> file</h3>
+<div class="paragraph">
+<p>If we read the contents of a file to get a JSON string, we can also inflate a JsonObject from that string:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">String content  = new String(
+  Files.readAllBytes(
+    Paths.get(pathToArthurJson)),
+  StandardCharsets.UTF_8);
+// String content  = Files.readString(Paths.get(pathToArthurJson), StandardCharsets.UTF_8); // Java 11+
+
+JsonObject json = JsonObject.fromJson(content);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This might seem a little clumsy though:
+We&#8217;re reading a string, inflating it into a JsonObject, passing it to a serializer which will&#8230;&#8203; turn it back into a string again to send over the network to the Couchbase server!</p>
+</div>
+<div class="paragraph">
+<p>We could instead simply pass it through with the Raw JSON Transcoder:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">import com.couchbase.client.java.codec.RawJsonTranscoder;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">collection.upsert("arthur", content,
+  UpsertOptions.upsertOptions().transcoder(RawJsonTranscoder.INSTANCE));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach could also be used to handle JSON created by other libraries such as Gson.
+See the <a href="transcoders-nonjson.html#rawjsontranscoder" class="page">Transcoder documentation</a> for more details.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="serializing-objects"><a class="anchor" href="#serializing-objects"></a>Serializing objects</h3>
+<div class="paragraph">
+<p>It&#8217;s common to want to serialize your own objects, rather than creating Json programmatically or textually.
+Luckily our built-in JSON serializer makes light work of this task.
+Using this simple class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">public class Person {
+  public String name;
+  
+  public int number;
+  
+  public Person() {} // default constructor needed to deserialize
+  
+  public Person(String name, int number) {
+    this.name = name;
+    this.number = number;
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We could insert the exact same JSON as before with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">collection.upsert("arthur", new Person("Arthur", 42));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s now trivial to return the data either as a JsonObject, exactly as we&#8217;ve done before, or indeed as a Person object:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">Person person = collection.get("arthur")
+  .contentAs(Person.class);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ObjectMapper"><a class="anchor" href="#ObjectMapper"></a>More complex Object to JSON mapping</h3>
+<div class="paragraph">
+<p>Because the SDK&#8217;s serializer is backed by an industry standard library (Jackson), it is easy to model all kinds of Object to JSON mappings.
+Though the SDK automatically uses your version of Jackson when it finds the library on the CLASSPATH, you may wish to be explicit, or use an already configured ObjectMapper, as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.codec.JacksonJsonSerializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonProperty;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">ObjectMapper mapper = new ObjectMapper();
+mapper.registerModule(new JsonValueModule()); // for JsonObject
+
+ClusterEnvironment env = 
+  ClusterEnvironment.builder()
+    .jsonSerializer(JacksonJsonSerializer.create(mapper))
+    .build();
+
+Cluster cluster = Cluster.connect(
+  connectionString,
+  ClusterOptions
+    .clusterOptions(username, password)
+    .environment(env));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this setup, we can then configure our classes as we wish.
+Here, we&#8217;ve just renamed the Java class and its fields in Spanish.
+But the generated JSON will have the same fields as before, for easy interoperability:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">public class Persona {
+  @JsonProperty("name")
+  public String nombre;
+  
+  @JsonProperty("number")
+  public int numero;
+  
+  // ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="datatypes"><a class="anchor" href="#datatypes"></a>Modelling JSON datatypes in Java</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;ve only looked at a few datatypes so far, JSON objects <code>{}</code>, strings, and integers. But the full range of JSON types can be expressed, with the obvious mappings to Java.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>string <code>"hello"</code></p>
+</li>
+<li>
+<p>integer <code>123</code></p>
+</li>
+<li>
+<p>float <code>123.456</code></p>
+</li>
+<li>
+<p>boolean: <code>true</code>, <code>false</code></p>
+</li>
+<li>
+<p>object: <code>JavaObject</code>, <code>Map</code></p>
+</li>
+<li>
+<p>array: <code>JavaArray</code>, <code>List</code></p>
+</li>
+<li>
+<p>null</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In general, these values can be inserted as top-level values, or nested within an object or array. Let&#8217;s look at a few examples:</p>
+</div>
+<div class="sect2">
+<h3 id="nested-object"><a class="anchor" href="#nested-object"></a>Nested object</h3>
+<div class="paragraph">
+<p>This example shows a variety of data types, including a nested array ("possessions") and object ("address"):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">JsonObject arthur = JsonObject.create()
+  .put("name", "Arthur")
+  .put("number", 42)
+  .put("float", 42.0)
+  .put("address", JsonObject.create()
+    .put("street", "Country Lane")
+    .put("number", 155)
+    .put("town", "Cottington"))
+  .put("harmless", true)
+  .put("tea", JsonNull.INSTANCE) // or e.g. (String) null
+  .put("possessions",
+        JsonArray.from(
+          "dressing gown",
+          "pyjamas"));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="top-level-values-other-than-jsonobject"><a class="anchor" href="#top-level-values-other-than-jsonobject"></a>Top level values other than JsonObject</h3>
+<div class="paragraph">
+<p>Although it&#8217;s common to use a JsonObject, or a JsonArray as the inserted value to couchbase, other values are supported.</p>
+</div>
+<div class="paragraph">
+<p>For example, to insert a string value, we could simply:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">collection.upsert("some-string", "string-value");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can retrieve this value as usual, with the appropriate <code>.contentAs()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">System.out.println(
+  collection.get("some-string")
+    .contentAs(String.class));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dates"><a class="anchor" href="#dates"></a>Dates</h3>
+<div class="paragraph">
+<p>JSON has no built-in representation of dates, so commonly they are represented as one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a string-formatted <a href="https://www.w3.org/TR/NOTE-datetime" target="_blank" rel="noopener">ISO-8601</a> date</p>
+</li>
+<li>
+<p>an offset in seconds or milliseconds from the Unix epoch 1 January 1970 UTC</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>While it doesn&#8217;t matter which you choose (as long as you serialize and deserialize your Date object consistently!) it may make sense to store the dates in Couchbase in a format that can be easily manipulated using the <a href="#7.0@server:n1ql:n1ql-language-reference/datefun.adoc" class="page unresolved">date functions in N1QL</a>.</p>
+</div>
+<div class="paragraph">
+<p>Handily, as we can see on the same page, the
+<a href="#7.0@server:n1ql:n1ql-language-reference$datefun.adoc#date-formats" class="page unresolved">supported date formats</a> are the usual convention in JSON.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s look at a brief example of how we might implement this, to serialize a new Event class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">public  class Event {
+  public String name;
+  
+  @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss")
+  public LocalDateTime date;
+  
+  // ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll need a few extra imports:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">import java.time.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonFormat;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As we are controlling the serialization carefully, we&#8217;ll also want to register our own <a href="#ObjectMapper">ObjectMapper</a> as above, and additionally configure some of the date handling properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">mapper.registerModule(new JavaTimeModule());
+mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now all this is set up we can simply serialize and deserialize our Event objects exactly as we&#8217;ve done before:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">Event towelday = new Event("Towel Day",
+  LocalDateTime.of(2021, Month.MAY, 25, 9, 30));
+
+collection.upsert("towel-day", towelday);
+
+Event event = collection.get("towel-day").contentAs(Event.class);
+System.out.println(event.date);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="subdocuments"><a class="anchor" href="#subdocuments"></a>Subdocuments</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The JsonObjects work equally well with the <a href="subdocument-operations.html" class="page">Sub-Document</a> API.
+So taking our original "Arthur" object above, we can insert a simple value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">String string = "value";
+collection.mutateIn("arthur",
+  Arrays.asList(MutateInSpec.upsert("key", string)));</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">{ "name": "Arthur",
+  "number": 42,
+  "key": "value" }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or we could insert another nested object:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">JsonObject object  = JsonObject.create().put("subkey", "subvalue");
+collection.mutateIn("arthur",
+  Arrays.asList(MutateInSpec.upsert("key", object)));</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">{ "name": "Arthur",
+  "number": 42,
+  "key": {
+    "subkey":"subvalue"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="identifying-the-type-of-arbitrary-json"><a class="anchor" href="#identifying-the-type-of-arbitrary-json"></a>Identifying the type of arbitrary JSON</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Though you will often be mapping objects to JSON according to a defined schema, sometimes you may wish to handle values with unknown types.</p>
+</div>
+<div class="paragraph">
+<p>As we want to interrogate a specific Java object with well-defined semantics, we again want to specify the <a href="#ObjectMapper">ObjectMapper</a> used.</p>
+</div>
+<div class="paragraph">
+<p>We can now convert the result to Jackson&#8217;s <code>JsonNode</code>, and use its rich set of methods to identify and handle arbitrary values:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">import com.fasterxml.jackson.databind.JsonNode;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/Json.java">GetResult result = collection.get("mystery");
+
+JsonNode node = result.contentAs(JsonNode.class);
+if (node.isBoolean()) {
+  System.out.println("It's a boolean!");
+  if (node.booleanValue()) {
+    System.out.println("SUCCESS!");
+  }
+}
+else {
+  System.out.println(node.getNodeType());
+  // STRING
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="additional-resources"><a class="anchor" href="#additional-resources"></a>Additional Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Read more about the <a href="#7.0@server:learn:data/data.adoc" class="page unresolved">Couchbase Data Model</a>.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </article>

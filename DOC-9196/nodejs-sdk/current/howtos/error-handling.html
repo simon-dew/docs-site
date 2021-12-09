@@ -1815,11 +1815,11 @@ Depending on the type of the exception you catch, there are a number of properti
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L21-L25">  try {
-    var result = await collection.get(docKey);
-  } catch (e) {
-    // we can handle any exceptions thrown here.
-  }</code></pre>
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/0c28395d400379101e879f2559f47b8e5f5e598f/modules/howtos/examples/error-handling.js#L21-L25">try {
+  var result = await collection.get(docKey);
+} catch (e) {
+  // we can handle any exceptions thrown here.
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1836,13 +1836,13 @@ Here we will cover some of the most common errors.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L29-L35">  try {
-    var result = await collection.get("key-which-does-not-exist");
-  } catch (e) {
-    if (e instanceof couchbase.DocumentNotFoundError) {
-      console.log("the document is missing")
-    }
-  }</code></pre>
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/0c28395d400379101e879f2559f47b8e5f5e598f/modules/howtos/examples/error-handling.js#L29-L35">try {
+  var result = await collection.get("key-which-does-not-exist");
+} catch (e) {
+  if (e instanceof couchbase.DocumentNotFoundError) {
+    console.log("the document is missing")
+  }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1850,13 +1850,13 @@ Here we will cover some of the most common errors.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L41-L47">  try {
-    var result = await collection.insert("key-which-exists", "hello");
-  } catch (e) {
-    if (e instanceof couchbase.DocumentExistsError) {
-      console.log("document unexpectedly exists")
-    }
-  }</code></pre>
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/0c28395d400379101e879f2559f47b8e5f5e598f/modules/howtos/examples/error-handling.js#L41-L47">try {
+  var result = await collection.insert("key-which-exists", "hello");
+} catch (e) {
+  if (e instanceof couchbase.DocumentExistsError) {
+    console.log("document unexpectedly exists")
+  }
+}</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -1869,7 +1869,7 @@ If it has, it returns <code>CasMismatchError</code>, and the most appropriate re
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L71-L92">  for (var retryNum = 0; retryNum &lt; 10; ++i) {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/0c28395d400379101e879f2559f47b8e5f5e598f/modules/howtos/examples/error-handling.js#L71-L92">  for (var retryNum = 0; retryNum &lt; 10; ++i) {
     try {
       var result = await collection.get(docKey);
 
@@ -1916,31 +1916,31 @@ This similarly indicates that the operation may or may not have succeeded: thoug
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L99-L123">    for (var retryNum = 0; retryNum &lt; 10; ++i) {
-      try {
-        var result = await collection.insert(docKey, "some value", {
-          durabilityLevel: couchbase.DurabilityLevel.PersistToMajority,
-        });
-  
-        // success!
-        break;
-      } catch (e) {
-        if (e instanceof couchbase.DocumentExistsError) {
-          if (retryNum &gt; 0) {
-            // If this is a retry and the document now exists, we can assume it was
-            // written successfully by a previously ambiguous error.
-            continue;
-          }
-        }
-        if (e instanceof couchbase.DurabilityAmbiguousError) {
-          // we can simply try the durable operation again...
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/0c28395d400379101e879f2559f47b8e5f5e598f/modules/howtos/examples/error-handling.js#L99-L123">  for (var retryNum = 0; retryNum &lt; 10; ++i) {
+    try {
+      var result = await collection.insert(docKey, "some value", {
+        durabilityLevel: couchbase.DurabilityLevel.PersistToMajority,
+      });
+
+      // success!
+      break;
+    } catch (e) {
+      if (e instanceof couchbase.DocumentExistsError) {
+        if (retryNum &gt; 0) {
+          // If this is a retry and the document now exists, we can assume it was
+          // written successfully by a previously ambiguous error.
           continue;
         }
-  
-        // if we ran into another kind of error, let's re-throw it...
-        throw e;
       }
-    }</code></pre>
+      if (e instanceof couchbase.DurabilityAmbiguousError) {
+        // we can simply try the durable operation again...
+        continue;
+      }
+
+      // if we ran into another kind of error, let's re-throw it...
+      throw e;
+    }
+  }</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1976,7 +1976,7 @@ For those that are not, such as a Sub-Document <code>arrayAppend</code> call, or
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/7b6ac1b7ee739a91a6dce8c3cea46d48883c35fc/modules/howtos/examples/error-handling.js#L51-L67">  try {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/0c28395d400379101e879f2559f47b8e5f5e598f/modules/howtos/examples/error-handling.js#L51-L67">  try {
     var results = cluster.query("SELECT * FROM `travel-sample`");
   } catch (e) {
     if (e instanceof couchbase.IndexFailureError) {

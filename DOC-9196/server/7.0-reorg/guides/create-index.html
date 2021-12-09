@@ -11,7 +11,7 @@
 <script src="../../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="How to create primary indexes and secondary indexes.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
-        <link rel="prev" href="group-agg.html">
+        <link rel="prev" href="indexes.html">
         <link rel="next" href="place-index.html">
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0-reorg">
@@ -1018,7 +1018,7 @@
 <li class="menu_list is-parent closed" data-depth="2">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <span class="menu_title menu_text">Indexes</span>
+    <a class="menu_title menu_link" href="indexes.html">Indexes</a>
   </span>
 <ul class="menu_row">
 <li class="menu_list is-current-page" data-depth="3">
@@ -4446,7 +4446,7 @@
 <li class="crumb"><a href="../introduction/intro.html">server</a></li>
 <li class="crumb">Developer Guides</li>
 <li class="crumb"><a href="query.html">Query</a></li>
-<li class="crumb">Indexes</li>
+<li class="crumb"><a href="indexes.html">Indexes</a></li>
 <li class="crumb"><a href="create-index.html">Creating Indexes</a></li>
 </ul>
 </nav>
@@ -4473,7 +4473,7 @@ How to create primary indexes and secondary indexes.
 <div class="sectionbody">
 <div class="paragraph">
 <p>You must create an index on a keyspace to be able to query that keyspace.
-The index service supports two types of index: primary indexes and secondary indexes.</p>
+The Index service supports two types of index: primary indexes and secondary indexes.</p>
 </div>
 <div class="paragraph">
 <p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
@@ -4499,6 +4499,31 @@ Read the following for further information about the tools available for editing
 Primary indexes are optional and are only required for running ad-hoc queries that are not supported by a secondary index.</p>
 </div>
 <div class="paragraph">
+<p>You can create a primary index using a N1QL statement or an SDK call.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_n1ql"></a>N1QL</p>
+</li>
+<li>
+<p><a id="tabset1_net"></a>.NET</p>
+</li>
+<li>
+<p><a id="tabset1_java"></a>Java</p>
+</li>
+<li>
+<p><a id="tabset1_node-js"></a>Node.js</p>
+</li>
+<li>
+<p><a id="tabset1_python"></a>Python</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_n1ql">
+<div class="paragraph">
 <p>To create a primary index, use the <code>CREATE PRIMARY INDEX</code> command.</p>
 </div>
 <div class="olist arabic">
@@ -4512,32 +4537,172 @@ If you don&#8217;t specify a name, the index is called <code>#primary</code>.</p
 </li>
 </ol>
 </div>
-<div class="exampleblock">
-<div class="content">
+<hr>
 <div class="paragraph">
-<p>The following query creates an unnamed primary index on the <code>airline</code> keyspace.</p>
+<p>The following example creates an unnamed primary index on the <code>airline</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-pri-nameless.n1ql#L2">CREATE PRIMARY INDEX ON `travel-sample`.inventory.airline;</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-pri-nameless.n1ql#L2">CREATE PRIMARY INDEX ON `travel-sample`.inventory.airline;</code></pre>
 </div>
 </div>
-</div>
-</div>
-<div class="exampleblock">
-<div class="content">
 <div class="paragraph">
-<p>The following query creates a primary index named <code>travel_primary</code> on the <code>airline</code> keyspace.</p>
+<p>The following example creates a primary index named <code>travel_primary</code> on the <code>airline</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-pri-name.n1ql">CREATE PRIMARY INDEX travel_primary ON `travel-sample`.inventory.airline;</code></pre>
-</div>
-</div>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-pri-name.n1ql">CREATE PRIMARY INDEX travel_primary ON `travel-sample`.inventory.airline;</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/createprimaryindex.html" class="page">CREATE PRIMARY INDEX</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_net">
+<div class="paragraph">
+<p>To create a primary index, use the task <code>CreatePrimaryIndexAsync()</code> on the interface <code>IQueryIndexManager</code>.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>If you want to specify a name for the index:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, use the <code>IndexName</code> method to specify the index name.</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates an unnamed primary index.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.cs#L2-L3">var bucketManager = bucket.CreateManager();
+await bucketManager.CreateN1qlPrimaryIndexAsync();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Management.Query.IQueryIndexManager.html" target="_blank" rel="noopener">IQueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_java">
+<div class="paragraph">
+<p>To create a primary index, use the <code>createPrimaryIndex</code> method.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>If you want to specify a name for the index:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, use the <code>IndexName</code> method to specify the index name.</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates an unnamed primary index.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.java#L2-L4">QueryIndexManager indexManager = cluster.queryIndexes();
+
+indexManager.createPrimaryIndex(bucketName);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-java-client/com/couchbase/client/java/manager/query/QueryIndexManager.html" target="_blank" rel="noopener">QueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_node-js">
+<div class="paragraph">
+<p>To create a primary index, use the <code>createPrimaryIndex</code> function on a <code>QueryIndexManager</code> object.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>If you want to specify a name for the index:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, use the <code>name</code> property to specify the index name.</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates an unnamed primary index.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.js#L2-L3">const indexMgr = cluster.queryIndexes();
+await indexMgr.createPrimaryIndex('bucket_name')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/classes/QueryIndexManager.html" target="_blank" rel="noopener">QueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_python">
+<div class="paragraph">
+<p>To create a primary index, use the <code>create_primary_index</code> function on a <code>QueryIndexManager</code> object.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates an unnamed primary index.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.py#L2">mgr.create_primary_index('bucket_name')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/api/couchbase.html?highlight=index#n1ql-index-management" target="_blank" rel="noopener">N1QL Index Management</a>.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4548,6 +4713,31 @@ If you don&#8217;t specify a name, the index is called <code>#primary</code>.</p
 <p>A secondary index is actually the main type of index that queries use.
 You can create a secondary index on any fields or expressions necessary to support your queries.</p>
 </div>
+<div class="paragraph">
+<p>You can create a secondary index using a N1QL statement or an SDK call.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_n1ql"></a>N1QL</p>
+</li>
+<li>
+<p><a id="tabset2_net"></a>.NET</p>
+</li>
+<li>
+<p><a id="tabset2_java"></a>Java</p>
+</li>
+<li>
+<p><a id="tabset2_node-js"></a>Node.js</p>
+</li>
+<li>
+<p><a id="tabset2_python"></a>Python</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_n1ql">
 <div class="paragraph">
 <p>To create a secondary index, use the <code>CREATE INDEX</code> statement.</p>
 </div>
@@ -4564,32 +4754,163 @@ You can create a secondary index on any fields or expressions necessary to suppo
 </li>
 </ol>
 </div>
-<div class="exampleblock">
-<div class="content">
+<hr>
 <div class="paragraph">
-<p>The following query creates a secondary index on the <code>name</code> field in the <code>airline</code> keyspace.</p>
+<p>The following example creates a secondary index on the <code>name</code> field in the <code>airline</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-name.n1ql">CREATE INDEX travel_name ON `travel-sample`.inventory.airline(name);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-idx-name.n1ql">CREATE INDEX travel_name ON `travel-sample`.inventory.airline(name);</code></pre>
 </div>
 </div>
-</div>
-</div>
-<div class="exampleblock">
-<div class="content">
 <div class="paragraph">
-<p>The following query creates a secondary index on an expression using the <code>name</code> field in the <code>airline</code> keyspace.</p>
+<p>The following example creates a secondary index on an expression using the <code>name</code> field in the <code>airline</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/learn/examples/services-and-indexes/indexes/create-idx-expr.n1ql">CREATE INDEX travel_cxname ON `travel-sample`.inventory.airport(LOWER(name));</code></pre>
-</div>
-</div>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/examples/services-and-indexes/indexes/create-idx-expr.n1ql">CREATE INDEX travel_cxname ON `travel-sample`.inventory.airport(LOWER(name));</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/createindex.html" class="page">CREATE INDEX</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_net">
+<div class="paragraph">
+<p>To create a secondary index, use the task <code>CreateIndexAsync()</code> on the interface <code>IQueryIndexManager</code>.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>Specify a name for the index.</p>
+</li>
+<li>
+<p>Specify the field or fields to index.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a secondary index on the <code>name</code> field in the <code>airline</code> keyspace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.cs#L6-L7">await bucketManager.CreateN1qlIndexAsync("index_name", new string[] { "name" });
+await bucketManager.CreateN1qlIndexAsync("index_email", new string[] { "email" });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Management.Query.IQueryIndexManager.html" target="_blank" rel="noopener">IQueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_java">
+<div class="paragraph">
+<p>To create a secondary index, use the <code>createIndex</code> method.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>Specify a name for the index.</p>
+</li>
+<li>
+<p>Specify the field or fields to index.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a secondary index on the <code>name</code> field.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.java#L7-L8">indexManager.createIndex(bucketName, "ix_name", Collections.singletonList("name"));
+indexManager.createIndex(bucketName, "ix_email", Collections.singletonList("preferred_email"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-java-client/com/couchbase/client/java/manager/query/QueryIndexManager.html" target="_blank" rel="noopener">QueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_node-js">
+<div class="paragraph">
+<p>To create a secondary index, use the <code>createIndex</code> function on a <code>QueryIndexManager</code> object.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>Specify a name for the index.</p>
+</li>
+<li>
+<p>Specify the field or fields to index.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a secondary index on the <code>name</code> field.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.js#L6-L7">await indexMgr.createIndex('bucket_name', 'ix_name', ['name'])
+await indexMgr.createIndex('bucket_name', 'ix_email', ['email'])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/classes/QueryIndexManager.html" target="_blank" rel="noopener">QueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_python">
+<div class="paragraph">
+<p>To create a secondary index, use the <code>create_index</code> function on a <code>QueryIndexManager</code> object.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Specify the keyspace on which to create the index.</p>
+</li>
+<li>
+<p>Specify a name for the index.</p>
+</li>
+<li>
+<p>Specify the field or fields to index.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a secondary index on the <code>name</code> field.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/create-index.py#L5">mgr.create_index('bucket_name', 'idx_foo', fields=['foo'])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/api/couchbase.html?highlight=index#n1ql-index-management" target="_blank" rel="noopener">N1QL Index Management</a>.</p>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="creating-a-composite-index"><a class="anchor" href="#creating-a-composite-index"></a>Creating a Composite Index</h3>
@@ -4602,11 +4923,11 @@ You can create a secondary index on any fields or expressions necessary to suppo
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>The following query creates a secondary index on the <code>name</code>, <code>id</code>, <code>icao</code>, and <code>iata</code> fields in the <code>airline</code> keyspace.</p>
+<p>The following example creates a secondary index on the <code>name</code>, <code>id</code>, <code>icao</code>, and <code>iata</code> fields in the <code>airline</code> keyspace.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/learn/examples/services-and-indexes/indexes/create-idx-composite.n1ql">CREATE INDEX travel_info ON `travel-sample`.inventory.airline(name, id, icao, iata);</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/examples/services-and-indexes/indexes/create-idx-composite.n1ql">CREATE INDEX travel_info ON `travel-sample`.inventory.airline(name, id, icao, iata);</code></pre>
 </div>
 </div>
 </div>
@@ -4627,7 +4948,7 @@ You can create a secondary index on any fields or expressions necessary to suppo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/meta-idx-id.n1ql">CREATE INDEX idx_hotel_id ON `travel-sample`.inventory.hotel (META().id);</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/meta-idx-id.n1ql">CREATE INDEX idx_hotel_id ON `travel-sample`.inventory.hotel (META().id);</code></pre>
 </div>
 </div>
 </div>
@@ -4661,7 +4982,7 @@ You can create a secondary index on any fields or expressions necessary to suppo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/learn/examples/services-and-indexes/indexes/create-idx-array.n1ql">CREATE INDEX travel_sched ON `travel-sample`.inventory.route
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/examples/services-and-indexes/indexes/create-idx-array.n1ql">CREATE INDEX travel_sched ON `travel-sample`.inventory.route
 (DISTINCT ARRAY v.day FOR v IN schedule END);</code></pre>
 </div>
 </div>
@@ -4686,7 +5007,7 @@ You can create a secondary index on any fields or expressions necessary to suppo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/learn/examples/services-and-indexes/indexes/create-idx-partial.n1ql">CREATE INDEX travel_eat ON `travel-sample`.inventory.landmark(name, id, address)
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/examples/services-and-indexes/indexes/create-idx-partial.n1ql">CREATE INDEX travel_eat ON `travel-sample`.inventory.landmark(name, id, address)
 WHERE activity='eat';</code></pre>
 </div>
 </div>
@@ -4739,27 +5060,27 @@ If a query uses a covering index, the query can get all the data it needs from t
 </ul>
 </div>
 <div class="paragraph">
-<p>Querying with SDKs:</p>
+<p>Indexes with SDKs:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">C</a>
-| <a href="../../../dotnet-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">.NET</a>
-| <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Go</a>
-| <a href="../../../java-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Java</a>
-| <a href="../../../nodejs-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Node.js</a>
-| <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">PHP</a>
-| <a href="../../../python-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Python</a>
-| <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Ruby</a>
-| <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Scala</a></p>
+<p><a href="#c-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">C</a>
+| <a href="../../../dotnet-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">.NET</a>
+| <a href="#go-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Go</a>
+| <a href="../../../java-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Java</a>
+| <a href="../../../nodejs-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Node.js</a>
+| <a href="#php-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">PHP</a>
+| <a href="../../../python-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Python</a>
+| <a href="#ruby-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Ruby</a>
+| <a href="#scala-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Scala</a></p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="group-agg.html">Grouping and Aggregation</a></span>
+  <span class="prev"><a href="indexes.html">Indexes</a></span>
   <span class="next"><a href="place-index.html">Index Placement</a></span>
 </nav>
 </article>

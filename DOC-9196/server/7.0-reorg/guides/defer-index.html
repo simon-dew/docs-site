@@ -1018,7 +1018,7 @@
 <li class="menu_list is-parent closed" data-depth="2">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <span class="menu_title menu_text">Indexes</span>
+    <a class="menu_title menu_link" href="indexes.html">Indexes</a>
   </span>
 <ul class="menu_row">
 <li class="menu_list" data-depth="3">
@@ -4446,7 +4446,7 @@
 <li class="crumb"><a href="../introduction/intro.html">server</a></li>
 <li class="crumb">Developer Guides</li>
 <li class="crumb"><a href="query.html">Query</a></li>
-<li class="crumb">Indexes</li>
+<li class="crumb"><a href="indexes.html">Indexes</a></li>
 <li class="crumb"><a href="defer-index.html">Deferring Indexes</a></li>
 </ul>
 </nav>
@@ -4474,7 +4474,7 @@ How to create deferred indexes and build them later.
 <div class="paragraph">
 <p>When you create a primary or secondary index, you can mark it as <em>deferred</em>.
 This means the index is not built at once; you can build the deferred index later.
-This may enable you to build multiple indexes more efficiently.</p>
+This enables you to build multiple indexes more efficiently.</p>
 </div>
 <div class="paragraph">
 <p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
@@ -4496,6 +4496,31 @@ Read the following for further information about the tools available for editing
 <h2 id="deferring-an-index"><a class="anchor" href="#deferring-an-index"></a>Deferring an Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>You can defer an index to be built later using a N1QL statement or an SDK call.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_n1ql"></a>N1QL</p>
+</li>
+<li>
+<p><a id="tabset1_net"></a>.NET</p>
+</li>
+<li>
+<p><a id="tabset1_java"></a>Java</p>
+</li>
+<li>
+<p><a id="tabset1_node-js"></a>Node.js</p>
+</li>
+<li>
+<p><a id="tabset1_python"></a>Python</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_n1ql">
+<div class="paragraph">
 <p>To defer a primary or secondary index to be built later:</p>
 </div>
 <div class="olist arabic">
@@ -4508,14 +4533,13 @@ Read the following for further information about the tools available for editing
 </li>
 </ol>
 </div>
-<div class="exampleblock">
-<div class="content">
+<hr>
 <div class="paragraph">
-<p>The following queries create a set of primary and secondary indexes in the <code>landmark</code> keyspace with build deferred until later.</p>
+<p>The following queries create a set of primary and secondary indexes in the <code>landmark</code> keyspace, with build deferred until later.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-1.n1ql">CREATE INDEX idx_landmark_country
   ON `travel-sample`.inventory.landmark(country)
   USING GSI
   WITH {"defer_build":true};</code></pre>
@@ -4523,7 +4547,7 @@ Read the following for further information about the tools available for editing
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-2.n1ql">CREATE INDEX idx_landmark_name 
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-2.n1ql">CREATE INDEX idx_landmark_name 
   ON `travel-sample`.inventory.landmark(name)
   USING GSI
   WITH {"defer_build":true};</code></pre>
@@ -4531,16 +4555,150 @@ Read the following for further information about the tools available for editing
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-3.n1ql">CREATE PRIMARY INDEX idx_landmark_primary
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-idx-defer-3.n1ql">CREATE PRIMARY INDEX idx_landmark_primary
   ON `travel-sample`.inventory.landmark
   USING GSI
   WITH {"defer_build":true};</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/createprimaryindex.html" class="page">CREATE PRIMARY INDEX</a> and <a href="../n1ql/n1ql-language-reference/createindex.html" class="page">CREATE INDEX</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_net">
+<div class="paragraph">
+<p>To defer a primary or secondary index to be built later:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> or <code>CreateQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, invoke the <code>Deferred</code> method with the argument <code>true</code>.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a set of primary and secondary indexes in the <code>landmark</code> keyspace, with build deferred until later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.cs#L2-L5">var bucketManager = bucket.CreateManager();
+await bucketManager.CreateN1qlPrimaryIndexAsync(defer = true);
+await bucketManager.CreateN1qlIndexAsync("ix_name", defer = true, new string[] { "name" });
+await bucketManager.CreateN1qlIndexAsync("ix_email", defer = true, new string[] { "email" });</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/createprimaryindex.html" class="page">CREATE PRIMARY INDEX</a> and <a href="../n1ql/n1ql-language-reference/createindex.html" class="page">CREATE INDEX</a>.</p>
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Management.Query.CreatePrimaryQueryIndexOptions.html" target="_blank" rel="noopener">CreatePrimaryQueryIndexOptions</a> and <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Management.Query.CreateQueryIndexOptions.html" target="_blank" rel="noopener">CreateQueryIndexOptions</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_java">
+<div class="paragraph">
+<p>To defer a primary or secondary index to be built later:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> or <code>CreateQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, invoke the <code>deferred</code> method with the argument <code>true</code>.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a set of primary and secondary indexes in the <code>landmark</code> keyspace, with build deferred until later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.java#L2-L9">QueryIndexManager indexManager = cluster.queryIndexes();
+
+indexManager.createPrimaryIndex(bucketName,
+    CreatePrimaryQueryIndexOptions.createPrimaryQueryIndexOptions().deferred(true));
+indexManager.createIndex(bucketName, "ix_name", Collections.singletonList("name"),
+    CreateQueryIndexOptions.createQueryIndexOptions().deferred(true));
+indexManager.createIndex(bucketName, "ix_email", Collections.singletonList("preferred_email"),
+    CreateQueryIndexOptions.createQueryIndexOptions().deferred(true));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-java-client/com/couchbase/client/java/manager/query/CreatePrimaryQueryIndexOptions.html" target="_blank" rel="noopener">CreatePrimaryQueryIndexOptions</a> and <a href="https://docs.couchbase.com/sdk-api/couchbase-java-client/com/couchbase/client/java/manager/query/CreateQueryIndexOptions.html" target="_blank" rel="noopener">CreateQueryIndexOptions</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_node-js">
+<div class="paragraph">
+<p>To defer a primary or secondary index to be built later:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> or <code>CreateQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, set the <code>deferred</code> property to <code>true</code>.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a set of primary and secondary indexes in the <code>landmark</code> keyspace, with build deferred until later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.js#L2-L5">const indexMgr = cluster.queryIndexes();
+await indexMgr.createPrimaryIndex('bucket_name', {deferred: true})
+await indexMgr.createIndex('bucket_name', 'ix_name', ['name'], {deferred: true})
+await indexMgr.createIndex('bucket_name', 'ix_email', ['email'], {deferred: true})</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/CreatePrimaryQueryIndexOptions.html" target="_blank" rel="noopener">CreatePrimaryQueryIndexOptions</a> and <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/CreateQueryIndexOptions.html" target="_blank" rel="noopener">CreateQueryIndexOptions</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_python">
+<div class="paragraph">
+<p>To defer a primary or secondary index to be built later:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use <code>CreatePrimaryQueryIndexOptions</code> or <code>CreateQueryIndexOptions</code> to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, set the <code>deferred</code> property to <code>true</code>.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example creates a set of primary and secondary indexes in the <code>landmark</code> keyspace, with build deferred until later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.py#L2"># TODO: Python example</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/api/couchbase.html?highlight=index#n1ql-index-management" target="_blank" rel="noopener">N1QL Index Management</a>.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4548,7 +4706,33 @@ Read the following for further information about the tools available for editing
 <h2 id="building-a-deferred-index"><a class="anchor" href="#building-a-deferred-index"></a>Building a Deferred Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To build a deferred primary or secondary index, use the <code>BUILD INDEX</code> statement:</p>
+<p>You can build one or more deferred primary or secondary indexes using a N1QL statement.
+You can also build all deferred indexes in a keyspace using an SDK call.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_n1ql"></a>N1QL</p>
+</li>
+<li>
+<p><a id="tabset2_net"></a>.NET</p>
+</li>
+<li>
+<p><a id="tabset2_java"></a>Java</p>
+</li>
+<li>
+<p><a id="tabset2_node-js"></a>Node.js</p>
+</li>
+<li>
+<p><a id="tabset2_python"></a>Python</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_n1ql">
+<div class="paragraph">
+<p>To build or or more deferred indexes, use the <code>BUILD INDEX</code> statement:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -4560,32 +4744,107 @@ Read the following for further information about the tools available for editing
 </li>
 </ol>
 </div>
-<div class="exampleblock">
-<div class="content">
+<hr>
 <div class="paragraph">
-<p>The following query builds a single deferred index.</p>
+<p>The following example builds a single deferred index.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-single.n1ql">BUILD INDEX ON `travel-sample`.inventory.landmark(idx_landmark_country) USING GSI;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/build-idx-single.n1ql">BUILD INDEX ON `travel-sample`.inventory.landmark(idx_landmark_country) USING GSI;</code></pre>
 </div>
 </div>
-</div>
-</div>
-<div class="exampleblock">
-<div class="content">
 <div class="paragraph">
-<p>The following query builds multiple deferred indexes.</p>
+<p>The following example builds multiple deferred indexes.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="https://github.com/simon-dew/docs-server/blob/undefined/modules/n1ql/examples/n1ql-language-reference/build-idx-multiple.n1ql">BUILD INDEX ON `travel-sample`.inventory.hotel(idx_landmark_name, idx_landmark_primary);</code></pre>
-</div>
-</div>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/build-idx-multiple.n1ql">BUILD INDEX ON `travel-sample`.inventory.hotel(idx_landmark_name, idx_landmark_primary);</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/build-index.html" class="page">BUILD INDEX</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_net">
+<div class="paragraph">
+<p>To build all deferred indexes in a keyspace, use the task <code>BuildDeferredIndexesAsync</code> on the interface <code>IQueryIndexManager</code>.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example builds all deferred indexes in the keyspace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.cs#L9-L10">await bucketManager.BuildN1qlDeferredIndexesAsync();
+await bucketManager.WatchN1qlIndexes(new List&lt;string&gt; { "ix_name", "ix_email", "#primary"}, TimeSpan.FromSeconds(2));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Management.Query.IQueryIndexManager.html" target="_blank" rel="noopener">IQueryIndexManager()</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_java">
+<div class="paragraph">
+<p>To build all deferred indexes in a keyspace, use the <code>buildDeferredIndexes</code> method.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example builds all deferred indexes in the keyspace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.java#L13-L14">indexManager.buildDeferredIndexes(bucketName);
+indexManager.watchIndexes(bucketName, Arrays.asList("ix_name", "ix_email"), Duration.ofMinutes(5));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-java-client/com/couchbase/client/java/manager/query/QueryIndexManager.html" target="_blank" rel="noopener">QueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_node-js">
+<div class="paragraph">
+<p>To build all deferred indexes in a keyspace, use the <code>buildDeferredIndexes</code> function on a <code>QueryIndexManager</code> object.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example builds all deferred indexes in the keyspace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.js#L9-L10">await indexMgr.buildDeferredIndexes('bucket_name')
+await indexMgr.watchIndexes('bucket_name', ['ix_name', 'ix_email', '#primary'], 2000)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/classes/QueryIndexManager.html" target="_blank" rel="noopener">QueryIndexManager</a>.</p>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_python">
+<div class="paragraph">
+<p>The following example builds all deferred indexes in the keyspace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/index/build-index.py#L6"># TODO: Python example</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
+</div>
+<div class="paragraph">
+<p>For further details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/api/couchbase.html?highlight=index#n1ql-index-management" target="_blank" rel="noopener">N1QL Index Management</a>.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4616,20 +4875,20 @@ Read the following for further information about the tools available for editing
 </ul>
 </div>
 <div class="paragraph">
-<p>Querying with SDKs:</p>
+<p>Indexes with SDKs:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">C</a>
-| <a href="../../../dotnet-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">.NET</a>
-| <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Go</a>
-| <a href="../../../java-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Java</a>
-| <a href="../../../nodejs-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Node.js</a>
-| <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">PHP</a>
-| <a href="../../../python-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Python</a>
-| <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Ruby</a>
-| <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Scala</a></p>
+<p><a href="#c-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">C</a>
+| <a href="../../../dotnet-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">.NET</a>
+| <a href="#go-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Go</a>
+| <a href="../../../java-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Java</a>
+| <a href="../../../nodejs-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Node.js</a>
+| <a href="#php-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">PHP</a>
+| <a href="../../../python-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Python</a>
+| <a href="#ruby-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Ruby</a>
+| <a href="#scala-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Scala</a></p>
 </li>
 </ul>
 </div>
