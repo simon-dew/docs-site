@@ -12,6 +12,8 @@
 <script src="../../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="This section describes how to connect the Java SDK to a Couchbase cluster.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
 <meta name="dcterms.subject" content="java-sdk">
 <meta name="dcterms.identifier" content="3.2">
 <meta name="page-url" content="/java-sdk/current/howtos/managing-connections.html">
@@ -1813,7 +1815,7 @@ The simplest way to create a <code>Cluster</code> object is to call <code>Cluste
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L39-L52">Cluster cluster = Cluster.connect("127.0.0.1", "username", "password");
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L39-L52">Cluster cluster = Cluster.connect("127.0.0.1", "username", "password");
 Bucket bucket = cluster.bucket("travel-sample");
 Collection collection = bucket.defaultCollection();
 
@@ -1848,7 +1850,7 @@ Multiple addresses may be specified in a connection string by delimiting them wi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L58">Cluster cluster = Cluster.connect("192.168.56.101,192.168.56.102", "username", "password");</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L58">Cluster cluster = Cluster.connect("192.168.56.101,192.168.56.102", "username", "password");</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -1876,7 +1878,7 @@ One way to customize the client&#8217;s behavior is to build your own <code>Clus
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L64-L75">ClusterEnvironment env = ClusterEnvironment.builder()
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L64-L75">ClusterEnvironment env = ClusterEnvironment.builder()
     // Customize client settings by calling methods on the builder
     .build();
 
@@ -1976,7 +1978,7 @@ If you created any <code>ClusterEnvironment</code> instances, call their <code>s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L81-L96">ClusterEnvironment env = ClusterEnvironment.builder()
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L81-L96">ClusterEnvironment env = ClusterEnvironment.builder()
     .timeoutConfig(TimeoutConfig.kvTimeout(Duration.ofSeconds(5))).build();
 
 Cluster clusterA = Cluster.connect("clusterA.example.com",
@@ -2027,18 +2029,24 @@ A node configured in this way will advertise two addresses: one for connecting f
 </div>
 <div class="paragraph">
 <p>On the client side, the externally visible ports must be used when connecting.
-If the external ports are not the default, you can specify custom ports using the overloaded <code>Cluster.connect()</code> method that takes a set of <code>SeedNode</code> objects instead of a connection string.</p>
+If the external ports are not the default, you can specify custom ports in the connection string when calling <code>Cluster.connect()</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/managing_connections.java#L56-L63">int customKvPort = 1234;
-int customManagerPort = 2345;
-Set&lt;SeedNode&gt; seedNodes = new HashSet&lt;&gt;(
-		Arrays.asList(SeedNode.create("127.0.0.1", Optional.of(customKvPort), Optional.of(customManagerPort))));
-
-Authenticator authenticator = PasswordAuthenticator.create(username, password);
-ClusterOptions options = ClusterOptions.clusterOptions(authenticator);
-Cluster cluster = Cluster.connect(seedNodes, options);</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/managing_connections.java#L49-L51">int customKvPort = 1234; // default is 11210 (or 11207 for TLS)
+String connectionString = "127.0.0.1:" + customKvPort;
+Cluster cluster = Cluster.connect(connectionString, username, password);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For nodes that do not have the KV service, you can connect using a custom manager port instead.
+Notice how <code>=manager</code> appears after the port number, identifying it as a manager port:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/managing_connections.java#L57-L59">int customManagerPort = 2345; // default is 8091 (or 18091 for TLS)
+String connectionString = "127.0.0.1:" + customManagerPort + "=manager";
+Cluster cluster = Cluster.connect(connectionString, username, password);</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -2125,7 +2133,7 @@ F4+FjEqAEIr1mQepDaNM0gEfVcgd2SzGhC3yhYFBAH//8W4DUot5ciEhoBs=
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L164-L165">ClusterEnvironment env = ClusterEnvironment.builder()
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L164-L165">ClusterEnvironment env = ClusterEnvironment.builder()
     .securityConfig(SecurityConfig.enableTls(true).trustCertificate(Paths.get("/path/to/cluster.cert"))).build();</code></pre>
 </div>
 </div>
@@ -2210,7 +2218,7 @@ In order to make the SDK actually use the SRV records, you need to enable DNS SR
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L171">ClusterEnvironment env = ClusterEnvironment.builder().ioConfig(IoConfig.enableDnsSrv(true)).build();</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L171">ClusterEnvironment env = ClusterEnvironment.builder().ioConfig(IoConfig.enableDnsSrv(true)).build();</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2248,7 +2256,7 @@ To prevent those early timeouts from happening, you can use the <code>waitUntilR
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/managing_connections.java#L69-L72">Cluster cluster = Cluster.connect("127.0.0.1", "Administrator", "password");
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/managing_connections.java#L65-L68">Cluster cluster = Cluster.connect("127.0.0.1", "Administrator", "password");
 cluster.waitUntilReady(Duration.ofSeconds(10));
 Bucket bucket = cluster.bucket("travel-sample");
 Collection collection = bucket.defaultCollection();</code></pre>
@@ -2259,7 +2267,7 @@ Collection collection = bucket.defaultCollection();</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/managing_connections.java#L78-L81">Cluster cluster = Cluster.connect("127.0.0.1", "Administrator", "password");
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/managing_connections.java#L74-L77">Cluster cluster = Cluster.connect("127.0.0.1", "Administrator", "password");
 cluster.waitUntilReady(Duration.ofSeconds(10));
 Bucket bucket = cluster.bucket("travel-sample");
 Collection collection = bucket.defaultCollection();</code></pre>
@@ -2332,7 +2340,7 @@ The <code>bucket()</code> method of an <code>AsyncCluster</code> returns an <cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L124-L133">Cluster cluster = Cluster.connect("127.0.0.1", "username", "password");
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L124-L133">Cluster cluster = Cluster.connect("127.0.0.1", "username", "password");
 Bucket bucket = cluster.bucket("travel-sample");
 
 // Same API as Bucket, but completely async with CompletableFuture
@@ -2349,7 +2357,7 @@ cluster.disconnect();</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L152-L158">AsyncCluster cluster = AsyncCluster.connect("127.0.0.1", "username", "password");
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L152-L158">AsyncCluster cluster = AsyncCluster.connect("127.0.0.1", "username", "password");
 AsyncBucket bucket = cluster.bucket("travel-sample");
 
 // An async cluster's disconnect methods returns a CompletableFuture&lt;Void&gt;.
@@ -2363,7 +2371,7 @@ cluster.disconnect().join();</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/e6f0ae5406b661996309f1cd99df71b87d692d8d/modules/howtos/examples/ManagingConnections.java#L139-L146">ReactiveCluster cluster = ReactiveCluster.connect("127.0.0.1", "username", "password");
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/3fd595c24e70d15291700b93a973eba071e1b0cf/modules/howtos/examples/ManagingConnections.java#L139-L146">ReactiveCluster cluster = ReactiveCluster.connect("127.0.0.1", "username", "password");
 ReactiveBucket bucket = cluster.bucket("travel-sample");
 
 // A reactive cluster's disconnect methods returns a Mono&lt;Void&gt;.
