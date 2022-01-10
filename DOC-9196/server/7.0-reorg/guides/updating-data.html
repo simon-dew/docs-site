@@ -1059,7 +1059,7 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="index-advisor.html">Index Advisor</a>
+    <span class="menu_title menu_text">Prepared Statements</span>
   </span>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -1084,6 +1084,11 @@
   </span>
 </li>
 </ul>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="transactions.html">Transactions</a>
+  </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4604,7 +4609,11 @@ If it doesn&#8217;t exist, Couchbase will simply create a new document.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::dotnet-sdk:hello-world:example$KvHelloWorldScoped.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/86f839e83a843d6fb0850f537b0357847a58dc4f/modules/hello-world/examples/KvHelloWorldScoped.csx#L177-L181">// Update or create a document in the hotel collection.
+var upsertResult = await hotelCollection.UpsertAsync("hotel-123", document);
+
+// Print the result's CAS metadata to the console.
+Console.WriteLine($"Cas: {upsertResult.Cas}");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4625,7 +4634,11 @@ If it doesn&#8217;t exist, Couchbase will simply create a new document.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::java-sdk:hello-world:example$KvHelloWorldScoped.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/13b2d078f8851137aa4b99ae45efa78c7c1fee79/modules/hello-world/examples/KvHelloWorldScoped.java#L186-L190">// Update or create a document in the hotel collection.
+MutationResult upsertResult = hotelCollection.upsert("hotel-123", document);
+
+// Print the result's CAS metadata to the console.
+System.out.println("CAS:" + upsertResult.cas());</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4646,7 +4659,11 @@ If it doesn&#8217;t exist, Couchbase will simply create a new document.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::nodejs-sdk:hello-world:example$kv-hello-world-scoped.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/a769d7f66018ddfec6b4e92046510945d3b761ed/modules/hello-world/examples/kv-hello-world-scoped.js#L155-L159">// Update or create a document in the hotel collection.
+const upsertResult = await hotelCollection.upsert('hotel-123', document)
+
+// Print the result's CAS metadata to the console.
+console.log('CAS:', upsertResult.cas)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4667,7 +4684,11 @@ If it doesn&#8217;t exist, Couchbase will simply create a new document.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::python-sdk:hello-world:example$kv_hello_world_scoped.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/819b89acf2f87b142638fb8dce5622c70a1ee353/modules/hello-world/examples/kv_hello_world_scoped.py#L152-L156"># Update or create a document in the hotel collection.
+upsert_result = hotel_collection.upsert("hotel-123", document)
+
+# Print the result's CAS metadata to the console.
+print("CAS:", upsert_result.cas)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4808,7 +4829,30 @@ To ensure data has not been modified before executing the replace operation, pas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::dotnet-sdk:hello-world:example$KvHelloWorldScoped.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/86f839e83a843d6fb0850f537b0357847a58dc4f/modules/hello-world/examples/KvHelloWorldScoped.csx#L133-L156">// Fetch an existing hotel document.
+var getResult = await hotelCollection.GetAsync("hotel-123");
+var existingDoc = getResult.ContentAs&lt;JObject&gt;();
+
+// Get the current CAS value.
+var currentCas = getResult.Cas;
+Console.WriteLine($"Current Cas: {currentCas}");
+
+// Add a new review to the reviews array.
+var reviews = (JArray)existingDoc["reviews"];
+reviews.Add(new JObject(
+	new JProperty("content", "This hotel was cozy, conveniently located and clean."),
+	new JProperty("author", "Carmella O'Keefe"),
+	new JProperty("date", DateTime.UtcNow))
+);
+
+// Update the document with new data and pass the current CAS value. 
+var replaceResult = await hotelCollection.ReplaceAsync("hotel-123", existingDoc, options =&gt;
+{
+	options.Cas(currentCas);
+});
+
+// Print the new CAS value.
+Console.WriteLine($"New Cas: {replaceResult.Cas}");</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4851,7 +4895,31 @@ To ensure data has not been modified before executing the replace operation, pas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::java-sdk:hello-world:example$KvHelloWorldScoped.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/13b2d078f8851137aa4b99ae45efa78c7c1fee79/modules/hello-world/examples/KvHelloWorldScoped.java#L143-L167">// Fetch an existing hotel document
+GetResult getResult = hotelCollection.get("hotel-123");
+JsonObject existingDoc = getResult.contentAsObject();
+
+// Get the current CAS value.
+Long currentCas = getResult.cas();
+System.out.println("Current CAS:" + currentCas);
+
+// Add a new review to the reviews array.
+existingDoc.getArray("reviews").add(JsonObject.create()
+    .put("content", "This hotel was cozy, conveniently located and clean.")
+    .put("author", "Carmella O'Keefe")
+    .put("date", DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+  )
+);
+
+// Update the document with new data and pass the current CAS value. 
+MutationResult replaceResult = hotelCollection.replace(
+    "hotel-123",
+    existingDoc,
+    ReplaceOptions.replaceOptions().cas(currentCas)
+);
+
+// Print the new CAS value.
+System.out.println("New CAS:" + replaceResult.cas());</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4894,7 +4962,29 @@ To ensure data has not been modified before executing the replace operation, pas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::nodejs-sdk:hello-world:example$kv-hello-world-scoped.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/a769d7f66018ddfec6b4e92046510945d3b761ed/modules/hello-world/examples/kv-hello-world-scoped.js#L113-L135">// Fetch an existing hotel document.
+getResult = await hotelCollection.get('hotel-123')
+const existingDoc = getResult.content
+
+// Get the current CAS value.
+const currentCas = getResult.cas
+console.log('Current CAS:', currentCas)
+
+// Add a new review to the reviews array.
+existingDoc['reviews'].push({
+  content: 'This hotel was cozy, conveniently located and clean.',
+  author: "Carmella O'Keefe",
+  date: new Date().toISOString(),
+})
+
+// Update the document with new data and pass the current CAS value.
+const replaceResult = await hotelCollection.replace(
+  'hotel-123',
+  existingDoc
+)
+
+// Print the new CAS value.
+console.log('New CAS:', replaceResult.cas)</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4937,7 +5027,26 @@ To ensure data has not been modified before executing the replace operation, pas
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::python-sdk:hello-world:example$kv_hello_world_scoped.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/819b89acf2f87b142638fb8dce5622c70a1ee353/modules/hello-world/examples/kv_hello_world_scoped.py#L113-L132"># Fetch an existing hotel document.
+get_result = hotel_collection.get("hotel-123")
+existing_doc = get_result.content_as[dict]
+
+# Get the current CAS value.
+current_cas = get_result.cas
+print("Current CAS:", get_result.cas)
+
+# Add a new review to the reviews array.
+existing_doc["reviews"].append({
+    "content": "This hotel was cozy, conveniently located and clean.",
+    "author": "Carmella O'Keefe",
+    "date": datetime.now().isoformat(),
+})
+
+# Update the document with new data and pass the current CAS value.
+replace_result = hotel_collection.replace(
+    "hotel-123", existing_doc, ReplaceOptions(cas=current_cas)
+)
+print("New CAS:", replace_result.cas)</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -5046,7 +5155,10 @@ subdoc&gt; dict-upsert airport_1254 --path pets_ok=true</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::dotnet-sdk:hello-world:example$KvHelloWorldScoped.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/86f839e83a843d6fb0850f537b0357847a58dc4f/modules/hello-world/examples/KvHelloWorldScoped.csx#L188-L191">var mutateInResult = await hotelCollection.MutateInAsync("hotel-123",
+	specs =&gt; specs.Upsert("pets_ok", true)
+);
+Console.WriteLine($"Cas: {mutateInResult.Cas}");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5076,7 +5188,10 @@ subdoc&gt; dict-upsert airport_1254 --path pets_ok=true</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::java-sdk:hello-world:example$KvHelloWorldScoped.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/13b2d078f8851137aa4b99ae45efa78c7c1fee79/modules/hello-world/examples/KvHelloWorldScoped.java#L197-L200">List&lt;MutateInSpec&gt; specs = Arrays.asList(MutateInSpec.upsert("pets_ok", true));
+
+MutateInResult mutateInResult = hotelCollection.mutateIn("hotel-123", specs);
+System.out.println("CAS:" + mutateInResult.cas());</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5106,7 +5221,10 @@ subdoc&gt; dict-upsert airport_1254 --path pets_ok=true</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::nodejs-sdk:hello-world:example$kv-hello-world-scoped.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/a769d7f66018ddfec6b4e92046510945d3b761ed/modules/hello-world/examples/kv-hello-world-scoped.js#L166-L169">const mutateInResult = await hotelCollection.mutateIn('hotel-123', [
+  couchbase.MutateInSpec.upsert('pets_ok', true),
+])
+console.log('CAS:', mutateInResult.cas)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5136,7 +5254,10 @@ subdoc&gt; dict-upsert airport_1254 --path pets_ok=true</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/updating-data.adoc - include::python-sdk:hello-world:example$kv_hello_world_scoped.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/819b89acf2f87b142638fb8dce5622c70a1ee353/modules/hello-world/examples/kv_hello_world_scoped.py#L163-L166">mutate_in_result = hotel_collection.mutate_in(
+    "hotel-123", [subdocument.upsert("pets_ok", True)]
+)
+print("CAS:", mutate_in_result.cas)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5258,7 +5379,7 @@ subdoc&gt; dict-upsert airport_1254 --path pets_ok=true</code></pre>
     </div>
     <div class="footer-terms">
       <div class="footer-terms-copyright">
-          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+          <span>© 2022 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
       </div>
       <div class="footer-terms-links">
         <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>

@@ -1050,7 +1050,7 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/index-advisor.html">Index Advisor</a>
+    <span class="menu_title menu_text">Prepared Statements</span>
   </span>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -1075,6 +1075,11 @@
   </span>
 </li>
 </ul>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../guides/transactions.html">Transactions</a>
+  </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4908,8 +4913,7 @@ Within each recommended index, if there is more than one index key, they are sor
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre>UNNEST schedule AS x
-WHERE x.day = 1</pre>
+<pre>UNNEST schedule AS x WHERE x.day = 1</pre>
 </div>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
@@ -4930,8 +4934,7 @@ WHERE x.day = 1</pre>
 <div class="listingblock">
 <div class="title">Examples</div>
 <div class="content">
-<pre>WHERE ANY v IN schedule
-SATISFIES v.utc = "19:00" END
+<pre>WHERE ANY v IN schedule SATISFIES v.utc = "19:00" END
 
 WHERE LOWER(name) = "john"
 
@@ -4962,12 +4965,9 @@ WHERE id = 10</pre>
 <div class="listingblock">
 <div class="title">Examples</div>
 <div class="content">
-<pre>WHERE ANY v IN schedule
-SATISFIES v.utc
-IN ["19:00", "20:00"] END
+<pre>WHERE ANY v IN schedule SATISFIES v.utc IN ["19:00", "20:00"] END
 
-WHERE LOWER(name)
-IN ["jo", "john"]
+WHERE LOWER(name) IN ["jo", "john"]
 
 WHERE id IN [10, 20]</pre>
 </div>
@@ -4990,12 +4990,9 @@ WHERE id IN [10, 20]</pre>
 <div class="listingblock">
 <div class="title">Examples</div>
 <div class="content">
-<pre>WHERE ANY v IN schedule
-SATISFIES v.utc BETWEEN
-"19:00" AND "20:00" END
+<pre>WHERE ANY v IN schedule SATISFIES v.utc BETWEEN "19:00" AND "20:00" END
 
-WHERE LOWER(name)
-BETWEEN "jo" AND "john"
+WHERE LOWER(name) BETWEEN "jo" AND "john"
 
 WHERE id BETWEEN 10 AND 25</pre>
 </div>
@@ -5018,8 +5015,7 @@ WHERE id BETWEEN 10 AND 25</pre>
 <div class="listingblock">
 <div class="title">Examples</div>
 <div class="content">
-<pre>WHERE ANY v IN schedule
-SATISFIES v.utc &gt; "19:00" END
+<pre>WHERE ANY v IN schedule SATISFIES v.utc &gt; "19:00" END
 
 WHERE LOWER(name) &gt; "jo"
 
@@ -5044,7 +5040,8 @@ WHERE id &gt; 10 AND id &lt; 25</pre>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre>FROM route r JOIN airline a
+<pre>FROM `travel-sample`.inventory.route r
+JOIN `travel-sample`.inventory.airline a
 ON r.airlineid = META(a).id</pre>
 </div>
 </div></div></td>
@@ -5066,9 +5063,7 @@ ON r.airlineid = META(a).id</pre>
 <div class="listingblock">
 <div class="title">Examples</div>
 <div class="content">
-<pre>WHERE ANY v IN schedule
-SATISFIES v.utc IS NOT NULL
-END
+<pre>WHERE ANY v IN schedule SATISFIES v.utc IS NOT NULL END
 
 WHERE LOWER(name) IS NOT NULL
 
@@ -5114,7 +5109,8 @@ WHERE id IS NOT NULL</pre>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre>FROM route r JOIN airline a
+<pre>FROM `travel-sample`.inventory.route r
+JOIN `travel-sample`.inventory.airline a
 ON r.airline = a.iata</pre>
 </div>
 </div></div></td>
@@ -5212,13 +5208,13 @@ You should check the suggested index names and change any that are duplicates.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-cbo.n1ql">ADVISE SELECT * FROM `travel-sample`.inventory.hotel a WHERE a.country = 'France';</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT * FROM `travel-sample`.inventory.hotel a WHERE a.country = 'France';</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-cbo.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "#operator": "Advise",
     "advice": {
@@ -5266,14 +5262,13 @@ You should check the suggested index names and change any that are duplicates.
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-indexes.n1ql">ADVISE SELECT airportname FROM `travel-sample`.inventory.airport
-WHERE geo.alt NOT BETWEEN 0 AND 100;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT airportname FROM `travel-sample`.inventory.airport WHERE geo.alt NOT BETWEEN 0 AND 100;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-indexes.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "#operator": "Advise",
     "advice": {
@@ -5314,14 +5309,13 @@ WHERE geo.alt NOT BETWEEN 0 AND 100;</code></pre>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-identical.n1ql">ADVISE SELECT * FROM `travel-sample`.inventory.landmark
-WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT * FROM `travel-sample`.inventory.landmark WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-identical.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "#operator": "Advise",
     "advice": {
@@ -5350,14 +5344,13 @@ WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-optimal.n1ql">ADVISE SELECT city FROM `travel-sample`.inventory.landmark
-WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT city FROM `travel-sample`.inventory.landmark WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-optimal.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "#operator": "Advise",
     "advice": {
@@ -5385,13 +5378,13 @@ WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-none.n1ql">ADVISE SELECT * FROM `travel-sample`.inventory.landmark LIMIT 5;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">ADVISE SELECT * FROM `travel-sample`.inventory.landmark LIMIT 5;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/advise-none.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "#operator": "Advise",
     "advice": {
@@ -5492,7 +5485,7 @@ WHERE city LIKE "Par%" OR city LIKE "Lon%";</code></pre>
     </div>
     <div class="footer-terms">
       <div class="footer-terms-copyright">
-          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+          <span>© 2022 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
       </div>
       <div class="footer-terms-links">
         <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>

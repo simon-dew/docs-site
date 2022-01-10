@@ -1059,7 +1059,7 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="index-advisor.html">Index Advisor</a>
+    <span class="menu_title menu_text">Prepared Statements</span>
   </span>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -1084,6 +1084,11 @@
   </span>
 </li>
 </ul>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="transactions.html">Transactions</a>
+  </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4642,7 +4647,39 @@ If the document already exists, <code class="cmd">cbc</code> will return a <code
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::dotnet-sdk:hello-world:example$KvHelloWorldScoped.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/86f839e83a843d6fb0850f537b0357847a58dc4f/modules/hello-world/examples/KvHelloWorldScoped.csx#L28-L60">// Create a document object.
+var document = new
+{
+	id = 123,
+	name = "Medway Youth Hostel ",
+	address = "Capstone Road, ME7 3JE",
+	url = "http://www.yha.org.uk",
+	geo = new
+	{
+		lat = 51.35785,
+		lon = 0.55818,
+		accuracy = "RANGE_INTERPOLATED"
+	},
+	country = "United Kingdom",
+	city = "Medway",
+	state = (string)null,
+	reviews = new[]
+	{
+		new {
+			content = "This was our 2nd trip here and we enjoyed it more than last year.",
+			author = "Ozella Sipes",
+			date = DateTime.UtcNow
+		}
+	},
+	vacancy = true,
+	description = "40 bed summer hostel about 3 miles from Gillingham."
+};
+
+// Insert the document in the hotel collection.
+var insertResult = await hotelCollection.InsertAsync("hotel-123", document);
+
+// Print the result's CAS metadata to the console.
+Console.WriteLine($"Cas: {insertResult.Cas}");</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4684,7 +4721,36 @@ If the document already exists, the SDK will return a <code>DocumentExistsExcept
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::java-sdk:hello-world:example$KvHelloWorldScoped.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/13b2d078f8851137aa4b99ae45efa78c7c1fee79/modules/hello-world/examples/KvHelloWorldScoped.java#L45-L74">// Create the document object.
+JsonObject geo = JsonObject.create()
+    .put("lat", 51.35785)
+    .put("lon", 0.55818)
+    .put("accuracy", "RANGE_INTERPOLATED");
+
+JsonArray reviews = JsonArray.create();
+reviews.add(JsonObject.create()
+    .put("content", "This was our 2nd trip here and we enjoyed it more than last year.")
+    .put("author", "Ozella Sipes")
+    .put("date", DateTimeFormatter.ISO_INSTANT.format(Instant.now())));
+
+JsonObject document = JsonObject.create()
+    .put("id", "hotel-123")
+    .put("name", "Medway Youth Hostel")
+    .put("address", "Capstone Road, ME7 3JE")
+    .put("url", "http://www.yha.org.uk")
+    .put("geo", geo)
+    .put("country", "United Kingdom")
+    .put("city", "Medway")
+    .put("state", (String) null)
+    .put("reviews", reviews)
+    .put("vacancy", true)
+    .put("description", "40 bed summer hostel about 3 miles from Gillingham.");
+
+// Insert the document in the hotel collection.
+MutationResult insertResult = hotelCollection.insert("hotel-123", document);
+
+// Print the result's CAS metadata to the console.
+System.out.println("CAS:" + insertResult.cas());</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4726,7 +4792,37 @@ If the document already exists, the SDK will return a <code>DocumentExistsExcept
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::nodejs-sdk:hello-world:example$kv-hello-world-scoped.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/a769d7f66018ddfec6b4e92046510945d3b761ed/modules/hello-world/examples/kv-hello-world-scoped.js#L14-L44">// Create a document object.
+const document = {
+  id: 123,
+  name: 'Medway Youth Hostel',
+  address: 'Capstone Road, ME7 3JE',
+  url: 'http://www.yha.org.uk',
+  geo: {
+    lat: 51.35785,
+    lon: 0.55818,
+    accuracy: 'RANGE_INTERPOLATED',
+  },
+  country: 'United Kingdom',
+  city: 'Medway',
+  state: null,
+  reviews: [
+    {
+      content:
+        'This was our 2nd trip here and we enjoyed it more than last year.',
+      author: 'Ozella Sipes',
+      date: new Date().toISOString(),
+    },
+  ],
+  vacancy: true,
+  description: '40 bed summer hostel about 3 miles from Gillingham.',
+}
+
+// Insert the document in the hotel collection.
+const insertResult = await hotelCollection.insert('hotel-123', document)
+
+// Print the result's CAS metadata to the console.
+console.log('CAS:', insertResult.cas)</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4768,7 +4864,36 @@ If the document already exists, the SDK will return a <code>DocumentExistsError<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::python-sdk:hello-world:example$kv_hello_world_scoped.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/819b89acf2f87b142638fb8dce5622c70a1ee353/modules/hello-world/examples/kv_hello_world_scoped.py#L16-L45"># Create a document object.
+document = {
+    "id": 123,
+    "name": "Medway Youth Hostel",
+    "address": "Capstone Road, ME7 3JE",
+    "url": "http://www.yha.org.uk",
+    "geo": {
+        "lat": 51.35785,
+        "lon": 0.55818,
+        "accuracy": "RANGE_INTERPOLATED",
+    },
+    "country": "United Kingdom",
+    "city": "Medway",
+    "state": None,
+    "reviews": [
+        {
+            "content": "This was our 2nd trip here and we enjoyed it more than last year.",
+            "author": "Ozella Sipes",
+            "date": datetime.now().isoformat(),
+        },
+    ],
+    "vacancy": True,
+    "description": "40 bed summer hostel about 3 miles from Gillingham.",
+}
+
+# Insert the document in the hotel collection.
+insert_result = hotel_collection.insert("hotel-123", document)
+
+# Print the result's CAS metadata to the console.
+print("CAS:", insert_result.cas)</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4898,7 +5023,28 @@ This unique value allows the database to protect against concurrent updates to t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::dotnet-sdk:hello-world:example$KvHelloWorldScoped.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/86f839e83a843d6fb0850f537b0357847a58dc4f/modules/hello-world/examples/KvHelloWorldScoped.csx#L67-L88">var document = new
+{
+	id = 456,
+	title = "Ardèche",
+	name = "La Pradella",
+	address = "rue du village, 07290 Preaux, France",
+	phone = "+33 4 75 32 08 52",
+	url = "http://www.lapradella.fr",
+	country = "France",
+	city = "Preaux",
+	state = "Rhône-Alpes",
+	vacancy = false
+};
+
+// Insert the document with an expiry time option of 60 seconds.
+var insertResult = await hotelCollection.InsertAsync("hotel-456", document, options =&gt;
+{
+	options.Expiry(TimeSpan.FromSeconds(60));
+});
+
+// Print the result's CAS metadata to the console.
+Console.WriteLine($"CAS: {insertResult.Cas}");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4925,7 +5071,27 @@ This unique value allows the database to protect against concurrent updates to t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::java-sdk:hello-world:example$KvHelloWorldScoped.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/13b2d078f8851137aa4b99ae45efa78c7c1fee79/modules/hello-world/examples/KvHelloWorldScoped.java#L81-L101">JsonObject document = JsonObject.create()
+    .put("id", 456)
+    .put("title", "Ardèche")
+    .put("name", "La Pradella")
+    .put("address", "rue du village, 07290 Preaux, France")
+    .put("phone", "+33 4 75 32 08 52")
+    .put("url", "http://www.lapradella.fr")
+    .put("country", "France")
+    .put("city", "Preaux")
+    .put("state", "Rhône-Alpes")
+    .put("vacancy", false);
+
+// Insert the document with an expiry time option of 60 seconds.
+MutationResult insertResult = hotelCollection.insert(
+  "hotel-456",
+  document,
+  InsertOptions.insertOptions().expiry(Duration.ofSeconds(2))
+);
+
+// Print the result's CAS metadata to the console.
+System.out.println("CAS:" + insertResult.cas());</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4952,7 +5118,26 @@ This unique value allows the database to protect against concurrent updates to t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::nodejs-sdk:hello-world:example$kv-hello-world-scoped.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/a769d7f66018ddfec6b4e92046510945d3b761ed/modules/hello-world/examples/kv-hello-world-scoped.js#L51-L70">document = {
+  id: 456,
+  title: 'Ardèche',
+  name: 'La Pradella',
+  address: 'rue du village, 07290 Preaux, France',
+  phone: '+33 4 75 32 08 52',
+  url: 'http://www.lapradella.fr',
+  country: 'France',
+  city: 'Preaux',
+  state: 'Rhône-Alpes',
+  vacancy: false,
+}
+
+// Insert the document with an expiry time option of 60 seconds.
+const insertResult = await hotelCollection.insert('hotel-456', document, {
+  expiry: 60,
+})
+
+// Print the result's CAS metadata to the console.
+console.log('CAS:', insertResult.cas)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4979,7 +5164,25 @@ This unique value allows the database to protect against concurrent updates to t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/creating-data.adoc - include::python-sdk:hello-world:example$kv_hello_world_scoped.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/819b89acf2f87b142638fb8dce5622c70a1ee353/modules/hello-world/examples/kv_hello_world_scoped.py#L52-L70">document = {
+    "id": 456,
+    "title": "Ardèche",
+    "name": "La Pradella",
+    "address": "rue du village, 07290 Preaux, France",
+    "phone": "+33 4 75 32 08 52",
+    "url": "http://www.lapradella.fr",
+    "country": "France",
+    "city": "Preaux",
+    "state": "Rhône-Alpes",
+    "vacancy": False,
+}
+# Insert the document with an expiry time option of 60 seconds.
+insert_result = hotel_collection.insert(
+    "hotel-456", document, InsertOptions(expiry=timedelta(seconds=60))
+)
+
+# Print the result's CAS metadata to the console.
+print("CAS:", insert_result.cas)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5084,7 +5287,7 @@ This unique value allows the database to protect against concurrent updates to t
     </div>
     <div class="footer-terms">
       <div class="footer-terms-copyright">
-          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+          <span>© 2022 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
       </div>
       <div class="footer-terms-links">
         <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>

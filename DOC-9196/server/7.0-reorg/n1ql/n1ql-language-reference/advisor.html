@@ -1050,7 +1050,7 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/index-advisor.html">Index Advisor</a>
+    <span class="menu_title menu_text">Prepared Statements</span>
   </span>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -1075,6 +1075,11 @@
   </span>
 </li>
 </ul>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../guides/transactions.html">Transactions</a>
+  </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4665,14 +4670,13 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-single.n1ql">SELECT ADVISOR("SELECT * FROM `travel-sample`.inventory.landmark
-WHERE activity = 'eat' AND city = 'Paris'") AS Single;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q1.n1ql">SELECT ADVISOR("SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'eat' AND city = 'Paris'") AS Single;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-single.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q1.jsonc">[
   {
     "Single": {
       "current_used_indexes": [
@@ -4681,18 +4685,18 @@ WHERE activity = 'eat' AND city = 'Paris'") AS Single;</code></pre>
           "statements": [
             {
               "run_count": 1,
-              "statement": "SELECT * FROM `travel-sample`.inventory.landmark\nWHERE activity = 'eat' AND city = 'Paris'"
+              "statement": "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'eat' AND city = 'Paris'"
             }
           ]
         }
       ],
       "recommended_indexes": [
         {
-          "index": "CREATE INDEX adv_city_activity ON `default`:`travel-sample`.`inventory`.`landmark`(`city`,`activity`)",
+          "index": "CREATE INDEX adv_activity_city ON `default`:`travel-sample`.`inventory`.`landmark`(`activity`,`city`)",
           "statements": [
             {
               "run_count": 1,
-              "statement": "SELECT * FROM `travel-sample`.inventory.landmark\nWHERE activity = 'eat' AND city = 'Paris'"
+              "statement": "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'eat' AND city = 'Paris'"
             }
           ]
         }
@@ -4746,18 +4750,16 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-multiple.n1ql">SELECT ADVISOR([
-  "SELECT * FROM `travel-sample`.inventory.landmark
-   WHERE activity = 'eat' AND city = 'Paris'",
-  "SELECT * FROM `travel-sample`.inventory.landmark
-   WHERE activity = 'see' AND city = 'San Francisco'"
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q2.n1ql">SELECT ADVISOR([
+  "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'eat' AND city = 'Paris'",
+  "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'see' AND city = 'San Francisco'"
 ]) AS Multiple;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-multiple.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q2.jsonc">[
   {
     "Multiple": {
       "current_used_indexes": [
@@ -4766,31 +4768,26 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
           "statements": [
             {
               "run_count": 1,
-              "statement": "SELECT * FROM `travel-sample`.inventory.landmark\n   WHERE activity = 'eat' AND city = 'Paris'"
+              "statement": "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'eat' AND city = 'Paris'"
             },
             {
               "run_count": 1,
-              "statement": "SELECT * FROM `travel-sample`.inventory.landmark\n   WHERE activity = 'see' AND city = 'San Francisco'"
+              "statement": "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'see' AND city = 'San Francisco'"
             }
           ]
         }
       ],
       "recommended_indexes": [
         {
-          "index": "CREATE INDEX adv_city_activity ON `default`:`travel-sample`.`inventory`.`landmark`(`city`,`activity`)",
-          "statements": [
-            {
-              "run_count": 1,
-              "statement": "SELECT * FROM `travel-sample`.inventory.landmark\n   WHERE activity = 'eat' AND city = 'Paris'"
-            }
-          ]
-        },
-        {
           "index": "CREATE INDEX adv_activity_city ON `default`:`travel-sample`.`inventory`.`landmark`(`activity`,`city`)",
           "statements": [
             {
               "run_count": 1,
-              "statement": "SELECT * FROM `travel-sample`.inventory.landmark\n   WHERE activity = 'see' AND city = 'San Francisco'"
+              "statement": "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'eat' AND city = 'Paris'"
+            },
+            {
+              "run_count": 1,
+              "statement": "SELECT * FROM `travel-sample`.inventory.landmark WHERE activity = 'see' AND city = 'San Francisco'"
             }
           ]
         }
@@ -4813,13 +4810,13 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-recent.n1ql">SELECT ADVISOR((SELECT RAW statement FROM system:completed_requests)) AS Recent;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q3.n1ql">SELECT ADVISOR((SELECT RAW statement FROM system:completed_requests)) AS Recent;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-recent.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "Recent": {
       "current_used_indexes": [
@@ -4834,7 +4831,8 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
               "run_count": 2,
               "statement": "SELECT d.id, d.destinationairport, RATIO_TO_REPORT(d.distance) OVER (PARTITION BY d.destinationairport) AS `distance-ratio` FROM `travel-sample`.inventory.route AS d LIMIT 7;"
             },
-// ...
+...
+      [data-source-url=file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q3.jsonc#L23-L62]
           ]
         },
         {
@@ -4875,7 +4873,7 @@ The index advisor works with <a href="selectintro.html" class="page">SELECT</a>,
               "run_count": 3,
               "statement": "SELECT * FROM `travel-sample`.inventory.route r JOIN `travel-sample`.inventory.airline a ON r.airlineid= META(a).id WHERE a.country = \"France\";"
             }
-// ...</code></pre>
+...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4992,13 +4990,13 @@ All completed queries taking longer than 0 seconds will be collected.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-start.n1ql">SELECT ADVISOR({"action": "start", "response": "0s", "duration": "1h"}) AS Collect;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q4.n1ql">SELECT ADVISOR({"action": "start", "response": "0s", "duration": "1h"}) AS Collect;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-start.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q4.jsonc">[
   {
     "Collect": {
       "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"
@@ -5287,13 +5285,13 @@ You will need to refer to this name to <a href="#advisor-session-get">get the re
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-list.n1ql">SELECT ADVISOR({"action": "list"}) AS List;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q5.n1ql">SELECT ADVISOR({"action": "list"}) AS List;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-list.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "List": [
       {
@@ -5304,7 +5302,8 @@ You will need to refer to this name to <a href="#advisor-session-get">get the re
           "name": "0cd09ae4-a083-4a7e-86cd-85e42c140d60",
           "node": "127.0.0.1:8091",
           "results": [
-// ...
+...
+[data-source-url=file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q5.jsonc#L16-L41]
           ],
           "startTime": "2021-01-19 15:57:51.015716783 +0000 UTC m=+19106.791327072",
           "state": "completed",
@@ -5389,14 +5388,13 @@ You can then <a href="#advisor-session-get">get the results</a> for this session
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-stop.n1ql">SELECT ADVISOR({"action": "stop", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"})
-AS Stop;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q6.n1ql">SELECT ADVISOR({"action": "stop", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"}) AS Stop;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-stop.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q6.jsonc">[
   {
     "Stop": []
   }
@@ -5454,14 +5452,13 @@ In this case, the session is stopped, and the session is removed from the tasks 
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-abort.n1ql">SELECT ADVISOR({"action": "abort", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"})
-AS Abort;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q7.n1ql">SELECT ADVISOR({"action": "abort", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"}) AS Abort;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-abort.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q7.jsonc">[
   {
     "Abort": []
   }
@@ -5522,14 +5519,13 @@ The index advisor is invoked for any collected <a href="selectintro.html" class=
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-get.n1ql">SELECT ADVISOR({"action": "get", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"})
-AS Get;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q8.n1ql">SELECT ADVISOR({"action": "get", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"}) AS Get;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-get.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
   {
     "Get": [
       [
@@ -5543,7 +5539,7 @@ AS Get;</code></pre>
                   "statement": "SELECT airportname FROM `travel-sample`.inventory.airport WHERE geo.alt NOT BETWEEN 0 AND 100;"
                 }
               ]
-// ...
+...
             }
           ],
           "recommended_covering_indexes": [
@@ -5555,7 +5551,8 @@ AS Get;</code></pre>
                   "statement": "SELECT h.name, h.city, a.airportname FROM `travel-sample`.inventory.hotel h JOIN `travel-sample`.inventory.airport a ON h.city = a.city LIMIT 5;"
                 }
               ]
-// ...
+...
+[data-source-url=file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q8.jsonc#L76-L93]
             }
           ],
           "recommended_indexes": [
@@ -5629,14 +5626,13 @@ AS Get;</code></pre>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-purge.n1ql">SELECT ADVISOR({"action": "purge", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"})
-AS Purge;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q9.n1ql">SELECT ADVISOR({"action": "purge", "session": "0cd09ae4-a083-4a7e-86cd-85e42c140d60"}) AS Purge;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/functions/advisor-purge.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/advisor-q9.jsonc">[
   {
     "Purge": []
   }
@@ -5725,7 +5721,7 @@ AS Purge;</code></pre>
     </div>
     <div class="footer-terms">
       <div class="footer-terms-copyright">
-          <span>© 2021 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+          <span>© 2022 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
       </div>
       <div class="footer-terms-links">
         <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
