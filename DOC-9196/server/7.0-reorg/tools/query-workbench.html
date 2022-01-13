@@ -1043,9 +1043,42 @@
 </li>
 </ul>
 </li>
+<li class="menu_list is-parent closed" data-depth="2">
+  <span class="menu_line">
+    <span class="in-toggle"></span>
+    <a class="menu_title menu_link" href="../guides/indexes.html">Indexes</a>
+  </span>
+<ul class="menu_row">
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../guides/create-index.html">Creating Indexes</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../guides/place-index.html">Index Placement</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../guides/defer-index.html">Deferring Indexes</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../guides/select-index.html">Selecting Indexes</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../guides/drop-index.html">Dropping Indexes</a>
+  </span>
+</li>
+</ul>
+</li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <span class="menu_title menu_text">Indexes</span>
+    <a class="menu_title menu_link" href="../guides/index-advisor.html">Index Advisor</a>
   </span>
 </li>
 <li class="menu_list" data-depth="2">
@@ -1075,11 +1108,6 @@
   </span>
 </li>
 </ul>
-</li>
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../guides/transactions.html">Transactions</a>
-  </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4490,7 +4518,7 @@ The Query Workbench provides a rich graphical user interface to perform query de
 You no longer have to select the documents at random and guess the structure of the document.</p>
 </li>
 <li>
-<p>Display query results in multiple formats: JSON, table, and chart.
+<p>Display query results in multiple formats: JSON, table, and so on.
 You can also save the query results to a file on disk.</p>
 </li>
 </ul>
@@ -5066,7 +5094,10 @@ The sections below display the result of the following query in each of the avai
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM `travel-sample`.inventory.airline LIMIT 1;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT r.airline, COUNT(1) num_routes, SUM(ARRAY_COUNT(r.schedule)) schedules
+FROM `travel-sample`.inventory.route r
+WHERE r.sourceairport = 'SFO'
+GROUP BY r.airline, r.schedule;</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -5106,6 +5137,77 @@ You can sort a column by clicking the column header.</p>
 <p>Click the copy icon <span class="icon"><i class="fa fa-copy"></i></span> to copy the query results to the clipboard in tab-separated format.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="tree-format"><a class="anchor" href="#tree-format"></a>Tree Format</h3>
+<div class="paragraph labels">
+<p><span class="status">Couchbase Server 7.0</span><span class="status">Couchbase Server 7.0.1</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 7.0 and Couchbase Server 7.0.1, you can click <strong>Tree</strong> to present the results in a tree (or list or outline) format.
+Each sub-object or sub-array is displayed as a sub-list.
+You can hover the mouse pointer over a data value to see the path to that value in a tool tip.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/query-workbench-result-tree.png" alt="Query results in tree format">
+</div>
+</div>
+<div class="paragraph">
+<p>Click the copy icon <span class="icon"><i class="fa fa-copy"></i></span> to copy the query results to the clipboard in tab-separated format.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="chart-format"><a class="anchor" href="#chart-format"></a>Chart Format</h3>
+<div class="paragraph labels">
+<p><span class="status">Couchbase Server 7.0.2</span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server 7.0.2 and later, you can click <strong>Chart</strong> to present the results as a chart, as long as your query returns a suitable data series.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/query-workbench-chart.png" alt="Query results in chart format">
+</div>
+</div>
+<div class="paragraph">
+<p>You can select the type of chart and the data options from the drop-down controls at the top left of the chart.</p>
+</div>
+<div class="paragraph">
+<p>To select the type of chart, open the <strong class="ui">Chart Type</strong> drop-down list ① and select a format for the chart: <strong>X-Y</strong>, <strong>Connected Points</strong>, <strong>Line</strong>, <strong>Area</strong>, <strong>Bar</strong>, <strong>Grouped Bar</strong>, <strong>Pie</strong>, or <strong>Donut</strong>.</p>
+</div>
+<div class="paragraph">
+<p>For <strong>X-Y</strong>, <strong>Connected Points</strong>, <strong>Line</strong>, and <strong>Area</strong> charts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Open the <strong class="ui">X-Axis</strong> drop-down list and select the field for the x-axis of the chart.</p>
+</li>
+<li>
+<p>Open the <strong class="ui">Y-Axis</strong> drop-down list and select the field for the y-axis of the chart.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For <strong>X-Y</strong> charts only: open the <strong class="ui">Color</strong> drop-down list and select a color for the data points.</p>
+</div>
+<div class="paragraph">
+<p>For <strong>Bar</strong>, <strong>Grouped Bar</strong>, <strong>Pie</strong>, and <strong>Donut</strong> charts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Open the <strong class="ui">Label</strong> drop-down list ② and select the field by which to categorize the data.</p>
+</li>
+<li>
+<p>Use the <strong class="ui">Value(s)</strong> list ③ to specify the data series to be rendered on the chart.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Click the download icon <span class="icon"><i class="fa fa-download"></i></span> to download the chart in SVG format.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5117,6 +5219,14 @@ You can sort a column by clicking the column header.</p>
 <div class="paragraph">
 <p>To display the query plan, click the <strong>Plan</strong> link or the <strong>Plan Text</strong> link in the <strong class="ui">Results</strong> area.
 You may also generate the query plan and display the plan in graphical format by clicking <b class="button">Explain</b>.</p>
+</div>
+<div class="paragraph">
+<p>The sections below display the plan for the following query in each of the available formats.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM `travel-sample`.inventory.airline LIMIT 1;</code></pre>
+</div>
 </div>
 <div class="sect2">
 <h3 id="plan"><a class="anchor" href="#plan"></a>Plan</h3>
@@ -5216,74 +5326,6 @@ Projection is split into two parts (one before Order and one after Order), but Q
 <img src="_images/query-workbench-result-plantext.png" alt="Query plan in JSON format">
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="chart"><a class="anchor" href="#chart"></a>Chart</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>You can visualize query results as a chart, as long as your query returns a suitable data series. Execute the following query in the workbench:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-couchbasequery hljs" data-lang="couchbasequery">SELECT r.airline, COUNT(1) num_routes,  SUM(ARRAY_COUNT(r.schedule)) schedules
-from `travel-sample`.inventory.route r
-WHERE r.sourceairport = 'SFO'
-GROUP BY r.airline, r.schedule</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As well as examining the data in table and JSON formats:</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset1_table"></a>table</p>
-</li>
-<li>
-<p><a id="tabset1_json"></a>json</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_table">
-<div class="imageblock">
-<div class="content">
-<img src="_images/query-workbench-chart-table.png" alt="query workbench chart table">
-</div>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset1_json">
-<div class="imageblock">
-<div class="content">
-<img src="_images/query-workbench-chart-json.png" alt="query workbench chart json">
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>you can render the results as a chart:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="_images/query-workbench-chart.png" alt="query workbench chart">
-</div>
-</div>
-<div class="paragraph">
-<p>
-You can change the type of chart, labels and data set by selecting from the three drop-downs marked above.</p>
-</div>
-<div class="paragraph">
-<p>① You can render the chart in one of several formats: <code>X-Y</code>, <code>Connected Point</code>, <code>Line</code>, <code>Area</code>, <code>Bar</code>, <code>Group Bar</code>, <code>Pie</code>, and <code>Donut</code>.</p>
-</div>
-<div class="paragraph">
-<p>② Select a label for your axis. This must be one of the items returned in your query results.</p>
-</div>
-<div class="paragraph">
-<p>③ The data series to be rendered on the chart.</p>
 </div>
 </div>
 </div>

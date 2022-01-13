@@ -6,16 +6,25 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
-<title>Couchbase Transactions | Couchbase Docs (Staging)</title>
+<title>Index Placement | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="How to create Couchbase transactions using N1QL.">
+<meta name="description" content="How to place indexes on specified nodes, create index replicas, and partition indexes.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+        <link rel="prev" href="create-index.html">
+        <link rel="next" href="defer-index.html">
+
+
+
+                <link rel="prev" href="create-index.html">
+
+
+                <link rel="next" href="defer-index.html">
 
 
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.0-reorg">
-<meta name="page-url" content="/server/7.0-reorg/guides/transactions.html">
+<meta name="page-url" content="/server/7.0-reorg/guides/place-index.html">
 <meta name="generator" content="Antora 3.0.0-alpha.5">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
 </head>
@@ -1043,9 +1052,42 @@
 </li>
 </ul>
 </li>
+<li class="menu_list is-parent closed" data-depth="2">
+  <span class="menu_line">
+    <span class="in-toggle"></span>
+    <a class="menu_title menu_link" href="indexes.html">Indexes</a>
+  </span>
+<ul class="menu_row">
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="create-index.html">Creating Indexes</a>
+  </span>
+</li>
+<li class="menu_list is-current-page" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link is-current-page" href="place-index.html">Index Placement</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="defer-index.html">Deferring Indexes</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="select-index.html">Selecting Indexes</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="drop-index.html">Dropping Indexes</a>
+  </span>
+</li>
+</ul>
+</li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <span class="menu_title menu_text">Indexes</span>
+    <a class="menu_title menu_link" href="index-advisor.html">Index Advisor</a>
   </span>
 </li>
 <li class="menu_list" data-depth="2">
@@ -1075,11 +1117,6 @@
   </span>
 </li>
 </ul>
-</li>
-<li class="menu_list is-current-page" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link is-current-page" href="transactions.html">Transactions</a>
-  </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4387,7 +4424,7 @@
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
-<li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/pages/transactions.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/pages/place-index.adoc" title="Edit Page" target="_blank" rel="noopener">Edit on GitHub</a></li>
 </ul>
 </div>
     <div class="toc-menu"></div>
@@ -4451,13 +4488,14 @@
 <li class="crumb"><a href="../introduction/intro.html">server</a></li>
 <li class="crumb">Developer Guides</li>
 <li class="crumb"><a href="query.html">Query</a></li>
-<li class="crumb"><a href="transactions.html">Transactions</a></li>
+<li class="crumb"><a href="indexes.html">Indexes</a></li>
+<li class="crumb"><a href="place-index.html">Index Placement</a></li>
 </ul>
 </nav>
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Couchbase Transactions</h1>
+<h1 class="page">Index Placement</h1>
 </div>
 <div class="contributor-list-box">
 <span class="last-commit-date" id="commitdate">    </span>
@@ -4467,7 +4505,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-How to create Couchbase transactions using N1QL.
+How to place indexes on specified nodes, create index replicas, and partition indexes.
 </blockquote>
 </div>
 </div>
@@ -4476,22 +4514,9 @@ How to create Couchbase transactions using N1QL.
 <h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Couchbase transactions enable you to carry out ACID (atomic, consistent, isolated, and durable) actions on the database.
-This how-to guide covers N1QL support for Couchbase transactions.
-Some SDKs also support Couchbase transactions.
-Refer to <a href="#related-links">Related Links</a> for further details.</p>
-</div>
-<div class="paragraph">
-<p>Only DML (data modification language) statements are permitted within a transaction:
-<a href="../n1ql/n1ql-language-reference/insert.html" class="page">INSERT</a>,
-<a href="../n1ql/n1ql-language-reference/upsert.html" class="page">UPSERT</a>,
-<a href="../n1ql/n1ql-language-reference/delete.html" class="page">DELETE</a>,
-<a href="../n1ql/n1ql-language-reference/update.html" class="page">UPDATE</a>,
-<a href="../n1ql/n1ql-language-reference/merge.html" class="page">MERGE</a>,
-<a href="#n1ql:n1ql-language-reference/select.adoc" class="page unresolved">SELECT</a>,
-<a href="../n1ql/n1ql-language-reference/execfunction.html" class="page">EXECUTE FUNCTION</a>,
-<a href="../n1ql/n1ql-language-reference/prepare.html" class="page">PREPARE</a>, or
-<a href="../n1ql/n1ql-language-reference/execute.html" class="page">EXECUTE</a>.</p>
+<p>To improve query responsiveness, you can choose where to save primary and secondary indexes.
+You can also partition a large secondary index across multiple nodes.
+In Couchbase Server Enterprise Edition, you can create replicas of primary indexes, secondary indexes, and secondary index partitions, to enhance index availability.</p>
 </div>
 <div class="paragraph">
 <p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
@@ -4507,16 +4532,15 @@ Read the following for further information about the tools available for editing
 </li>
 </ul>
 </div>
-<div class="admonitionblock warning">
+<div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Please note that the examples in this guide will alter the data in your sample buckets.
-To restore your sample data, remove and reinstall the <code>travel-sample</code> bucket.
-Refer to <a href="../manage/manage-settings/install-sample-buckets.html" class="page">Sample Buckets</a> for details.
+This how-to guide focuses on index placement, partitioning, and replication using N1QL queries.
+The SDKs do not currently support all of these features fully.
 </td>
 </tr>
 </table>
@@ -4524,371 +4548,114 @@ Refer to <a href="../manage/manage-settings/install-sample-buckets.html" class="
 </div>
 </div>
 <div class="sect1">
-<h2 id="settings"><a class="anchor" href="#settings"></a>Transaction Parameters</h2>
+<h2 id="placing-a-single-index"><a class="anchor" href="#placing-a-single-index"></a>Placing a Single Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can specify various settings and parameters to control how transactions work.
-You can access transaction settings and parameters through the Query Workbench, the cbq shell, or the Query REST API.</p>
+<p>When you create a primary or secondary index, you can specify the placement of the index.</p>
 </div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset1_query-workbench"></a>Query Workbench</p>
-</li>
-<li>
-<p><a id="tabset1_cbq-shell"></a>CBQ Shell</p>
-</li>
-<li>
-<p><a id="tabset1_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_query-workbench">
 <div class="paragraph">
-<p>To specify parameters for a Couchbase transaction, use the query run-time preferences window.</p>
+<p>To specify the placement of a single index:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Click the cog icon <span class="icon"><i class="fa fa-cog"></i></span> to display the Run-Time Preferences window.</p>
+<p>Use the <code>WITH</code> clause to specify the index options.</p>
 </li>
 <li>
-<p>To specify the transaction scan consistency, open the <strong>Scan Consistency</strong> drop-down list and select an option.</p>
-</li>
-<li>
-<p>To specify the transaction timeout, enter a value in seconds in the <strong>Transaction Timeout</strong> box.</p>
-</li>
-<li>
-<p>To specify any other parameters, click the <b class="button">+</b> button in the <strong>Named Parameters</strong> section.
-When the new named parameter appears, enter the name in the <strong>name</strong> box and a value in the <strong>value</strong> box.</p>
-</li>
-<li>
-<p>Choose <b class="button">Save Preferences</b> to save the preferences and return to the Query Workbench.</p>
+<p>In the index options, use the <code>nodes</code> attribute to specify an array containing a single node.
+The node name must include the cluster administration port, by default 8091.</p>
 </li>
 </ol>
 </div>
-<hr>
-<div class="paragraph">
-<p>The following settings set the transaction parameters for the examples in the <a href="#multiple-statement">Multiple Statement Transactions</a> section below.</p>
-</div>
-<div class="imageblock">
+<div class="exampleblock">
 <div class="content">
-<img src="_images/transactions-preferences.png" alt="The Run-Time Preferences dialog, with Scan Consistency set to &quot;not_bounded&quot;, Transaction Timeout set to &quot;120&quot;, and named parameter &quot;durability_level&quot; set to &quot;none&quot;">
-</div>
-</div>
 <div class="paragraph">
-<p>① Set <strong>Scan Consistency</strong> to <code>not_bounded</code>.</p>
-</div>
-<div class="paragraph">
-<p>② In the <strong>Named Parameters</strong> section, add a named parameter with <strong>name</strong> set to <code>durability_level</code> and <strong>value</strong> set to <code>"none"</code> (with double quotes).</p>
-</div>
-<div class="paragraph">
-<p>③ Set <strong>Transaction Timeout</strong> to <code>120</code>.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset1_cbq-shell">
-<div class="paragraph">
-<p>To specify parameters for a Couchbase transaction, use the <code>\SET</code> command.</p>
-</div>
-<hr>
-<div class="paragraph">
-<p>The following settings set the transaction parameters for the examples in the <a href="#multiple-statement">Multiple Statement Transactions</a> section below.</p>
+<p>The following query creates a secondary index that contains airports with an <code>alt</code> value greater than 1000 on the node <code>127.0.0.1</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L2-L4">\SET -txtimeout "2m"; 
-\SET -scan_consistency "not_bounded"; 
-\SET -durability_level "none"; </code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset1_n1ql-rest-api">
-<div class="paragraph">
-<p>To specify parameters for a Couchbase transaction, set body parameters or query parameters alongside the query statement.</p>
-</div>
-<hr>
-<div class="paragraph">
-<p>The following settings set the transaction parameters for the examples in the <a href="#multiple-statement">Multiple Statement Transactions</a> section below.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L15-L24">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "BEGIN WORK",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txtimeout": "2m",
-  "scan_consistency": "request_plus",
-  "durability_level": "none"
-}'</code></pre>
-</div>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/create-idx-node.n1ql">CREATE INDEX idx_airport_over1000
+  ON `travel-sample`.inventory.airport(geo.alt)
+  WHERE geo.alt &gt; 1000
+  USING GSI
+  WITH {"nodes": ["127.0.0.1:8091"]};</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>For further details, refer to <a href="../n1ql/n1ql-language-reference/transactions.html#settings-and-parameters" class="page">Transaction Settings and Parameters</a>.</p>
+<p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/createprimaryindex.html" class="page">CREATE PRIMARY INDEX</a> and <a href="../n1ql/n1ql-language-reference/createindex.html" class="page">CREATE INDEX</a>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="single-statement"><a class="anchor" href="#single-statement"></a>Single Statement Transactions</h2>
+<h2 id="replicating-an-index"><a class="anchor" href="#replicating-an-index"></a>Replicating an Index</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can create a Couchbase transaction containing a single DML statement.</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset2_query-workbench"></a>Query Workbench</p>
-</li>
-<li>
-<p><a id="tabset2_cbq-shell"></a>CBQ Shell</p>
-</li>
-<li>
-<p><a id="tabset2_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset2_query-workbench">
-<div class="paragraph">
-<p>To execute a single statement as a transaction, simply enter the statement in the Query Editor and click <b class="button">Run as TX</b>.</p>
+<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
 </div>
 <div class="paragraph">
-<p>You do not need to specify the <code>txid</code> parameter or the <code>tximplicit</code> parameter.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/single.n1ql#L6-L8">UPDATE `travel-sample`.inventory.hotel
-SET price = "from £89"
-WHERE name = "Glasgow Grand Central";</code></pre>
-</div>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset2_cbq-shell">
-<div class="paragraph">
-<p>To execute a single statement as a transaction, set the <code>tximplicit</code> parameter to <code>true</code>.</p>
+<p>In Couchbase Server Enterprise Edition, when you create a secondary index, you can replicas of the index across multiple nodes.</p>
 </div>
 <div class="paragraph">
-<p>You do not need to specify the <code>txid</code> parameter.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/single.n1ql">\SET -tximplicit true;
-
-UPDATE `travel-sample`.inventory.hotel
-SET price = "from £89"
-WHERE name = "Glasgow Grand Central";</code></pre>
-</div>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset2_n1ql-rest-api">
-<div class="paragraph">
-<p>To execute a single statement as a transaction, set the <code>tximplicit</code> parameter to <code>true</code>.</p>
-</div>
-<div class="paragraph">
-<p>You do not need to specify the <code>txid</code> parameter.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/single.sh#L4-L12">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "UPDATE `travel-sample`.inventory.hotel
-                SET price = \"from £89\"
-                WHERE name = \"Glasgow Grand Central\";",
-  "tximplicit": true
-}'</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multiple-statement"><a class="anchor" href="#multiple-statement"></a>Multiple Statement Transactions</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A Couchbase transaction may contain multiple DML statements.
-In this case, you must use N1QL transaction statements to support the transaction:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#begin">BEGIN TRANSACTION</a> to start the transaction.</p>
-</li>
-<li>
-<p><a href="#set">SET TRANSACTION</a> to specify transaction settings.</p>
-</li>
-<li>
-<p><a href="#savepoint">SAVEPOINT</a> to set a transaction savepoint.</p>
-</li>
-<li>
-<p><a href="#rollback">ROLLBACK TRANSACTION</a> to roll back a transaction.</p>
-</li>
-<li>
-<p><a href="#commit">COMMIT TRANSACTION</a> to commit a transaction.</p>
-</li>
-</ul>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset3_query-workbench"></a>Query Workbench</p>
-</li>
-<li>
-<p><a id="tabset3_cbq-shell"></a>CBQ Shell</p>
-</li>
-<li>
-<p><a id="tabset3_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset3_query-workbench">
-<div class="paragraph">
-<p>To execute a transaction containing multiple statements:</p>
+<p>To replicate a secondary index by specifying the number of replicas:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Compose the sequence of statements in the Query Editor.
-Each statement must be terminated with a semicolon.</p>
+<p>Use the <code>WITH</code> clause to specify the index options.</p>
 </li>
 <li>
-<p>After each statement, press <span class="keyseq"><kbd>Shift</kbd>+<kbd>Enter</kbd></span> to start a new line <em>without</em> executing the query.</p>
-</li>
-<li>
-<p>When you have entered the entire transaction, click <b class="button">Execute</b> to execute the transaction.</p>
+<p>In the index options, use the <code>num_replica</code> attribute to specify the number of replicas to create.
+The value of this attribute must be less than or equal to the number of index nodes.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>You do not need to specify the <code>txid</code> parameter or the <code>tximplicit</code> parameter.</p>
+<p>If you specify <code>num_replica</code> but not <code>nodes</code>, the replicas are distributed amongst index nodes automatically.</p>
 </div>
-<hr>
+<div class="exampleblock">
+<div class="content">
 <div class="paragraph">
-<p>The following example demonstrates a complete transaction using N1QL. Individual N1QL transaction statements are described in the sections below.</p>
-</div>
-<div class="paragraph">
-<div class="title">Preparation</div>
-<p>First, specify the transaction settings, as shown in the section <a href="#settings">Transaction Parameters</a> above.</p>
-</div>
-<div class="paragraph">
-<p>Second, create a primary index on <code>`travel-sample`.tenant_agent_00.bookings</code> so that you can query this collection.</p>
+<p>The following query creates an index with two replicas, with no destination-nodes specified.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L8">CREATE PRIMARY INDEX ON `travel-sample`.tenant_agent_00.bookings;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/examples/services-and-indexes/indexes/replication-num.n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+WITH {"num_replica": 2};</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="paragraph">
-<div class="title">Transaction</div>
-<p>Now copy the entire sequence below and paste it into the Query Workbench.</p>
+<p>To replicate a secondary index by specifying the replica nodes:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use the <code>WITH</code> clause to specify the index options.</p>
+</li>
+<li>
+<p>In the index options, use the <code>nodes</code> attribute to specify an array containing the nodes on which you want to create replicas.
+Each node name must include the cluster administration port, by default 8091.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If you specify <code>nodes</code> but not <code>num_replica</code>, the number of replicas (plus the original index) is equal to the number of nodes.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query creates an index on <code>node1</code>, with replicas on <code>node2</code> and <code>node3</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L12-L93">-- Start the transaction
-BEGIN WORK;
-
--- Specify transaction settings
-SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-
--- Create a booking document
-UPSERT INTO `travel-sample`.tenant_agent_00.bookings
-VALUES("bf7ad6fa-bdb9-4099-a840-196e47179f03", {
-  "date": "07/24/2021",
-  "flight": "WN533",
-  "flighttime": 7713,
-  "price": 964.13,
-  "route": "63986"
-});
-
--- Set a savepoint
-SAVEPOINT s1;
-
--- Update the booking document to include a user
-UPDATE `travel-sample`.tenant_agent_00.bookings AS b
-SET b.`user` = "0"
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Check the content of the booking and user
-SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Set a second savepoint
-SAVEPOINT s2;
-
--- Update the booking documents to change the user
-UPDATE `travel-sample`.tenant_agent_00.bookings AS b
-SET b.`user` = "1"
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Check the content of the booking and user
-SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Roll back the transaction to the second savepoint
-ROLLBACK TRAN TO SAVEPOINT s2;
-
--- Check the content of the booking and user again
-SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Commit the transaction
-COMMIT WORK;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/learn/examples/services-and-indexes/indexes/replication-nodes.n1ql">CREATE INDEX country_idx ON `travel-sample`.inventory.airport(country, city)
+WITH {"nodes": ["node1:8091", "node2:8091", "node3:8091"]};</code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/results.jsonc#L108-L116">{
-  "date": "07/24/2021",
-  "flight": "WN533",
-  "flighttime": 7713,
-  "name": "Keon Hoppe",
-  "price": 964.13,
-  "route": "63986",
-  "user": "0" <i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>When the transaction is committed, the document is added with the attributes that were present after rolling back to the second savepoint.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset3_cbq-shell">
-<div class="paragraph">
-<p>To execute a transaction containing multiple statements, create the transaction one statement at a time.</p>
-</div>
-<div class="paragraph">
-<p>Once you have started a transaction, all statements within the cbq shell session are assumed to be part of the same transaction until you rollback or commit the transaction.
-You don&#8217;t need to set the <code>txid</code> parameter.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4897,754 +4664,100 @@ You don&#8217;t need to set the <code>txid</code> parameter.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You must be using cbq shell version 2.0 or above to use the automatic transaction ID functionality.
+If you specify both <code>num_replica</code> <em>and</em> <code>nodes</code>, the number of nodes must be <em>one greater</em> than the number of replicas.
 </td>
 </tr>
 </table>
 </div>
-<hr>
 <div class="paragraph">
-<p>The following example demonstrates a complete transaction using N1QL. Individual N1QL transaction statements are described in the sections below.</p>
+<p>For further details and examples, refer to <a href="../learn/services-and-indexes/indexes/index-replication.html#index-replication" class="page">Index Replication</a>.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="partitioning-an-index"><a class="anchor" href="#partitioning-an-index"></a>Partitioning an Index</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<div class="title">Preparation</div>
-<p>First, specify the transaction settings, as shown in the section <a href="#settings">Transaction Parameters</a> above.</p>
-</div>
-<div class="paragraph">
-<p>Second, create a primary index on <code>`travel-sample`.tenant_agent_00.bookings</code> so that you can query this collection.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L8">CREATE PRIMARY INDEX ON `travel-sample`.tenant_agent_00.bookings;</code></pre>
-</div>
+<p>When you create a secondary index, you can split the index into multiple partitions.
+You can specify the placement of the partitions of an index, just as you can for a single index.</p>
 </div>
 <div class="paragraph">
-<div class="title">Transaction</div>
-<p>Now copy the entire sequence below and paste it into the cbq shell.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L12-L93">-- Start the transaction
-BEGIN WORK;
-
--- Specify transaction settings
-SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-
--- Create a booking document
-UPSERT INTO `travel-sample`.tenant_agent_00.bookings
-VALUES("bf7ad6fa-bdb9-4099-a840-196e47179f03", {
-  "date": "07/24/2021",
-  "flight": "WN533",
-  "flighttime": 7713,
-  "price": 964.13,
-  "route": "63986"
-});
-
--- Set a savepoint
-SAVEPOINT s1;
-
--- Update the booking document to include a user
-UPDATE `travel-sample`.tenant_agent_00.bookings AS b
-SET b.`user` = "0"
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Check the content of the booking and user
-SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Set a second savepoint
-SAVEPOINT s2;
-
--- Update the booking documents to change the user
-UPDATE `travel-sample`.tenant_agent_00.bookings AS b
-SET b.`user` = "1"
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Check the content of the booking and user
-SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Roll back the transaction to the second savepoint
-ROLLBACK TRAN TO SAVEPOINT s2;
-
--- Check the content of the booking and user again
-SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Commit the transaction
-COMMIT WORK;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/results.jsonc#L108-L116">{
-  "date": "07/24/2021",
-  "flight": "WN533",
-  "flighttime": 7713,
-  "name": "Keon Hoppe",
-  "price": 964.13,
-  "route": "63986",
-  "user": "0" <i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>When the transaction is committed, the document is added with the attributes that were present after rolling back to the second savepoint.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset3_n1ql-rest-api">
-<div class="paragraph">
-<p>To execute a transaction containing multiple statements, create the transaction one statement at a time.</p>
+<p>Similarly, in Couchbase Server Enterprise Edition, you can specify replicas for a partitioned index, just as you can for a single index.</p>
 </div>
 <div class="paragraph">
-<p>Once you have started the transaction, you must set the <code>txid</code> parameter to specify the transaction to which each subsequent statement belongs.</p>
+<p>To partition a secondary index:</p>
 </div>
-<hr>
-<div class="paragraph">
-<p>The following example demonstrates a complete transaction using N1QL.
-Individual N1QL transaction statements are described in the sections below.</p>
-</div>
-<div class="paragraph">
-<div class="title">Preparation</div>
-<p>For this example, you will set the query context to <code>`travel-sample`.tenant_agent_00</code>.
-You must also create a primary index on the <code>bookings</code> collection so that you can query it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L4-L10">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "CREATE PRIMARY INDEX ON bookings;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-}'</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<div class="title">Transaction</div>
-<p>Make the following REST API calls one at a time.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L14-L162">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "BEGIN WORK",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txtimeout": "2m",
-  "scan_consistency": "request_plus",
-  "durability_level": "none"
-}'
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SET TRANSACTION ISOLATION LEVEL READ COMMITTED;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "UPSERT INTO bookings VALUES(\"bf7ad6fa-bdb9-4099-a840-196e47179f03\", {
-    \"date\": \"07/24/2021\",
-    \"flight\": \"WN533\",
-    \"flighttime\": 7713,
-    \"price\": 964.13,
-    \"route\": \"63986\"
-});",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SAVEPOINT s1;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "UPDATE bookings AS b
-    SET b.`user` = \"0\"
-    WHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SELECT b.*, u.name
-                FROM bookings b JOIN users u ON b.`user` = META(u).id
-                WHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SAVEPOINT s2;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "UPDATE bookings AS b
-    SET b.`user` = \"1\"
-    WHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SELECT b.*, u.name
-                FROM bookings b JOIN users u ON b.`user` = META(u).id
-                WHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "ROLLBACK TRAN TO SAVEPOINT s2;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SELECT b.*, u.name
-                FROM bookings b JOIN users u ON b.`user` = META(u).id
-                WHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b>
-
-curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "COMMIT TRANSACTION",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>After beginning the transaction, each subsequent statement in the transaction must specify the transaction ID that was generated when the transaction began.</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/results.jsonc#L108-L116">{
-  "date": "07/24/2021",
-  "flight": "WN533",
-  "flighttime": 7713,
-  "name": "Keon Hoppe",
-  "price": 964.13,
-  "route": "63986",
-  "user": "0" <i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>When the transaction is committed, the document is added with the attributes that were present after rolling back to the second savepoint.</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="begin"><a class="anchor" href="#begin"></a>Begin a Transaction</h3>
-<div class="paragraph">
-<p>To start a transaction, use the <code>BEGIN TRANSACTION</code> statement.</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p><a id="tabset4_query-workbench"></a>Query Workbench</p>
+<p>Use the <code>PARTITION BY HASH</code> clause to specify the field expression or expressions by which you want to partition the index.</p>
 </li>
 <li>
-<p><a id="tabset4_cbq-shell"></a>CBQ Shell</p>
+<p>If required, use the <code>WITH</code> clause to specify the index options, and use the <code>num_partition</code> attribute to specify the number of partitions.
+If you don&#8217;t specify the number of partitions, the index has 8 partitions.</p>
+</li>
+</ol>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query creates an index partitioned by the document ID.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/partition-idx.n1ql">CREATE INDEX idx ON `travel-sample`.inventory.airline
+(country, name, id)
+ PARTITION BY HASH(META().id);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/index-partitioning.html" class="page">Index Partitioning</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="altering-index-placement"><a class="anchor" href="#altering-index-placement"></a>Altering Index Placement</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><span class="edition"><a href="https://www.couchbase.com/products/editions">ENTERPRISE EDITION</a></span></p>
+</div>
+<div class="paragraph">
+<p>In Couchbase Server Enterprise Edition, you can alter the placement of an existing index or replica, increase or decrease the number of replicas, or to drop a replica temporarily.
+You can also perform the same alterations to a partitioned index and any replica partitions.</p>
+</div>
+<div class="paragraph">
+<p>To alter index placement:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use the <code>ALTER INDEX</code> statement to specify the the index to alter.</p>
 </li>
 <li>
-<p><a id="tabset4_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset4_query-workbench">
-<div class="paragraph">
-<p>The following statement begins a transaction.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L14">BEGIN WORK;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/results.jsonc#L8-L10">{
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51" <i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Beginning a transaction returns the transaction ID.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset4_cbq-shell">
-<div class="paragraph">
-<p>The following statement begins a transaction.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L14">BEGIN WORK;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/results.jsonc#L8-L10">{
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51" <i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Beginning a transaction returns the transaction ID.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset4_n1ql-rest-api">
-<div class="paragraph">
-<p>The following statement begins a transaction.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L15-L24">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "BEGIN WORK",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txtimeout": "2m",
-  "scan_consistency": "request_plus",
-  "durability_level": "none"
-}'</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/results.jsonc#L8-L10">{
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51" <i class="conum" data-value="1"></i><b>(1)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Beginning a transaction returns the transaction ID.</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>For further details, refer to <a href="../n1ql/n1ql-language-reference/begin-transaction.html" class="page">BEGIN TRANSACTION</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="set"><a class="anchor" href="#set"></a>Specify Transaction Settings</h3>
-<div class="paragraph">
-<p>To specify transaction settings, use the <code>SET TRANSACTION</code> statement.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Currently, the only available transaction setting is "isolation level read committed".
-This setting is enabled by default.
-The <code>SET TRANSACTION</code> statement is therefore optional and may be omitted.
-</td>
-</tr>
-</table>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset5_query-workbench"></a>Query Workbench</p>
+<p>Use the <code>ON</code> clause to specify the keyspace on which the index was built.</p>
 </li>
 <li>
-<p><a id="tabset5_cbq-shell"></a>CBQ Shell</p>
+<p>Use the <code>WITH</code> clause to specify the action to take and the parameters of that action.</p>
 </li>
-<li>
-<p><a id="tabset5_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
+</ol>
 </div>
+<div class="exampleblock">
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset5_query-workbench">
 <div class="paragraph">
-<p>The following statement specifies transaction settings.</p>
+<p>The following query moves the index <code>def_inventory_airport_faa</code> to node <code>192.168.10.11</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L19">SET TRANSACTION ISOLATION LEVEL READ COMMITTED;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset5_cbq-shell">
-<div class="paragraph">
-<p>The following statement specifies transaction settings.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L19">SET TRANSACTION ISOLATION LEVEL READ COMMITTED;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset5_n1ql-rest-api">
-<div class="paragraph">
-<p>The following statement specifies transaction settings.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L28-L35">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SET TRANSACTION ISOLATION LEVEL READ COMMITTED;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>After beginning the transaction, each subsequent statement in the transaction must specify the transaction ID that was generated when the transaction began.</td>
-</tr>
-</table>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/n1ql-language-reference/alter-idx-move.n1ql">ALTER INDEX def_inventory_airport_faa ON `travel-sample`.inventory.airport
+WITH {"action": "move", "nodes": ["192.168.10.11:8091"]};</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>For further details, refer to <a href="../n1ql/n1ql-language-reference/set-transaction.html" class="page">SET TRANSACTION</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="savepoint"><a class="anchor" href="#savepoint"></a>Set a Savepoint</h3>
-<div class="paragraph">
-<p>To set a savepoint within a transaction, use the <code>SAVEPOINT</code> statement and specify a name for the savepoint.</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset6_query-workbench"></a>Query Workbench</p>
-</li>
-<li>
-<p><a id="tabset6_cbq-shell"></a>CBQ Shell</p>
-</li>
-<li>
-<p><a id="tabset6_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset6_query-workbench">
-<div class="paragraph">
-<p>The following statement sets a savepoint.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L36">SAVEPOINT s1;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset6_cbq-shell">
-<div class="paragraph">
-<p>The following statement sets a savepoint.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L36">SAVEPOINT s1;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset6_n1ql-rest-api">
-<div class="paragraph">
-<p>The following statement sets a savepoint.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L56-L63">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "SAVEPOINT s1;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>After beginning the transaction, each subsequent statement in the transaction must specify the transaction ID that was generated when the transaction began.</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>For further details, refer to <a href="../n1ql/n1ql-language-reference/savepoint.html" class="page">SAVEPOINT</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="rollback"><a class="anchor" href="#rollback"></a>Roll Back a Transaction</h3>
-<div class="paragraph">
-<p>To roll back a transaction, use the <code>ROLLBACK TRANSACTION</code> statement.</p>
-</div>
-<div class="paragraph">
-<p>By default, this statement rolls back the entire transaction.
-If you want to roll back to a savepoint, use the <code>TO SAVEPOINT</code> keywords and specify the savepoint name.</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset7_query-workbench"></a>Query Workbench</p>
-</li>
-<li>
-<p><a id="tabset7_cbq-shell"></a>CBQ Shell</p>
-</li>
-<li>
-<p><a id="tabset7_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset7_query-workbench">
-<div class="paragraph">
-<p>The following statement rolls back a transaction to a specified savepoint.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L78">ROLLBACK TRAN TO SAVEPOINT s2;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset7_cbq-shell">
-<div class="paragraph">
-<p>The following statement rolls back a transaction to a specified savepoint.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L78">ROLLBACK TRAN TO SAVEPOINT s2;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset7_n1ql-rest-api">
-<div class="paragraph">
-<p>The following statement rolls back a transaction to a specified savepoint.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L130-L137">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "ROLLBACK TRAN TO SAVEPOINT s2;",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>After beginning the transaction, each subsequent statement in the transaction must specify the transaction ID that was generated when the transaction began.</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>For further details, refer to <a href="../n1ql/n1ql-language-reference/rollback-transaction.html" class="page">ROLLBACK TRANSACTION</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="commit"><a class="anchor" href="#commit"></a>Commit a Transaction</h3>
-<div class="paragraph">
-<p>To commit a transaction, use the <code>COMMIT TRANSACTION</code> statement.</p>
-</div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
-<ul>
-<li>
-<p><a id="tabset8_query-workbench"></a>Query Workbench</p>
-</li>
-<li>
-<p><a id="tabset8_cbq-shell"></a>CBQ Shell</p>
-</li>
-<li>
-<p><a id="tabset8_n1ql-rest-api"></a>N1QL REST API</p>
-</li>
-</ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset8_query-workbench">
-<div class="paragraph">
-<p>The following statement commits a transaction.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L92">COMMIT WORK;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset8_cbq-shell">
-<div class="paragraph">
-<p>The following statement commits a transaction.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.n1ql#L92">COMMIT WORK;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Click the GitHub button <span class="icon"><i class="fa fa-github"></i></span> to view this code in context.</p>
-</div>
-</div>
-<div class="tab-pane" aria-labelledby="tabset8_n1ql-rest-api">
-<div class="paragraph">
-<p>The following statement commits a transaction.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/transactions/multiple.sh#L154-L161">curl http://localhost:8093/query/service \
--u Administrator:password \
--H 'Content-Type: application/json' \
--d '{
-  "statement": "COMMIT TRANSACTION",
-  "query_context": "`travel-sample`.tenant_agent_00",
-  "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51"
-}' <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>After beginning the transaction, each subsequent statement in the transaction must specify the transaction ID that was generated when the transaction began.</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>For further details, refer to <a href="../n1ql/n1ql-language-reference/commit-transaction.html" class="page">COMMIT TRANSACTION</a>.</p>
-</div>
+<p>For further details and examples, refer to <a href="../n1ql/n1ql-language-reference/alterindex.html" class="page">ALTER INDEX</a>.</p>
 </div>
 </div>
 </div>
@@ -5657,41 +4770,51 @@ If you want to roll back to a savepoint, use the <code>TO SAVEPOINT</code> keywo
 <div class="ulist">
 <ul>
 <li>
-<p><a href="../learn/data/transactions.html" class="page">Transactions</a></p>
-</li>
-<li>
-<p><a href="../n1ql/n1ql-language-reference/transactions.html" class="page">N1QL Support for Couchbase Transactions</a></p>
+<p><a href="../learn/services-and-indexes/indexes/global-secondary-indexes.html" class="page">Using Indexes</a></p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Online transaction simulator:</p>
+<p>Administrator guides:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://transactions.couchbase.com" target="_blank" rel="noopener">Query Transaction Simulator</a></p>
+<p><a href="../manage/manage-indexes/manage-indexes.html" class="page">Manage Indexes</a></p>
+</li>
+<li>
+<p><a href="../manage/monitor/monitoring-indexes.html" class="page">Monitor Indexes</a></p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Transactions with SDKs:</p>
+<p>Indexes with SDKs:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="../../../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="page">Distributed Transactions from the Java SDK</a></p>
-</li>
-<li>
-<p><a href="#cxx-txns::distributed-acid-transactions-from-the-sdk.adoc" class="page unresolved">cxx-txns::distributed-acid-transactions-from-the-sdk.adoc</a></p>
-</li>
-<li>
-<p><a href="../../../dotnet-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="page">Distributed Transactions from the .NET SDK</a></p>
+<p><a href="#c-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">C</a>
+| <a href="../../../dotnet-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">.NET</a>
+| <a href="#go-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Go</a>
+| <a href="../../../java-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Java</a>
+| <a href="../../../nodejs-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Node.js</a>
+| <a href="#php-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">PHP</a>
+| <a href="../../../python-sdk/current/concept-docs/n1ql-query.html#indexes" class="page">Python</a>
+| <a href="#ruby-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Ruby</a>
+| <a href="#scala-sdk:concept-docs:n1ql-query.adoc#indexes" class="page unresolved">Scala</a></p>
 </li>
 </ul>
 </div>
 </div>
 </div>
+
+        <nav class="pagination">
+
+                    <span class="prev"><a href="create-index.html">Creating Indexes</a></span>
+
+
+                    <span class="next"><a href="defer-index.html">Deferring Indexes</a></span>
+
 </article>
 </main>
 </div>
