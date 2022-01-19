@@ -1805,7 +1805,7 @@ Parallel data management for complex queries over many records, using a familiar
 </div>
 <div class="paragraph">
 <p>The N1QL Query Language provides a familiar, SQL-like experience for querying documents stored in Couchbase.
-You can <a href="#7.0@server:n1ql:n1ql-language-reference/index.adoc" class="page unresolved">read up on the language in our reference guide</a>,
+You can <a href="../../../server/7.0/n1ql/n1ql-language-reference/index.html" class="page">read up on the language in our reference guide</a>,
 but you probably just want to <a href="../howtos/n1ql-queries-with-sdk.html" class="page">dive into a practical example</a>.</p>
 </div>
 <div class="paragraph">
@@ -1862,7 +1862,7 @@ Do not turn off the <code>AdHoc</code> flag for <em>every</em> query to Server 6
 <i class="fa icon-caution" title="Caution"></i>
 </td>
 <td class="content">
-<strong>When running an application using Prepared Statements through the .NET SDK</strong>&#8201;&#8212;&#8201;if you plan to upgrade Couchbase Server from 6.0.x or earlier to 6.5.0 or later, and are running a version of the .NET SDK prior to <a href="../project-docs/sdk-release-notes.html#version-3-0-1-13-may-2020" class="page">3.0.1</a>, you will need to <a href="#7.0@server:install:upgrade-strategy-for-features.adoc#prepared-statements" class="page unresolved">restart the app or otherwise work around</a> a change in the Server&#8217;s behaviour.
+<strong>When running an application using Prepared Statements through the .NET SDK</strong>&#8201;&#8212;&#8201;if you plan to upgrade Couchbase Server from 6.0.x or earlier to 6.5.0 or later, and are running a version of the .NET SDK prior to <a href="../project-docs/sdk-release-notes.html#version-3-0-1-13-may-2020" class="page">3.0.1</a>, you will need to <a href="../../../server/7.0/install/upgrade-feature-availability.html#prepared-statements" class="page">restart the app or otherwise work around</a> a change in the Server&#8217;s behaviour.
 </td>
 </tr>
 </table>
@@ -1873,10 +1873,10 @@ Do not turn off the <code>AdHoc</code> flag for <em>every</em> query to Server 6
 <h2 id="indexes"><a class="anchor" href="#indexes"></a>Indexes</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Couchbase query service makes use of <a href="#7.0@server:learn:services-and-indexes/indexes/indexes.adoc" class="page unresolved"><em>indexes</em></a> in order to do its work.
+<p>The Couchbase query service makes use of <a href="../../../server/7.0/learn/services-and-indexes/indexes/indexes.html" class="page"><em>indexes</em></a> in order to do its work.
 Indexes replicate subsets of documents from data nodes over to index nodes,
 allowing specific data (for example, specific document properties) to be retrieved quickly,
-and to distribute load away from data nodes in <a href="#7.0@server:learn:services-and-indexes/services/services.adoc" class="page unresolved">MDS</a> topologies.</p>
+and to distribute load away from data nodes in <a href="../../../server/7.0/learn/services-and-indexes/services/services.html" class="page">MDS</a> topologies.</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -1935,7 +1935,7 @@ SELECT name, email FROM `users` WHERE name="Monty Python" OR email="monty@python
 When an index includes the actual values of all the fields specified in the query,
 the index <em>covers</em> the query, and eliminates the need to fetch the actual values from the Data Service.
 An index, in this case, is called a <em>covering index</em>, and the query is called a <em>covered</em> query.
-For more information, see <a href="#7.0@server:n1ql:n1ql-language-reference/covering-indexes.adoc" class="page unresolved">Covering Indexes</a>.</p>
+For more information, see <a href="../../../server/7.0/n1ql/n1ql-language-reference/covering-indexes.html" class="page">Covering Indexes</a>.</p>
 </div>
 <div class="paragraph">
 <p>You can also create and define indexes in the SDK using:</p>
@@ -1995,7 +1995,7 @@ and, depending on how you issue the query, may at times not contain the most up-
 This may especially be the case when deployed in a write-heavy environment: changes may take some time to propagate over to the index nodes.</p>
 </div>
 <div class="paragraph">
-<p>The asynchronous updating nature of <a href="#7.0@server:learn:services-and-indexes/indexes/global-secondary-indexes.adoc" class="page unresolved">Global Secondary Indexes (GSIs)</a> means that they can be very quick to query and do not require the additional overhead of index recaclculations at the time documents are modified.
+<p>The asynchronous updating nature of <a href="../../../server/7.0/learn/services-and-indexes/indexes/global-secondary-indexes.html" class="page">Global Secondary Indexes (GSIs)</a> means that they can be very quick to query and do not require the additional overhead of index recaclculations at the time documents are modified.
 N1QL queries are forwarded to the relevant indexes, and the queries are done based on indexed information, rather than the documents as they exist in the data service.</p>
 </div>
 <div class="paragraph">
@@ -2009,8 +2009,24 @@ ensuring that indexes are synchronized with the data service before querying.</p
 <div class="paragraph">
 <p>The following options are available:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>not_bounded</code>: Executes the query immediately, without requiring any consistency for the query.
+If index-maintenance is running behind, out-of-date results may be returned.</p>
+</li>
+<li>
+<p><code>at_plus</code>: Executes the query, requiring indexes first to be updated to the timestamp of the last update.
+If index-maintenance is running behind, the query waits for it to catch up.</p>
+</li>
+<li>
+<p><code>request_plus</code>: Executes the query, requiring the indexes first to be updated to the timestamp of the current query-request.
+If index-maintenance is running behind, the query waits for it to catch up.</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
-<p>Unresolved include directive in modules/concept-docs/pages/n1ql-query.adoc - include::7.0@server:learn:page$services-and-indexes/indexes/index-replication.adoc[]</p>
+<p>For N1QL, the default consistency is <code>not_bounded</code>.</p>
 </div>
 <div class="paragraph">
 <p>Consider the following snippet:</p>
