@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
-<title>Configure saslauthd | Couchbase Docs (Staging)</title>
+<title>Configuring saslauthd | Couchbase Docs (Staging)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9198/server/current/rest-api/rest-configure-saslauthd.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="The Couchbase REST API supports enablement of &lt;code&gt;saslauthd&lt;/code&gt; for the cluster; and the addition of administrator and read-only administrator users to the cluster.">
+<meta name="description" content="The Couchbase REST API supports enablement of &lt;em&gt;saslauthd&lt;/em&gt; and the establishment of saslauthd administrators for the cluster.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 
 
@@ -5181,7 +5181,7 @@
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Configure saslauthd</h1>
+<h1 class="page">Configuring saslauthd</h1>
 </div>
 <div class="contributor-list-box">
 <span class="last-commit-date" id="commitdate">    </span>
@@ -5191,87 +5191,158 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-The Couchbase REST API supports enablement of <code>saslauthd</code> for the cluster; and the addition of administrator and read-only administrator users to the cluster.
+The Couchbase REST API supports enablement of <em>saslauthd</em> and the establishment of saslauthd administrators for the cluster.
 </blockquote>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="get-pools"><a class="anchor" href="#get-pools"></a>GET /pools</h2>
+<h2 id="http-methods-and-uris"><a class="anchor" href="#http-methods-and-uris"></a>HTTP Methods and URIs</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>POST /settings/saslauthdAuth
+
+GET /settings/saslauthdAuth</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="description"><a class="anchor" href="#description"></a>Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><strong>Description</strong></p>
+<p>The <code>POST</code> method enables <em>saslauthd</em> for the cluster, and establishes <em>administrators</em> and/or <em>read-only administrators</em> for saslauthd.</p>
 </div>
 <div class="paragraph">
-<p>This command enables <code>saslauthd</code> for the cluster.
-Note that the appropriate installation and preparation procedures must have been performed.
-See <a href="../manage/manage-security/configure-saslauthd.html" class="page">Configure saslauthd</a>.</p>
+<p>The <code>GET</code> method returns the current saslauthd settings for the cluster.</p>
 </div>
 <div class="paragraph">
-<p><strong>Syntax:</strong></p>
+<p>Note that appropriate installation and configuration must already have occurred, for the <code>POST</code> and <code>GET</code> methods to succeed (see <a href="../manage/manage-security/configure-saslauthd.html" class="page">Configure saslauthd</a>).</p>
+</div>
+<div class="paragraph">
+<p>The Full Admin, Cluster Admin, or External Security Admin role is required for each method.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="curl-syntax"><a class="anchor" href="#curl-syntax"></a>Curl Syntax</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre> curl -X POST -u &lt;administrator&gt;:&lt;password&gt;
+    http://&lt;ip-address-or-hostname&gt;:8091/settings/saslauthdAuth
+    -d enabled=&lt; true | false &gt;
+    -d admins=[&lt;admin-name&gt;]
+    -d roAdmins=[&lt;admin-name&gt;]
+
+curl -X GET -u &lt;administrator&gt;:&lt;password&gt;
+   http://&lt;ip-address-or-hostname&gt;:8091/settings/saslauthdAuth</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>enabled</code> parameter is a required parameter, whose value determines whether saslauthd is enabled or disabled on the cluster: if the value is <code>true</code>, saslauthd is enabled.
+By default, saslauthd is disabled.</p>
+</div>
+<div class="paragraph">
+<p>The values of the optional <code>admins</code> and <code>roAdmins</code> parameters can in each case be a comma-separated list of <em>saslauthd users</em> (each user having already been established by means of the operating system), who are to be given privileges corresponding to the parameter, across the entire cluster.
+If an empty list is specified, no saslauthd users will have the privileges corresponding to the parameter.</p>
+</div>
+<div class="paragraph">
+<p>Note that use of the <code>POST</code> method is not incremental: each specified list explicitly defines the new list of users and privileges that will exist from the point of execution&#8201;&#8212;&#8201;users who have previously had privileges, but are omitted from the list, <em>lose</em> their privileges.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="responses"><a class="anchor" href="#responses"></a>Responses</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Successful use of POST returns <code>200 OK</code>, and a JSON object containing three key-value pairs, which respectively indicate the current enablement-status, the current list of administrators, and the current list of read-only administrators.</p>
+</div>
+<div class="paragraph">
+<p>Successful use of <code>GET</code> returns <code>200 OK</code>, and a JSON object identical to that returned by the most recent <code>POST</code>.</p>
+</div>
+<div class="paragraph">
+<p>A malformed URI returns <code>404 Object Not Found</code>.</p>
+</div>
+<div class="paragraph">
+<p>Failure to authenticate returns <code>401 Unauthorized</code>.
+Successful authentication with an inappropriate role returns <code>403 Forbidden</code>, and an object such as the following: <code>{"message":"Forbidden. User needs the following permissions","permissions":["cluster.admin.security.external!write"]}</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following examples show how saslauthd can be configured with the REST API.</p>
+</div>
+<div class="sect2">
+<h3 id="enable-saslauthd-and-establish-administrators"><a class="anchor" href="#enable-saslauthd-and-establish-administrators"></a>Enable saslauthd and Establish Administrators</h3>
+<div class="paragraph">
+<p>The following example assigns saslauthd roles to three users, who have already been established as members of the <code>sasl</code> group:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre> curl -X GET -u &lt;administrator&gt;:&lt;password&gt;
-    http://&lt;host&gt;:&lt;port&gt;/settings/saslauthdAuth
-    -d args
-    .
-    .</pre>
+<pre>curl -X POST http://localhost:8091/settings/saslauthdAuth -u Administrator:password -d admins=[couchbase] -d roAdmins=[abc,def] -d enabled=true</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>HTTP request syntax:</p>
+<p>If the call is successful, an object such as the following is returned.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>GET /settings/saslauthdAuth
-Host: localhost:8091
-Authorization: Basic xxxxxxxxxxxxxxxxxxx
-Accept: */*
-Content-Type: application/x-www-form-urlencoded</pre>
+<pre>{"enabled":true,"admins":["[couchbase]"],"roAdmins":["[abc,def]"]}</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="retrieve-current-saslauthd-settings"><a class="anchor" href="#retrieve-current-saslauthd-settings"></a>Retrieve Current saslauthd Settings</h3>
+<div class="paragraph">
+<p>The following example retrieves the current saslauthd settings for the cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -X GET http://localhost:8091/settings/saslauthdAuth -u Administrator:password</pre>
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Example</strong></p>
+<p>If the call is successful, an object such as the following is returned:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>curl -v -X GET -u Administrator:password \
-http://10.143.192.101:8091/settings/saslauthdAuth \
--d enabled=true \
--d admins=alice,barry \
--d roadmins=clair,daniel</pre>
+<pre>{"enabled":true,"admins":["[tjh]"],"roAdmins":["[abc,def]"]}</pre>
 </div>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Controller parameters</caption>
-<colgroup>
-<col style="width: 36.3636%;">
-<col style="width: 63.6364%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Function</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">admins</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-separated list of SASL users to be given administrator privileges on the cluster.
-If either an asterisk or the word 'asterisk' is specified as the value, all SASL users not specified to be granted a different set of privileges are granted administrator privileges.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">roadmins</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Comma-separated list of SASL users to be given read-only administrator privileges on the cluster.
-If either an asterisk or the word 'asterisk' is specified as the value, all SASL users not specified to be granted a different set of privileges are granted read-only administrator privileges.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables or disables SASL on the cluster. 1 enables, 0 disables.</p></td>
-</tr>
-</tbody>
-</table>
+</div>
+<div class="sect2">
+<h3 id="delete-administrators-and-disable-saslauthd"><a class="anchor" href="#delete-administrators-and-disable-saslauthd"></a>Delete Administrators and Disable saslauthd</h3>
+<div class="paragraph">
+<p>The following example deletes all previously created administrators and disables saslauthd.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -X POST http://localhost:8091/settings/saslauthdAuth -u Administrator:password -d admins=[] -d roAdmins=[] -d enabled=false</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the call is successful, an object such as the following is returned:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{"enabled":false,"admins":[],"roAdmins":[]}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Information on configuring saslauthd is provided in see <a href="../manage/manage-security/configure-saslauthd.html" class="page">Configure saslauthd</a>.
+Information on Couchbase-Server <em>authentication domains</em> is provided in <a href="../learn/security/authentication-domains.html" class="page">Authentication Domains</a>.</p>
+</div>
 </div>
 </div>
 </article>
