@@ -1,0 +1,751 @@
+<!DOCTYPE html><html xmlns:related-links="http://dita-ot.sourceforge.net/ns/200709/related-links" class="no-js developer-portal" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><title>Providing transactional logic — Couchbase Server 3.0/3.1</title><meta name="apple-mobile-web-app-title" content="Couchbase"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png"><link rel="stylesheet" href="../../assets/stylesheets/application.css"><link rel="stylesheet" href="../../assets/stylesheets/docs.css"></head><body data-modules="developer-portal-sidebar-navigation developer-portal-versions-navigation">
+	<!-- Google Tag Manager -->
+				<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MVPNN2"
+					height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+				<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+					'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+					})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+				<!-- End Google Tag Manager -->
+				<header class="developer-portal-header" role="banner"><div class="layout-wrapper"><div class="developer-portal-header__hgroup"><h1 class="developer-portal-header__logo"><a href="http://couchbase.com" rel="home">Couchbase</a></h1><p class="developer-portal-header__page-title">Couchbase Server 3.0/3.1</p></div><nav class="developer-portal-header__navigation" id="primary-navigation" role="navigation"><div class="developer-portal-header__navigation__wrapper" id="primary-navigation__wrapper"><ul class="developer-portal-header__navigation__items"><li class="developer-portal-header__navigation__item"><a href="/index.html">Documentation Home</a></li><li class="developer-portal-header__navigation__item"><a href="http://www.couchbase.com/nosql-databases/downloads">Downloads</a></li><li class="developer-portal-header__navigation__item"><a href="http://www.couchbase.com/open-source">Open Source Projects</a></li><li class="developer-portal-header__navigation__item"><a href="http://forums.couchbase.com">Forums</a></li></ul><div class="developer-portal-header__search"><script>
+					  (function() {
+					    var cx = '018016427239405524608:fkg1v30apnm';
+					    var gcse = document.createElement('script');
+					    gcse.type = 'text/javascript';
+					    gcse.async = true;
+					    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					        '//www.google.com/cse/cse.js?cx=' + cx;
+					    var s = document.getElementsByTagName('script')[0];
+					    s.parentNode.insertBefore(gcse, s);
+					  })();
+					</script><gcse:search></gcse:search></div></div></nav></div></header><main class="developer-portal-global-content" role="main"><aside class="developer-portal-sidebar"><nav class="developer-portal-sidebar__navigation"><div class="developer-portal-sidebar__navigation__wrapper" id="developer-portal-sidebar-navigation"><ul><li class="section section--has-sub-sections"><a href="../../admin/Couchbase-intro.html"><span>Introduction</span></a></li><li class="section"><a href="../../admin/Whats-new-3.0.html"><span>What's new in 3.0</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/install-intro.html"><span>Installation and upgrade</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/admin-intro.html"><span>Administration</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/Views/views-intro.html"><span>Views and indexes</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/cli-intro.html"><span>CLI reference</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/rest-intro.html"><span>REST API reference</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/rel-notes/rel-notes3.0.html"><span>Release notes</span></a></li><li class="section"><a href="../../admin/pdfs.html"><span>PDFs</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/intro.html"><span>Overview</span></a></li><li class="section section--has-sub-sections&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;section--active"><a href="../../developer/dev-guide-3.0/concepts.html"><span>Developing applications</span></a><ul class="sub-sections"><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/first-app.html"><span>Creating your first application</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/modeling-docs.html"><span>Modeling documents</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/access-data.html"><span>Accessing data with Couchbase SDKs</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/store-data.html"><span>Storing data</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/find-data.html"><span>Finding data with views</span></a></li><li class="section section--has-sub-sections&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;section--active"><a href="../../developer/dev-guide-3.0/advanced-topics.html"><span>Advanced topics in development</span></a><ul class="sub-sections"><li class="section"><a href="../../developer/dev-guide-3.0/bulk-set.html"><span>Performing a bulk set</span></a></li><li class="section"><a href="../../developer/dev-guide-3.0/memory-errors.html"><span>Handling temporary out of memory errors</span></a></li><li class="section"><a href="../../developer/dev-guide-3.0/sync-async-transactions.html"><span>Synchronous and asynchronous transactions</span></a></li><li class="section"><a href="../../developer/dev-guide-3.0/transactional-logic.html" class="current"><span>Providing transactional logic</span></a><ul class="sub-sections"></ul></li><li class="section"><a href="../../developer/dev-guide-3.0/app-performance.html"><span>Improving application performance</span></a></li><li class="section"><a href="../../developer/dev-guide-3.0/thread-safety.html"><span>Thread safety for Couchbase SDKs</span></a></li><li class="section"><a href="../../developer/dev-guide-3.0/common-errors.html"><span>Handling common errors</span></a></li><li class="section"><a href="../../developer/dev-guide-3.0/troubleshooting.html"><span>Troubleshooting</span></a></li></ul></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/client-library.html"><span>Developing a client library</span></a></li></ul></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/old-versions.html"><span>Older SDK versions</span></a></li></ul></div></nav></aside><div class="developer-portal-content"><div class="developer-portal-content__wrapper textblock__content">
+	<h1 class="title topictitle1" id="ariaid-title1">Providing transactional logic</h1>
+
+	<div class="body conbody">
+		<p class="p">In <a class="xref" href="modeling-docs.html#concept1312">Modeling documents</a> we discuss much more in depth the
+			advantages you gain when you use JSON documents with Couchbase Server; we also discuss when
+			you might want to use more than one document to represent an object. Here we want to
+			discuss how to perform operations on data across one or more documents while providing some
+			reliability and consistency. In traditional relational database systems, this is the
+			concept of database concept of ACIDity:</p>
+
+		<ul class="ul">
+			<li class="li">
+				<p class="p">Atomicity means that if a transaction fails, all changes to related records fail and the data
+					is left unchanged.</p>
+
+			</li>
+
+			<li class="li">
+				<p class="p">Consistency means data must be valid according to defined rules, for instance you cannot
+					delete a blog post without also deleting all of the related comments.</p>
+
+			</li>
+
+			<li class="li">
+				<p class="p">Isolation means that concurrent transactions would create the same data as if that
+					transactions were executed sequentially.</p>
+
+			</li>
+
+			<li class="li">
+				<p class="p">Durability means that once the transaction completes, the data changes survive system
+					failure.</p>
+
+			</li>
+
+		</ul>
+
+		<p class="p">Relational databases will typically rely on locking or versioning data to provide ACID
+			capabilities. Locking means the database marks data so that no other transactions modify it
+			until the first transaction succeeds; versioning means the database provides a version of
+			the data that existed before one process started a process.</p>
+
+		<p class="p">NoSQL databases generally do not support transactions in the traditional way used by
+			relational databases. Yet there are many situations where you might want to use Couchbase
+			Server to build an application with transactional logic. With Couchbase Server you can
+			generally improve the reliability, consistency, and isolation of related commits by 1)
+			providing ‘leases’ on information, which reserves the document for use by a single process,
+			or 2) by performing two-phase commits on multiple documents.</p>
+
+
+		<section class="section"><h2 class="title sectiontitle">Using a lease-out pattern</h2>
+			
+			<p class="p">When you use this web application pattern, you ‘lease-out’ information, or in other
+				words, reserve a document for use by a single process. By doing so, you manage any
+				conflicts with any other processes that my attempt to access the document. Imagine you
+				want to build an online ticketing system that meets the following rules:</p>
+
+			<ul class="ul">
+				<li class="li">
+					<p class="p">All seats being ticketed are unique; no two seats are the same.</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p">A user can purchase a ticket once the system guarantees a seat.</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p">A user might not complete a ticket purchase.</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p">The ticket should be available to the user at checkout.</p>
+
+				</li>
+
+			</ul>
+
+			<p class="p">To fulfill these requirements, we can use these techniques:</p>
+
+			<ul class="ul">
+				<li class="li">
+					<p class="p">Document Model: Provide one document per ticket.</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p">Lease/Reserve: Implement a lease for tickets. Once a user chooses a seat, we
+						reserve the ticket and a user has 5 minutes to purchase it.</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p">Manage States, and Compensate: A seat can be made available again; expired tickets
+						can be offered once again. If there are failures when a ticket is in an
+						intermediate state, the system can compensate.</p>
+
+				</li>
+
+			</ul>
+
+			<div class="note note"><span class="notetitle">Note:</span> When handling document changes, it is assumed that an accurate
+				transaction state can be retrieved from the document, which may not be possible if the
+				system fails and the document has still not been persisted.</div>
+
+			<p class="p">The following diagram shows the basic application process flow:</p>
+
+			<img class="image" src="images/lease_out_pattern1.png">
+			<p class="p">The initial stage of our ticket document, as JSON, would appear as follows:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">{
+    "ticket_id" : "ticket1",
+    "seat_no" : 100,
+    "state" : "AVAILABLE"
+}
+</samp></code></pre>
+
+			<p class="p">The ticket document has an unique id, an associated seat, and an explicit
+					<samp class="ph codeph">state</samp> field to store that state of our ticket transaction. We can
+				use this information in our application logic to ensure no other process tries to
+				reserve the seat. We can also use this information to roll-back the ticket to an initial
+				state. Imagine a user searches for open seats, and then they want a seat that is
+				unavailable. Our system can get all the tickets that were requested but not purchased by
+				other users; these will all be tickets with expired leases. So we can also use this
+				information to reserve seats and return seats to a pool of available seats that we offer
+				to users. If a user selects an open seat, we put the ticket in their shopping cart, and
+				indicate this in the ticket document:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">{
+    "ticket_id" : "ticket1",
+    "seat_no" : 100,
+    "state" : "INCART",
+    "expiry" : &lt;timestamp&gt;
+}
+</samp></code></pre>
+
+			<p class="p">Notice that when we update the state of the ticket, we also provide an expiration. The
+					<samp class="ph codeph">expiry</samp> in this case is 5 minutes, and serves as the lease, or time
+				hold that is in place on the ticket so that no other processes can modify it during that
+				period. The user now has 5 minutes to pay for the ticket. If a user moves forward with
+				the purchase, our application should then get each ticket in the user cart from
+				Couchbase Server and test that the tickets in the user shopping cart have not expired.
+				If the ticket lease has not expired, we update the state to
+					<samp class="ph codeph">PRE-AUTHORIZE</samp>:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">{
+    "ticket_id" : "ticket1",
+    "seat_no" : 100,
+    "state" : "PRE-AUTHORIZE",
+    "expiry" : &lt;updated_timestamp&gt;
+}
+</samp></code></pre>
+
+			<p class="p">Note at this phase we also update the timestamps to 5 minutes once again; this provides
+				the additional time we may need to authorize payment from a credit card, or get an
+				electronic payment for the ticket. If the payment fails, for instance the credit card is
+				not authorized, we can reset the tickets to the state <samp class="ph codeph">AVAILABLE</samp>. Our
+				system will know that the ticket can be returned to the pool of available tickets that
+				we present to users. If the payment succeeds, we then set the ticket state to
+					<samp class="ph codeph">SOLD</samp> and set the expiration to 0:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">{
+    "ticket_id" : "ticket1",
+    "seat_no" : 100,
+    "state" : "SOLD",
+    "expiry" : 0
+}
+</samp></code></pre>
+
+			<p class="p">So we set the expiration explicitly to 0 to indicate the ticket has no expiration since
+				it is sold. We keep the document in the system so that the user can print it out, and as
+				a record until the actual event is over. Here is the process once again, this time we
+				also demonstrate the state changes which keep track of the ticket along with the
+				application flow:</p>
+
+			<img class="image" src="images/lease_out_pattern_w_tickets.png">
+			<p class="p">This diagram shows some of the compensation mechanisms we can put in place. If the seat
+				that a user selects is not <samp class="ph codeph">AVAILABLE</samp> we can reset all the tickets that
+				are expired to <samp class="ph codeph">AVAILABLE</samp> and retrieve them for the user. If the user
+				fails to complete the checkout, for instance their credit card does not clear, we can
+				also reset that ticket state to <samp class="ph codeph">AVAILABLE</samp> so that it is ready to
+				retrieve for other users. At each phase of the user interaction, we keep track of the
+				ticket state so that it is reserved for checkout and payment. If the system fails and
+				the ticket is persisted, we can retrieve that state and return the user to the latest
+				step in the purchase they had achieved. Also by preserving the ticket state and
+				expiration, we withhold it from access and changes by other users during the payment
+				process.</p>
+
+			<p class="p">An alternate approach you can use with this same pattern is to have a ticketing system
+				that offers a fixed number of general admission tickets. In this case, we can use lazy
+				expiration in Couchbase Server to remove all the tickets once the event has already
+				passed.</p>
+
+		</section>
+
+
+		<section class="section"><h2 class="title sectiontitle">Performing two-phase commits</h2>
+			
+			<p class="p">For traditional relational databases, we can store information for an object in one or
+				more tables. This helps us from having a lot of duplicate information in a table. In the
+				case of a document database, such as Couchbase Server, we can store the high level
+				information in a JSON document and store related information in a separate JSON
+				documents.</p>
+
+
+			<p class="p">This leads to the challenge of transactions in document-based databases. In relational
+				databases, you are able to change both the blog post and the comments in a single
+				transaction. You can undo all the changes from the transaction via rollback, ensure you
+				have a consistent version of the data during the transaction, or in case of system
+				failure during the transaction, leave the data in a state that is easier to repair.</p>
+
+
+			<p class="p">The Ruby and PHP examples we describe here plus two slightly more complex versions are
+				available on Github:</p>
+
+			<ul class="ul">
+				<li class="li">
+					<p class="p">
+						<a class="xref" href="https://gist.github.com/3135796" target="_blank">Ruby
+							basic example</a>
+					</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p"><a class="xref" href="https://gist.github.com/3136027" target="_blank">Ruby
+							class</a> to represent the two-phase commit, including counters.</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p">
+						<a class="xref" href="https://gist.github.com/3155132/2301591fa9d2dddbf3c2578ad1369703493c5aef" target="_blank">PHP basic example</a>
+					</p>
+
+				</li>
+
+				<li class="li">
+					<p class="p"><a class="xref" href="https://gist.github.com/3155762" target="_blank">PHP
+							Advanced Transaction</a>, includes checks, JSON helpers, encapsulation, and
+						counters.</p>
+
+				</li>
+
+			</ul>
+
+
+			<div class="note note"><span class="notetitle">Caveats on this approach:</span> 
+				<p class="p">The following approach we illustrate below is still an optimistic approach that
+					assumes we can recover correct information about the two-phase commit state from the
+					server after failure. It is possible that a system failure occurs and the information
+					is not yet persisted, and therefore information used to rollback a transaction is not
+					adequate. As of Couchbase Server 2.0+ we provide new functionality in the
+						<samp class="ph codeph">observe()</samp> command which enables you to find out whether an item
+					is persisted or not. This provides better assurance for you that a commit state is
+					accurate so you can perform any required rollbacks.</p>
+
+				<p class="p">The second major caveat for this approach is that if you perform this across
+					thousands of documents or more, you may have a larger number of remaining documents
+					which represent the transfers. We suggest you delete documents representing transfers
+					is an orderly way, otherwise you will have a larger number of stale, pending
+					documents.</p>
+
+				<p class="p">You should only use these patterns in production only after you test your application
+					in all failure scenarios; for data that requires the highest level of integrity and
+					reliability, such as cash balances, you may want to use a traditional database which
+					provides absolute guarantees of data integrity.</p>
+
+			</div>
+
+
+			<p class="p">With Couchbase Server, you can generally provide something functional analogous to an
+				atomic transaction by performing a two-phase commit. You follow this approach:</p>
+
+					<img class="image" src="images/two_phase_commit.png">
+			<p class="p">Here is the same approach demonstrated in actual code using the Couchbase Ruby SDK. To
+				view the complete code, as well as a slightly more complex version, see <a class="xref" href="https://gist.github.com/3135796" target="_blank">sample
+					two-phase transaction</a> and <a class="xref" href="https://gist.github.com/3136027" target="_blank">transfer()</a>. First we start by storing the
+				documents/objects that we want to update. The example below shows how to create the new
+				Couchbase client, and then store two players and their points:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">require 'rubygems'
+require 'couchbase'
+
+cb = Couchbase.bucket
+
+karen = {"name" =&gt; "karen", "points" =&gt; 500, "transactions" =&gt; []}
+dipti = {"name" =&gt; "dipti", "points" =&gt; 700, "transactions" =&gt; []}
+
+# preload initial documents
+
+cb.set("karen", karen)
+cb.set("dipti", dipti)
+</samp></code></pre>
+
+			<p class="p">We then create a third record that represents the transaction between the two
+				objects:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph"># STEP 1: prepare transaction document
+
+trans = {"source" =&gt; "karen", "destination" =&gt; "dipti", "amount" =&gt; 100, "state" =&gt; "initial"}
+cb.set("trans:1", trans)
+</samp></code></pre>
+
+			<p class="p">Then we set the transfer state to <samp class="ph codeph">pending</samp>, which indicates the transfer
+				between karen and dipti is in progress. Notice in this case we do this in a
+					<samp class="ph codeph">begin..rescue</samp> block so that we can perform a rollback in the
+					<samp class="ph codeph">rescue</samp> in case of server/system failure.</p>
+
+			<p class="p">Next in our <samp class="ph codeph">begin..rescue</samp> block we refer the two documents we want to
+				update to the actual transfer document. We then update the amounts in the documents and
+				change the transfer status to <samp class="ph codeph">committed</samp> :</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">begin
+
+    # STEP 2: Switch transfer into pending state
+
+    cb.cas("trans:1") do
+    trans.update("state" =&gt; "pending")
+    end
+
+    # STEP 3 + 4: Apply transfer to both documents
+
+    cb.cas("karen") do |val|
+        val.update("points" =&gt; val["points"] - 100,
+        "transactions" =&gt; val["transactions"] + ["trans:1"])
+    end
+
+    cb.cas("dipti") do |val|
+        val.update("points" =&gt; val["points"] + 100,
+        "transactions" =&gt; val["transactions"] + ["trans:1"])
+    end
+
+    # STEP 4: Switch transfer document into committed state
+
+    cb.cas("trans:1") do |val|
+        val.update("state" =&gt; "committed")
+    end
+</samp></code></pre>
+
+			<p class="p">In this case we have combined both steps 3 and 4 into three CAS operations: one
+				operation per document. In other words, we update the documents to refer to the
+				transfer, and we also update their points. Depending on your programming languages, it
+				may be easier to combine these two, or keep them separate updates.</p>
+
+
+			<p class="p">For this last step in the <samp class="ph codeph">begin..rescue</samp> block we change remove the two
+				references from the player documents and update the transfer to be
+				<samp class="ph codeph">done</samp>.</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph"># STEP 5: Remove transfer from the documents
+
+    cb.cas("karen") do |val|
+        val.update("transactions" =&gt; val["transactions"] - ["trans:1"])
+    end
+
+    cb.cas("dipti") do |val|
+        val.update("transactions" =&gt; val["transactions"] - ["trans:1"])
+    end
+
+    # STEP 5: Switch transfer into done state
+
+    cb.cas("trans:1") do |val|
+        val.update("state" =&gt; "done")
+    end
+</samp></code></pre>
+
+			<p class="p">To perform the rollback, we had placed all of our update operations in a
+					<samp class="ph codeph">begin..rescue..end</samp> block. If there are any failures during the
+					<samp class="ph codeph">begin</samp> block, we will execute the <samp class="ph codeph">rescue</samp> part of the
+				block. In order to undo the transfer when it is left in a particular state, we have a
+					<samp class="ph codeph">case</samp> statement to test whether the transfer failed at a pending,
+				commit, or done status:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">rescue Couchbase::Error::Base =&gt; ex
+
+    # Rollback transaction
+
+    trans = cb.get("trans:1")
+
+    case trans["state"]
+
+        when "committed"
+
+            # Create new transaction and swap the targets or amount sign.
+            # The code block about could be wrapped in the method something like
+            #
+            #     def transfer(source, destination, amount)
+            #     ...
+            #   end
+            #
+            # So that this handler could just re-use it.
+
+        when "pending"
+            # STEP 1: Switch transaction into cancelling state
+
+            cb.cas("trans:1") do |val|
+                val.update("state" =&gt; "cancelling")
+            end
+
+            # STEP 2: Revert changes if they were applied
+
+            cb.cas("karen") do |val|
+                break unless val["transactions"].include?("trans:1")
+                val.update("points" =&gt; val["points"] + 100,
+                "transactions" =&gt; val["transactions"] - ["trans:1"])
+            end
+
+            cb.cas("dipti") do |val|
+                break unless val["transactions"].include?("trans:1")
+                val.update("points" =&gt; val["points"] - 100,
+                 "transactions" =&gt; val["transactions"] - ["trans:1"])
+            end
+
+            # STEP 3: Switch transaction into cancelled state
+
+            cb.cas("trans:1") do |val|
+                val.update("state" =&gt; "cancelled")
+            end
+
+      end
+
+    # Re-raise original exception
+    raise ex
+
+end
+</samp></code></pre>
+
+			<p class="p">As the comments in the code note, it may be most useful to put the entire transfer,
+				including the rollback into a new <samp class="ph codeph">transfer</samp> method. As a method, it
+				could include a counter, and also take parameters to represent the documents updated in
+				a transfer. This variation also uses a cas value with <samp class="ph codeph">update</samp> to
+				rollback the transfer; this is to avoid the unintended risk of rewriting the entire
+				transfer document. To see the complete sample code provided above, as well as a Ruby
+				variation which includes the code as a <samp class="ph codeph">transfer()</samp> method, see <a class="xref" href="https://gist.github.com/3135796" target="_blank">sample
+					two-phase transaction</a> and <a class="xref" href="https://gist.github.com/3136027" target="_blank">transfer()</a>.</p>
+
+			<p class="p">This next illustration shows you the diagram we initially introduced to you at the start
+				of this section. but this we update it to show when system failures may occur and the
+				rollback scenario you may want to provide. Depending on the programming language that
+				you use, how you implement the rollbacks may vary slightly:</p>
+
+					<img class="image" src="images/two-phase-rollback.png">
+
+			<p class="p">The next example demonstrates a transaction using the PHP SDK; as in the Ruby example
+				provided above, we follow the same process of creating a separate transfer document to
+				track the state of our changes. To see the example we illustrate above, as well as the
+				alternate class, see <a class="xref" href="https://gist.github.com/3155132/2301591fa9d2dddbf3c2578ad1369703493c5aef" target="_blank">Two-Phase PHP Couchbase Commit</a> and <a class="xref" href="https://gist.github.com/3155762" target="_blank">Advanced
+					Two-Phase PHP Couchbase Commit</a></p>
+
+			<p class="p">In this case we provide the functionality within a single exception class which manages
+				the commits as well as the possible rollback cases based on errors. First we establish
+				some base elements before we actually set any documents</p>
+
+			<p class="p">Here we create our <samp class="ph codeph">Transaction</samp> class which will throw an error if any
+				issues arise as we try to perform our transaction. We then provide a public method,
+					<samp class="ph codeph">transfer()</samp> which we can use to retrieve the documents and decode the
+				JSON. We can provide parameters to this method that specify the document from which we
+				remove points, also known as the source document, and the document to which we add
+				points, also known as the destination document. We can also provide the client instance
+				and the amount of the transaction as parameters. We will use the client instance as our
+				connection to the server. Within the <samp class="ph codeph">transfer()</samp> function we try to
+				create and store the new document which represents the actual transfer:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">&lt;?php
+
+class TransactionException extends RuntimeException {}
+
+function transfer($source, $destination, $amount, &amp;$cb) {
+      $get = function($key, $casOnly = false) use (&amp;$cb) {
+          $return = null;
+          $cb-&gt;getDelayed(array($key), true, function($cb, $data) use(&amp;$return, $casOnly) {
+              $return = $casOnly ? $data['cas'] : array(json_decode($data['value'], true), $data['cas']);
+                  });
+              return $return;
+      };
+
+      if($cb-&gt;get('transaction:counter') === null) {
+          $cb-&gt;set('transaction:counter', 0);
+      }
+
+        $id = $cb-&gt;increment('transaction:counter', 1);
+
+        $state = 'initial';
+        $transKey = "transaction:$id";
+
+        $transDoc = compact('source', 'destination', 'amount', 'state');
+        $cb-&gt;set($transKey, json_encode($transDoc));
+        $transactionCas = $get($transKey, true);
+
+          if(!$transactionCas) {
+                throw new TransactionException("Could not insert transaction document");
+        }
+</samp></code></pre>
+
+			<p class="p">The first thing we do is try to retrieve any existing, named document
+					<samp class="ph codeph">transaction:counter</samp> and if it does not exist, create a new one with
+				the default counter of 0. We then increment the id for our transfer and set the state
+				and key. Finally we perform the SDK store operation <samp class="ph codeph">set()</samp> to save the
+				document as JSON to Couchbase Server. In the <samp class="ph codeph">transfer()</samp> function, we
+				use a <samp class="ph codeph">try..catch</samp> block to try to update the transfer to a pending state
+				and throw an exception if we cannot update the state:</p>
+
+			<p class="p">In the <samp class="ph codeph">try</samp> block we try to retrieve the stored documents and apply the
+				attributes from the documents provided as parameters. We also provide a reference to the
+				new transfer document in the source and destination documents as we described in our
+				illustration.</p>
+
+			<p class="p">We perform compare and swap operations to update the source and destination documents in
+				the <samp class="ph codeph">try</samp> block; if either attempts fail and return false, we raise an
+				exception. We then update the transfer document in Couchbase Server to indicate the
+				commit state is now committed:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">try {
+                $transDoc['state'] = 'pending';
+                if(!$cb-&gt;cas($transactionCas, $transKey, json_encode($transDoc))) {
+                       throw new TransactionException("Could not switch to pending state");
+                }
+
+                list($sourceDoc, $sourceCas) = $get($source);
+                list($destDoc, $destCas) = $get($destination);
+
+                $sourceDoc['points'] -= $amount;
+                $sourceDoc['transactions'] += array($transKey);
+                $destDoc['points'] += $amount;
+                $destDoc['transactions'] += array($transKey);
+
+                if(!$cb-&gt;cas($sourceCas, $source, json_encode($sourceDoc))) {
+                         throw new TransactionException("Could not update source document");
+                }
+
+                if(!$cb-&gt;cas($destCas, $destination, json_encode($destDoc))) {
+                         throw new TransactionException("Could not update destination document");
+                }
+            $transDoc['state'] = 'committed';
+                $transactionCas = $get($transKey, true);
+
+                if(!$cb-&gt;cas($transactionCas, $transKey, json_encode($transDoc))) {
+                        throw new TransactionException("Could not switch to committed state");
+                }
+</samp></code></pre>
+
+			<p class="p">Again in the <samp class="ph codeph">try</samp> block we throw an exception if we fail to update the
+				transfer state. We then remove the reference to the transfer for the source and
+				destination documents. At the end of our <samp class="ph codeph">try</samp> we update the transfer
+				document so that it is marked as ‘done’:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">list($sourceDoc, $sourceCas) = $get($source);
+                list($destDoc, $destCas) = $get($destination);
+
+                $sourceDoc['transactions'] = array_diff($sourceDoc['transactions'], array($transKey));
+                $destDoc['transactions'] = array_diff($destDoc['transactions'], array($transKey));
+
+                if(!$cb-&gt;cas($sourceCas, $source, json_encode($sourceDoc))) {
+                       throw new TransactionException("Could not remove transaction from source document");
+                }
+
+                if(!$cb-&gt;cas($destCas, $destination, json_encode($destDoc))) {
+                       throw new TransactionException("Could not remove transaction from destination document");
+                 }
+
+            $transDoc['state'] = 'done';
+                $transactionCas = $get($transKey, true);
+                if(!$cb-&gt;cas($transactionCas, $transKey, json_encode($transDoc))) {
+                        throw new TransactionException("Could not switch to done state");
+                }
+</samp></code></pre>
+
+			<p class="p">We can now handle any system failures in our <samp class="ph codeph">transfer()</samp> function with
+				exception handling code which looks at the state of our two-phase commit:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">} catch(Exception $e) {
+
+              // Rollback transaction
+
+              list($transDoc, $transCas) = $get($transKey);
+
+              switch($transDoc['state']) {
+
+                     case 'committed':
+                            // create new transaction and swap the targets
+                            transfer($destination, $source, $amount, $cb);
+                        break;
+
+                     case 'pending':
+
+                          // STEP 1: switch transaction into cancelling state
+
+                          $transDoc['state'] = 'cancelling';
+                          $transactionCas = $get($transKey, true);
+
+                          if(!$cb-&gt;cas($transactionCas, $transKey, json_encode($transDoc))) {
+                               throw new TransactionException("Could not switch into cancelling state");
+                          }
+
+                          // STEP 2: revert changes if applied
+
+                          list($sourceDoc, $sourceCas) = $get($source);
+                          list($destDoc, $destCas) = $get($destination);
+
+                          if(in_array($transKey, $sourceDoc['transactions'])) {
+                                 $sourceDoc['points'] += $amount;
+                                 $sourceDoc['transactions'] = array_diff($sourceDoc['transactions'], array($transKey));
+                                 if(!$cb-&gt;cas($sourceCas, $source, json_encode($sourceDoc))) {
+                                      throw new TransactionException("Could not revert source document");
+                                 }
+                           }
+
+                          if(in_array($transKey, $destDoc['transactions'])) {
+                                 $destDoc['points'] -= $amount;
+                                 $destDoc['transactions'] = array_diff($destDoc['transactions'], array($transKey));
+                                 if(!$cb-&gt;cas($destCas, $destination, json_encode($destDoc))) {
+                                        throw new TransactionException("Could not revert destination document");
+                                 }
+                          }
+
+                          // STEP 3: switch transaction into cancelled state
+
+                          $transDoc['state'] = 'cancelled';
+                          $transactionCas = $get($transKey, true);
+                          if(!$cb-&gt;cas($transactionCas, $transKey, json_encode($transDoc))) {
+                                 throw new TransactionException("Could not switch into cancelled state");
+                          }
+
+                      break;
+              }
+
+            // Rethrow the original exception
+            throw new Exception("Transaction failed, rollback executed", null, $e);
+
+       }
+
+}
+</samp></code></pre>
+
+			<p class="p">If the transfer is in a indeterminate state, such as ‘pending’ or ‘committed’ but not
+				‘done’, we flag the document as in the process of being cancelled and then revert the
+				values for the stored documents into their original states. To revert the documents, we
+				use the <samp class="ph codeph">transfer()</samp> method again, but this time we invert the parameters
+				and provide the destination as the source of points and source as the destination of
+				points. This will take away the amount from the destination and revert them back to the
+				source. This final sample code illustrates our new class and <samp class="ph codeph">transfer()</samp>
+				method in action:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">$cb = new Couchbase('localhost:8091');
+
+$cb-&gt;set('karen', json_encode(array(
+           'name' =&gt; 'karen',
+           'points' =&gt; 500,
+           'transactions' =&gt; array()
+        )));
+
+$cb-&gt;set('dipti', json_encode(array(
+            'name' =&gt; 'dipti',
+            'points' =&gt; 700,
+            'transactions' =&gt; array()
+       )));
+
+transfer('karen', 'dipti', 100, $cb);
+
+?&gt;
+</samp></code></pre>
+
+			<p class="p">There is also another variation for handling transactions with the Couchbase PHP SDK
+				that relies on helper functions to create the document objects, and to provide the
+				additional option to create a document if it does not exist in Couchbase Server. The
+				sample is slightly more complex, but handles cases where the documents do not already
+				exist in Couchbase Server, and cases where the documents provided as parameters are only
+				partial values to be added to the stored documents. To see the example we illustrate
+				above, as well as the alternate class, see <a class="xref" href="https://gist.github.com/3155132/2301591fa9d2dddbf3c2578ad1369703493c5aef" target="_blank">Two-Phase PHP Couchbase Commit</a> and <a class="xref" href="https://gist.github.com/3155132/2301591fa9d2dddbf3c2578ad1369703493c5aef" target="_blank">Advanced Two-Phase PHP Couchbase Commit</a>.</p>
+
+		</section>
+
+
+		<section class="section"><h2 class="title sectiontitle">Getting and locking</h2>
+			
+			<p class="p">Retrieving information from back end or remote systems might be slow and consume a lot
+				of resources. You can use advisory locks on records in order to control access to these
+				resources. Instead of letting any client access Couchbase Server and potentially
+				overwhelm the server with high concurrent client requests, you could create an advisory
+				lock to allow only one client at a time access the information.</p>
+
+			<p class="p">You can create a lock in Couchbase by setting an expiration on specific item and by
+				using the <samp class="ph codeph">add()</samp> and <samp class="ph codeph">delete()</samp> methods to access that
+				named item. The <samp class="ph codeph">add()</samp> and <samp class="ph codeph">delete()</samp> methods are atomic,
+				so you can be assured that only one client will become the advisory lock owner.</p>
+
+			<p class="p">The first client that tries to add a named lock item with an expiration timeout will
+				succeed. Other clients will see error responses to an <samp class="ph codeph">add()</samp> command on
+				that named lock item; they will know that some other client owns the named lock item.
+				When the current lock owner is finished owning the lock, it can send an explicit
+					<samp class="ph codeph">delete()</samp> command on the named lock item to free the lock.</p>
+
+			<p class="p">If a client that owns a lock crashes, the lock will automatically become available to
+				the next client that requests for lock via <samp class="ph codeph">add()</samp> after the expiration
+				timeout.</p>
+
+			<p class="p">As a convenience, several Couchbase SDKs provide <samp class="ph codeph">get-and-lock</samp> as a
+				single operation and single server request. This will accomplish the functional
+				equivalent of adding a lock and deleting it. The following is an example from the Python
+				SDK:</p>
+
+			<pre class="pre codeblock"><code><samp class="ph codeph">import uuid
+
+key, value = str(uuid.uuid4()), str(uuid.uuid4())
+
+client.set(key, 0, 0, value)
+client.getl((key)[2], value)
+client.set(key, 0, 0, value)
+</samp></code></pre>
+
+			<p class="p">After we set the key and values to unique strings, we lock the key. The subsequent
+					<samp class="ph codeph">set()</samp> request will fail and return an error.</p>
+
+		</section>
+
+
+	</div>
+
+
+<nav class="related-links"><h2>Related information</h2>
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="../../developer/dev-guide-3.0/advanced-topics.html">Advanced topics in development</a></div>
+<div class="previouslink"><strong>Previous topic:</strong> <a class="link" href="../../developer/dev-guide-3.0/sync-async-transactions.html">Synchronous and asynchronous transactions</a></div>
+<div class="nextlink"><strong>Next topic:</strong> <a class="link" href="../../developer/dev-guide-3.0/app-performance.html">Improving application performance</a></div>
+</div>
+</nav></div><footer class="developer-portal-footer" role="contentinfo"><p class="legal"><span class="license">© 2011–2015 <b class="company-name">Couchbase</b>. All rights reserved.</span><a href="http://support.couchbase.com/">Customer Login</a><a href="http://www.couchbase.com/terms-of-service">Terms of Service</a><a href="http://www.couchbase.com/privacy-policy">Privacy Policy</a></p></footer></div></main><script src="../../assets/javascripts/vendor/prism.js"></script><script type="text/javascript">var BASEPATH='../../';</script><script src="../../assets/javascripts/init.js"></script><script type="text/javascript" src="https://issues.couchbase.com/s/en_US-pvmaib-418945332/845/131/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=86389172"></script></body></html>

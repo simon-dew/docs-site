@@ -1,0 +1,554 @@
+<!DOCTYPE html><html xmlns:related-links="http://dita-ot.sourceforge.net/ns/200709/related-links" class="no-js developer-portal" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><title>Translating SQL to map/reduce — Couchbase Server 3.0/3.1</title><meta name="apple-mobile-web-app-title" content="Couchbase"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png"><link rel="stylesheet" href="../../assets/stylesheets/application.css"><link rel="stylesheet" href="../../assets/stylesheets/docs.css"></head><body data-modules="developer-portal-sidebar-navigation developer-portal-versions-navigation">
+	<!-- Google Tag Manager -->
+				<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MVPNN2"
+					height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+				<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+					'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+					})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+				<!-- End Google Tag Manager -->
+				<header class="developer-portal-header" role="banner"><div class="layout-wrapper"><div class="developer-portal-header__hgroup"><h1 class="developer-portal-header__logo"><a href="http://couchbase.com" rel="home">Couchbase</a></h1><p class="developer-portal-header__page-title">Couchbase Server 3.0/3.1</p></div><nav class="developer-portal-header__navigation" id="primary-navigation" role="navigation"><div class="developer-portal-header__navigation__wrapper" id="primary-navigation__wrapper"><ul class="developer-portal-header__navigation__items"><li class="developer-portal-header__navigation__item"><a href="/index.html">Documentation Home</a></li><li class="developer-portal-header__navigation__item"><a href="http://www.couchbase.com/nosql-databases/downloads">Downloads</a></li><li class="developer-portal-header__navigation__item"><a href="http://www.couchbase.com/open-source">Open Source Projects</a></li><li class="developer-portal-header__navigation__item"><a href="http://forums.couchbase.com">Forums</a></li></ul><div class="developer-portal-header__search"><script>
+					  (function() {
+					    var cx = '018016427239405524608:fkg1v30apnm';
+					    var gcse = document.createElement('script');
+					    gcse.type = 'text/javascript';
+					    gcse.async = true;
+					    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+					        '//www.google.com/cse/cse.js?cx=' + cx;
+					    var s = document.getElementsByTagName('script')[0];
+					    s.parentNode.insertBefore(gcse, s);
+					  })();
+					</script><gcse:search></gcse:search></div></div></nav></div></header><main class="developer-portal-global-content" role="main"><aside class="developer-portal-sidebar"><nav class="developer-portal-sidebar__navigation"><div class="developer-portal-sidebar__navigation__wrapper" id="developer-portal-sidebar-navigation"><ul><li class="section section--has-sub-sections"><a href="../../admin/Couchbase-intro.html"><span>Introduction</span></a></li><li class="section"><a href="../../admin/Whats-new-3.0.html"><span>What's new in 3.0</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/install-intro.html"><span>Installation and upgrade</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/admin-intro.html"><span>Administration</span></a></li><li class="section section--has-sub-sections&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;section--active"><a href="../../admin/Views/views-intro.html"><span>Views and indexes</span></a><ul class="sub-sections"><li class="section"><a href="../../admin/Views/views-basics.html"><span>View basics</span></a></li><li class="section"><a href="../../admin/Views/views-index-updates.html"><span>Stream-based views</span></a></li><li class="section"><a href="../../admin/Views/views-operation.html"><span>Views operations</span></a></li><li class="section"><a href="../../admin/Views/views-storedData.html"><span>Views and stored data</span></a></li><li class="section"><a href="../../admin/Views/views-development.html"><span>Development views</span></a></li><li class="section"><a href="../../admin/Views/views-production.html"><span>Production views</span></a></li><li class="section"><a href="../../admin/Views/views-writing.html"><span>Writing views</span></a></li><li class="section"><a href="../../admin/Views/views-geospatial.html"><span>Writing geospatial views</span></a></li><li class="section"><a href="../../admin/Views/views-schemaless.html"><span>Views in a schema-less database</span></a></li><li class="section"><a href="../../admin/Views/views-translateSQL.html" class="current"><span>Translating SQL to map/reduce</span></a><ul class="sub-sections"></ul></li><li class="section"><a href="../../admin/Views/views-querying.html"><span>Querying views</span></a></li><li class="section"><a href="../../admin/Views/views-querySample.html"><span>View and query examples</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/Misc/sample-bucket-intro.html"><span>Sample buckets</span></a></li></ul></li><li class="section section--has-sub-sections"><a href="../../admin/cli-intro.html"><span>CLI reference</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/rest-intro.html"><span>REST API reference</span></a></li><li class="section section--has-sub-sections"><a href="../../admin/rel-notes/rel-notes3.0.html"><span>Release notes</span></a></li><li class="section"><a href="../../admin/pdfs.html"><span>PDFs</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/intro.html"><span>Overview</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/concepts.html"><span>Developing applications</span></a></li><li class="section section--has-sub-sections"><a href="../../developer/dev-guide-3.0/old-versions.html"><span>Older SDK versions</span></a></li></ul></div></nav></aside><div class="developer-portal-content"><div class="developer-portal-content__wrapper textblock__content">
+  <h1 class="title topictitle1" id="ariaid-title1">Translating SQL to map/reduce</h1>
+
+  
+  <div class="body"><p class="shortdesc">This section provides information on how to translate SQL to a map/reduce
+    environment.</p>
+
+    <pre class="pre codeblock"><code><samp class="ph codeph">SELECT fieldlist FROM table \
+    WHERE condition \
+    GROUP BY groupfield \
+    ORDER BY orderfield \
+    LIMIT limitcount OFFSET offsetcount
+</samp></code></pre>
+
+    <p class="p">The different elements within the source statement affect how a view is written in the
+      following ways:</p>
+
+    <ul class="ul">
+      <li class="li"><samp class="ph codeph">SELECT fieldlist</samp></li>
+
+    </ul>
+
+    <p class="p">The field list within the SQL statement affects either the corresponding key or value within
+      the <samp class="ph codeph">map()</samp> function, depending on whether you are also selecting or reducing
+      your data. </p>
+
+    <ul class="ul">
+      <li class="li"><samp class="ph codeph">FROM table</samp></li>
+
+    </ul>
+
+    <p class="p">There are no table compartments within Couchbase Server, and you cannot perform views across
+      more than one bucket boundary. However, if you are using a <samp class="ph codeph">type</samp> field within
+      your documents to identify different record types, then you may want to use the
+        <samp class="ph codeph">map()</samp> function to make a selection.</p>
+
+    
+    <ul class="ul">
+      <li class="li"><samp class="ph codeph">WHERE condition</samp></li>
+
+    </ul>
+
+    <p class="p">The <samp class="ph codeph">map()</samp> function and the data generated into the view key directly affect
+      how you can query, and therefore how the selection of records takes place.</p>
+
+    <ul class="ul">
+      <li class="li"><samp class="ph codeph">ORDER BY orderfield</samp></li>
+
+    </ul>
+
+    <p class="p"> The key specified during the <samp class="ph codeph">map()</samp> function phase of the view generation
+      directly controls the order of record output within a view.</p>
+
+    <ul class="ul">
+      <li class="li"><samp class="ph codeph">LIMIT limitcount OFFSET offsetcount</samp></li>
+
+    </ul>
+
+    <p class="p">There are some different paging strategies available within the map/reduce and views
+      mechanism.</p>
+
+    <ul class="ul">
+      <li class="li"><samp class="ph codeph">GROUP BY groupfield</samp></li>
+
+    </ul>
+
+    <p class="p">Grouping within SQL is handled within views through the use of the <samp class="ph codeph">reduce()</samp>
+      function.</p>
+
+    <p class="p">The interaction between the view <samp class="ph codeph">map()</samp> function, <samp class="ph codeph">reduce()</samp>
+      function, selection parameters and other miscellaneous parameters according to the table
+      below:</p>
+
+    
+    
+    
+    
+    
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table" frame="border" border="1" rules="all">
+        <col style="width:14.285714285714285%">
+        <col style="width:14.285714285714285%">
+        <col style="width:14.285714285714285%">
+        <col style="width:14.285714285714285%">
+        <col style="width:14.285714285714285%">
+        <col style="width:14.285714285714285%">
+        <col style="width:14.285714285714285%">
+        <thead class="thead" style="text-align:left;">
+          <tr class="row">
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e134">SQL Statement Fragment</th>
+
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e137">View Key</th>
+
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e140">View Value</th>
+
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e143"><samp class="ph codeph">map()</samp> Function</th>
+
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e148"><samp class="ph codeph">reduce()</samp> Function</th>
+
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e154">Selection Parameters</th>
+
+            <th class="entry cellrowborder" style="text-align:left;vertical-align:top;" id="d118658e157">Other Parameters</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody class="tbody">
+          <tr class="row">
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e134 ">SELECT fields</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e137 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e140 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e143 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e148 ">No: with <samp class="ph codeph">GROUP BY</samp> and <samp class="ph codeph">SUM()</samp> or
+                <samp class="ph codeph">COUNT()</samp> functions only</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e154 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e157 ">No</td>
+
+          </tr>
+
+          <tr class="row">
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e134 ">FROM table</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e137 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e140 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e143 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e148 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e154 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e157 ">No</td>
+
+          </tr>
+
+          <tr class="row">
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e134 ">WHERE clause</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e137 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e140 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e143 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e148 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e154 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e157 ">No</td>
+
+          </tr>
+
+          <tr class="row">
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e134 ">ORDER BY field</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e137 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e140 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e143 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e148 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e154 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e157 "><samp class="ph codeph">descending</samp></td>
+
+          </tr>
+
+          <tr class="row">
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e134 ">LIMIT x OFFSET y</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e137 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e140 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e143 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e148 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e154 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e157 "><samp class="ph codeph">limit</samp>, <samp class="ph codeph">skip</samp></td>
+
+          </tr>
+
+          <tr class="row">
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e134 ">GROUP BY field</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e137 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e140 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e143 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e148 ">Yes</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e154 ">No</td>
+
+            <td class="entry cellrowborder" style="text-align:left;vertical-align:top;" headers="d118658e157 ">No </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+</div>
+
+    <p class="p">Within SQL, the basic query structure can be used for a multitude of different queries. For
+      example, the same <samp class="ph codeph">SELECT fieldlist FROM table WHERE xxxx</samp> can be used with
+      different clauses.</p>
+
+    <p class="p">Within map/reduce and Couchbase Server, multiple views may be needed to be created to handled
+      different query types. For example, performing a query on all the blog posts on a specific
+      date will need a very different view definition than one needed to support selection by the
+      author.</p>
+
+    
+    
+    
+    
+    <section class="section"><h2 class="title sectiontitle">Translating SQL SELECT to map/reduce</h2><p class="p">The field selection within an SQL query can be translated into a corresponding view definition.
+        Add the fields to the emitted key if the value is also used for selection in a
+          <samp class="ph codeph">WHERE</samp> clause, or into the emitted value if the data is separate from the
+        required query parameters.</p>
+<p class="p">For example, to get the sales data by country from each stored document
+        using the following <samp class="ph codeph">map()</samp>
+        function:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta) {
+  emit([doc.city, doc.sales], null);
+}
+</samp></code></pre>
+<p class="p">If you want to output information and use it within a reduce function, specify it in the value
+        generated by each <samp class="ph codeph">emit()</samp> call. For example, to reduce the sales figures,
+        re-write  the above <samp class="ph codeph">map()</samp> function:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta) {
+  emit(doc.city, doc.sales);
+}
+</samp></code></pre>
+<p class="p">The output is not significantly different albeit with a simplified key, but the information can
+        now be reduced using the numerical value.</p>
+<p class="p">If you want to output data or field values separate to the query values, then these fields can be
+        explicitly output within the value portion of the view. For example:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta) {
+  emit(doc.city, [doc.name, doc.sales]);
+}
+</samp></code></pre>
+<p class="p">If the entire document for each item is required, load the document data after the view has been
+        requested through the client library. </p>
+<p class="p">Within a <samp class="ph codeph">SELECT</samp> statement, it is common practice to include the primary key for
+        a given record in the output. Within a view, this is not normally required since the
+        document ID that generated each row is always included within the view output.</p>
+</section>
+
+    
+    
+    
+    <section class="section"><h2 class="title sectiontitle">Translating SQL WHERE to map/reduce</h2><p class="p">The <samp class="ph codeph">WHERE</samp> clause
+				within an SQL statement forms the selection criteria for choosing individual records.
+				Within a view, the ability to query the data is controlled by the content and structure
+				of the <samp class="ph codeph">key</samp> generated by the <samp class="ph codeph">map()</samp> function.</p>
+<p class="p">In
+				general, for each <samp class="ph codeph">WHERE</samp> clause you need to include the corresponding
+				field in the key of the generated view. Use the <samp class="ph codeph">key</samp>,
+					<samp class="ph codeph">keys</samp> or <samp class="ph codeph">startkey</samp> / <samp class="ph codeph">endkey</samp>
+				combinations to indicate the data you want to select. The complexity occurs when you
+				need to perform queries on multiple fields. There are different strategies that you can
+				use for this.</p>
+<p class="p">The simplest way is to decide whether you want to be able to select
+				a specific combination, or whether you want to perform range or multiple selections. For
+				example, if you want to select recipes that use the ingredient ‘carrot’ and have a
+				cooking time of exactly 20 minutes, you can specify these two fields in the
+					<samp class="ph codeph">map()</samp>
+				function:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta)
+{
+  if (doc.ingredients)
+  {
+    for(i=0; i &lt; doc.ingredients.length; i++)
+    {
+      emit([doc.ingredients[i].ingredient, doc.totaltime], null);
+    }
+  }
+}
+</samp></code></pre>
+<p class="p">Then
+				the query is an array of the two selection
+				values:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">?key=["carrot",20]
+</samp></code></pre>
+<p class="p">The example is
+				equivalent to the following SQL
+				query:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">SELECT recipeid FROM recipe JOIN ingredients on ingredients.recipeid = recipe.recipeid
+    WHERE ingredient = 'carrot' AND totaltime = 20
+</samp></code></pre>
+<p class="p">If,
+				however, you want to perform a query that selects recipes containing carrots that you
+				can prepare in less than 20 minutes, a range query is possible with the same
+					<samp class="ph codeph">map()</samp>
+			function:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">?startkey=["carrot",0]&amp;endkey=["carrot",20]
+</samp></code></pre>
+The
+			above example works due to the sorting mechanism in a view that outputs in the information
+			sequentially, fortunately nicely sorted with carrots first and a sequential number.<p class="p">More
+				complex queries though are more difficult. What if you want to select recipes with
+				carrots and rice, still preparable in under 20 minutes?</p>
+<p class="p">A standard
+					<samp class="ph codeph">map()</samp> function like that above won't work. A range query on both
+				ingredients will list all the ingredients between the two. There are a number of
+				solutions available to you. First, the easiest way to handle the timing selection is to
+				create a view that explicitly selects recipes prepared within the specified time.
+				I.E:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta)
+{
+  if (doc.totaltime &lt;= 20)
+  {
+    ...
+  }
+}
+</samp></code></pre>
+<p class="p">Although
+				this approach seems to limit your queries severely, remember you can create multiple
+				views, so you could create one for 10 mins, one for 20, one for 30, or whatever
+				intervals you select. It’s unlikely that anyone will want to select recipes that can be
+				prepared in 17 minutes, so such granular selection is overkill.</p>
+<p class="p">The multiple
+				ingredients are more difficult to solve. One way is to use the client to perform two
+				queries and merge the data. For example, the <samp class="ph codeph">map()</samp> function:</p>
+
+			<pre class="pre codeblock"><code>function(doc, meta)
+{
+  if (doc.totaltime &amp;&amp; doc.totaltime &lt;= 20)
+  {
+    if (doc.ingredients)
+    {
+      for(i=0; i &lt; doc.ingredients.length; i++)
+      {
+        emit(doc.ingredients[i].ingredient, null);
+      }
+    }
+  }
+}
+</code></pre>
+
+			<p class="p">Two queries, one for each ingredient can easily be merged by performing a comparison and
+				count on the document ID output by each view.</p>
+<p class="p">The alternative is to output the
+				ingredients twice within a nested loop, like this:</p>
+
+			<pre class="pre codeblock"><code>function(doc, meta)
+{
+  if (doc.totaltime &amp;&amp; doc.totaltime &lt;= 20)
+  {
+    if (doc.ingredients)
+    {
+      for (i=0; i &lt; doc.ingredients.length; i++)
+      {
+        for (j=0; j &lt; doc.ingredients.length; j++)
+        {
+          emit([doc.ingredients[i].ingredient, doc.ingredients[j].ingredient], null);
+        }
+      }
+    }
+  }
+}
+</code></pre>
+
+			<p class="p">Now you can perform an explicit query on both
+				ingredients:</p>
+<pre class="pre codeblock"><code>?key=["carrot","rice"]
+</code></pre>
+<p class="p">If you really want to
+				support flexible cooking times, then you can also add the cooking
+				time:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta)
+{
+  if (doc.ingredients)
+  {
+    for (i=0; i &lt; doc.ingredients.length; i++)
+    {
+      for (j=0; j &lt; doc.ingredients.length; j++)
+      {
+        emit([doc.ingredients[i].ingredient, doc.ingredients[j].ingredient, recipe.totaltime], null);
+      }
+    }
+  }
+}
+</samp></code></pre>
+<p class="p">And
+				now you can support a ranged query on the cooking time with the two ingredient
+				selection:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">?startkey=["carrot","rice",0]&amp;key=["carrot","rice",20]
+</samp></code></pre>
+<p class="p">This
+				would be equivalent
+			to:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">SELECT recipeid FROM recipe JOIN ingredients on ingredients.recipeid = recipe.recipeid
+    WHERE (ingredient = 'carrot' OR ingredient = 'rice') AND totaltime = 20
+</samp></code></pre>
+</section>
+
+    
+    
+    
+    <section class="section"><h2 class="title sectiontitle">Translating SQL ORDER BY to map/reduce</h2><p class="p">The <samp class="ph codeph">ORDER BY</samp>
+        clause within SQL controls the order of the records that are output. Ordering within a view
+        is controlled by the value of the key. However, the key also controls and supports the
+        querying mechanism.</p>
+<p class="p">In <samp class="ph codeph">SELECT</samp> statements where there is no explicit
+          <samp class="ph codeph">WHERE</samp> clause, the emitted key can entirely support the sorting you want.
+        For example, to sort by the city and salesman name, the following <samp class="ph codeph">map()</samp>
+        will achieve the required
+        sorting:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta)
+{
+   emit([doc.city, doc.name], null)
+}
+</samp></code></pre>
+<p class="p">If
+        you need to query on a value, and that query specification is part of the order sequence
+        then you can use the format above. For example, if the query basis is city, then you can
+        extract all the records for ‘London’ using the above view and a suitable range
+        query:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">?endkey=["London\u0fff"]&amp;startkey=["London"]
+</samp></code></pre>
+<p class="p">However,
+        if you want to query the view by the salesman name, you need to reverse the field order in
+        the <samp class="ph codeph">emit()</samp>
+        statement:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta)
+{
+   emit([doc.name,doc.city],null)
+}
+</samp></code></pre>
+<p class="p">Now
+        you can search for a name while still getting the information in city order.</p>
+<p class="p">The order
+        the output can be reversed (equivalent to <samp class="ph codeph">ORDER BY field DESC</samp> ) by using
+        the <samp class="ph codeph">descending</samp> query parameter. </p>
+</section>
+
+    
+    
+    
+    <section class="section"><h2 class="title sectiontitle">Translating SQL GROUP BY to map/reduce</h2><p class="p">The <samp class="ph codeph">GROUP BY</samp>
+        parameter within SQL provides summary information for a group of matching records according
+        to the specified fields, often for use with a numeric field for a sum or total value, or
+        count operation.</p>
+<p class="p">For
+        example:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">SELECT name,city,SUM(sales) FROM sales GROUP BY name,city
+</samp></code></pre>
+<p class="p">This
+        query groups the information by the two fields ‘name’ and ‘city’ and produces a sum total of
+        these values. To translate this into a map/reduce function within Couchbase Server:</p>
+<ul class="ul">
+        <li class="li"><p class="p">From the list of selected fields, identify the field used for the calculation. These
+            will need to be exposed within the value emitted by the <samp class="ph codeph">map()</samp>
+            function.</p>
+</li>
+
+        <li class="li"><p class="p">Identify the list of fields in the <samp class="ph codeph">GROUP BY</samp> clause. These will need
+            to be output within the key of the <samp class="ph codeph">map()</samp> function.</p>
+</li>
+
+        <li class="li"><p class="p">Identify the grouping function, for example <samp class="ph codeph">SUM()</samp> or
+              <samp class="ph codeph">COUNT()</samp>. You will need to use the equivalent built-in function, or a
+            custom function, within the <samp class="ph codeph">reduce()</samp> function of the view.</p>
+</li>
+
+      </ul>
+<p class="p">For example, in the above case, the corresponding map function can be written as
+          <samp class="ph codeph">map()</samp>
+        :</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">function(doc, meta)
+{
+   emit([doc.name,doc.city],doc.sales);
+}
+</samp></code></pre>
+<p class="p">This
+        outputs the name and city as the key, and the sales as the value. Because the
+          <samp class="ph codeph">SUM()</samp> function is used, the built-in <samp class="ph codeph">reduce()</samp> function
+          <samp class="ph codeph">_sum</samp> can be used.</p>
+<p class="p">An example of this map/reduce combination can be
+        seen <samp class="ph codeph">_sum</samp>.</p>
+<p class="p">More complex grouping operations may require a custom reduce function.
+        </p>
+</section>
+
+    
+    
+    
+    <section class="section"><h2 class="title sectiontitle">Translating SQL LIMIT and OFFSET</h2><p class="p">Within SQL, the
+          <samp class="ph codeph">LIMIT</samp> and <samp class="ph codeph">OFFSET</samp> clauses to a given query are used as a
+        paging mechanism. For example, you might
+        use:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">SELECT recipeid,title FROM recipes LIMIT 100
+</samp></code></pre>
+<p class="p">To
+        get the first 100 rows from the database, and then use the <samp class="ph codeph">OFFSET</samp> to get
+        the subsequent groups of
+        records:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">SELECT recipeid,title FROM recipes LIMIT 100 OFFSET 100
+</samp></code></pre>
+<p class="p">With
+        Couchbase Server, the <samp class="ph codeph">limit</samp> and <samp class="ph codeph">skip</samp> parameters when
+        supplied to the query provide the same basic
+        functionality:</p>
+<pre class="pre codeblock"><code><samp class="ph codeph">?limit=100&amp;skip=100
+</samp></code></pre>
+<p class="p">Performance
+        for high values of skip can be affected.</p>
+</section>
+
+  </div>
+
+  <nav class="related-links"><h2>Related information</h2>
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="../../admin/Views/views-intro.html" title="Couchbase views enable indexing and querying of data.">Views and indexes</a></div>
+<div class="previouslink"><strong>Previous topic:</strong> <a class="link" href="../../admin/Views/views-schemaless.html" title="A schema-less database along with view definitions provide for a flexible document structure.">Views in a schema-less database</a></div>
+<div class="nextlink"><strong>Next topic:</strong> <a class="link" href="../../admin/Views/views-querying.html" title="The content of the key that is generated by the emit() function provides information on how the data is selected from your view.">Querying views</a></div>
+</div>
+<linklist class="- topic/linklist " outputclass="relinfo"><title class="- topic/title ">Related information</title><link xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" xmlns:dita-ot="http://dita-ot.sourceforge.net/ns/201007/dita-ot" href="views-querySample.dita" class="- topic/link " xtrf="file:/Users/simondew/GitHub/couchbase/docs/learn/admin/Views/views-translateSQL.dita" xtrc="link:1;371:51" type="topic"><?ditaot gentext><linktext class="- topic/linktext ">View and query examples</linktext><?ditaot genshortdesc><desc class="- topic/desc ">This section provides general information and query examples.</desc><link xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" xmlns:dita-ot="http://dita-ot.sourceforge.net/ns/201007/dita-ot" href="views-querying.dita" class="- topic/link " xtrf="file:/Users/simondew/GitHub/couchbase/docs/learn/admin/Views/views-translateSQL.dita" xtrc="link:2;372:48" type="topic"><?ditaot gentext><linktext class="- topic/linktext ">Querying views</linktext><?ditaot genshortdesc><desc class="- topic/desc ">The content of the key that is generated by the <codeph class="+ topic/ph pr-d/codeph " xtrf="file:/Users/simondew/GitHub/couchbase/docs/learn/admin/Views/views-querying.dita" xtrc="codeph:1;6:71">emit()</codeph> function provides information on       how the data is selected from your view.</desc><link xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" xmlns:dita-ot="http://dita-ot.sourceforge.net/ns/201007/dita-ot" href="views-writing.dita" class="- topic/link " xtrf="file:/Users/simondew/GitHub/couchbase/docs/learn/admin/Views/views-translateSQL.dita" xtrc="link:3;373:47" type="topic"><?ditaot gentext><linktext class="- topic/linktext ">Writing views</linktext><?ditaot genshortdesc><desc class="- topic/desc ">During the view creation process,       the output structure, field order, content, and any summary or grouping       information desired in the view is defined.</desc></linklist></nav>
+</div><footer class="developer-portal-footer" role="contentinfo"><p class="legal"><span class="license">© 2011–2015 <b class="company-name">Couchbase</b>. All rights reserved.</span><a href="http://support.couchbase.com/">Customer Login</a><a href="http://www.couchbase.com/terms-of-service">Terms of Service</a><a href="http://www.couchbase.com/privacy-policy">Privacy Policy</a></p></footer></div></main><script src="../../assets/javascripts/vendor/prism.js"></script><script type="text/javascript">var BASEPATH='../../';</script><script src="../../assets/javascripts/init.js"></script><script type="text/javascript" src="https://issues.couchbase.com/s/en_US-pvmaib-418945332/845/131/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=86389172"></script></body></html>
