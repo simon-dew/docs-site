@@ -8035,6 +8035,9 @@ This can be used to implement read-your-own-writes (RYOW).</p>
 Before processing the request, a current vector is obtained.
 The vector is used as a lower bound for the statements in the request.
 If there are DML statements in the request, RYOW is also applied within the request.</p>
+<div class="paragraph">
+<p>If <code>request_plus</code> is specified in a query that runs during a failover of an index node, the query waits until the rebalance operation completes and the index data has rebalanced before returning a result.</p>
+</div>
 </dd>
 <dt class="hdlist1"><code>statement_plus</code></dt>
 <dd>
@@ -8045,9 +8048,6 @@ Before processing each statement, a current vector is obtained and used as a low
 </div>
 <div class="paragraph">
 <p>Values are case-insensitive.</p>
-</div>
-<div class="paragraph">
-<p>If r`equest_plus` is specified in a query that runs during a failover of an index node, the query waits until the rebalance operation completes and the index data has rebalanced before returning a result.</p>
 </div>
 <div class="paragraph">
 <p>For multi-statement requests, the default behavior is RYOW within each request.
@@ -8496,6 +8496,46 @@ If none of the available full-text indexes are qualified, the available GSI inde
 <div id="_credentials" class="paragraph">
 <p><strong>Credentials</strong></p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 61.1111%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>user</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>An identity for authentication. Note that bucket names may be prefixed with <code>local:</code>, and admin names may be prefixed with <code>admin:</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>pass</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>A password for authentication.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>string</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 <h5 id="transactional-scan-consistency" class="discrete">Transactional Scan Consistency</h5>
 <div class="paragraph">
 <p>If the request contains a <code>BEGIN TRANSACTION</code> statement, or a DML statement with the <a href="#tximplicit">tximplicit</a> parameter set to <code>true</code>, then the <a href="#scan_consistency">scan_consistency</a> parameter sets the <em class="def">transactional scan consistency</em>.
