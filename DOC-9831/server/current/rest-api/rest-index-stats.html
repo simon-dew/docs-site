@@ -5166,7 +5166,7 @@ This API enables you to get Index service statistics.</p>
 <div class="sect2">
 <h3 id="version-information"><a class="anchor" href="#version-information"></a>Version information</h3>
 <div class="paragraph">
-<p><em>Version</em> : 7.0</p>
+<p><em>Version</em> : 7.1</p>
 </div>
 </div>
 <div class="sect2">
@@ -5214,7 +5214,7 @@ This API enables you to get Index service statistics.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="parameters"><a class="anchor" href="#parameters"></a>Parameters</h4>
+<h4 id="_get_node_stats_parameters"><a class="anchor" href="#_get_node_stats_parameters"></a>Parameters</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 10%;">
@@ -5243,6 +5243,24 @@ This API enables you to get Index service statistics.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>Whether the output should be formatted with indentations and newlines.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><code>"false"</code></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>Query</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>redact</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Whether keyspace and index names should be redacted in the output.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>boolean</p>
@@ -5348,6 +5366,9 @@ Returns an object containing a nested <code>indexer</code> object, and usually o
 <p><code><em>index</em></code> is the name of the index.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>If the <a href="#_get_node_stats_parameters">redact</a> query parameter was set to <code>true</code>, the keyspace and index names are replaced by the index instance ID for confidentiality.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><a href="#_index">Index</a></p>
@@ -5399,7 +5420,7 @@ Returns an object containing a nested <code>indexer</code> object, and usually o
 <div class="listingblock">
 <div class="title">Curl request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -X GET -u Administrator:password \
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
 "http://localhost:9102/api/v1/stats?pretty=true"</code></pre>
 </div>
 </div>
@@ -5413,8 +5434,22 @@ Returns an object containing a nested <code>indexer</code> object, and usually o
 <div class="listingblock">
 <div class="title">Curl request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -X GET -u Administrator:password \
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
 "http://localhost:9102/api/v1/stats?skipEmpty=true&amp;pretty=true"</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="node-example-3" class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Request 3: Return statistics for an index node, omit empty results, redact index names, and format the output.</p>
+</div>
+<div class="listingblock">
+<div class="title">Curl request</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
+"http://localhost:9102/api/v1/stats?skipEmpty=true&amp;redact=true&amp;pretty=true"</code></pre>
 </div>
 </div>
 </div>
@@ -5496,7 +5531,7 @@ Returns an object containing a nested <code>indexer</code> object, and usually o
       "scan_bytes_read": 0,
       "total_scan_duration": 0
    },
-   ...
+   // ...
    }
 }</code></pre>
 </div>
@@ -5516,7 +5551,8 @@ Returns an object containing a nested <code>indexer</code> object, and usually o
       "indexer_state": "Active",
       "memory_quota": 536870912,
       "memory_total_storage": 14708736,
-      "memory_used": 376973312
+      "memory_used": 376973312,
+      "total_indexer_gc_pause_ns": 72809334
    },
    "travel-sample:def_airportname": {
       "avg_item_size": 73,
@@ -5538,7 +5574,49 @@ Returns an object containing a nested <code>indexer</code> object, and usually o
       "memory_used": 16330,
       "recs_on_disk": 7380
    },
-   ...
+   // ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Result of <a href="#node-example-3">request 3</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Response 200</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+   "10862128657611330848": {
+      "avg_item_size": 73,
+      "data_size": 514623,
+      "disk_size": 872448,
+      "frag_percent": 56,
+      "initial_build_progress": 100,
+      "items_count": 1968,
+      "memory_used": 3498,
+      "recs_on_disk": 1968
+   },
+   "1358505159407317360": {
+      "avg_item_size": 59,
+      "data_size": 1083447,
+      "disk_size": 1138688,
+      "frag_percent": 56,
+      "initial_build_progress": 100,
+      "items_count": 7380,
+      "memory_used": 16330,
+      "recs_on_disk": 7380
+   },
+   // ...
+   "indexer": {
+      "indexer_state": "Active",
+      "memory_quota": 536870912,
+      "memory_total_storage": 14708736,
+      "memory_used": 376973312,
+      "total_indexer_gc_pause_ns": 72809334
+   }
 }</code></pre>
 </div>
 </div>
@@ -5611,6 +5689,24 @@ For example, <code>`bucket.1`.scope.collection</code>.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>Whether the output should be formatted with indentations and newlines.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><code>"false"</code></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>Query</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>redact</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Whether keyspace and index names should be redacted in the output.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>boolean</p>
@@ -5739,6 +5835,9 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <p><code><em>index</em></code> is the name of the index.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>If the <a href="#_get_keyspace_stats_parameters">redact</a> query parameter was set to <code>true</code>, the keyspace and index names are replaced by the index instance ID for confidentiality.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><a href="#_index">Index</a></p>
@@ -5777,12 +5876,12 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div id="keyspace-example-1" class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Request 3: Return statistics for all indexes in a scope, omit empty results, and format the output.</p>
+<p>Request 4: Return statistics for all indexes in a scope, omit empty results, and format the output.</p>
 </div>
 <div class="listingblock">
 <div class="title">Curl request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -X GET -u Administrator:password \
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
 "http://localhost:9102/api/v1/stats/travel-sample.inventory?pretty=true&amp;skipEmpty=true"</code></pre>
 </div>
 </div>
@@ -5791,12 +5890,12 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div id="keyspace-example-2" class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Request 4: Return statistics for all indexes in a collection, omit empty results, and format the output.</p>
+<p>Request 5: Return statistics for all indexes in a collection, omit empty results, and format the output.</p>
 </div>
 <div class="listingblock">
 <div class="title">Curl request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -X GET -u Administrator:password \
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
 "http://localhost:9102/api/v1/stats/travel-sample.inventory.airline?pretty=true&amp;skipEmpty=true"</code></pre>
 </div>
 </div>
@@ -5808,7 +5907,7 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Result of <a href="#keyspace-example-1">request 3</a>.</p>
+<p>Result of <a href="#keyspace-example-1">request 4</a>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Response 200</div>
@@ -5844,7 +5943,7 @@ Returns the complete specified keyspace name, and the specified index name if pr
       "memory_used": 3880,
       "recs_on_disk": 1968
    },
-   ...
+   // ...
 }</code></pre>
 </div>
 </div>
@@ -5853,7 +5952,7 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Result of <a href="#keyspace-example-2">request 4</a>.</p>
+<p>Result of <a href="#keyspace-example-2">request 5</a>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Response 200</div>
@@ -5998,6 +6097,24 @@ For example, <code>`bucket.1`.scope.collection</code>.</p>
 <p><strong>Query</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>redact</strong><br>
+<em>optional</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>Whether keyspace and index names should be redacted in the output.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p>boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><code>"false"</code></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
+<p><strong>Query</strong></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><strong>skipEmpty</strong><br>
 <em>optional</em></p>
 </div></div></td>
@@ -6128,6 +6245,9 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <p><code><em>index</em></code> is the name of the index.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>If the <a href="#_get_index_stats_parameters">redact</a> query parameter was set to <code>true</code>, the keyspace and index names are replaced by the index instance ID for confidentiality.</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p><a href="#_index">Index</a></p>
@@ -6188,13 +6308,13 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div id="index-example-1" class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Request 5: Return statistics for an index and format the output.</p>
+<p>Request 6: Return statistics for an index and format the output.</p>
 </div>
 <div class="listingblock">
 <div class="title">Curl request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -X GET -u Administrator:password \
-"http://localhost:9102/api/v1/stats/travel-sample.inventory.route/def_sourceairport_partn?pretty=true"</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
+"http://localhost:9102/api/v1/stats/travel-sample.inventory.route/idx_partn?pretty=true"</code></pre>
 </div>
 </div>
 </div>
@@ -6202,13 +6322,13 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div id="index-example-2" class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Request 6: Return statistics for an index, include partitions, and format the output.</p>
+<p>Request 7: Return statistics for an index, include partitions, and format the output.</p>
 </div>
 <div class="listingblock">
 <div class="title">Curl request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">curl -X GET -u Administrator:password \
-"http://localhost:9102/api/v1/stats/travel-sample.inventory.route/def_sourceairport_partn?partition=true&amp;pretty=true"</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -X GET -u Administrator:password \
+"http://localhost:9102/api/v1/stats/travel-sample.inventory.route/idx_partn?partition=true&amp;pretty=true"</code></pre>
 </div>
 </div>
 </div>
@@ -6219,13 +6339,13 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Result of <a href="#index-example-1">request 5</a>.</p>
+<p>Result of <a href="#index-example-1">request 6</a>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Response 200</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-   "travel-sample:inventory:route:def_sourceairport_partn": {
+   "travel-sample:inventory:route:idx_partn": {
       "avg_drain_rate": 0,
       "avg_item_size": 41,
       "avg_scan_latency": 0,
@@ -6261,7 +6381,7 @@ Returns the complete specified keyspace name, and the specified index name if pr
 <div class="exampleblock">
 <div class="content">
 <div class="paragraph">
-<p>Result of <a href="#index-example-2">request 6</a>.</p>
+<p>Result of <a href="#index-example-2">request 7</a>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Response 200</div>
@@ -6379,7 +6499,7 @@ Returns the complete specified keyspace name, and the specified index name if pr
       "scan_bytes_read": 0,
       "total_scan_duration": 0
    },
-   "travel-sample:inventory:route:def_sourceairport_partn": {
+   "travel-sample:inventory:route:idx_partn": {
       "avg_drain_rate": 0,
       "avg_item_size": 41,
       "avg_scan_latency": 0,
