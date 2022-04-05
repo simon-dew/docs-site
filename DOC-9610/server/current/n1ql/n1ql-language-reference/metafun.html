@@ -367,28 +367,10 @@
     <a class="menu_title menu_link" href="../../guides/import.html">Importing Data</a>
   </span>
 </li>
-<li class="menu_list is-parent closed" data-depth="2">
+<li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <span class="in-toggle"></span>
-    <a class="menu_title menu_link" href="../../guides/javascript-udfs.html">User-defined Functions in JavaScript</a>
+    <a class="menu_title menu_link" href="../../guides/udfs-for-query/udfs-for-query-introduction.html">User-Defined Functions for Query</a>
   </span>
-<ul class="menu_row">
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/creating-javascript-library.html">Creating a JavaScript Library</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/calling-javascript-udf.html">Calling a JavaScript UDF</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/remove-javascript-udf.html">Removing a JavaScript UDF</a>
-  </span>
-</li>
-</ul>
 </li>
 </ul>
 </li>
@@ -1535,34 +1517,6 @@
 <li class="menu_list is-parent closed" data-depth="1">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <a class="menu_title menu_link" href="../../javascript-udfs/javascript-udf-language-constructs.html">JavaScript User-Defined Functions</a>
-  </span>
-<ul class="menu_row">
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../javascript-udfs/javascript-and-json-objects.html">JavaScript and JSON Objects</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../javascript-udfs/calling-n1ql-from-javascript.html">Calling N1QL from Javascript</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../javascript-udfs/using-n1ql-inside-javascript-udfs.html">Using N1QL inside JavaScript UDFs</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../javascript-udfs/built-in-functions.html">Built-In Functions</a>
-  </span>
-</li>
-</ul>
-</li>
-<li class="menu_list is-parent closed" data-depth="1">
-  <span class="menu_line">
-    <span class="in-toggle"></span>
     <a class="menu_title menu_link" href="../../eventing/eventing-overview.html">Eventing</a>
   </span>
 <ul class="menu_row">
@@ -2003,11 +1957,6 @@
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../analytics/5_ddl.html">Data Definition Language (DDL)</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../analytics/5a_views.html">Analytics Views</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -4446,6 +4395,11 @@
     <a class="menu_title menu_link" href="../../rest-api/rest-index-stats.html">Index Statistics API</a>
   </span>
 </li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../rest-api/rest-modify-index-batch-size.html">Modify Index Batch Size</a>
+  </span>
+</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -5508,7 +5462,7 @@ If the input expression is <code>missing</code>, the return value is also <code>
 </div>
 </div>
 <div class="sect1">
-<h2 id="len"><a class="anchor" href="#len"></a>LEN(<code>expression</code>)</h2>
+<h2 id="flatten_keys"><a class="anchor" href="#flatten_keys"></a>FLATTEN_KEYS(<code>expression</code>)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><em>(Introduced in Couchbase Server 7.1)</em></p>
@@ -5516,11 +5470,107 @@ If the input expression is <code>missing</code>, the return value is also <code>
 <div class="sect2">
 <h3 id="description-4"><a class="anchor" href="#description-4"></a>Description</h3>
 <div class="paragraph">
-<p>A general function to return the length of an item.</p>
+<p>A function to <em>flatten</em> the elements of an array.
+If one or more fields are present in the array index key, this function flattens them; and indexing occurs with all subsequent index keys accordingly moved to the right.
+Queries will be sargable and generate spans.</p>
+</div>
+<div class="paragraph">
+<p>Use of this function provides indexing with lower latency and higher scalability.</p>
+</div>
+<div class="paragraph">
+<p><code>FLATTEN_KEYS()</code> can only be used on the array index key, and cannot be used recursively.
+Arguments can be modified with <code>ASC</code>/<code>DESC</code>.
+Outside modifiers are not allowed.
+<code>FLATTEN_KEYS()</code> takes at least one and at most 32 argument-values.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="arguments-4"><a class="anchor" href="#arguments-4"></a>Arguments</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expr</dt>
+<dd>
+<p>An expression of the form <code>(f(x), f1(x), . . . )</code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="return-value-4"><a class="anchor" href="#return-value-4"></a>Return Value</h3>
+<div class="paragraph">
+<p>The return value is a flattened list of array elements.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
+<div id="flatten_keys-ex" class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">INSERT INTO default VALUES ("airline_001", {"airline":"AF","airlineid":"airline_001","destinationairport":"SFO","distance":2881.617376098415,"equipment":"320","id":1, "sourceairport":"ATL", "schedule":[{"day":0,"flight":"AF198","utc":"10:13:00"}, {"day":1,"flight":"AF250","utc":"12:59:00"}, {"day":2,"flight":"AF223","utc":"19:41:00"}], "special_flights" : [ {"day":1, "flight" : "AF444", "utc" : "4:44:44"}, {"day": 2, "flight" : "AF333", "utc" : "3:33:33"} ] });
+
+INSERT INTO default VALUES ("airline_002", {"airline":"AF","airlineid":"airline_002","destinationairport":"SJC","distance":481.617376098415,"equipment":"320","id":2, "sourceairport":"LAX", "schedule":[{"day":0,"flight":"AF198","utc":"10:13:00"}, {"day":1,"flight":"AF250","utc":"12:59:00"}, {"day":2,"flight":"AF223","utc":"19:41:00"}],
+"special_flights" : [ {"flight" : "AF444", "utc" : "4:44:44"}, {"flight" : "AF333", "utc" : "3:33:33"} ] });
+
+INSERT INTO default VALUES ("airline_003", {"airline":"AF","airlineid":"airline_003","destinationairport":"SFO","distance":2481.617376098415,"equipment":"320","id":3, "sourceairport":"DFW", "schedule":[{"day":0,"flight":"AF198","utc":"10:13:00"}, {"day":1,"flight":"AF250","utc":"12:59:00"}, {"day":2,"flight":"AF223","utc":"19:41:00"}] });
+
+CREATE INDEX ix51 ON default(airline, destinationairport, DISTINCT ARRAY FLATTEN_KEYS(v.day ASC, v.flight DESC) FOR v IN schedule END, sourceairport, distance);
+                 ====&gt; (airline, destinationairport, v.day, v.flight, sourceairport, distance);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example of <code>CREATE INDEX</code>, the <code>day</code> and <code>flight</code> values within the <code>schedule</code> array, respectively modified with <code>ASC</code> and <code>DESC</code>, are flattened with the <code>FLATTEN_KEYS()</code> function.
+As a result, the index stores data as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>["AF" "SFO" 0 "AF198" "ATL" 2881.617376098415] ... airline_001
+["AF" "SFO" 0 "AF198" "DFW" 2481.617376098415] ... airline_003
+["AF" "SFO" 1 "AF250" "ATL" 2881.617376098415] ... airline_001
+["AF" "SFO" 1 "AF250" "DFW" 2481.617376098415] ... airline_003
+["AF" "SFO" 2 "AF223" "ATL" 2881.617376098415] ... airline_001
+["AF" "SFO" 2 "AF223" "DFW" 2481.617376098415] ... airline_003
+["AF" "SJC" 0 "AF198" "LAX" 481.617376098415] ... airline_002
+["AF" "SJC" 1 "AF250" "LAX" 481.617376098415] ... airline_002
+["AF" "SJC" 2 "AF223" "LAX" 481.617376098415] ... airline_002</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that <em>without</em> the use of <code>FLATTEN_KEYS</code>, the index would have stored data as follows.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>["AF" "SFO" [0,"AF198"] "ATL" 2881.617376098415] ... airline_001
+["AF" "SFO" [0,"AF198"] "DFW" 2481.617376098415] ... airline_003
+["AF" "SFO" [1,"AF250"] "ATL" 2881.617376098415] ... airline_001
+["AF" "SFO" [1,"AF250"] "DFW" 2481.617376098415] ... airline_003
+["AF" "SFO" [2,"AF223"] "ATL" 2881.617376098415] ... airline_001
+["AF" "SFO" [2,"AF223"] "DFW" 2481.617376098415] ... airline_003
+["AF" "SJC" [0,"AF198"] "LAX" 481.617376098415] ... airline_002
+["AF" "SJC" [1,"AF250"] "LAX" 481.617376098415] ... airline_002
+["AF" "SJC" [2,"AF223"] "LAX" 481.617376098415] ... airline_002</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="len"><a class="anchor" href="#len"></a>LEN(<code>expr</code>)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>(Introduced in Couchbase Server 7.1)</em></p>
+</div>
+<div class="sect2">
+<h3 id="description-5"><a class="anchor" href="#description-5"></a>Description</h3>
+<div class="paragraph">
+<p>A general function to return the length of an item.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="arguments-5"><a class="anchor" href="#arguments-5"></a>Arguments</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">expr</dt>
@@ -5531,7 +5581,7 @@ If the input expression is <code>missing</code>, the return value is also <code>
 </div>
 </div>
 <div class="sect2">
-<h3 id="return-value-4"><a class="anchor" href="#return-value-4"></a>Return Value</h3>
+<h3 id="return-value-5"><a class="anchor" href="#return-value-5"></a>Return Value</h3>
 <div class="paragraph">
 <p>The return value is usually a number, depending on the datatype of the input expression.</p>
 </div>
@@ -5586,7 +5636,7 @@ If the input expression is <code>missing</code>, the return value is also <code>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-3"><a class="anchor" href="#example-3"></a>Example</h3>
+<h3 id="example-4"><a class="anchor" href="#example-4"></a>Example</h3>
 <div id="len-ex" class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -5625,7 +5675,7 @@ If the input expression is <code>missing</code>, the return value is also <code>
 <h2 id="meta"><a class="anchor" href="#meta"></a>META( [ <code>keyspace_expr</code> ] ) [ .<code>property</code> ]</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="description-5"><a class="anchor" href="#description-5"></a>Description</h3>
+<h3 id="description-6"><a class="anchor" href="#description-6"></a>Description</h3>
 <div class="paragraph">
 <p>This function returns the <a href="../../learn/data/data.html#metadata" class="page">metadata</a> for the document or keyspace specified by <code class="var">keyspace_expr</code>.
 The metadata is returned as a JSON object.</p>
@@ -5643,7 +5693,7 @@ Only certain metadata properties are indexable; these are indicated in the descr
 </div>
 </div>
 <div class="sect2">
-<h3 id="arguments-5"><a class="anchor" href="#arguments-5"></a>Arguments</h3>
+<h3 id="arguments-6"><a class="anchor" href="#arguments-6"></a>Arguments</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">keyspace_expr</dt>
@@ -5709,7 +5759,7 @@ If you attempt to build an index on this property, an error is returned.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="return-value-5"><a class="anchor" href="#return-value-5"></a>Return Value</h3>
+<h3 id="return-value-6"><a class="anchor" href="#return-value-6"></a>Return Value</h3>
 <div class="paragraph">
 <p>The bare function returns a JSON object containing the specified document&#8217;s metadata.
 When the function is used with a property as part of a nested expression, the expression returns the JSON value of the property.</p>
@@ -5843,7 +5893,7 @@ LIMIT 3;</code></pre>
 <h2 id="pairs"><a class="anchor" href="#pairs"></a>PAIRS(<code>obj</code>)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="description-6"><a class="anchor" href="#description-6"></a>Description</h3>
+<h3 id="description-7"><a class="anchor" href="#description-7"></a>Description</h3>
 <div class="paragraph">
 <p>This function generates an array of arrays of [<code class="var">field_name</code>, <code>value</code>] pairs of all possible fields in the given JSON object <code class="var">obj</code>.</p>
 </div>
@@ -5861,7 +5911,7 @@ Nested sub-object fields are explored recursively.
 </div>
 </div>
 <div class="sect2">
-<h3 id="arguments-6"><a class="anchor" href="#arguments-6"></a>Arguments</h3>
+<h3 id="arguments-7"><a class="anchor" href="#arguments-7"></a>Arguments</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">obj</dt>
@@ -5872,7 +5922,7 @@ Nested sub-object fields are explored recursively.
 </div>
 </div>
 <div class="sect2">
-<h3 id="return-value-6"><a class="anchor" href="#return-value-6"></a>Return Value</h3>
+<h3 id="return-value-7"><a class="anchor" href="#return-value-7"></a>Return Value</h3>
 <div class="paragraph">
 <p>Array of [<code class="var">field_name</code>, <code>value</code>] arrays for each field in the input object <code class="var">obj</code>.</p>
 </div>
@@ -6332,25 +6382,25 @@ LIMIT  1;</code></pre>
 <h2 id="uuid"><a class="anchor" href="#uuid"></a>UUID()</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="description-7"><a class="anchor" href="#description-7"></a>Description</h3>
+<h3 id="description-8"><a class="anchor" href="#description-8"></a>Description</h3>
 <div class="paragraph">
 <p>Generates a universally unique identifier (UUID) according to <a href="https://www.ietf.org/rfc/rfc4122.txt" target="_blank" rel="noopener">RFC 4122</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="arguments-7"><a class="anchor" href="#arguments-7"></a>Arguments</h3>
+<h3 id="arguments-8"><a class="anchor" href="#arguments-8"></a>Arguments</h3>
 <div class="paragraph">
 <p>None.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="return-value-7"><a class="anchor" href="#return-value-7"></a>Return Value</h3>
+<h3 id="return-value-8"><a class="anchor" href="#return-value-8"></a>Return Value</h3>
 <div class="paragraph">
 <p>A string representing a version 4 UUID.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="example-4"><a class="anchor" href="#example-4"></a>Example</h3>
+<h3 id="example-5"><a class="anchor" href="#example-5"></a>Example</h3>
 <div id="uuid-ex" class="exampleblock">
 <div class="content">
 <div class="paragraph">
