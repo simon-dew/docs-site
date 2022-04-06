@@ -5330,6 +5330,73 @@ Nodes and Clusters</a>.</p>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="plasma-memory-enhancements"><a class="anchor" href="#plasma-memory-enhancements"></a>Plasma Memory Enhancements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Server Version 7.1 provides the following enhancements for Plasma:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Per page <em>Bloom Filters</em>.</p>
+</li>
+<li>
+<p>In-memory compression.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These are described below.</p>
+</div>
+<div class="sect2">
+<h3 id="per-page-bloom-filters"><a class="anchor" href="#per-page-bloom-filters"></a>Per Page Bloom Filters</h3>
+<div class="paragraph">
+<p>A <a href="https://en.wikipedia.org/wiki/Bloom_filter" target="_blank" rel="noopener">Bloom filter</a> gives guidance as to whether a searched-for item resides on disk.
+By indicating that the item is <em>not</em> on disk, the filter prevents unnecessary on-disk searches.</p>
+</div>
+<div class="paragraph">
+<p>If Bloom filters are enabled (which is the default), when a lookup occurs, and the correct Plasma page is located, the Bloom filter indicates either that the item is <em>not</em> on the page, or that it <em>may be</em> on the page.
+If the filter indicates that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The item is <em>not</em> on the page, then the item is not on disk, and no disk read need occur.</p>
+</li>
+<li>
+<p>The item <em>may be</em> on the page, then the item can continue to be searched for, and a disk read must therefore occur.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The consequent reduction in disk reads promotes the efficiency of mutation processing, when the mutations are insert heavy.</p>
+</div>
+<div class="paragraph">
+<p>Bloom filters can be enabled or disabled by means of the Couchbase Web Console UI, or the REST API.
+See the information provided on establishing <a href="../../../manage/manage-settings/general-settings.html" class="page">General</a> settings for the cluster.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="in-memory-compression"><a class="anchor" href="#in-memory-compression"></a>In-Memory Compression</h3>
+<div class="paragraph">
+<p>In Couchbase Server Version 7.1, Plasma memory-management routinely performs the <em>compression</em> of a subset of items, in order to free memory; and thereby, due to the additional memory made available, keep a greater number of items in memory overall.
+By keeping more items in memory, the need for disk reads is reduced, as are corresponding latencies.</p>
+</div>
+<div class="paragraph">
+<p>The selection of items to be compressed occurs periodically.
+Only items that have already been flushed to disk are compressed: after compression, such items are principal candidates for subsequent ejection.</p>
+</div>
+<div class="paragraph">
+<p>Disk-flushing occurs every ten minutes: items not yet flushed to disk are not compressed; nor is any recently used item.
+In consequence, items most likely to be accessed remain <em>uncompressed</em> in memory, and are therefore accessible with the least latency; while items less likely to be accessed are retained in memory in <em>compressed</em> form, until their ejection; beyond which, they must be accessed through disk reads.</p>
+</div>
+<div class="paragraph">
+<p>This new model of memory usage leads to higher <em>residence ratios</em>, and greater <em>access-efficiency</em>; at the cost of some additional CPU utilization, due to the more frequent performance of compression and decompression routines.</p>
+</div>
+</div>
+</div>
+</div>
 <div id="footnotes">
 <hr>
 <div class="footnote" id="_footnotedef_1">

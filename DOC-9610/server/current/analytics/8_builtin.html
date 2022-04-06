@@ -10866,13 +10866,20 @@ Note that this function does not update an existing field in a given object.</p>
 <p>Syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>object_concat(obj1, obj2 ...)</pre>
+<pre>object_concat(obj1, obj2 ...)
+object_concat(array)</pre>
 </div>
 </div>
 </li>
 <li>
 <p>Concatenates the input objects.
-This function requires a minimum of two input objects.</p>
+This function has two possible syntaxes.
+The first requires any number of object arguments.
+The second requires a single array argument, containing any number of objects.</p>
+<div class="paragraph">
+<p>You can use the array syntax in situations where you don&#8217;t know ahead of time how many input objects there are to
+concatenate; or where you want to concatenate objects which are generated dynamically, for example by a subquery.</p>
+</div>
 </li>
 <li>
 <p>Arguments:</p>
@@ -10880,6 +10887,9 @@ This function requires a minimum of two input objects.</p>
 <ul>
 <li>
 <p><code>obj1</code>, <code>obj2</code> &#8230;&#8203;: Objects, or expressions that evaluate to objects.</p>
+</li>
+<li>
+<p><code>array</code>: An array of objects, or an expression that evaluates to an array of objects.</p>
 </li>
 </ul>
 </div>
@@ -10889,16 +10899,27 @@ This function requires a minimum of two input objects.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A concatenated JSON object.</p>
+<p>An object constructed by concatenating all the input objects.
+If there is only one input object, it is returned unchanged.
+If any of the input objects contain the same attribute name,
+the attribute from the last relevant object in the input list is copied to the output;
+similarly-named attributes from earlier objects in the input list are ignored.</p>
+</li>
+<li>
+<p><code>null</code> if the function contains more than one array argument;
+if the function contains a mixture of array and object arguments;
+if the function has an array argument which is empty;
+if the function has no arguments;
+or if the function contains any argument that is not an array or object.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Example:</p>
+<p>Example &mdash; using object syntax:</p>
 <div class="literalblock">
 <div class="content">
-<pre>object_concat({"abc":1},{"def":2},{"ghi":3});</pre>
+<pre>object_concat({"abc": 0}, {"abc": 1}, {"def": 2}, {"ghi": 3});</pre>
 </div>
 </div>
 </li>
@@ -10910,6 +10931,50 @@ This function requires a minimum of two input objects.</p>
   "ghi": 3,
   "def": 2,
   "abc": 1
+}</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Example &mdash; using array syntax:</p>
+<div class="literalblock">
+<div class="content">
+<pre>object_concat([{"abc": 0}, {"abc": 1}, {"def": 2}, {"ghi": 3}]);</pre>
+</div>
+</div>
+</li>
+<li>
+<p>The expected result is:</p>
+<div class="literalblock">
+<div class="content">
+<pre>{
+  "ghi": 3,
+  "def": 2,
+  "abc": 1
+}</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Example &mdash; using subquery:</p>
+<div class="literalblock">
+<div class="content">
+<pre>object_concat((SELECT VALUE {custid: name} FROM customers));</pre>
+</div>
+</div>
+</li>
+<li>
+<p>The expected result is:</p>
+<div class="literalblock">
+<div class="content">
+<pre>{
+  "C41": "R. Dodge",
+  "C25": "M. Sinclair",
+  "C31": "B. Pruitt",
+  "C47": "S. Logan",
+  "C37": "T. Henry",
+  "C13": "T. Cody",
+  "C35": "J. Roberts"
 }</pre>
 </div>
 </div>
