@@ -4561,6 +4561,11 @@
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="rest-settings.html">Analytics Settings REST API</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="rest-links.html">Analytics Links REST API</a>
   </span>
 </li>
@@ -5446,29 +5451,6 @@ In addition, they are automatically rebalanced when their shadow Analytics colle
 <a href="#Creating_and_dropping">Create Statements</a> and
 <a href="#Drop_statements">Drop Statements</a>.</p>
 </div>
-<div class="sect3">
-<h4 id="Array_indexes"><a class="anchor" href="#Array_indexes"></a>Array Indexes</h4>
-<div class="paragraph">
-<p>Couchbase Analytics also provides array indexes, which enable you to index fields within an array, or within an object nested in an array.
-You can create an array index by providing a sequence of <code>UNNEST</code> and <code>SELECT</code> keywords to identify the field to be indexed.</p>
-</div>
-<div class="paragraph">
-<p>There are some differences between array indexes and standard indexes concerning the types of data that they can contain, and how the query optimizer utilizes them.
-Refer to <a href="7_using_index.html" class="page">Using Indexes</a> and <a href="appendix_2_parameters.md#ArrayIndexFlag">Array Index Parameter</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="Functions"><a class="anchor" href="#Functions"></a>Functions</h3>
-<div class="paragraph">
-<p>For details about user-defined functions, refer to <a href="9_udf.html" class="page">User-Defined Functions</a> and <a href="appendix_5_python.html" class="page">Appendix 5: Python UDFs</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="Views"><a class="anchor" href="#Views"></a>Views</h3>
-<div class="paragraph">
-<p>For details about views and tabular views, refer to <a href="5a_views.html" class="page">Analytics Views</a>.</p>
-</div>
 </div>
 </div>
 </div>
@@ -5931,26 +5913,10 @@ Otherwise, it looks for the target collection in the same scope as the synonym.<
 </div>
 </div>
 <div class="sect4">
-<h5 id="indexelement"><a class="anchor" href="#indexelement"></a>IndexElement</h5>
-<div class="imageblock">
-<div class="content">
-<img src="_images/IndexElement.png" alt="ArrayIndexElement &vert; IndexField &vert; &quot;(&quot; ( ArrayIndexElement &vert; IndexField ) &quot;)&quot;">
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="arrayindexelement"><a class="anchor" href="#arrayindexelement"></a>ArrayIndexElement</h5>
-<div class="imageblock">
-<div class="content">
-<img src="_images/ArrayIndexElement.png" alt="( &quot;UNNEST&quot; NestedField )+ ( &quot;:&quot; TypeReference &vert; &quot;SELECT&quot; NestedField &quot;:&quot; TypeReference ( &quot;,&quot; NestedField &quot;:&quot; TypeReference )* )">
-</div>
-</div>
-</div>
-<div class="sect4">
 <h5 id="indexfield"><a class="anchor" href="#indexfield"></a>IndexField</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/IndexField.png" alt="NestedField &quot;:&quot; TypeReference">
+<img src="_images/IndexField.png" alt="NestedField &quot;:&quot; ( &quot;BIGINT&quot; | &quot;INT&quot; | &quot;DOUBLE&quot; | &quot;STRING&quot; | &quot;DATE&quot; | &quot;TIME&quot; | &quot;DATETIME&quot; )">
 </div>
 </div>
 </div>
@@ -5959,22 +5925,6 @@ Otherwise, it looks for the target collection in the same scope as the synonym.<
 <div class="imageblock">
 <div class="content">
 <img src="_images/NestedField.png" alt="Identifier ( &quot;.&quot; Identifier )*">
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="typereference"><a class="anchor" href="#typereference"></a>TypeReference</h5>
-<div class="imageblock">
-<div class="content">
-<img src="_images/TypeReference.png" alt="&quot;BIGINT&quot; &vert; &quot;INT&quot; &vert; &quot;DOUBLE&quot; &vert; &quot;STRING&quot; &vert; &quot;DATE&quot; &vert; &quot;TIME&quot; &vert; &quot;DATETIME&quot;">
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="indexunknown"><a class="anchor" href="#indexunknown"></a>IndexUnknown</h5>
-<div class="imageblock">
-<div class="content">
-<img src="_images/IndexUnknown.png" alt="( &quot;EXCLUDE&quot; &vert; &quot;INCLUDE&quot; ) &quot;UNKNOWN&quot; &quot;KEY&quot;">
 </div>
 </div>
 <div class="paragraph">
@@ -5989,38 +5939,8 @@ or the scope defined by the <code>query_context</code> parameter, or the <code>D
 according to the rules for <a href="appendix_3_resolution.html#Resolving_database_entities">Resolving Database Entities</a>.</p>
 </div>
 <div class="paragraph">
-<p>The index definition is contained within brackets, and consists of a list of index elements.
-Within the index definition, each <code>IndexElement</code> may be either an <code>ArrayIndexElement</code>, or a simple <code>IndexField</code>.
-If the index definition contains one or more array index elements, an array index is created; if it contains only simple index fields, a standard (non-array) index is created.
-The <code>IndexElement</code> may itself be bracketed to eliminate ambiguity, in cases where the index definition contains both array index elements and simple index fields.</p>
-</div>
-<div class="paragraph">
-<p>Within an <code>ArrayIndexElement</code>, the UNNEST keyword denotes a field or nested field that contains an array, and the SELECT denotes one or more fields or nested fields inside an object of the aforementioned array.
-If an array contains only primitive types (strings, integers, etc.), then only UNNEST is specified.
-Each indexed field in the array index element must have a type identifier.</p>
-</div>
-<div class="paragraph">
 <p>The <code>IndexField</code> consists of a <code>NestedField</code> that specifies a field path into the indexed JSON document,
 and a type identifier.</p>
-</div>
-<div class="paragraph">
-<p>The <code>IndexUnknown</code> modifier enables you to specify whether NULL or MISSING values are included in a standard (non-array) index.
-If you omit this modifier, NULL or MISSING values are included by default.
-When you specify EXCLUDE UNKNOWN KEY, all the indexed keys need to be NULL or MISSING for the entry to be excluded;
-if any of the keys has a value, the entry for the keys will be stored in the index.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Array indexes cannot include NULL or MISSING values.
-You must specify EXCLUDE UNKNOWN KEY when defining an array index.
-</td>
-</tr>
-</table>
 </div>
 </div>
 <div class="sect4">
@@ -6033,42 +5953,7 @@ CREATE ANALYTICS INDEX hotel_loc_idx on travel.hotels (geo.lon: double, geo.lat:
 </div>
 </div>
 <div class="paragraph">
-<p>The example above creates standard indexes on the identified fields for the specified types.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE ANALYTICS INDEX travelHotelLikesIdx
-ON travel.hotels (UNNEST public_likes: string)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above creates an array index on an array of primitive data types &mdash; in this case, a string array.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE ANALYTICS INDEX travelHotelCleanServiceIdx
-ON travel.hotels (UNNEST reviews
-                  SELECT ratings.Cleanliness: bigint,
-                         ratings.Service: bigint)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above creates an array index on two nested integer fields in an array of objects.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE ANALYTICS INDEX travelHotelCityCleanServiceIdx
-ON travel.hotels (city: string,
-                  UNNEST reviews
-                  SELECT ratings.Cleanliness: bigint,
-                         ratings.Service: bigint)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above creates an array index on two nested integer fields in an array of objects, and one string field outside of an array.</p>
+<p>Creates indexes on the identified fields for the specified types.</p>
 </div>
 </div>
 </div>
@@ -6460,40 +6345,11 @@ WHERE d.DataverseName &lt;&gt; "Metadata"</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Returns the qualified names of all Analytics collections that are not in the <code>Metadata</code> Analytics scope.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT * FROM Metadata.`Index`
-WHERE IndexStructure = "BTREE";</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above returns information about all standard (non-array) indexes.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT * FROM Metadata.`Index`
-WHERE IndexStructure = "ARRAY";</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The example above returns information about all array indexes.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
+<p>Returns the qualified names of all Analytics collections that are not in the <code>Metadata</code> Analytics scope.
 While Analytics scopes, Analytics collections, and indexes
 are created and removed by the corresponding CREATE and DROP statements,
 and remote links and external links are created and removed by the command-line interface or the REST API,
-the lifecycle of local links is managed by the system&#8201;&#8212;&#8201;they are created and removed as needed.
-</td>
-</tr>
-</table>
+the lifecycle of local links is managed by the system&#8201;&#8212;&#8201;they are created and removed as needed.</p>
 </div>
 </div>
 </div>

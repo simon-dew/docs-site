@@ -9,7 +9,7 @@
 <title>Using Indexes | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="Using indexes to speed up queries.">
+<meta name="description" content="Using indexes to speedup queries.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 
 
@@ -4561,6 +4561,11 @@
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="rest-settings.html">Analytics Settings REST API</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="rest-links.html">Analytics Links REST API</a>
   </span>
 </li>
@@ -5078,7 +5083,7 @@
 </aside>
 <aside class="toc sidebar"
       data-title="Contents"
-      data-levels="2">
+      data-levels="1">
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
@@ -5164,16 +5169,9 @@
 </div><div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Indexes can speed up both Analytics queries if they are applied properly.
-The following sections describe scenarios in which indexes may be used to speed up query processing.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="Standard_indexes"><a class="anchor" href="#Standard_indexes"></a>Standard Indexes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This section contains observations about standard (non-array) Analytics indexes.</p>
+<p>Indexes can speedup both selection queries and join queries if they
+are applied properly. The following two sections describe
+scenarios that indexes are explored inside the system for query processing purpose.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -5182,15 +5180,17 @@ The following sections describe scenarios in which indexes may be used to speed 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-By default, standard indexes store NULL values.
-However, when you create the index, you may specify that NULL and MISSING values should be excluded from the index.
-If this is the case, queries that select objects based on the existence of a NULL field will not be accelerated by the index.
+Secondary indexes do not store NULL values.
+Queries that select objects based on the existence of a NULL field are not accelerated by an index.
 </td>
 </tr>
 </table>
 </div>
-<div class="sect2">
-<h3 id="Selection_queries"><a class="anchor" href="#Selection_queries"></a>Selection Queries</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Selection_queries"><a class="anchor" href="#Selection_queries"></a>Selection Queries</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The query optimizer chooses to use a secondary index for query execution
 if both of the following conditions are met:</p>
@@ -5199,7 +5199,7 @@ if both of the following conditions are met:</p>
 <ul>
 <li>
 <p>The query contains a conjunctive equality or range predicate over one or more fields, or a join predicate
-&mdash; see the <a href="#Join_queries">next section</a>.
+(see the next section).
 The conjunctive predicate has a form:</p>
 <div class="literalblock">
 <div class="content">
@@ -5262,8 +5262,10 @@ then the key sets will be intersected to further filter retrieved primary keys.<
 </ul>
 </div>
 </div>
-<div class="sect2">
-<h3 id="Join_queries"><a class="anchor" href="#Join_queries"></a>Join Queries</h3>
+</div>
+<div class="sect1">
+<h2 id="Join_queries"><a class="anchor" href="#Join_queries"></a>Join Queries</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>N1QL for Analytics supports joins from standard SQL in the following forms:</p>
 </div>
@@ -5300,8 +5302,8 @@ SELECT * FROM ds_outer RIGHT OUTER JOIN ds_inner ON &lt;predicate&gt;;</pre>
 </ul>
 </div>
 <div class="paragraph">
-<p><code>ds_outer</code> is the outer branch and <code>ds_inner</code> is the inner branch,
-in the order in which they appear in the FROM clause.</p>
+<p>ds_outer is the <code>outer</code> branch and ds_inner is the <code>inner</code> branch
+(in the order in which they appear in the FROM clause).</p>
 </div>
 <div class="paragraph">
 <p>The query optimizer picks an index for join evaluation if the following conditions are met:</p>
@@ -5333,11 +5335,11 @@ Usually, <code>fn()</code> is one of the following: to_string(), to_double(), or
 </ul>
 </div>
 <div class="paragraph">
-<p>Note that the type of <code>expr_outer</code> is not known at compile time, therefore the index join cannot be
+<p>Note that if the type of <code>expr_outer</code> is not known at compile time therefore the index join cannot be
 selected if the join predicate is just <code>expr_outer /*+ indexnl */ op field_inner</code>.</p>
 </div>
 <div class="paragraph">
-<p>For example, suppose there are two Analytics collections, foo1 and foo2, with an index on foo2:</p>
+<p>For example, suppose there are two shadow collections, foo1 and foo2, with an index on foo2:</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -5352,244 +5354,6 @@ selected if the join predicate is just <code>expr_outer /*+ indexnl */ op field_
 <pre>SELECT f1.c_x1 as c1, f2.c_x2 as c2
 FROM foo1 AS f1, foo2 AS f2
 WHERE to_string(f1.c_s1)  /*+ indexnl */ = f2.c_s2</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="Array_indexes"><a class="anchor" href="#Array_indexes"></a>Array Indexes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Array indexes are used in applications where you want to accelerate a query that involves some array-valued field.
-This enables fast evaluation of predicates in queries involving arrays or arrays of nested objects.
-For brevity, all further mentions of array-valued fields are also applicable to multiset-valued fields.</p>
-</div>
-<div class="paragraph">
-<p>It should be noted that in Analytics, array indexes are <em>not</em> meant to serve as covering indexes.
-Instead, array indexes are simply meant to accelerate queries involving multi-valued fields.</p>
-</div>
-<div class="sect2">
-<h3 id="QuantificationQueries"><a class="anchor" href="#QuantificationQueries"></a>Quantification Queries</h3>
-<div class="paragraph">
-<p>A common use-case for array indexes involves quantifying some or all elements within an array.
-Quantification queries have two variants: existential and universal.
-Existential queries ask if <em>any</em> element in some array satisfies a given predicate.
-Membership queries are a specific type of existential query, asking if any element in some array is equal to a particular value.
-Universal queries ask if <em>all</em> elements in some array satisfy a particular predicate.
-Empty arrays are not stored in an array index, meaning that a user must additionally specify that the array is non-empty to tell Analytics that it is possible to use an array index as an access method for the given query.</p>
-</div>
-<div class="paragraph">
-<p>The examples shown here are based on the Commerce data in <a href="appendix_4_examples.html">Appendix 4</a>.
-In addition, the examples in this section suppose the existence of an Analytics collection named <code>products</code>, containing two fields: <code>productno</code> (an integer), and <code>categories</code> (an array of strings).</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
-  { "productno": 347, "categories": ["Food"]},
-  { "productno": 193, "categories": ["Drink"]},
-  { "productno": 460, "categories": ["Food", "Frozen"]},
-  // ...
-]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can create an array index on the <code>categories</code> field of the <code>products</code> collection as follows.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE INDEX pCategoriesIdx
-ON products (UNNEST categories:STRING)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note that <code>EXCLUDE UNKNOWN KEY</code> is required for array indexes.
-Array indexes cannot be used for queries with potentially empty arrays.</p>
-</div>
-<div class="paragraph">
-<p>Suppose you want to find all products that have the category "Food".
-The following membership query will utilize the <code>pCategoriesIdx</code> index.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT p
-FROM products p
-WHERE "Food" IN p.categories;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can rewrite the query above as an explicit existential quantification query with an equality predicate.
-This will also utilize the <code>pCategoriesIdx</code> index.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT p
-FROM products p
-WHERE SOME c IN p.categories SATISFIES c = "Food";</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can create an array index on the <code>qty</code> and <code>price</code> fields in the <code>items</code> array of the <code>orders</code> collection as follows.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE INDEX oItemsQtyPriceIdx
-ON orders (UNNEST items SELECT qty:INT, price:DOUBLE)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now suppose you want to find all orders that only have items with large quantities and low prices.
-The following universal quantification query will utilize the <code>oItemsQtyPriceIdx</code> index.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT o
-FROM orders o
-WHERE EVERY i IN o.items SATISFIES i.qty &gt; 100 AND i.price &lt; 5.00;</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ExplicitUnnestQueries"><a class="anchor" href="#ExplicitUnnestQueries"></a>Explicit Unnesting Queries</h3>
-<div class="paragraph">
-<p>Array indexes can also be used to accelerate queries that involve the explicit unnesting of array fields.
-You can express the same membership / existential example above using an explicit <code>UNNEST</code> query.
-To keep the same cardinality as the query above, i.e. to undo the <code>UNNEST</code>, the query adds a <code>DISTINCT</code> clause.
-The <code>pCategoriesIdx</code> index will be utilized anyway.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT DISTINCT p
-FROM products p, p.categories c
-WHERE c = "Food";</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As another example, suppose that you want to find all orders that have <em>some</em> item with a large quantity.
-The following query utilizes the <code>oItemsQtyPriceIdx</code> index, using only the <code>qty</code> field.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT DISTINCT o
-FROM orders o, o.items i
-WHERE i.qty &gt; 100;</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="JoinQueries"><a class="anchor" href="#JoinQueries"></a>Join Queries</h3>
-<div class="paragraph">
-<p>Finally, array indexes can also be used for index nested-loop joins if the field being joined is located within an array.
-You can create an array index on the <code>itemno</code> field in the <code>items</code> array of the <code>orders</code> collection as follows.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE INDEX oProductIDIdx
-ON orders (UNNEST items SELECT itemno:INT)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now suppose you want to find all products located in a specific order.
-You can accomplish this with the join query below.
-Note that you must specify the <code>indexnl</code> join hint to tell Analytics that you want to optimize this specific join, as hash joins are the default join method otherwise.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT DISTINCT p
-FROM products p, orders o, o.items i
-WHERE i.itemno /*+ indexnl */ = p.productno
-      AND o.custid = "C41";</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ComplexIndexingExamples"><a class="anchor" href="#ComplexIndexingExamples"></a>Arrays in Arrays</h3>
-<div class="paragraph">
-<p>Array indexes are not just limited to arrays of depth 1.
-You can generalize array indexes to arbitrary depth, as long as an object encapsulates each array.
-For example, suppose the <code>orders</code> collection includes the <code>qty</code> field in a double-nested <code>items</code> array.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "orderno": 2001,
-  "items0": [
-    {
-      "items1": [
-        {
-          "qty": 100,
-          // ...
-        }
-      ]
-    }
-  ]
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The following statement indexes the <code>qty</code> field in a double-nested <code>items</code> array.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE INDEX oItemItemQtyIdx
-ON orders (UNNEST items0 UNNEST items1 SELECT qty:INT)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Similarly, suppose the <code>orders</code> collection includes the <code>qty</code> field in a triple-nested <code>items</code> array.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
-  "orderno": 3001,
-  "items0": [
-    {
-      "items1": [
-        {
-          "items2": [
-            {
-              "qty": 100,
-              // ...
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The following statement indexes the <code>qty</code> field in a triple-nested <code>items</code> array.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>CREATE INDEX oItemItemItemQtyIdx
-ON orders (UNNEST items0 UNNEST items1 UNNEST items2 SELECT qty:INT)
-EXCLUDE UNKNOWN KEY;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The queries below will utilize the indexes above.
-The first query utilizes the <code>oItemItemQtyIdx</code> index through nested existential quantification.
-The second query utilizes the <code>oItemItemItemQtyIdx</code> index with three unnesting clauses.</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>SELECT o
-FROM orders o
-WHERE SOME o0 IN o.items0 SATISFIES (
-    SOME o1 IN o0.items1 SATISFIES o1.qty = 100
-);
-
-SELECT DISTINCT o
-FROM orders o, o.items0 o0, o0.items1 o1, o1.items2 o2
-WHERE o2.qty = 100;</pre>
-</div>
 </div>
 </div>
 </div>
