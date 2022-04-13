@@ -9,7 +9,7 @@
 <title>Automatic Failover | Couchbase Docs (Staging)</title>
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="One or more nodes can be failed over automatically when they become unresponsive or experience continous disk access problems. This is done as long as data safety is maintained;i.e. no data loss occurs as a result of failover.">
+<meta name="description" content="One or more nodes can be failed over automatically when they become unresponsive or experience continuous disk access problems. This is done as long as data safety is maintained;i.e. no data loss occurs as a result of failover.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 
 
@@ -5161,7 +5161,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-One or more nodes can be failed over automatically when they become unresponsive or experience continous disk access problems. This is done as long as data safety is maintained;i.e. no data loss occurs as a result of failover.
+One or more nodes can be failed over automatically when they become unresponsive or experience continuous disk access problems. This is done as long as data safety is maintained;i.e. no data loss occurs as a result of failover.
 </blockquote>
 </div>
 </div>
@@ -5271,7 +5271,10 @@ details on configuring email alerts related to failover.</p>
 This is referred to as <a href="#data-service-preference">Data Service Preference</a>.</p>
 </li>
 <li>
-<p>A node running the Index Service is <em>never</em> automatically failed over, <em>unless</em> Data Service Preference applies.</p>
+<p>The index service shares the same Auto-Failover settings of the Data Service.</p>
+</li>
+<li>
+<p>When the Index service is co-located with the Data service, it will not be consulted on failing over the node.</p>
 </li>
 </ul>
 </div>
@@ -5300,7 +5303,7 @@ This is referred to as <a href="#data-service-preference">Data Service Preferenc
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Index</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Not supported</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Search</p></td>
@@ -5443,9 +5446,13 @@ In this case, even though the Query and Search Services were both running on onl
 </table>
 <div class="paragraph">
 <p>If node #1, #2, or #3 becomes unresponsive, auto-failover can be triggered.
-In each case, this is due to <em>Data Service Preference</em>, which applies auto-failover based on the policy for the Data Service, irrespective of other services on the unresponsive node.
-Note that in the case of node #2, this allows an Index Service node to be automatically failed over.
-However, if node #4 becomes unresponsive, auto-failover is not triggered; since auto-failover is not supported for the Index Service, unless Data Service Preference applies.</p>
+In each case, this is due to <em>Data Service Preference</em>, which applies auto-failover based on the policy for the Data Service, irrespective of other services on the unresponsive node.</p>
+</div>
+<div class="paragraph">
+<p>Note that in the case of node #2, this allows an Index Service node to be automatically failed over.</p>
+</div>
+<div class="paragraph">
+<p>If node #4 becomes unresponsive, then the auto-failover of the node will be triggered, as the index service supports Auto-Failover, independent of the Data service. Please note, in this scenario, the Index Service Auto-Failover will only happen if the action doesn&#8217;t result in any indexes or partition loss.</p>
 </div>
 <div class="admonitionblock warning">
 <table>

@@ -5449,7 +5449,7 @@ In addition, they are automatically rebalanced when their shadow Analytics colle
 <div class="sect3">
 <h4 id="Array_indexes"><a class="anchor" href="#Array_indexes"></a>Array Indexes</h4>
 <div class="paragraph">
-<p>Couchbase Analytics also provides array indexes, which enable you to index fields within an array, or within an object nested in an array.
+<p>Couchbase Analytics also provides array indexes, which enable you to index values within an array, or fields within an object nested in an array.
 You can create an array index by providing a sequence of <code>UNNEST</code> and <code>SELECT</code> keywords to identify the field to be indexed.</p>
 </div>
 <div class="paragraph">
@@ -5531,13 +5531,13 @@ as an equivalent to the Data service bucket name and scope name.</p>
 </div>
 <div class="sect4">
 <h5 id="examples"><a class="anchor" href="#examples"></a>Examples</h5>
+<div class="paragraph">
+<p>The following example creates an Analytics scope with the name <code>travel</code> to be used to manage other metadata entities.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>CREATE ANALYTICS SCOPE travel;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Creates an Analytics scope with the name <code>travel</code> to be used to manage other metadata entities.</p>
 </div>
 </div>
 </div>
@@ -5794,6 +5794,13 @@ relative to the external data source.</p>
 </div>
 <div class="sect4">
 <h5 id="examples-2"><a class="anchor" href="#examples-2"></a>Examples</h5>
+<div class="paragraph">
+<p>The following example creates 2 Analytics collections in the <code>travel</code> Analytics scope:
+an Analytics collection called <code>hotels</code> on the <code>`travel-sample`.inventory.hotel</code> keyspace,
+and an Analytics collection called <code>airports</code> on the <code>`travel-sample`.inventory.airport</code> keyspace.
+For the <code>airports</code> Analytics collection, the <code>snappy</code> storage compression scheme is explicitly specified.
+Note that back-ticks are necessary for reserved keywords, such as <code>type</code>, or certain operators, such as <code>-</code>.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>CREATE ANALYTICS COLLECTION travel.hotels
@@ -5805,11 +5812,10 @@ CREATE ANALYTICS COLLECTION travel.airports
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates 2 Analytics collections in the <code>travel</code> Analytics scope:
-an Analytics collection called <code>hotels</code> on the <code>`travel-sample`.inventory.hotel</code> keyspace,
-and an Analytics collection called <code>airports</code> on the <code>`travel-sample`.inventory.airport</code> keyspace.
-For the <code>airports</code> Analytics collection, the <code>snappy</code> storage compression scheme is explicitly specified.
-Note that back-ticks are necessary for reserved keywords, such as <code>type</code>, or certain operators, such as <code>-</code>.</p>
+<p>The following example creates an Analytics collection in the <code>travel</code> Analytics scope called <code>restaurants</code>, and filters
+the content for the Analytics collection by the value of the <code>activity</code> field of the record.
+The Analytics collection uses data from the <code>`travel-sample`.inventory.landmark</code> keyspace at the remote
+Couchbase cluster which is connected via the remote link called <code>myCbLink</code> in the <code>Default</code> Analytics scope.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -5819,10 +5825,13 @@ Note that back-ticks are necessary for reserved keywords, such as <code>type</co
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates an Analytics collection in the <code>travel</code> Analytics scope called <code>restaurants</code>, and filters
-the content for the Analytics collection by the value of the <code>activity</code> field of the record.
-The Analytics collection uses data from the <code>`travel-sample`.inventory.landmark</code> keyspace at the remote
-Couchbase cluster which is connected via the remote link called <code>myCbLink</code> in the <code>Default</code> Analytics scope.</p>
+<p>The following example creates an external Analytics collection in the <code>travel</code> Analytics scope called <code>customers</code>.
+The Analytics collection uses data from the Amazon S3 bucket called <code>TravelShop</code>,
+which is connected via the link called <code>myS3Link</code> in the <code>travel</code> Analytics scope.</p>
+</div>
+<div class="paragraph">
+<p>The files containing the data are located in <code>json-data/customers</code> and use JSON Lines format.
+The only files included are those with the extension <code>.json</code>, and with <code>2018</code> and <code>2019</code> as part of the file name.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -5837,13 +5846,22 @@ WITH {
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates an external Analytics collection in the <code>travel</code> Analytics scope called <code>customers</code>.
+<p>The following example creates an external Analytics collection in the <code>travel</code> Analytics scope called <code>bookings</code>.
 The Analytics collection uses data from the Amazon S3 bucket called <code>TravelShop</code>,
-which is connected via the link called <code>myS3Link</code> in the <code>travel</code> Analytics scope.</p>
+which is connected on the link called <code>myS3Link</code> in the <code>travel</code> Analytics scope.</p>
 </div>
 <div class="paragraph">
-<p>The files containing the data are located in <code>json-data/customers</code> and use JSON Lines format.
-The only files included are those with the extension <code>.json</code>, and with <code>2018</code> and <code>2019</code> as part of the file name.</p>
+<p>The files containing the data are located in <code>csv-data/accounts</code> and have CSV format.
+The only files included are those with the extension <code>.csv</code>, in subdirectories ranging from <code>2015</code> to <code>2019</code>, and whose file name does <em>not</em> end with <code>2</code>, <code>3</code>, or <code>4</code>.</p>
+</div>
+<div class="paragraph">
+<p>Each CSV file is expected to have a header row, which is excluded.
+In each row, the first column is expected to be a bigint which cannot be null,
+the second column is expected to be a string which cannot be null,
+the third column is expected to be a double which cannot be null,
+and the fourth column is expected to be a string.
+If any of the rows do not meet this data model, they will not be included.
+These fields will be given the names <code>id</code>, <code>datetime</code>, <code>amount</code>, and <code>details</code> respectively.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -5861,24 +5879,6 @@ WITH {
   "include": "201[5-9]/*[!234].csv"
 };</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This example creates an external Analytics collection in the <code>travel</code> Analytics scope called <code>bookings</code>.
-The Analytics collection uses data from the Amazon S3 bucket called <code>TravelShop</code>,
-which is connected on the link called <code>myS3Link</code> in the <code>travel</code> Analytics scope.</p>
-</div>
-<div class="paragraph">
-<p>The files containing the data are located in <code>csv-data/accounts</code> and have CSV format.
-The only files included are those with the extension <code>.csv</code>, in subdirectories ranging from <code>2015</code> to <code>2019</code>, and whose file name does <em>not</em> end with <code>2</code>, <code>3</code>, or <code>4</code>.</p>
-</div>
-<div class="paragraph">
-<p>Each CSV file is expected to have a header row, which is excluded.
-In each row, the first column is expected to be a bigint which cannot be null,
-the second column is expected to be a string which cannot be null,
-the third column is expected to be a double which cannot be null,
-and the fourth column is expected to be a string.
-If any of the rows do not meet this data model, they will not be included.
-These fields will be given the names <code>id</code>, <code>datetime</code>, <code>amount</code>, and <code>details</code> respectively.</p>
 </div>
 </div>
 </div>
@@ -5910,13 +5910,13 @@ Otherwise, it looks for the target collection in the same scope as the synonym.<
 </div>
 <div class="sect4">
 <h5 id="example"><a class="anchor" href="#example"></a>Example</h5>
+<div class="paragraph">
+<p>This example sets <code>accommodation</code> to be a synonym in the Analytics scope <code>travel</code> for the Analytics collection <code>hotels</code>.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>CREATE ANALYTICS SYNONYM travel.accommodation FOR hotels;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This example sets <code>accommodation</code> to be a synonym in the Analytics scope <code>travel</code> for the Analytics collection <code>hotels</code>.</p>
 </div>
 </div>
 </div>
@@ -5942,7 +5942,7 @@ Otherwise, it looks for the target collection in the same scope as the synonym.<
 <h5 id="arrayindexelement"><a class="anchor" href="#arrayindexelement"></a>ArrayIndexElement</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/ArrayIndexElement.png" alt="( &quot;UNNEST&quot; NestedField )+ ( &quot;:&quot; TypeReference &vert; &quot;SELECT&quot; NestedField &quot;:&quot; TypeReference ( &quot;,&quot; NestedField &quot;:&quot; TypeReference )* )">
+<img src="_images/ArrayIndexElement.png" alt="( &quot;UNNEST&quot; NestedField )+ ( &quot;:&quot; IndexTypeRef &vert; &quot;SELECT&quot; NestedField &quot;:&quot; IndexTypeRef ( &quot;,&quot; NestedField &quot;:&quot; IndexTypeRef )* )">
 </div>
 </div>
 </div>
@@ -5950,7 +5950,7 @@ Otherwise, it looks for the target collection in the same scope as the synonym.<
 <h5 id="indexfield"><a class="anchor" href="#indexfield"></a>IndexField</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/IndexField.png" alt="NestedField &quot;:&quot; TypeReference">
+<img src="_images/IndexField.png" alt="NestedField &quot;:&quot; IndexTypeRef">
 </div>
 </div>
 </div>
@@ -5963,10 +5963,10 @@ Otherwise, it looks for the target collection in the same scope as the synonym.<
 </div>
 </div>
 <div class="sect4">
-<h5 id="typereference"><a class="anchor" href="#typereference"></a>TypeReference</h5>
+<h5 id="indextyperef"><a class="anchor" href="#indextyperef"></a>IndexTypeRef</h5>
 <div class="imageblock">
 <div class="content">
-<img src="_images/TypeReference.png" alt="&quot;BIGINT&quot; &vert; &quot;INT&quot; &vert; &quot;DOUBLE&quot; &vert; &quot;STRING&quot; &vert; &quot;DATE&quot; &vert; &quot;TIME&quot; &vert; &quot;DATETIME&quot;">
+<img src="_images/IndexTypeRef.png" alt="&quot;BIGINT&quot; &vert; &quot;INT&quot; &vert; &quot;DOUBLE&quot; &vert; &quot;STRING&quot; &vert; &quot;DATE&quot; &vert; &quot;TIME&quot; &vert; &quot;DATETIME&quot;">
 </div>
 </div>
 </div>
@@ -6004,10 +6004,41 @@ Each indexed field in the array index element must have a type identifier.</p>
 and a type identifier.</p>
 </div>
 <div class="paragraph">
-<p>The <code>IndexUnknown</code> modifier enables you to specify whether NULL or MISSING values are included in a standard (non-array) index.
-If you omit this modifier, NULL or MISSING values are included by default.
-When you specify EXCLUDE UNKNOWN KEY, all the indexed keys need to be NULL or MISSING for the entry to be excluded;
-if any of the keys has a value, the entry for the keys will be stored in the index.</p>
+<p>The <code>IndexUnknown</code> modifier enables you to specify whether to make an entry or not in a standard (non-array) index when the indexed key&#8217;s value is NULL or MISSING.
+The following table outlines the behavior of INCLUDE UNKNOWN KEY and EXCLUDE UNKNOWN KEY:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Modifier</th>
+<th class="tableblock halign-left valign-top">All keys NULL or MISSING</th>
+<th class="tableblock halign-left valign-top">Some keys NULL or MISSING</th>
+<th class="tableblock halign-left valign-top">No NULL or MISSING</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INCLUDE UNKNOWN KEY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry included ✓</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry included ✓</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry included ✓</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EXCLUDE UNKNOWN KEY</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry excluded ✗</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry included ✓</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry included ✓</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If you omit this modifier, then the default is INCLUDE UNKNOWN KEY.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -6025,6 +6056,9 @@ You must specify EXCLUDE UNKNOWN KEY when defining an array index.
 </div>
 <div class="sect4">
 <h5 id="examples-3"><a class="anchor" href="#examples-3"></a>Examples</h5>
+<div class="paragraph">
+<p>The following example creates standard indexes on the identified fields for the specified types.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>CREATE ANALYTICS INDEX airport_name_idx on travel.airports (airportname: string);
@@ -6033,7 +6067,7 @@ CREATE ANALYTICS INDEX hotel_loc_idx on travel.hotels (geo.lon: double, geo.lat:
 </div>
 </div>
 <div class="paragraph">
-<p>The example above creates standard indexes on the identified fields for the specified types.</p>
+<p>The following example creates an array index on an array of primitive data types &mdash; in this case, an array of strings.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6043,7 +6077,7 @@ EXCLUDE UNKNOWN KEY;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The example above creates an array index on an array of primitive data types &mdash; in this case, a string array.</p>
+<p>The following example creates an array index on two nested integer fields in an array of objects.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6055,7 +6089,7 @@ EXCLUDE UNKNOWN KEY;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The example above creates an array index on two nested integer fields in an array of objects.</p>
+<p>The following example creates an array index on two nested integer fields in an array of objects, and one string field outside of an array.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6066,9 +6100,6 @@ ON travel.hotels (city: string,
                          ratings.Service: bigint)
 EXCLUDE UNKNOWN KEY;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>The example above creates an array index on two nested integer fields in an array of objects, and one string field outside of an array.</p>
 </div>
 </div>
 </div>
@@ -6092,13 +6123,13 @@ according to the rules for <a href="appendix_3_resolution.html#Resolving_databas
 <p>The USE statement only works in a conjunction with another statement in a single request.</p>
 </div>
 <h5 id="example-2" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example sets <code>travel</code> to be the default Analytics scope for the statement immediately following.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>USE travel;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This example sets <code>travel</code> to be the default Analytics scope for the statement immediately following.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6179,14 +6210,17 @@ However, you cannot drop an Analytics scope if there are any user-defined functi
 user-defined functions or Analytics collections within the scope being dropped.</p>
 </div>
 <h5 id="examples-4" class="discrete">Examples</h5>
+<div class="paragraph">
+<p>This example drops the <code>travel</code> Analytics scope, if it already exists.
+Dropping an Analytics scope disconnects any links and drops any Analytics collections contained in it.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>DROP ANALYTICS SCOPE travel IF EXISTS;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example drops the <code>travel</code> Analytics scope, if it already exists.
-Dropping an Analytics scope disconnects any links and drops any Analytics collections contained in it.</p>
+<p>This example removes the Analytics collections and all contained data.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6196,7 +6230,7 @@ DROP ANALYTICS COLLECTION travel.bookings;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example removes the Analytics collections and all contained data.</p>
+<p>The following example drops the synonym.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6204,7 +6238,7 @@ DROP ANALYTICS COLLECTION travel.bookings;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Drops the synonym.</p>
+<p>The following example drops the indexes.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6212,9 +6246,6 @@ DROP ANALYTICS COLLECTION travel.bookings;</pre>
 DROP ANALYTICS INDEX travel.hotels.hotel_name_idx;
 DROP ANALYTICS INDEX travel.hotels.hotel_loc_idx;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Drops the indexes.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6293,15 +6324,22 @@ and the synonym for the Analytics collection if it exists, but does not drop the
 This is equivalent to running DROP ANALYTICS COLLECTION, and if necessary DROP ANALYTICS SYNONYM.</p>
 </div>
 <h5 id="examples-5" class="discrete">Examples</h5>
+<div class="paragraph">
+<p>The following example creates an Analytics scope called <code>`travel-sample`.inventory</code>.
+Within that scope, it creates an Analytics collection called <code>airline</code>.
+The Analytics collection uses the <code>airline</code> collection within the <code>inventory</code> scope in the <code>travel-sample</code> bucket
+as its data source.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>ALTER COLLECTION `travel-sample`.inventory.airline ENABLE ANALYTICS;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates an Analytics scope called <code>`travel-sample`.inventory</code>.
-Within that scope, it creates an Analytics collection called <code>airline</code>.
-The Analytics collection uses the <code>airline</code> collection within the <code>inventory</code> scope in the <code>travel-sample</code> bucket
+<p>The following example creates an Analytics scope called <code>`travel-sample`._default</code>.
+Within this scope, it creates an Analytics collection also called <code>_default</code>.
+It then creates a synonym <code>travel-sample</code> for this Analytics collection in the <code>Default</code> Analytics scope.
+The Analytics collection uses the default collection within the default scope in the <code>travel-sample</code> bucket
 as its data source.</p>
 </div>
 <div class="literalblock">
@@ -6310,11 +6348,8 @@ as its data source.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This example creates an Analytics scope called <code>`travel-sample`._default</code>.
-Within this scope, it creates an Analytics collection also called <code>_default</code>.
-It then creates a synonym <code>travel-sample</code> for this Analytics collection in the <code>Default</code> Analytics scope.
-The Analytics collection uses the default collection within the default scope in the <code>travel-sample</code> bucket
-as its data source.</p>
+<p>The following example drops the <code>airline</code> Analytics collection,
+but leaves the <code>`travel-sample`.inventory</code> Analytics scope in place.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6322,17 +6357,13 @@ as its data source.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This example drops the <code>airline</code> Analytics collection,
-but leaves the <code>`travel-sample`.inventory</code> Analytics scope in place.</p>
+<p>The following example drops the <code>travel-sample</code> Analytics synonym and the <code>_default</code> Analytics collection,
+but leaves the <code>`travel-sample`._default</code> Analytics scope in place.</p>
 </div>
 <div class="literalblock">
 <div class="content">
 <pre>ALTER COLLECTION `travel-sample` DISABLE ANALYTICS;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This example drops the <code>travel-sample</code> Analytics synonym and the <code>_default</code> Analytics collection,
-but leaves the <code>`travel-sample`._default</code> Analytics scope in place.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6389,22 +6420,22 @@ It will be removed in a future version of Couchbase Server.
 </table>
 </div>
 <h5 id="examples-6" class="discrete">Examples</h5>
+<div class="paragraph">
+<p>The following example connects all Analytics collections that use the link <code>Local</code> in the current Analytics scope to their Data
+Service keyspaces, and starts shadowing.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>CONNECT LINK Local;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example connects all Analytics collections that use the link <code>Local</code> in the current Analytics scope to their Data
-Service keyspaces, and starts shadowing.</p>
+<p>The following example connects all Analytics collections on the remote link called <code>myCbLink</code> and starts shadowing.</p>
 </div>
 <div class="literalblock">
 <div class="content">
 <pre>CONNECT LINK myCbLink;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This example connects all Analytics collections on the remote link called <code>myCbLink</code> and starts shadowing.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6421,22 +6452,22 @@ The DISCONNECT statement is not applicable to external links.</p>
 </div>
 </div>
 <h5 id="examples-7" class="discrete">Examples</h5>
+<div class="paragraph">
+<p>The following example stops shadowing for all Analytics collections that use the link <code>Local</code> in the current Analytics scope,
+and disconnects their Data Service keyspaces.</p>
+</div>
 <div class="literalblock">
 <div class="content">
 <pre>DISCONNECT LINK Local;</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This example stops shadowing for all Analytics collections that use the link <code>Local</code> in the current Analytics scope,
-and disconnects their Data Service keyspaces.</p>
+<p>The following example stops shadowing and disconnects all Analytics collections on the remote link called <code>myCbLink</code>.</p>
 </div>
 <div class="literalblock">
 <div class="content">
 <pre>DISCONNECT LINK myCbLink;</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>This example stops shadowing and disconnects all Analytics collections on the remote link called <code>myCbLink</code>.</p>
 </div>
 </div>
 </div>
@@ -6450,7 +6481,10 @@ The Metadata Analytics scope contains the Analytics collections <code>Dataverse<
 Each Analytics collection contains the queryable metadata for each entity type.</p>
 </div>
 <div class="paragraph">
-<p>Because the name of each of these collections is a reserved word in N1QL for Analytics, note that you must delimit the collection name with backticks (&grave;), as shown in the example below.</p>
+<p>Because the name of each of these collections is a reserved word in N1QL for Analytics, note that you must delimit the collection name with backticks (&grave;), as shown in the examples below.</p>
+</div>
+<div class="paragraph">
+<p>The following example returns the qualified names of all Analytics collections that are not in the <code>Metadata</code> Analytics scope.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6460,7 +6494,7 @@ WHERE d.DataverseName &lt;&gt; "Metadata"</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Returns the qualified names of all Analytics collections that are not in the <code>Metadata</code> Analytics scope.</p>
+<p>The following example returns information about all standard (non-array) indexes.</p>
 </div>
 <div class="literalblock">
 <div class="content">
@@ -6469,16 +6503,13 @@ WHERE IndexStructure = "BTREE";</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The example above returns information about all standard (non-array) indexes.</p>
+<p>The following example returns information about all array indexes.</p>
 </div>
 <div class="literalblock">
 <div class="content">
 <pre>SELECT * FROM Metadata.`Index`
 WHERE IndexStructure = "ARRAY";</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>The example above returns information about all array indexes.</p>
 </div>
 <div class="admonitionblock note">
 <table>
