@@ -5374,7 +5374,7 @@ If any of the input objects contain the same attribute name, the attribute from 
 <h3 id="description-3"><a class="anchor" href="#description-3"></a>Description</h3>
 <div class="paragraph">
 <p>This function returns the value of the specified field within the given object.
-A field may be any attribute or element, nested at any level within the object.</p>
+A field in this context may be any attribute or element, nested at any level within the object.</p>
 </div>
 </div>
 <div class="sect2">
@@ -5462,8 +5462,11 @@ In the path to the nested object attribute, the final attribute name is escaped,
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT OBJECT_FIELD(hotel, "reviews[1]") AS array_element,
-       OBJECT_FIELD(hotel, "reviews[1].ratings.`Business service (e.g., internet access)`") AS object_attribute
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT
+  OBJECT_FIELD(hotel, "reviews[1]")
+    AS array_element,
+  OBJECT_FIELD(hotel, "reviews[1].ratings.`Business service (e.g., internet access)`")
+    AS object_attribute
 FROM `travel-sample`.inventory.hotel
 LIMIT 1;</code></pre>
 </div>
@@ -6074,7 +6077,7 @@ For an illustration, refer to the examples below.</p>
 <dt class="hdlist1">composites</dt>
 <dd>
 <p>A boolean.
-If <code>true</code>, every level of every nested field is displayed; if <code>false</code> only the deepest possible nested fields are returned.
+If <code>true</code>, every level of every nested field is displayed; if <code>false</code>, only the deepest possible nested fields are returned.
 Default <code>false</code>.</p>
 </dd>
 <dt class="hdlist1">pattern</dt>
@@ -6317,7 +6320,7 @@ A field in this context may be any attribute or element, nested at any level wit
 <dt class="hdlist1">composites</dt>
 <dd>
 <p>A boolean.
-If <code>true</code>, every level of every nested field is displayed; if <code>false</code> only the deepest possible nested fields are returned.
+If <code>true</code>, every level of every nested field is displayed; if <code>false</code>, only the deepest possible nested fields are returned.
 Default <code>true</code>.</p>
 </dd>
 <dt class="hdlist1">arraysubscript</dt>
@@ -6341,12 +6344,12 @@ Used in conjunction with the following setting.</p>
 <dt class="hdlist1">patternspace</dt>
 <dd>
 <p>A string literal with two possible values.
-Default <code>path</code>.</p>
+Default <code>"path"</code>.</p>
 <div class="hdlist">
 <table>
 <tr>
 <td class="hdlist1">
-<code>field</code>
+<code>"field"</code>
 </td>
 <td class="hdlist2">
 <p>The pattern is matched against individual field names.</p>
@@ -6354,7 +6357,7 @@ Default <code>path</code>.</p>
 </tr>
 <tr>
 <td class="hdlist1">
-<code>path</code>
+<code>"path"</code>
 </td>
 <td class="hdlist2">
 <p>The pattern is matched against composite path names.</p>
@@ -6434,11 +6437,15 @@ SELECT OBJECT_PATHS(input, {"composites": true}) AS composite,
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WITH input AS ({
-  "attribute": {"name": "elem1"}
+  "attribute": [ { "name": "elem1"}, {"name": "elem2"}]
 })
-SELECT OBJECT_PATHS(input, {"arraysubscript": true}) AS subscripts,
-       OBJECT_PATHS(input, {"arraysubscript": false, "unique": false}) AS no_subscripts_not_unique,
-       OBJECT_PATHS(input, {"arraysubscript": false, "unique": true}) AS no_subscripts_unique;</code></pre>
+SELECT
+  OBJECT_PATHS(input, {"arraysubscript": true})
+    AS subscripts,
+  OBJECT_PATHS(input, {"arraysubscript": false, "unique": false})
+    AS no_subscripts_not_unique,
+  OBJECT_PATHS(input, {"arraysubscript": false, "unique": true})
+    AS no_subscripts_unique;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -6478,9 +6485,13 @@ SELECT OBJECT_PATHS(input, {"arraysubscript": true}) AS subscripts,
 <pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">WITH input AS ({
   "attribute": {"name": "elem1"}
 })
-SELECT OBJECT_PATHS(input) AS all_paths,
-       OBJECT_PATHS(input, {"pattern": "^n", "patternspace": "field"}) AS field_starts_with_n,
-       OBJECT_PATHS(input, {"pattern": "^n", "patternspace": "path"}) AS path_starts_with_n;</code></pre>
+SELECT
+  OBJECT_PATHS(input)
+    AS all_paths,
+  OBJECT_PATHS(input, {"pattern": "^n", "patternspace": "field"})
+    AS field_starts_with_n,
+  OBJECT_PATHS(input, {"pattern": "^n", "patternspace": "path"})
+    AS path_starts_with_n;</code></pre>
 </div>
 </div>
 <div class="listingblock">
