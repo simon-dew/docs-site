@@ -5274,19 +5274,35 @@ The value of this property must be set to <code>true</code>.</p>
 </div>
 <div class="sect2">
 <h3 id="examples"><a class="anchor" href="#examples"></a>Examples</h3>
+<div class="paragraph">
+<p>For the examples in this section, it is assumed that the cost-based optimizer is active, and all optimizer statistics are up-to-date.</p>
+</div>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="title">ORDERED hint&#8201;&#8212;&#8201;simple syntax</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT /*+ ORDERED */ *
-FROM `travel-sample`.inventory.route AS rte
-JOIN `travel-sample`.inventory.airport AS apt
-  ON rte.destinationairport = apt.faa
-NEST `travel-sample`.inventory.landmark AS lmk
-  ON apt.city = lmk.city
-LIMIT 5;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ordered-hint.n1ql#L6-L13">SELECT /*+ ORDERED */
+       a.airportname AS source, r.id AS route, l.name AS airline
+FROM `travel-sample`.inventory.airport AS a
+JOIN `travel-sample`.inventory.route AS r <i class="conum" data-value="1"></i><b>(1)</b>
+  ON r.sourceairport = a.faa
+JOIN `travel-sample`.inventory.airline AS l <i class="conum" data-value="2"></i><b>(2)</b>
+  ON r.airlineid = META(l).id
+WHERE l.name = "40-Mile Air";</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Join the <code>airport</code> keyspace to the <code>route</code> keyspace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Join the resulting dataset to the <code>airline</code> keyspace.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -5295,14 +5311,98 @@ LIMIT 5;</code></pre>
 <div class="listingblock">
 <div class="title">ORDERED hint&#8201;&#8212;&#8201;JSON syntax</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT /*+ {"ordered": true} */ *
-FROM `travel-sample`.inventory.route AS rte
-JOIN `travel-sample`.inventory.airport AS apt
-  ON rte.destinationairport = apt.faa
-NEST `travel-sample`.inventory.landmark AS lmk
-  ON apt.city = lmk.city
-LIMIT 5;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ordered-hint.n1ql#L17-L24">SELECT /*+ {"ordered": true} */
+       a.airportname AS source, r.id AS route, l.name AS airline
+FROM `travel-sample`.inventory.airport AS a
+JOIN `travel-sample`.inventory.route AS r <i class="conum" data-value="1"></i><b>(1)</b>
+  ON r.sourceairport = a.faa
+JOIN `travel-sample`.inventory.airline AS l <i class="conum" data-value="2"></i><b>(2)</b>
+  ON r.airlineid = META(l).id
+WHERE l.name = "40-Mile Air";</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Join the <code>airport</code> keyspace to the <code>route</code> keyspace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Join the resulting dataset to the <code>airline</code> keyspace.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you examine the plan for this query, or the query in the previous example, you can see that the joins are ordered just as they were written.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/join-order-hint.png" alt="Query plan with join order hint">
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Join the <code>airport</code> keyspace to the <code>route</code> keyspace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Join the resulting dataset to the <code>airline</code> keyspace.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>For further insight into join enumeration, consider the following query, which is equivalent to the previous two examples, but without the ORDERED hint.</p>
+</div>
+<div class="listingblock">
+<div class="title">Optimized join ordering</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/select/ordered-hint.n1ql#L28-L34">SELECT a.airportname AS source, r.id AS route, l.name AS airline
+FROM `travel-sample`.inventory.airport AS a
+JOIN `travel-sample`.inventory.route AS r <i class="conum" data-value="1"></i><b>(1)</b>
+  ON r.sourceairport = a.faa
+JOIN `travel-sample`.inventory.airline AS l <i class="conum" data-value="2"></i><b>(2)</b>
+  ON r.airlineid = META(l).id
+WHERE l.name = "40-Mile Air";</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Join the <code>airport</code> keyspace to the <code>route</code> keyspace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Join the resulting dataset to the <code>airline</code> keyspace.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you examine the plan for this query, you can see that because there is no query hint, the optimizer has re-ordered the joins.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../_images/join-order-optimize.png" alt="Query plan with optimized join order">
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Join the <code>airline</code> keyspace to the <code>route</code> keyspace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Join the resulting dataset to the <code>airport</code> keyspace.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
