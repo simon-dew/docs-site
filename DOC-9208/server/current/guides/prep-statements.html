@@ -7,21 +7,16 @@
 <script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
 <title>Prepared Statements | Couchbase Docs (Staging)</title>
-<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9208/server/current/guides/prepared.html">
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-9208/server/current/guides/prep-statements.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="How to create and execute prepared statements, including placeholder parameters.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
-        <link rel="prev" href="delete.html">
-        <link rel="next" href="transactions.html">
-
-
-
 
 
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.1">
-<meta name="page-url" content="/server/current/guides/prepared.html">
+<meta name="page-url" content="/server/current/guides/prep-statements.html">
 <meta name="generator" content="Antora 3.0.0-alpha.5">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
 </head>
@@ -365,7 +360,7 @@
 </li>
 <li class="menu_list is-current-page" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link is-current-page" href="prepared.html">Prepared Statements</a>
+    <a class="menu_title menu_link is-current-page" href="prep-statements.html">Prepared Statements</a>
   </span>
 </li>
 <li class="menu_list" data-depth="2">
@@ -5197,7 +5192,7 @@
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
-<li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/pages/prepared.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/pages/prep-statements.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
 </ul>
 </div>
     <div class="toc-menu"></div>
@@ -5258,7 +5253,7 @@
 <li class="crumb"><a href="../introduction/intro.html">Couchbase Server</a></li>
 <li class="crumb">Develop</li>
 <li class="crumb"><a href="intro.html">Developer Guides</a></li>
-<li class="crumb"><a href="prepared.html">Prepared Statements</a></li>
+<li class="crumb"><a href="prep-statements.html">Prepared Statements</a></li>
 </ul>
 </nav>
 </div>
@@ -5283,20 +5278,30 @@ How to create and execute prepared statements, including placeholder parameters.
 <h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Reiterate the concept that this how-to guide covers, in one or two sentences.
-This is tagged so that it can be transcluded into an associative navigation page for linked how-to guides.</p>
+<p>If you need to execute certain N1QL statements repeatedly, you can use placeholder parameters and prepared statements to optimize query reuse.</p>
 </div>
 <div class="paragraph">
-<p>Include any partials here that users will need to follow the examples.
-Be brief!</p>
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
+Read the following for further information about the tools available for editing and executing queries:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../tools/cbq-shell.html" class="page">cbq: The Command Line Shell for N1QL</a></p>
+</li>
+<li>
+<p><a href="../tools/query-workbench.html" class="page">Query Workbench</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="add-placeholder-parameters"><a class="anchor" href="#add-placeholder-parameters"></a>Add Placeholder Parameters</h2>
+<h2 id="placeholders"><a class="anchor" href="#placeholders"></a>Adding Placeholder Parameters</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can add a placeholder parameter to the WHERE clause, the LIMIT clause, or the OFFSET clause of a query.</p>
+<p>You can add placeholder parameters to a statement, so that you can safely supply variable values when you run the statement.
+You can add placeholder parameters in the WHERE clause, the LIMIT clause, or the OFFSET clause.</p>
 </div>
 <div class="paragraph">
 <p>A placeholder parameter may be a <em>named parameter</em> or a <em>positional parameter</em>.</p>
@@ -5359,22 +5364,19 @@ WHERE city=? AND country=?;</code></pre>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p>For more information and examples, refer to [concept or reference].</p>
-</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="supply-parameter-values"><a class="anchor" href="#supply-parameter-values"></a>Supply Parameter Values</h2>
+<h2 id="values"><a class="anchor" href="#values"></a>Supplying Parameter Values</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO: Optional single paragraph, summarizing any concepts that this procedure covers.</p>
+<p>To run a query containing placeholder parameters, you must supply values for the parameters.</p>
 </div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset1_cbq-shell"></a>CBQ Shell</p>
+<p><a id="tabset1_n1ql"></a>N1QL</p>
 </li>
 <li>
 <p><a id="tabset1_net"></a>.NET</p>
@@ -5391,41 +5393,90 @@ WHERE city=? AND country=?;</code></pre>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_cbq-shell">
+<div class="tab-pane" aria-labelledby="tabset1_n1ql">
 <div class="paragraph">
-<p>To supply positional parameter values for a query or prepared statement, use the <code>\SET</code> command to specify the <code>-args</code> parameter.
-This parameter takes an array value, each element of which is a positional parameter value.</p>
+<p>To supply values for placeholder parameters:</p>
 </div>
-<div class="paragraph">
-<p>To supply named parameter values for a query or prepared statement, use the <code>\SET</code> command to specify each parameter.
-The name of each parameter must be prefixed by <code>-$</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you are using the cbq shell, use the <code>\SET</code> command to set the parameters, then run the statement.</p>
+</li>
+<li>
+<p>If you are using the N1QL REST API, specify the parameters in the request body or the query URI, alongside the statement.</p>
+</li>
+<li>
+<p>If you are using the Query Workbench, use the cog icon <span class="icon"><i class="fa fa-cog"></i></span> to display the Run-Time Preferences window and set the parameters, then run the statement.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+When you are executing a prepared statement, the <code>EXECUTE</code> statement provides another, easier way to supply parameter values.
+Refer to <a href="#execute">Executing Prepared Statements</a> below.
+</td>
+</tr>
+</table>
 </div>
 <hr>
 <div class="paragraph">
-<p>The following example supplies a single positional parameter.</p>
+<p>The following example supplies a single positional parameter, using the cbq shell.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">\SET -args ["France"];
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/param-numbers.n1ql">\SET -args ["France"]; <i class="conum" data-value="1"></i><b>(1)</b><i class="conum" data-value="2"></i><b>(2)</b><i class="conum" data-value="3"></i><b>(3)</b>
 SELECT COUNT(*) FROM `travel-sample`.inventory.airline WHERE country = ?;</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In the cbq shell, parameter names must be prefixed by a hyphen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In the cbq shell or the REST API, the <code>args</code> parameter specifies positional parameters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>args</code> parameter takes an array, each element of which is a value for a positional parameter.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
-<p>The following example supplies a single named parameter.</p>
+<p>The following example supplies a single named parameter, using the cbq shell.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">\SET -$country "France";
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/param-names.n1ql">\SET -$country "France"; <i class="conum" data-value="1"></i><b>(1)</b><i class="conum" data-value="2"></i><b>(2)</b>
 SELECT COUNT(*) FROM `travel-sample`.inventory.airline WHERE country = $country;</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In the cbq shell, parameter names must be prefixed by a hyphen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In the cbq shell, the REST API, or the Query Workbench, named parameters must begin with a dollar sign <code>$</code>.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
-<p>For more information and examples, refer to <a href="../tools/cbq-shell.html" class="page">cbq: The Command Line Shell for N1QL</a>.</p>
+<p>For more information and examples, refer to <a href="../settings/query-settings.html" class="page">Settings and Parameters</a>.</p>
 </div>
 </div>
 <div class="tab-pane" aria-labelledby="tabset1_net">
 <div class="paragraph">
-<p>To supply parameter values for a query or prepared statement, use the <code>Parameter</code> method on the <code>QueryOptions</code> object.</p>
+<p>To supply values for placeholder parameters, use the <code>Parameter</code> method on the <code>QueryOptions</code> object.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -5468,7 +5519,7 @@ There are different versions of the <code>Parameter</code> method for supplying 
 </div>
 <div class="tab-pane" aria-labelledby="tabset1_java">
 <div class="paragraph">
-<p>To supply parameter values for a query or prepared statement, use the <code>parameter</code> method on the <code>QueryOptions</code> object.</p>
+<p>To supply values for placeholder parameters, use the <code>parameter</code> method on the <code>QueryOptions</code> object.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -5509,7 +5560,7 @@ There are different versions of the <code>parameter</code> method for supplying 
 </div>
 <div class="tab-pane" aria-labelledby="tabset1_node-js">
 <div class="paragraph">
-<p>To supply parameter values for a query or prepared statement, use the <code>parameters</code> property on the <code>QueryOptions</code> interface.</p>
+<p>To supply values for placeholder parameters, use the <code>parameters</code> property on the <code>QueryOptions</code> interface.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -5597,14 +5648,14 @@ Alternatively, you can supply positional parameters or named parameters as keywo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/7769d0e805fe110d44081392ddf190b8af366891/modules/howtos/examples/n1ql_ops.py#L39-L41">result = cluster.query(
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/79356e6e8cf19ec3270b0e7d879ab1625e3f1838/modules/howtos/examples/n1ql_ops.py#L39-L41">result = cluster.query(
     "SELECT ts.* FROM `travel-sample`.inventory.airport WHERE city=$1",
     QueryOptions(positional_parameters=["San Jose"]))</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/7769d0e805fe110d44081392ddf190b8af366891/modules/howtos/examples/n1ql_ops.py#L33-L35">result = cluster.query(
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/79356e6e8cf19ec3270b0e7d879ab1625e3f1838/modules/howtos/examples/n1ql_ops.py#L33-L35">result = cluster.query(
     "SELECT ts.* FROM `travel-sample`.inventory.airport WHERE city=$1",
     "San Jose")</code></pre>
 </div>
@@ -5614,14 +5665,14 @@ Alternatively, you can supply positional parameters or named parameters as keywo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/7769d0e805fe110d44081392ddf190b8af366891/modules/howtos/examples/n1ql_ops.py#L51-L53">result = cluster.query(
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/79356e6e8cf19ec3270b0e7d879ab1625e3f1838/modules/howtos/examples/n1ql_ops.py#L51-L53">result = cluster.query(
     "SELECT ts.* FROM `travel-sample`.inventory.airport WHERE city=$city",
     QueryOptions(named_parameters={"city": "San Jose"}))</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/7769d0e805fe110d44081392ddf190b8af366891/modules/howtos/examples/n1ql_ops.py#L45-L47">result = cluster.query(
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/79356e6e8cf19ec3270b0e7d879ab1625e3f1838/modules/howtos/examples/n1ql_ops.py#L45-L47">result = cluster.query(
     "SELECT ts.* FROM `travel-sample`.inventory.airport WHERE city=$city",
     city='San Jose')</code></pre>
 </div>
@@ -5635,10 +5686,22 @@ Alternatively, you can supply positional parameters or named parameters as keywo
 </div>
 </div>
 <div class="sect1">
-<h2 id="create-a-prepared-statement"><a class="anchor" href="#create-a-prepared-statement"></a>Create a Prepared Statement</h2>
+<h2 id="prepare"><a class="anchor" href="#prepare"></a>Creating Prepared Statements</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO: Optional single paragraph, summarizing any concepts that this procedure covers.</p>
+<p>If you need to run a statement more than once, you can prepare the execution plan for the statement and cache it for reuse.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can include placeholder parameters in the prepared statement, if necessary.
+</td>
+</tr>
+</table>
 </div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
@@ -5666,44 +5729,66 @@ Alternatively, you can supply positional parameters or named parameters as keywo
 <p>To create a prepared statement, use the <code>PREPARE</code> statement.</p>
 </div>
 <div class="paragraph">
-<p>You can use the FROM / AS clause to specify a name for the prepared statement, if required.
+<p>Use the FROM / AS clause to specify a name for the prepared statement, if required.
 If you don&#8217;t, a name is generated automatically.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Include placeholder parameters in the query, if necessary.
-</td>
-</tr>
-</table>
 </div>
 <hr>
 <div class="paragraph">
-<p>The following query prepares and caches the query plan for the given statement, including the specified parameters.</p>
+<p>The following query prepares the execution plan for the given statement, including the specified positional parameters.</p>
 </div>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM `travel-sample`.inventory.hotel <i class="conum" data-value="1"></i><b>(1)</b>
-LIMIT 1;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/prepare-numbers.n1ql">PREPARE NumParam AS
+SELECT * FROM `travel-sample`.inventory.hotel
+WHERE city=$1 AND country=$2;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/prepare-numbers.jsonc#L2-L10">[
+  {
+    "encoded_plan": "H4sIAAAAAAAA/wEAAP//AAAAAAAAAAA=",
+    "featureControls": 76,
+    "indexApiVersion": 4,
+    "indexScanKeyspaces": {
+      "default:travel-sample.inventory.hotel": false
+    },
+    "name": "[127.0.0.1:8091]NumParam", <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Callouts if necessary.</td>
+<td>The query returns the name of the prepared statement.</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>The following query prepares the execution plan for the given statement, including the specified named parameters.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/prepare-names.n1ql">PREPARE NameParam AS
+SELECT * FROM `travel-sample`.inventory.hotel
+WHERE city=$city AND country=$country;</code></pre>
+</div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"hotel": "Nero's Palace"} // &lt;.&gt;;</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/prepare-names.jsonc#L2-L10">[
+  {
+    "encoded_plan": "H4sIAAAAAAAA/wEAAP//AAAAAAAAAAA=",
+    "featureControls": 76,
+    "indexApiVersion": 4,
+    "indexScanKeyspaces": {
+      "default:travel-sample.inventory.hotel": false
+    },
+    "name": "[127.0.0.1:8091]NameParam", <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -5722,18 +5807,6 @@ LIMIT 1;</code></pre>
 <div class="paragraph">
 <p>To create a prepared statement, use the <code>Cluster.QueryAsync&lt;T&gt;</code> method with the <code>adhoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Include placeholder parameters in the query, if necessary.
-</td>
-</tr>
-</table>
-</div>
 <hr>
 <div class="paragraph">
 <p>The following example executes a query with the specified parameters.
@@ -5741,10 +5814,10 @@ If this query has not been executed before, the query plan is cached for reuse.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = await cluster.QueryAsync&lt;dynamic&gt;(
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/adhoc.cs">var result = await cluster.QueryAsync&lt;dynamic&gt;(
     "select count(*) from `travel-sample`.inventory.airport where country = ?",
     options =&gt;
-        options.Parameter("Country")
+        options.Parameter("France")
         .AdHoc(false);
 );</code></pre>
 </div>
@@ -5756,18 +5829,6 @@ If this query has not been executed before, the query plan is cached for reuse.<
 <div class="tab-pane" aria-labelledby="tabset2_java">
 <div class="paragraph">
 <p>To create a prepared statement, use the <code>query()</code> method with the <code>AdHoc</code> query option set to false.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Include placeholder parameters in the query, if necessary.
-</td>
-</tr>
-</table>
 </div>
 <hr>
 <div class="paragraph">
@@ -5790,18 +5851,6 @@ If this query has not been executed before, the query plan is cached for reuse.<
 <div class="paragraph">
 <p>To create a prepared statement, use the <code>query()</code> function with the <code>adhoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Include placeholder parameters in the query, if necessary.
-</td>
-</tr>
-</table>
-</div>
 <hr>
 <div class="paragraph">
 <p>The following example executes a query with the specified parameters.
@@ -5809,16 +5858,16 @@ If this query has not been executed before, the query plan is cached for reuse.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">async function queryNamed() {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/adhoc.js">async function queryNamed() {
   const query = `
-    SELECT airportname, city
-    FROM \`travel-sample\`.inventory.airport
-    WHERE city='London';`
+  SELECT airportname, city FROM \`travel-sample\`.inventory.airport
+  WHERE city=$1
+  `;
+  var options = { adhoc: false, parameters: ['London'] }
 
   try {
-    let result = await cluster.query(query, { adhoc: false })
-    results.rows.forEach((row) =&gt; {
-      console.log('Query row: ', row)
+    let result = await cluster.query(query, options)
+    console.log("Result:", result)
     return result
   } catch (error) {
     console.error('Query failed: ', error)
@@ -5834,18 +5883,6 @@ If this query has not been executed before, the query plan is cached for reuse.<
 <div class="paragraph">
 <p>To create a prepared statement, use the <code>query()</code> function with the <code>adhoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Include placeholder parameters in the query, if necessary.
-</td>
-</tr>
-</table>
-</div>
 <hr>
 <div class="paragraph">
 <p>The following example executes a query with the specified parameters.
@@ -5853,7 +5890,7 @@ If this query has not been executed before, the query plan is cached for reuse.<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">result = cluster.query(
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/adhoc.py">result = cluster.query(
     """SELECT airportname, city
     FROM \`travel-sample\`.inventory.airport
     WHERE city=$1;""",
@@ -5869,10 +5906,23 @@ If this query has not been executed before, the query plan is cached for reuse.<
 </div>
 </div>
 <div class="sect1">
-<h2 id="execute-a-prepared-statement"><a class="anchor" href="#execute-a-prepared-statement"></a>Execute a Prepared Statement</h2>
+<h2 id="execute"><a class="anchor" href="#execute"></a>Executing Prepared Statements</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO: Optional single paragraph, summarizing any concepts that this procedure covers.</p>
+<p>When you execute a prepared statement, the cached execution plan is reused, so the query executes faster.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can supply parameter values for a prepared statement, just as you can for a query.
+These can be different to the parameter values that you supplied when you created the prepared statement.
+</td>
+</tr>
+</table>
 </div>
 <div class="tabset is-loading">
 <div class="ulist tabs">
@@ -5897,72 +5947,53 @@ If this query has not been executed before, the query plan is cached for reuse.<
 <div class="content">
 <div class="tab-pane" aria-labelledby="tabset3_n1ql">
 <div class="paragraph">
-<p>FIXME: To execute a prepared statement, use the <code>EXECUTE</code> statement.</p>
+<p>To execute a prepared statement, use the <code>EXECUTE</code> statement.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Any hints or tips that apply to the procedure.
-</td>
-</tr>
-</table>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Supply the name of the prepared statement, as provided when you created the prepared statement.</p>
+</li>
+<li>
+<p>If necessary, use the USING clause to supply the values for parameters in the prepared statement.</p>
+</li>
+</ol>
 </div>
 <hr>
 <div class="paragraph">
-<p>For example, the following code &#8230;&#8203;</p>
+<p>The following query executes a prepared statement, including the specified positional parameters.</p>
 </div>
 <div class="listingblock">
-<div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT * FROM `travel-sample`.inventory.hotel <i class="conum" data-value="1"></i><b>(1)</b>
-LIMIT 1;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/execute-numbers.n1ql">EXECUTE NumParam
+USING ["Paris", "France"];</code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Callouts if necessary.</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{"hotel": "Nero's Palace"} // &lt;.&gt;;</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Callouts if necessary.</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>For more information and examples, refer to [concept or reference].</p>
+<p>Positional parameters are specified using an array of values.</p>
+</div>
+<div class="paragraph">
+<p>The following query executes a prepared statement, including the specified named parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/execute-names.n1ql">EXECUTE NameParam
+USING {"city": "Paris", "country": "France"};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Named parameters are specified using an object containing name / value properties.</p>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/execute.html" class="page">EXECUTE</a>.</p>
 </div>
 </div>
 <div class="tab-pane" aria-labelledby="tabset3_net">
 <div class="paragraph">
-<p>To execute a prepared statement, use the <code>Cluster.QueryAsync&lt;T&gt;</code> method to run the prepared statement query string, with the <code>adhoc</code> query option again set to false.</p>
+<p>To execute a prepared statement, use the <code>Cluster.QueryAsync&lt;T&gt;</code> method to run the prepared statement query string again, with the <code>adhoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Specify parameter values for the query, if necessary.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
 </div>
 <hr>
 <div class="paragraph">
@@ -5971,10 +6002,10 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = await cluster.QueryAsync&lt;dynamic&gt;(
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/adhoc.cs">var result = await cluster.QueryAsync&lt;dynamic&gt;(
     "select count(*) from `travel-sample`.inventory.airport where country = ?",
     options =&gt;
-        options.Parameter("Country")
+        options.Parameter("France")
         .AdHoc(false);
 );</code></pre>
 </div>
@@ -5985,19 +6016,10 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 <div class="tab-pane" aria-labelledby="tabset3_java">
 <div class="paragraph">
-<p>To execute a prepared statement, use the <code>query()</code> method to run the prepared statement query string, with the <code>AdHoc</code> query option again set to false.</p>
+<p>To execute a prepared statement, use the <code>query()</code> method to run the prepared statement query string again, with the <code>AdHoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Specify parameter values for the query, if necessary.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
 </div>
 <hr>
 <div class="paragraph">
@@ -6018,19 +6040,10 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 <div class="tab-pane" aria-labelledby="tabset3_node-js">
 <div class="paragraph">
-<p>To execute a prepared statement, use the <code>query()</code> function to run the prepared statement query string, with the <code>adhoc</code> query option again set to false.</p>
+<p>To execute a prepared statement, use the <code>query()</code> function to run the prepared statement query string again, with the <code>adhoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Specify parameter values for the query, if necessary.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
 </div>
 <hr>
 <div class="paragraph">
@@ -6039,16 +6052,16 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">async function queryNamed() {
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/adhoc.js">async function queryNamed() {
   const query = `
-    SELECT airportname, city
-    FROM \`travel-sample\`.inventory.airport
-    WHERE city='London';`
+  SELECT airportname, city FROM \`travel-sample\`.inventory.airport
+  WHERE city=$1
+  `;
+  var options = { adhoc: false, parameters: ['London'] }
 
   try {
-    let result = await cluster.query(query, { adhoc: false })
-    results.rows.forEach((row) =&gt; {
-      console.log('Query row: ', row)
+    let result = await cluster.query(query, options)
+    console.log("Result:", result)
     return result
   } catch (error) {
     console.error('Query failed: ', error)
@@ -6062,19 +6075,10 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 <div class="tab-pane" aria-labelledby="tabset3_python">
 <div class="paragraph">
-<p>To execute a prepared statement, use the <code>query()</code> function to run the prepared statement query string, with the <code>adhoc</code> query option again set to false.</p>
+<p>To execute a prepared statement, use the <code>query()</code> function to run the prepared statement query string again, with the <code>adhoc</code> query option set to false.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Specify parameter values for the query, if necessary.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
 </div>
 <hr>
 <div class="paragraph">
@@ -6083,7 +6087,7 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">result = cluster.query(
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/guides/examples/prepared/adhoc.py">result = cluster.query(
     """SELECT airportname, city
     FROM \`travel-sample\`.inventory.airport
     WHERE city=$1;""",
@@ -6102,12 +6106,12 @@ If a prepared statement has been created from this query previously, the cached 
 <h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Explanations:</p>
+<p>Overview:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Link(s) to concept topics, if available.</p>
+<p><a href="../n1ql/n1ql-intro/queriesandresults.html" class="page">N1QL Queries and Results</a></p>
 </li>
 </ul>
 </div>
@@ -6121,6 +6125,24 @@ If a prepared statement has been created from this query previously, the cached 
 </li>
 <li>
 <p><a href="../n1ql/n1ql-rest-api/admin.html#_prepared_statements_resource" class="page">N1QL Admin REST API for Prepared Statements</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Querying with SDKs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">C</a>
+| <a href="../../../dotnet-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">.NET</a>
+| <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Go</a>
+| <a href="../../../java-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Java</a>
+| <a href="../../../nodejs-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Node.js</a>
+| <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">PHP</a>
+| <a href="../../../python-sdk/current/howtos/n1ql-queries-with-sdk.html" class="page">Python</a>
+| <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Ruby</a>
+| <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="page unresolved">Scala</a></p>
 </li>
 </ul>
 </div>
@@ -6144,14 +6166,7 @@ If a prepared statement has been created from this query previously, the cached 
 </div>
 </div>
 </div>
-
-        <nav class="pagination">
-
-                <span>&nbsp;</span>
-        
-                <span>&nbsp;</span>
-            </nav>
-        </article>
+</article>
 </main>
 </div>
 <footer class="footer">

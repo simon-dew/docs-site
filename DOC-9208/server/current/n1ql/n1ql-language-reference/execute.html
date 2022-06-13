@@ -360,7 +360,7 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/prepared.html">Prepared Statements</a>
+    <a class="menu_title menu_link" href="../../guides/prep-statements.html">Prepared Statements</a>
   </span>
 </li>
 <li class="menu_list" data-depth="2">
@@ -5281,12 +5281,12 @@ The EXECUTE statement executes a prepared statement.
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>execute ::= EXECUTE <em>name</em> [ USING <em>parameters</em> ]</pre>
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/partials/grammar/utility.ebnf#L33">execute ::= 'EXECUTE' name ( 'USING' parameters )?</code></pre>
 </div>
 </div>
-<div class="imageblock">
+<div class="imageblock text-left">
 <div class="content">
-<img src="../_images/n1ql-language-reference/execute.png" alt="'EXECUTE' name ( 'USING' parameters )?">
+<img src="../_images/n1ql-language-reference/execute.png" alt="execute">
 </div>
 </div>
 <div class="dlist">
@@ -5415,24 +5415,24 @@ In N1QL, named parameters are specified using an object containing name / value 
 </div>
 <div class="exampleblock">
 <div class="content">
-<div class="listingblock">
+<div class="listingblock no-callouts">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXECUTE NameParam
-USING {"city":"paris", "country":"france"};</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/execute-names.n1ql">EXECUTE NameParam
+USING {"city": "Paris", "country": "France"};</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="paragraph">
 <p>Positional parameters are specified by the position of each supplied parameter when the statement is executed.
-In N1QL, named parameters are specified using an array of values.</p>
+In N1QL, positional parameters are specified using an array of values.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
-<div class="listingblock">
+<div class="listingblock no-callouts">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL">EXECUTE NumParam
-USING ["paris", "france"];</code></pre>
+<pre class="highlightjs highlight"><code class="language-N1QL hljs" data-lang="N1QL" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/examples/utility/execute-numbers.n1ql">EXECUTE NumParam
+USING ["Paris", "France"];</code></pre>
 </div>
 </div>
 </div>
@@ -5485,14 +5485,15 @@ When you do this, the query service returns error <code>5003</code>: "cannot hav
 <div class="listingblock">
 <div class="title">Request</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">$ curl -v http://localhost:8093/query/service -d 'statement=PREPARE SELECT text FROM tweets WHERE rating &gt; $r AND created_at &gt; $date'</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -v http://localhost:8093/query/service \
+     -d 'statement=PREPARE SELECT text FROM tweets
+                           WHERE rating &gt; $r AND created_at &gt; $date'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Response</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">&lt; HTTP/1.1 200 OK
-{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
   "requestID": "a339a496-7ed5-4625-9c64-0d7bf584a1bd",
   "signature": "json",
   "results": [
@@ -5526,14 +5527,14 @@ When you do this, the query service returns error <code>5003</code>: "cannot hav
 <div class="listingblock">
 <div class="title">Request:</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">$ curl -v http://localhost:8093/query/service -d 'prepared="a1355198-2576-4e3d-af04-5acc77d8a681"&amp;$r=9.5&amp;$date="1-1-2014"'</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -v http://localhost:8093/query/service \
+     -d 'prepared="a1355198-2576-4e3d-af04-5acc77d8a681"&amp;$r=9.5&amp;$date="1-1-2014"'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Response:</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">&lt; HTTP/1.1 200 OK
-{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
  "requestID": "1bd9956b-bc8e-478a-bd84-3955fe2db047",
  "signature": {
  "text": "json"
@@ -5564,22 +5565,26 @@ When you do this, the query service returns error <code>5003</code>: "cannot hav
 <div class="listingblock">
 <div class="title">Request:</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">$ curl -v http://localhost:8093/query/service -d 'statement=PREPARE fave_tweets FROM SELECT text FROM tweets WHERE rating &gt;= $r'</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -v http://localhost:8093/query/service \
+     -d 'statement=PREPARE fave_tweets FROM SELECT text FROM tweets WHERE rating &gt;= $r'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Response:</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">&lt; HTTP/1.1 200 OK
- {
-        "requestID": "a339a496-7ed5-4625-9c64-0d7bf584a1bd",
-        "signature": "json",
-        "results": [
-        {   "encoded_plan": "H4sIAAAJbogA/5yRQU/6QBDFvwpZ/gdIIAAA==",
-        "name": "fave_tweets",
-        "operator": {
-        // and so on
-        ...</code></pre>
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "requestID": "a339a496-7ed5-4625-9c64-0d7bf584a1bd",
+  "signature": "json",
+  "results": [
+    {
+      "encoded_plan": "H4sIAAAJbogA/5yRQU/6QBDFvwpZ/gdIIAAA==",
+      "name": "fave_tweets",
+      "operator": {
+      // ...
+      }
+    }
+  ]
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5588,14 +5593,13 @@ When you do this, the query service returns error <code>5003</code>: "cannot hav
 <div class="listingblock">
 <div class="title">Request:</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">$ curl -v http://localhost:8093/query/service -d 'prepared="fave_tweets"&amp;$r=9.5'</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">curl -v http://localhost:8093/query/service -d 'prepared="fave_tweets"&amp;$r=9.5'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Response</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">&lt; HTTP/1.1 200 OK
-{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
  "requestID": "1bd9956b-bc8e-478a-bd84-3955fe2db047",
  "signature": {
  "text": "json"
