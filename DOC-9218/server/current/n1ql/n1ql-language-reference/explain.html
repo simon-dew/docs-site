@@ -328,11 +328,6 @@
     <a class="menu_title menu_link" href="../../guides/drop-index.html">Dropping Indexes</a>
   </span>
 </li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/index-advisor.html">Index Advisor</a>
-  </span>
-</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -358,10 +353,28 @@
 </li>
 </ul>
 </li>
-<li class="menu_list" data-depth="2">
+<li class="menu_list is-parent closed" data-depth="2">
+  <span class="menu_line">
+    <span class="in-toggle"></span>
+    <a class="menu_title menu_link" href="../../guides/optimize.html">Optimizing Performance</a>
+  </span>
+<ul class="menu_row">
+<li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../guides/prep-statements.html">Prepared Statements</a>
   </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../guides/index-advisor.html">Index Advisor</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../guides/cbo.html">Cost-Based Optimizer</a>
+  </span>
+</li>
+</ul>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
@@ -4429,42 +4442,42 @@
 <ul class="menu_row">
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-create-replication.html">Creating XDCR Replications</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-create-ref.html">Creating and Editing References</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-get-ref.html">Getting a Destination Cluster Reference</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-get-ref.html">Getting a Reference</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-create-ref.html">Setting a Destination Cluster Reference</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-create-replication.html">Creating a Replication</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-delete-ref.html">Deleting a Destination Cluster Reference</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-pause-resume.html">Pausing and Resuming a Replication</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-delete-replication.html">Deleting XDCR Replications</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-delete-replication.html">Deleting a Replication</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-adv-settings.html">Managing Advanced XDCR Settings</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-delete-ref.html">Deleting a Reference</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-pause-resume.html">Pausing XDCR Replication Streams</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-adv-settings.html">Managing Advanced Settings</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-statistics.html">Getting XDCR Stats</a>
+    <a class="menu_title menu_link" href="../../rest-api/rest-xdcr-statistics.html">Getting Statistics</a>
   </span>
 </li>
 </ul>
@@ -5295,9 +5308,11 @@ For more details about user roles, see
 <div class="paragraph">
 <p>To execute the following statement, you must have the <em>Query Insert</em> privilege on the <code>`travel-sample`.inventory.landmark</code> keyspace and the <em>Query Select</em> privilege on the <code>`beer-sample`</code> keyspace.</p>
 </div>
-<div class="listingblock n1ql">
+<div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">EXPLAIN INSERT INTO `travel-sample`.inventory.landmark (KEY foo, VALUE bar) SELECT META(doc).id AS foo, doc AS bar FROM `beer-sample` AS doc WHERE type = "brewery";</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN INSERT INTO `travel-sample`.inventory.landmark (KEY foo, VALUE bar)
+        SELECT META(doc).id AS foo, doc AS bar
+        FROM `beer-sample` AS doc WHERE type = "brewery";</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5311,13 +5326,33 @@ For more details about user roles, see
 </div>
 </div>
 <div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/n1ql/partials/grammar/utility.ebnf#L15">explain ::= 'EXPLAIN' statement</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/explain.png" alt="explain">
+</div>
+</div>
+<div class="paragraph">
+<p>The statement consists of the <code>EXPLAIN</code> keyword, followed by the query whose execution plan you want to see.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
 <div class="sectionbody">
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN SELECT title, activity, hours FROM `travel-sample`.inventory.landmark ORDER BY title;</code></pre>
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">EXPLAIN SELECT title, activity, hours
+FROM `travel-sample`.inventory.landmark
+ORDER BY title;</code></pre>
 </div>
 </div>
 <div class="listingblock">
