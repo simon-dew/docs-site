@@ -5442,7 +5442,7 @@ WHERE airline="KL" AND sourceairport="ABQ"
 <div class="title">Example 2. ANY with no matching elements</div>
 <div class="content">
 <div class="paragraph">
-<p>But if you change the <code>SATISFIES</code> clause to 1 minute after the last flight ("23:42"), then the resulting array is empty.</p>
+<p>But if you change the <code>SATISFIES</code> clause to 1 minute after the last flight (23:42), then the resulting array is empty.</p>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
@@ -5552,7 +5552,7 @@ WHERE airline="KL"
 <div class="title">Example 5. EVERY with no matching elements</div>
 <div class="content">
 <div class="paragraph">
-<p>But if you change the <code>SATISFIES</code> clause to 1 minute after the first flight ("00:37"), then the resulting array is empty.</p>
+<p>But if you change the <code>SATISFIES</code> clause to 1 minute after the first flight (00:37), then the resulting array is empty.</p>
 </div>
 <div class="listingblock">
 <div class="title">Results</div>
@@ -5778,10 +5778,11 @@ WHERE airline="KL"
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ARRAY v FOR v IN schedule, w IN schedule WHEN v.utc &gt; "19:00" AND w.day = 5 END AS fri_evening_flights
-FROM `travel-sample`
-WHERE type="route"
-  AND airline="KL"
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ARRAY v
+  FOR v IN schedule, w IN schedule WHEN v.utc &gt; "19:00" AND w.day = 5 END
+  AS fri_evening_flights
+FROM `travel-sample`.inventory.route
+WHERE airline="KL"
   AND sourceairport="ABQ"
   AND destinationairport="ATL";</code></pre>
 </div>
@@ -5807,7 +5808,9 @@ WHERE type="route"
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ARRAY v FOR v IN schedule WHEN v.utc &gt; "19:00" AND v.day = 5 END AS fri_evening_flights
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT ARRAY v
+  FOR v IN schedule WHEN v.utc &gt; "19:00" AND v.day = 5 END
+  AS fri_evening_flights
 FROM `travel-sample`.inventory.route
 WHERE airline="KL"
   AND sourceairport="ABQ"
@@ -6004,7 +6007,9 @@ This example uses the <a href="typefun.html#tostring" class="page">TOSTRING()</a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT OBJECT "num_" || TOSTRING(i):v FOR i:v IN schedule WHEN v.day = 5 END AS fri_flights
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">SELECT OBJECT "num_" || TOSTRING(i):v
+  FOR i:v IN schedule WHEN v.day = 5 END
+  AS fri_flights
 FROM `travel-sample`.inventory.route
 WHERE airline="KL"
   AND sourceairport="ABQ"
@@ -6054,7 +6059,7 @@ WHERE airline="KL"
 </div>
 </div>
 <div class="sect1">
-<h2 id="membership-and-existence"><a class="anchor" href="#membership-and-existence"></a>Membership and Existence Tests</h2>
+<h2 id="membership-and-existence"><a class="anchor" href="#membership-and-existence"></a>Membership and Existence</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Membership tests (<a href="#collection-op-in">IN</a> and <a href="#collection-op-within">WITHIN</a>) enable you to test whether a value exists within an array.
