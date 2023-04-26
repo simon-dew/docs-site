@@ -2230,6 +2230,11 @@
 </li>
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="5b_cbo.html">Cost-Based Optimizer for Analytics</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="6_n1ql.html">SQL for Analytics vs. SQL for Query</a>
   </span>
 </li>
@@ -5703,6 +5708,485 @@ SELECT o.orderno
 FROM orders o
 WHERE SOME i IN o.items
 SATISFIES i.price = 19.91;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="CBO_parameters"><a class="anchor" href="#CBO_parameters"></a>Cost-Based Optimizer Parameters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following parameters enable you to specify the behavior of the cost-based optimizer.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>compiler.queryplanshape</strong>: A string specifying the shape of the query plan produced by the query compiler for multi-way hash join queries.
+Three settings are available for this parameter: <code>zigzag</code>, <code>leftdeep</code>, and <code>rightdeep</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>zigzag</code> &mdash; The smaller input is the build side of the hash join, and the larger input is the probe side.
+This is the default value, and provides a balance between speed and memory usage.</p>
+</li>
+<li>
+<p><code>leftdeep</code> &mdash; After the first join, previous join results are always on the build side of the hash join, and base collections are always on the probe side.
+This saves memory, but is potentially slower.</p>
+</li>
+<li>
+<p><code>rightdeep</code> &mdash;  After the first join, base collections are always on the build side of the hash join, and previous join results are always on the probe side.
+This is potentially quicker, but uses more memory.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>compiler.forcejoinorder</strong>: A boolean specifying whether joins should be performed in the order in which they are specified in the query.
+The default value is <code>false</code>, meaning the cost-based optimizer chooses the optimal join order.</p>
+</li>
+<li>
+<p><strong>compiler.cbo</strong>: A boolean specifying whether the cost-based optimizer should be activated or not.
+Setting this to <code>false</code> turns off the cost-based optimizer entirely.
+The default value is <code>true</code>.</p>
+</li>
+</ul>
+</div>
+<h5 id="example" class="discrete">Example</h5>
+<div class="paragraph">
+<p>The following example explicitly specifies the zigzag plan shape for a multi-join query, even though this is the default.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SET `compiler.queryplanshape` "zigzag";
+
+SELECT nation, o_year, sum(amount) AS sum_profit
+FROM (SELECT n.n_name AS nation,
+      DATE_PART_STR(o.o_orderdate, 'year'),
+      l.l_extendedprice * (1 - l.l_discount) -
+      ps.ps_supplycost * l.l_quantity as amount
+      FROM part p, supplier s, lineitem l,
+           partsupp ps, orders o, nation n
+      WHERE s.s_suppkey = l.l_suppkey
+        AND ps.ps_suppkey = l.l_suppkey
+        AND s.s_suppkey = ps.ps_suppkey
+        AND ps.ps_partkey = l.l_partkey
+        AND p.p_partkey = l.l_partkey
+        AND p.p_partkey = ps.ps_partkey
+        AND o.o_orderkey = l.l_orderkey
+        AND s.s_nationkey = n.n_nationkey
+        AND p.p_name LIKE '%green%') AS profit
+GROUP BY nation, o_year
+ORDER BY nation, o_year DESC;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This produces a query plan which can be represented as follows.
+For each hash join, the left side is the build side and the right side is the probe side.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>           HJ
+          /  \
+         /    \
+       HJ      o
+      /  \
+     /    \
+   HJ      l
+  /  \
+ /    \
+n      HJ
+      /  \
+     /    \
+    s      HJ
+          /  \
+         /    \
+        p      ps</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the bottom three hash joins have base collections as their build side but the top two hash joins have join results as their build side.</p>
+</div>
+<h5 id="example-2" class="discrete">Example</h5>
+<div class="paragraph">
+<p>The following example specifies the left deep plan shape.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SET `compiler.queryplanshape` "leftdeep";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A left deep plan for the query above can be represented as follows.
+For each hash join, the left side is the build side and the right side is the probe side.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>                   HJ
+                  /  \
+                 /    \
+               HJ      o
+              /  \
+             /    \
+           HJ      l
+          /  \
+         /    \
+       HJ      n
+      /  \
+     /    \
+   HJ      s
+  /  \
+ /    \
+p      ps</pre>
+</div>
+</div>
+<h5 id="example-3" class="discrete">Example</h5>
+<div class="paragraph">
+<p>The following example specifies the right deep plan shape.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SET `compiler.queryplanshape` "rightdeep";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A right deep plan for the query above can be represented as follows.
+For each hash join, the left side is the build side and the right side is the probe side.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>   HJ
+  /  \
+ /    \
+o      HJ
+      /  \
+     /    \
+    l      HJ
+          /  \
+         /    \
+        n      HJ
+              /  \
+             /    \
+            s      HJ
+                  /  \
+                 /    \
+                p      ps</pre>
+</div>
+</div>
+<h5 id="example-4" class="discrete">Example</h5>
+<div class="paragraph">
+<p>The following example forces the cost-based optimizer to use the order of joins specified in the query.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SET `compiler.forcejoinorder` "true";</pre>
+</div>
+</div>
+<h5 id="example-5" class="discrete">Example</h5>
+<div class="paragraph">
+<p>The following example turns the cost-based optimizer off.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SET `compiler.cbo` "false";</pre>
+</div>
+</div>
+<h5 id="example-6" class="discrete">Example</h5>
+<div class="paragraph">
+<p>The following example turns the cost-based optimizer on again.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SET `compiler.cbo` "true";</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="CBO_hints"><a class="anchor" href="#CBO_hints"></a>Cost-Based Optimizer Hints</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can supply hints to the cost-based optimizer using a hint comment.
+These enable you to specify the behavior of the cost-based optimizer for individual queries.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Generally speaking, you should rely on the optimizer to generate the query plan.
+Optimizer hints may be useful in specific situations where the optimizer is not able to come up with the preferred plan.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="productivity_hint"><a class="anchor" href="#productivity_hint"></a>Productivity Hint</h3>
+<div class="paragraph">
+<p>The <code>productivity</code> hint can help the cost-based optimizer get a better join cardinality estimate for foreign key to foreign key joins.</p>
+</div>
+<div class="paragraph">
+<p>This hint is used within the join predicate.
+If the join is on a composite key, then this hint needs to be provided just once on any of the join&#8217;s predicates.</p>
+</div>
+<div class="paragraph">
+<p>The hint requires two parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>keyspace</strong>: A collection or alias.</p>
+</li>
+<li>
+<p><strong>productivity</strong>: How many matching objects are expected from a join with the specified collection.</p>
+</li>
+</ul>
+</div>
+<h5 id="example-7" class="discrete">Example</h5>
+<div class="paragraph">
+<p>In this example, the hint specifies that for each object of <code>s</code> we expect to get 600 matching objects resulting from joining <code>s</code> with <code>c</code>, that is, each <code>s</code> will produce 600 <code>c</code> matches.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT c.*
+FROM customers c, nations n
+WHERE c.nationkey /*+ productivity s 600.0 */ = s.nationkey;</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="hashjoin_hint"><a class="anchor" href="#hashjoin_hint"></a>Hash Join Hint</h3>
+<div class="paragraph">
+<p>The <code>hashjoin</code> hint can be used in a join predicate to force a hash join.</p>
+</div>
+<div class="paragraph">
+<p>The hint requires you to specify which side of the hash join the identified collection or alias should be on: the <code>build</code> side or the <code>probe</code> side.</p>
+</div>
+<div class="paragraph">
+<p>The hint requires one parameter:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>keyspace</strong>: A base collection or alias.
+The base collection or alias may be from a previous join result.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the keyspace is valid, the cost-based optimizer only considers using a hash join plan with the specified collection.</p>
+</div>
+<div class="paragraph">
+<p>If the keyspace is invalid or not specified, the cost-based optimizer ignores the hint, generates a warning, and then tries all possible join methods.</p>
+</div>
+<h5 id="example-8" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the <code>orders</code> collection (<code>o</code>) should be on the build side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hashjoin build (o) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-9" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the subquery containing the <code>customers</code> collection (<code>c</code>) should be on the build side.
+This is equivalent to specifying that the <code>orders</code> collection (<code>o</code>) should be on the probe side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hashjoin build (c) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-10" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the subquery containing the <code>nations</code> collection (<code>n</code>) should be on the build side.
+This is equivalent to specifying that the <code>orders</code> collection (<code>o</code>) should be on the probe side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+  ON cn.custid /*+ hashjoin build (n) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-11" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the <code>orders</code> collection (<code>o</code>) should be on the probe side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+  ON cn.custid /*+ hashjoin probe (o) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-12" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the subquery containing the <code>customers</code> collection (<code>c</code>) should be on the probe side.
+This is equivalent to specifying that the <code>orders</code> collection (<code>o</code>) should be on the build side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hashjoin probe (c) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-13" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the subquery containing the <code>nations</code> collection (<code>n</code>) should be on the probe side.
+This is equivalent to specifying that the <code>orders</code> collection (<code>o</code>) should be on the build side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hashjoin probe (n) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-14" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example generates a warning because <code>cn</code> is not a base collection.
+The hint is ignored, and all possible join orders and join methods are considered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+  ON cn.custid /*+ hashjoin build (cn) */ = o.custid;</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="hash_bcast_hint"><a class="anchor" href="#hash_bcast_hint"></a>Hash Broadcast Hint</h3>
+<div class="paragraph">
+<p>By default, Analytics uses a partitioned-parallel hash join strategy to parallelize the execution of an equi-join.
+In this approach both sides of the join are repartitioned (if necessary) on a hash of the join key;
+potentially matching data items thus arrive at the same partition to be joined locally.
+This strategy is robust, but not always the fastest when one of the join sides is low cardinality and
+the other is high cardinality (since it scans and potentially moves the data from both sides).
+This special case can be better handled by broadcasting (replicating) the smaller side to all data partitions
+of the larger side and not moving the data from the other (larger) side.
+Analytics provides the <code>hash-bcast</code> join hint to enable this strategy.
+This hint forces one side of the join to be replicated while the other retains its original partitioning.</p>
+</div>
+<div class="paragraph">
+<p>The hint may have one optional parameter:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>keyspace</strong>: A base collection or alias which should be broadcast for the join.
+The base collection or alias may be from a previous join result.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the keyspace is valid, the cost-based optimizer only tries the broadcast plan with the specified collection.</p>
+</div>
+<div class="paragraph">
+<p>If the keyspace is not specified, the cost-based optimizer tries two broadcast plans, broadcast left and broadcast right.</p>
+</div>
+<div class="paragraph">
+<p>If the keyspace is invalid, the cost-based optimizer ignores the hint, generates a warning, and then tries all possible join methods.</p>
+</div>
+<h5 id="example-15" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the query should use a broadcast plan, but does not specify which side should be on the broadcast side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hash-bcast */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-16" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the subquery containing the <code>customers</code> collection (<code>c</code>) should be on the broadcast side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hash-bcast (c) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-17" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the subquery containing the <code>nations</code> collection (<code>n</code>) should be on the broadcast side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hash-bcast (n) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-18" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example specifies that the <code>orders</code> collection (<code>o</code>) should be on the broadcast side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hash-bcast (o) */ = o.custid;</pre>
+</div>
+</div>
+<h5 id="example-19" class="discrete">Example</h5>
+<div class="paragraph">
+<p>This example generates a warning because <code>cn</code> is not a base collection.
+The hint is ignored, and all possible join orders and join methods are considered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>SELECT count(*)
+FROM orders o
+JOIN (SELECT c.*
+      FROM customers c, nations n
+      WHERE c.nationkey = n.nationkey) AS cn
+ON cn.custid /*+ hash-bcast (cn) */ = o.custid;</pre>
+</div>
 </div>
 </div>
 </div>
