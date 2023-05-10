@@ -135,7 +135,22 @@
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
+    <a class="menu_title menu_link" href="install-antora.html">Install Antora</a>
+  </span>
+</li>
+<li class="menu_list is-current-page" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link is-current-page" href="playbook.html">Get the Site Playbook Project</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
     <a class="menu_title menu_link" href="set-up-repository.html">Set Up Your Local Repository</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="2">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="build-site.html">Build the Site</a>
   </span>
 </li>
 </ul>
@@ -270,22 +285,17 @@
 <li class="menu_list is-parent closed" data-depth="1">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <span class="menu_title menu_text">Testing Locally</span>
+    <span class="menu_title menu_text">Technical details</span>
   </span>
 <ul class="menu_row">
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="install-antora.html">Install Antora</a>
-  </span>
-</li>
-<li class="menu_list is-current-page" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link is-current-page" href="playbook.html">Get the Site Playbook Project</a>
+    <a class="menu_title menu_link" href="generate-rest-api.html">Generate REST API Documentation</a>
   </span>
 </li>
 <li class="menu_list" data-depth="2">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="build-site.html">Build the Site</a>
+    <a class="menu_title menu_link" href="extensions.html">Site Extensions</a>
   </span>
 </li>
 </ul>
@@ -364,7 +374,7 @@
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
 <li class="crumb">Contributing to the Documentation</li>
-<li class="crumb">Testing Locally</li>
+<li class="crumb">Setting Up Your Workspace</li>
 <li class="crumb"><a href="playbook.html">Get the Site Playbook Project</a></li>
 </ul>
 </nav>
@@ -468,41 +478,98 @@ You&#8217;ve already completed the steps on this page.
 </div>
 </div>
 <div class="sect1">
-<h2 id="sync-with-the-upstream-repository"><a class="anchor" href="#sync-with-the-upstream-repository"></a>Sync with the Upstream Repository</h2>
+<h2 id="configuring-the-playbook"><a class="anchor" href="#configuring-the-playbook"></a>Configuring the Playbook</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You need to connect your local repository to the upstream repository so you can use the latest playbooks and extensions.</p>
+<p>To preview your changes on the site locally, you need to configure the playbook to use your local repository.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Go to the <a href="https://github.com/couchbase/docs-site" target="_blank" rel="noopener">upstream Docs Site repository</a> and click <b class="button">Clone or download</b>.</p>
+<p>Copy the Antora playbook, <em>antora-playbook.yml</em>, and save it in the <em>docs-site</em> repository.</p>
 </li>
 <li>
-<p>Click the Clipboard icon to copy the repository&#8217;s Git URL.</p>
+<p>Rename it <em>local-antora-playbook.yml</em>.</p>
 </li>
 <li>
-<p>In your terminal type <code>git remote add upstream</code>, paste the copied URL, and press <kbd>Enter</kbd>.</p>
+<p>Open <em>local-antora-playbook.yml</em> in Atom or your editor.</p>
+</li>
+<li>
+<p>Under <code>sources</code>, find the <code>url</code> key that matches the upstream repository you plan to submit your changes to.
+Replace the repository URL with either the relative system path from the playbook project to your local repository or the absolute path.
+For example, if you&#8217;re making changes to files in the <em>docs-server</em> repository, you&#8217;d enter:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- url: ./docs-server</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>If there isn&#8217;t a <code>branches</code> key on the line directly below the <code>url</code> key, add it and assign it the list of version branch names, except for the version branch your working branch is based on.
+In place of the remote version branch, use the value of <code>HEAD</code>.
+<code>HEAD</code> tells Antora to use your working branch.
+For example, if your working branch is based off of the docs-server release/5.5 branch, you&#8217;d assign the following values to <code>branches</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">- url: ./docs-server
+  branches: [release/7.1, release/7.0, release/6.5, HEAD]</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>If there is a <code>branches</code> key on the line directly below the <code>url</code> key, replace the version branch name you based your working branch on with <code>HEAD</code>.</p>
+</li>
+<li>
+<p><a id="setup-kroki-server"></a>The build process makes use of a <a href="https://kroki.io">Kroki server</a> to generate diagrams from structured textual descriptions.
+There is a section for the Kroki setup in the playbook:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">asciidoc:
+  attributes:
+    # other settings
+    kroki-server-url: http://3.91.133.254:9500
+    kroki-fetch-diagram: true
+
+  extensions:
+     # other settings
+  - asciidoctor-kroki</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In your own playbook, set the <code>kroki-server-url</code> address to the public Kroki server, as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">kroki-server-url: https://kroki.io</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Save the playbook.</p>
 </li>
 </ol>
 </div>
+<div id="lightweight-local-playbook" class="sidebarblock">
+<div class="content">
+<div class="title">Lightweight Local Playbook</div>
 <div class="paragraph">
-<p>Now you&#8217;re ready to run Antora and build the documentation site on your device.</p>
+<p>You may have to iterate over amending the Antora playbook file a number of times, commenting out repos to which you do not have access.
+An easier approach could be starting with an intentionally minimalist playbook, and only adding the repos that you&#8217;re planning to work on.
+This will have to include the <code>docs-server</code> repo which, amongst other things, contains the site navigation.</p>
+</div>
+<div class="paragraph">
+<p>For example, to work on local copies of our ten SDK docs repos, and the Server docs, and also include couchbase-cli in your local docs build, take a look at our
+<a href="https://github.com/couchbase/docs-site/blob/master/home/modules/contribute/examples/local-staging-antora-playbook.yml" target="_blank" rel="noopener">example local-staging-antora-playbook.yml file</a>.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="next-steps"><a class="anchor" href="#next-steps"></a>Next Steps</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="build-site.html" class="page">Build the documentation site</a>.</p>
-</li>
-<li>
-<p><a href="test-site.html" class="page">Test your changes on the site</a>.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p><a href="set-up-repository.html" class="page">Set Up Your Local Repository</a></p>
 </div>
 </div>
 </div>
