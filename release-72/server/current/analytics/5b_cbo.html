@@ -5717,15 +5717,32 @@ Some of the choices will be faster and more efficient than others.
 The cost-based optimizer (CBO) aims to choose the most efficient option for each.</p>
 </div>
 <div class="paragraph">
-<p>The cost-based optimizer for Analytics takes a sample-based approach to single-collection statistics.
-Rather than gathering histograms for a collection&#8217;s field values and attempting to combine them to estimate predicate selectivity, the cost-based optimizer for Analytics gathers and utilizes samples of collections and then queries its samples at query planning time &mdash; based on a query&#8217;s single-collection predicates &mdash; in order to estimate the number of qualifying objects in each base collection for each query.</p>
+<p>At a high level, the cost-based optimizer does the following when generating the plan:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Index selection: the optimizer can select the optimal index for the query, including index pushdowns</p>
+</li>
+<li>
+<p>Join method: the optimizer can choose between nested-loop joins, hash joins, and hash broadcast joins.
+For hash joins, the optimizer can choose which side of the join should be the build side or the probe side.</p>
+</li>
+<li>
+<p>Join enumeration: the optimizer can consider different join orders, and rewrite the query to use the optimal join order.</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>This approach is more effective for the types of predicates which are expected to be more common in analytical use cases.</p>
+<p>The cost-based optimizer for Analytics uses sample data taken randomly from each Analytics collection.
+At query planning time, the cost-based optimizer queries its samples, based on the query&#8217;s single-collection predicates, in order to estimate the number of qualifying objects in each base collection for each query.</p>
 </div>
 <div class="paragraph">
-<p>In contrast, the <a href="../n1ql/n1ql-language-reference/cost-based-optimizer.html">cost-based optimizer for the Query service</a> uses a mix of metadata and data statistics (histograms) to estimate the amount of processing (memory, CPU, network traffic, and I/O) needed for each operation.
+<p>ses a mix of metadata and data statistics (histograms) to estimate the amount of processing (memory, CPU, network traffic, and I/O) needed for each operation.
 It considers the estimated cost of the alternatives in order to choose the query execution plan with the least expected cost.</p>
+</div>
+<div class="paragraph">
+<p>This approach is expected to be more effective for the types of predicates which are common in analytical use cases.</p>
 </div>
 </div>
 </div>
@@ -5738,7 +5755,7 @@ To turn it off or on, use the <code>compiler.cbo</code> configuration parameter.
 </div>
 <div class="paragraph">
 <p>Note that, in general, the <code>SET</code> statement only sets configuration parameters for the current query.
-It does not enable you to turn off the cost-based optimizer and leave it off.</p>
+It does not enable you to turn off the cost-based optimizer and leave it off permanently.</p>
 </div>
 <div class="paragraph">
 <p>For more details, see <a href="appendix_2_parameters.html#CBO_parameters">Cost-Based Optimizer Parameters</a>.</p>
@@ -5967,6 +5984,15 @@ See <a href="appendix_2_parameters.html#CBO_parameters">Cost-Based Optimizer Par
 <p>You can also supply hints to the optimizer within a specially-formatted hint comment.
 These enable you to specify the behavior of the cost-based optimizer within individual queries.
 See <a href="appendix_2_parameters.html#CBO_hints">Cost-Based Optimizer Hints</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Related_links"><a class="anchor" href="#Related_links"></a>Related Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="../n1ql/n1ql-language-reference/cost-based-optimizer.html">cost-based optimizer for the Query service</a> uses a mix of metadata and data statistics (histograms) to estimate the amount of processing (memory, CPU, network traffic, and I/O) needed for each operation.
+It considers the estimated cost of the alternatives in order to choose the query execution plan with the least expected cost.</p>
 </div>
 </div>
 </div>
