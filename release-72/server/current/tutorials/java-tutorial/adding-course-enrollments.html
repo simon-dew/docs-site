@@ -4,9 +4,16 @@
 <meta charset="utf-8">
 <meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<script>(window.dataLayer=window.dataLayer||[]).push({event:'gtm.js','gtm.start':+new Date()})</script>
-<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MVPNN2"></script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
 <title>Adding Course Enrollments | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/release-72/server/current/tutorials/java-tutorial/adding-course-enrollments.html">
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="In this section, you&#x27;re going to add enrollment details to the student records using the Couchbase SDK">
@@ -23,7 +30,7 @@
 <meta name="dcterms.subject" content="server">
 <meta name="dcterms.identifier" content="7.2">
 <meta name="page-url" content="/server/current/tutorials/java-tutorial/adding-course-enrollments.html">
-<meta name="generator" content="Antora 3.0.0-alpha.5">
+<meta name="generator" content="Antora 3.1.4">
 <link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
 </head>
 <body class="article">
@@ -116,7 +123,7 @@
       <div class="component_list-version">
         <span class="component_list_title">Couchbase Server</span>
         <select class="version_list" data-component="server">
-          <option value="7.2" data-url="../../introduction/intro.html" selected>7.2 Prerelease</option>
+          <option value="7.2" data-url="../../introduction/intro.html" selected>7.2</option>
         </select>
       </div>
       <div class="version_items hide" data-version="7.2">
@@ -2143,7 +2150,7 @@
 <li class="menu_list is-parent closed" data-depth="3">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <a class="menu_title menu_link" href="../../eventing/eventing-examples.html#examples-scriptlets-n1ql">eventing:eventing-examples.adoc#examples-scriptlets-n1ql</a>
+    <a class="menu_title menu_link" href="../../eventing/eventing-examples.html#examples-scriptlets-n1ql">Basic SQL++ Eventing Functions</a>
   </span>
 <ul class="menu_row">
 <li class="menu_list" data-depth="4">
@@ -5630,7 +5637,7 @@
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
-<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbaselabs/docs-devex/modules/tutorials/pages/java-tutorial/adding-course-enrollments.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+<li class="tool edit"><a href="https://github.com/simon-dew/docs-devex/edit/release/7.2/modules/tutorials/pages/java-tutorial/adding-course-enrollments.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
 </ul>
 </div>
     <div class="toc-menu"></div>
@@ -5723,9 +5730,44 @@ In this section, you&#8217;re going to add enrollment details to the student rec
 <div class="paragraph">
 <p>A quick recap: here&#8217;s the structure of our document store:</p>
 </div>
-<div class="imageblock kroki">
+<div class="literalblock">
 <div class="content">
-<img src="../_images/diag-df7c322dccd420365aa8f4937b5ba8e895f4a35f.svg" alt="student-document-database-design">
+<pre>@startuml
+left to right direction
+
+
+    database "student-bucket" {
+
+        node "art-school-scope" {
+
+                folder "student-record-collection" {
+
+                    file  "Hilary's record" as hilary {
+                        file "enrollment details" as hilary_enrollment
+                    }
+
+                    file "Ashley's record" as ashley {
+                        file "enrollment details" as ashley_enrollment
+
+                    }
+
+                }
+
+                folder "course-record-collection" {
+
+                    file "ART-HISTORY-000001" as art_history
+                    file "GRAPHIC-DESIGN-000003" as graphic_design
+                    file "FINE_ART-000002" as fine_art
+                }
+
+                hilary_enrollment --&gt; art_history
+                hilary_enrollment --&gt; graphic_design
+                ashley_enrollment --&gt;fine_art
+        }
+
+    }
+
+@enduml</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5769,7 +5811,7 @@ You&#8217;re now going to write a short program that will add enrollment details
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>As you&#8217;ll remember from our <a href="creating-the-students-collection.html#connecting-to-the-database" class="page">first example</a>, the application first has to connect to the Couchbase cluster.</td>
+<td>As you&#8217;ll remember from our <a href="creating-the-students-collection.html#connecting-to-the-database" class="xref page">first example</a>, the application first has to connect to the Couchbase cluster.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -5785,7 +5827,7 @@ You&#8217;re now going to write a short program that will add enrollment details
 <summary class="title">Answer</summary>
 <div class="content">
 <div class="paragraph">
-<p>As discussed earlier in <a href="../couchbase-tutorial-student-records.html" class="page">Couchbase Tutorial: A Student Record System</a>, Couchbase has been designed from the ground up to be scalable and performant, and an important part of this design is the architecture behind the APIs. Most of the APIs are non-blocking, which means that once you call them, your program is free to carry on and do other things while the called function executes.</p>
+<p>As discussed earlier in <a href="../couchbase-tutorial-student-records.html" class="xref page">Couchbase Tutorial: A Student Record System</a>, Couchbase has been designed from the ground up to be scalable and performant, and an important part of this design is the architecture behind the APIs. Most of the APIs are non-blocking, which means that once you call them, your program is free to carry on and do other things while the called function executes.</p>
 </div>
 </div>
 </details>
@@ -6019,6 +6061,7 @@ You can explore the documentation site to learn more about Couchbase.</p>
 </div>
 </template>
 <script id="site-script" src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
 <script defer src="../../../../_/js/vendor/fontawesome-icon-defs.js"></script>
 <script defer src="../../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
 <script async src="../../../../_/js/vendor/highlight.js"></script>
