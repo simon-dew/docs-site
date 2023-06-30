@@ -478,11 +478,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/transactions.html">SQL++ Support for Couchbase Transactions</a>
   </span>
 </li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/time-series.html">Time Series Data</a>
-  </span>
-</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -624,11 +619,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="5">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/curl.html">CURL Function</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="5">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/timeseries.html">_TIMESERIES Function</a>
   </span>
 </li>
 </ul>
@@ -1239,6 +1229,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../../search/create-custom-wordlist.html">Create a Custom Wordlist</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../../search/create-custom-date-time-parser.html">Create a Custom Date/Time Parser</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -2026,11 +2021,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../guides/create-index.html">Creating Indexes</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/place-index.html">Index Placement</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -3650,24 +3640,7 @@ Refer to <a href="transactions.html" class="xref page">SQL++ Support for Couchba
 When you start a transaction within a multi-statement request, all statements within the request are assumed to be part of the same transaction until you rollback or commit the transaction.</p>
 </div>
 <div class="paragraph">
-<p>Similarly, if you are using the cbq shell, you don&#8217;t need to specify the transaction ID.
-Once you have started a transaction, all statements within the cbq shell session are assumed to be part of the same transaction until you rollback or commit the transaction.
-<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup></p>
-</div>
-<div class="paragraph">
 <p>When you rollback the entire transaction, this statement removes all savepoints within the transaction.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If you are using the cbq shell, and a transaction fails for any reason, you must use the <code>ROLLBACK TRANSACTION</code> statement to remove the transaction context and reset the transaction ID.
-</td>
-</tr>
-</table>
 </div>
 </div>
 </div>
@@ -3676,7 +3649,7 @@ If you are using the cbq shell, and a transaction fails for any reason, you must
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/8b3cc8f29bacc73cbb52edf493076c053cbe82fb/modules/n1ql/partials/grammar/tcl.ebnf#L23-L24">rollback-transaction ::= 'ROLLBACK' ( 'WORK' | 'TRAN' | 'TRANSACTION' )?
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/579961d19ff442f3d7f112a6a1f1468e71e3eac3/modules/n1ql/partials/grammar/tcl.ebnf#L23-L24">rollback-transaction ::= 'ROLLBACK' ( 'WORK' | 'TRAN' | 'TRANSACTION' )?
                        ( 'TO' 'SAVEPOINT' savepointname )?</code></pre>
 </div>
 </div>
@@ -3725,8 +3698,76 @@ BEGIN WORK;
 -- Specify transaction settings
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
+-- Create 2 users
+UPSERT INTO users
+VALUES("0", {
+  "name": "Keon Hoppe",
+  "addresses": [
+    {
+      "type": "home",
+      "address": "222 Sauer Neck",
+      "city": "London",
+      "country": "United Kingdom"
+    },
+    {
+      "type": "work",
+      "address": "123 Carenden Road",
+      "city": "London",
+      "country": "United Kingdom"
+    }
+  ],
+  "driving_licence": "8d3931b5-51c5-58c8-9cf7-bc8ce9049558",
+  "passport": "95bfb372-04e8-5865-9331-d3ec66ca631b",
+  "preferred_email": "<a href="mailto:keonhoppe@reynholmindustries.co.uk">keonhoppe@reynholmindustries.co.uk</a>",
+  "preferred_phone": "0118 999 881 999 119 7253",
+  "preferred_airline": "samples.airline.airline_2607",
+  "preferred_airport": "samples.airport.airport_507",
+  "credit_cards": [
+    {
+      "type": "Mastercard",
+      "number": "5161395257291763",
+      "expiration": "2021-11"
+    },
+    {
+      "type": "Visa",
+      "number": "4986258227926866",
+      "expiration": "2021-07"
+    }
+  ],
+  "created": "2020-10-20",
+  "updated": "2021-02-19"
+});
+
+UPSERT INTO users
+VALUES("1", {
+  "name": "Rigoberto Bernier",
+  "addresses": [
+    {
+      "type": "home",
+      "address": "0622 Adams Mills",
+      "city": "London",
+      "country": "United Kingdom"
+    }
+  ],
+  "driving_licence": "5f5f145d-a4db-5630-b7d8-874df29a505d",
+  "passport": "a1c4f1ac-a7d7-5b97-88ed-11cafc634896",
+  "preferred_email": "<a href="mailto:rigobertobernier@reynholmindustries.co.uk">rigobertobernier@reynholmindustries.co.uk</a>",
+  "preferred_phone": "(965) 227-3977",
+  "preferred_airline": "samples.airline.airline_5479",
+  "preferred_airport": "samples.airport.airport_478",
+  "credit_cards": [
+    {
+      "type": "American Express",
+      "number": "346533746753899",
+      "expiration": "2021-04"
+    }
+  ],
+  "created": "2020-04-12",
+  "updated": "2021-02-19"
+});
+
 -- Create a booking document
-UPSERT INTO `travel-sample`.tenant_agent_00.bookings
+UPSERT INTO bookings
 VALUES("bf7ad6fa-bdb9-4099-a840-196e47179f03", {
   "date": "07/24/2021",
   "flight": "WN533",
@@ -3739,14 +3780,14 @@ VALUES("bf7ad6fa-bdb9-4099-a840-196e47179f03", {
 SAVEPOINT s1;
 
 -- Update the booking document to include a user
-UPDATE `travel-sample`.tenant_agent_00.bookings AS b
+UPDATE bookings AS b
 SET b.`user` = "0"
 WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
 
 -- Check the content of the booking and user
 SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
+FROM bookings b
+JOIN users u
 ON b.`user` = META(u).id
 WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
 
@@ -3754,14 +3795,14 @@ WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
 SAVEPOINT s2;
 
 -- Update the booking documents to change the user
-UPDATE `travel-sample`.tenant_agent_00.bookings AS b
+UPDATE bookings AS b
 SET b.`user` = "1"
 WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
 
 -- Check the content of the booking and user
 SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
+FROM bookings b
+JOIN users u
 ON b.`user` = META(u).id
 WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
 
@@ -3770,8 +3811,8 @@ ROLLBACK TRAN TO SAVEPOINT s2;
 
 -- Check the content of the booking and user again
 SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
+FROM bookings b
+JOIN users u
 ON b.`user` = META(u).id
 WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
 
@@ -3803,7 +3844,7 @@ ROLLBACK WORK;</code></pre>
   },
   {
     "_sequence_num": 3,
-    "_sequence_query": "\n\n-- Create a booking document\nUPSERT INTO `travel-sample`.tenant_agent_00.bookings\nVALUES(\"bf7ad6fa-bdb9-4099-a840-196e47179f03\", {\n  \"date\": \"07/24/2021\",\n  \"flight\": \"WN533\",\n  \"flighttime\": 7713,\n  \"price\": 964.13,\n  \"route\": \"63986\"\n});",
+    "_sequence_query": "\n\n-- Create 2 users\nUPSERT INTO users...",
     "_sequence_query_status": "success",
     "_sequence_result": {
       "results": []
@@ -3811,7 +3852,7 @@ ROLLBACK WORK;</code></pre>
   },
   {
     "_sequence_num": 4,
-    "_sequence_query": "\n\n-- Set a savepoint\nSAVEPOINT s1;",
+    "_sequence_query": "\n\nUPSERT INTO users...",
     "_sequence_query_status": "success",
     "_sequence_result": {
       "results": []
@@ -3819,7 +3860,7 @@ ROLLBACK WORK;</code></pre>
   },
   {
     "_sequence_num": 5,
-    "_sequence_query": "\n\n-- Update the booking document to include a user\nUPDATE `travel-sample`.tenant_agent_00.bookings AS b\nSET b.`user` = \"0\"\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
+    "_sequence_query": "\n\n-- Create a booking document\nUPSERT INTO bookings\nVALUES(\"bf7ad6fa-bdb9-4099-a840-196e47179f03\", {\n  \"date\": \"07/24/2021\",\n  \"flight\": \"WN533\",\n  \"flighttime\": 7713,\n  \"price\": 964.13,\n  \"route\": \"63986\"\n});",
     "_sequence_query_status": "success",
     "_sequence_result": {
       "results": []
@@ -3827,7 +3868,23 @@ ROLLBACK WORK;</code></pre>
   },
   {
     "_sequence_num": 6,
-    "_sequence_query": "\n\n-- Check the content of the booking and user\nSELECT b.*, u.name\nFROM `travel-sample`.tenant_agent_00.bookings b\nJOIN `travel-sample`.tenant_agent_00.users u\nON b.`user` = META(u).id\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
+    "_sequence_query": "\n\n-- Set a savepoint\nSAVEPOINT s1;",
+    "_sequence_query_status": "success",
+    "_sequence_result": {
+      "results": []
+    }
+  },
+  {
+    "_sequence_num": 7,
+    "_sequence_query": "\n\n-- Update the booking document to include a user\nUPDATE bookings AS b\nSET b.`user` = \"0\"\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
+    "_sequence_query_status": "success",
+    "_sequence_result": {
+      "results": []
+    }
+  },
+  {
+    "_sequence_num": 8,
+    "_sequence_query": "\n\n-- Check the content of the booking and user\nSELECT b.*, u.name\nFROM users u\nON b.`user` = META(u).id\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
     "_sequence_query_status": "success",
     "_sequence_result": [
       {
@@ -3842,7 +3899,7 @@ ROLLBACK WORK;</code></pre>
     ]
   },
   {
-    "_sequence_num": 7,
+    "_sequence_num": 9,
     "_sequence_query": "\n\n-- Set a second savepoint\nSAVEPOINT s2;",
     "_sequence_query_status": "success",
     "_sequence_result": {
@@ -3850,16 +3907,16 @@ ROLLBACK WORK;</code></pre>
     }
   },
   {
-    "_sequence_num": 8,
-    "_sequence_query": "\n\n-- Update the booking documents to change the user\nUPDATE `travel-sample`.tenant_agent_00.bookings AS b\nSET b.`user` = \"1\"\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
+    "_sequence_num": 10,
+    "_sequence_query": "\n\n-- Update the booking documents to change the user\nUPDATE `&lt;BUCKET_NAME&gt;`.tenants.bookings AS b\nSET b.`user` = \"1\"\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
     "_sequence_query_status": "success",
     "_sequence_result": {
       "results": []
     }
   },
   {
-    "_sequence_num": 9,
-    "_sequence_query": "\n\n-- Check the content of the booking and user\nSELECT b.*, u.name\nFROM `travel-sample`.tenant_agent_00.bookings b\nJOIN `travel-sample`.tenant_agent_00.users u\nON b.`user` = META(u).id\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
+    "_sequence_num": 11,
+    "_sequence_query": "\n\n-- Check the content of the booking and user\nSELECT b.*, u.name\nFROM `&lt;BUCKET_NAME&gt;`.tenants.bookings b\nJOIN `&lt;BUCKET_NAME&gt;`.tenants.users u\nON b.`user` = META(u).id\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
     "_sequence_query_status": "success",
     "_sequence_result": [
       {
@@ -3874,7 +3931,7 @@ ROLLBACK WORK;</code></pre>
     ]
   },
   {
-    "_sequence_num": 10,
+    "_sequence_num": 12,
     "_sequence_query": "\n\n-- Roll back the transaction to the second savepoint\nROLLBACK TRAN TO SAVEPOINT s2;",
     "_sequence_query_status": "success",
     "_sequence_result": {
@@ -3882,8 +3939,8 @@ ROLLBACK WORK;</code></pre>
     }
   },
   {
-    "_sequence_num": 11,
-    "_sequence_query": "\n\n-- Check the content of the booking and user again\nSELECT b.*, u.name\nFROM `travel-sample`.tenant_agent_00.bookings b\nJOIN `travel-sample`.tenant_agent_00.users u\nON b.`user` = META(u).id\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
+    "_sequence_num": 13,
+    "_sequence_query": "\n\n-- Check the content of the booking and user again\nSELECT b.*, u.name\nFROM `&lt;BUCKET_NAME&gt;`.tenants.bookings b\nJOIN `&lt;BUCKET_NAME&gt;`.tenants.users u\nON b.`user` = META(u).id\nWHERE META(b).id = \"bf7ad6fa-bdb9-4099-a840-196e47179f03\";",
     "_sequence_query_status": "success",
     "_sequence_result": [
       {
@@ -3898,7 +3955,7 @@ ROLLBACK WORK;</code></pre>
     ]
   },
   {
-    "_sequence_num": 12,
+    "_sequence_num": 14,
     "_sequence_query": "\n\n-- Roll back the entire transaction\nROLLBACK WORK;",
     "_sequence_query_status": "success",
     "_sequence_result": {
@@ -3936,8 +3993,8 @@ ROLLBACK WORK;</code></pre>
 <div class="title">Query</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">SELECT b.*, u.name
-FROM `travel-sample`.tenant_agent_00.bookings b
-JOIN `travel-sample`.tenant_agent_00.users u
+FROM bookings b
+JOIN users u
 ON b.`user` = META(u).id
 WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";</code></pre>
 </div>
@@ -3982,12 +4039,6 @@ WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";</code></pre>
 </li>
 </ul>
 </div>
-</div>
-</div>
-<div id="footnotes">
-<hr>
-<div class="footnote" id="_footnotedef_1">
-<a href="#_footnoteref_1">1</a>. You must be using cbq shell version 2.0 or above to use the automatic transaction ID functionality.
 </div>
 </div>
 </article>

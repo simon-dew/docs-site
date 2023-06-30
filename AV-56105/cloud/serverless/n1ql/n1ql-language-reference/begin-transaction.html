@@ -478,11 +478,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/transactions.html">SQL++ Support for Couchbase Transactions</a>
   </span>
 </li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/time-series.html">Time Series Data</a>
-  </span>
-</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -624,11 +619,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="5">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/curl.html">CURL Function</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="5">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/timeseries.html">_TIMESERIES Function</a>
   </span>
 </li>
 </ul>
@@ -1239,6 +1229,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../../search/create-custom-wordlist.html">Create a Custom Wordlist</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../../search/create-custom-date-time-parser.html">Create a Custom Date/Time Parser</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -2026,11 +2021,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../guides/create-index.html">Creating Indexes</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/place-index.html">Index Placement</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -3651,9 +3641,6 @@ Refer to <a href="transactions.html" class="xref page">SQL++ Support for Couchba
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>All statements within a transaction are sent to the same Query node.</p>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -3673,7 +3660,7 @@ You can also specify a single DML statement as an ACID transaction by setting th
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/8b3cc8f29bacc73cbb52edf493076c053cbe82fb/modules/n1ql/partials/grammar/tcl.ebnf#L10-L11">begin-transaction ::= ( 'BEGIN' | 'START' ) ( 'WORK' | 'TRAN' | 'TRANSACTION' )
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/579961d19ff442f3d7f112a6a1f1468e71e3eac3/modules/n1ql/partials/grammar/tcl.ebnf#L10-L11">begin-transaction ::= ( 'BEGIN' | 'START' ) ( 'WORK' | 'TRAN' | 'TRANSACTION' )
                       ( 'ISOLATION' 'LEVEL' 'READ' 'COMMITTED' )?</code></pre>
 </div>
 </div>
@@ -3721,161 +3708,6 @@ The <code>ISOLATION LEVEL READ COMMITTED</code> keywords are therefore optional 
 <p>If you are using the Query Workbench, you don&#8217;t need to specify the transaction ID for any statements that form a part of the same transaction within a multi-statement request.
 If you start a transaction within a multi-statement request, all statements within the request are assumed to be part of the same transaction until you rollback or commit the transaction.</p>
 </div>
-<div class="paragraph">
-<p>Similarly, if you are using the cbq shell, you don&#8217;t need to specify the transaction ID for any statements that form a part of the same transaction.
-Once you have started a transaction, all statements within the cbq shell session are assumed to be part of the same transaction until you rollback or commit the transaction.
-<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you want to try this example, first refer to <a href="transactions.html#preparation" class="xref page">Preparation</a> to set up your environment.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 1. Begin a transaction</div>
-<div class="content">
-<div class="listingblock">
-<div class="title">Transaction</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/8b3cc8f29bacc73cbb52edf493076c053cbe82fb/modules/n1ql/examples/transactions/multiple.n1ql">-- <mark>Start the transaction</mark>
-BEGIN WORK;
-
--- Specify transaction settings
-SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-
--- Create a booking document
-UPSERT INTO bookings
-VALUES("bf7ad6fa-bdb9-4099-a840-196e47179f03", {
-  "date": "07/24/2021",
-  "flight": "WN533",
-  "flighttime": 7713,
-  "price": 964.13,
-  "route": "63986"
-});
-
--- Set a savepoint
-SAVEPOINT s1;
-
--- Update the booking document to include a user
-UPDATE bookings AS b
-SET b.`user` = "0"
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Check the content of the booking and user
-SELECT b.*, u.name
-FROM bookings b
-JOIN users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Set a second savepoint
-SAVEPOINT s2;
-
--- Update the booking documents to change the user
-UPDATE bookings AS b
-SET b.`user` = "1"
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Check the content of the booking and user
-SELECT b.*, u.name
-FROM bookings b
-JOIN users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Roll back the transaction to the second savepoint
-ROLLBACK TRAN TO SAVEPOINT s2;
-
--- Check the content of the booking and user again
-SELECT b.*, u.name
-FROM bookings b
-JOIN users u
-ON b.`user` = META(u).id
-WHERE META(b).id = "bf7ad6fa-bdb9-4099-a840-196e47179f03";
-
--- Commit the transaction
-COMMIT WORK;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Results</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/8b3cc8f29bacc73cbb52edf493076c053cbe82fb/modules/n1ql/examples/transactions/results.jsonc">[
-  {
-    "_sequence_num": 1,
-    "_sequence_query": "-- Start the transaction\nBEGIN WORK;",
-    "_sequence_query_status": "success",
-    "_sequence_result": [
-      {
-        "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51" <i class="conum" data-value="1"></i><b>(1)</b>
-      }
-    ]
-  },
-  {
-    "_sequence_num": 2,
-    "_sequence_query": "\n\n-- Specify transaction settings\nSET TRANSACTION ISOLATION LEVEL READ COMMITTED;",
-    "_sequence_query_status": "success",
-    "_sequence_result": {
-      "results": []
-    }
-  },
-  {
-    "_sequence_num": 3,
-    "_sequence_query": "\n\n-- Create a booking document\nUPSERT INTO `travel-sample`.tenant_agent_00.bookings\nVALUES(\"bf7ad6fa-bdb9-4099-a840-196e47179f03\", {\n  \"date\": \"07/24/2021\",\n  \"flight\": \"WN533\",\n  \"flighttime\": 7713,\n  \"price\": 964.13,\n  \"route\": \"63986\"\n});",
-    "_sequence_query_status": "success",
-    "_sequence_result": {
-      "results": []
-    }
-  },
-// ...</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Beginning a transaction returns a transaction ID.</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>For an overview of Couchbase transactions, refer to <a href="../../../../server/current/learn/data/transactions.html" class="xref page">Transactions</a>.</p>
-</li>
-<li>
-<p>To specify transaction settings, refer to <a href="set-transaction.html" class="xref page">SET TRANSACTION</a>.</p>
-</li>
-<li>
-<p>To set a savepoint, refer to <a href="savepoint.html" class="xref page">SAVEPOINT</a>.</p>
-</li>
-<li>
-<p>To rollback a transaction, refer to <a href="rollback-transaction.html" class="xref page">ROLLBACK TRANSACTION</a>.</p>
-</li>
-<li>
-<p>To commit a transaction, refer to <a href="commit-transaction.html" class="xref page">COMMIT TRANSACTION</a>.</p>
-</li>
-<li>
-<p>Blog post: <a href="https://blog.couchbase.com/transactions-n1ql-couchbase-distributed-nosql/" target="_blank" rel="noopener">Couchbase Transactions: Elastic, Scalable, and Distributed</a>.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div id="footnotes">
-<hr>
-<div class="footnote" id="_footnotedef_1">
-<a href="#_footnoteref_1">1</a>. You must be using cbq shell version 2.0 or above to use the automatic transaction ID functionality.
 </div>
 </div>
 </article>

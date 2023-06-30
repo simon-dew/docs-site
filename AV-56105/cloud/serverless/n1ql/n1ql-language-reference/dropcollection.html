@@ -478,11 +478,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/transactions.html">SQL++ Support for Couchbase Transactions</a>
   </span>
 </li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/time-series.html">Time Series Data</a>
-  </span>
-</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="2">
@@ -624,11 +619,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="5">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/curl.html">CURL Function</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="5">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../../n1ql/n1ql-language-reference/timeseries.html">_TIMESERIES Function</a>
   </span>
 </li>
 </ul>
@@ -1239,6 +1229,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../../search/create-custom-wordlist.html">Create a Custom Wordlist</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="3">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../../../search/create-custom-date-time-parser.html">Create a Custom Date/Time Parser</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -2026,11 +2021,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list" data-depth="3">
   <span class="menu_line">
     <a class="menu_title menu_link" href="../../guides/create-index.html">Creating Indexes</a>
-  </span>
-</li>
-<li class="menu_list" data-depth="3">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../../guides/place-index.html">Index Placement</a>
   </span>
 </li>
 <li class="menu_list" data-depth="3">
@@ -3636,8 +3626,8 @@ The <code>DROP COLLECTION</code> statement enables you to delete a named collect
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/8b3cc8f29bacc73cbb52edf493076c053cbe82fb/modules/n1ql/partials/grammar/ddl.ebnf#L42-L43">drop-collection ::= 'DROP' 'COLLECTION' ( ( namespace ':' )? bucket '.' scope '.' )?
-                    collection ( 'IF' 'EXISTS' )?</code></pre>
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/579961d19ff442f3d7f112a6a1f1468e71e3eac3/modules/n1ql/partials/grammar/ddl.ebnf#L42-L43">drop-collection ::= 'DROP' 'COLLECTION' ( ( ( namespace ':' )? bucket '.' )? 
+                    scope '.' )? collection ( 'IF' 'EXISTS' )?</code></pre>
 </div>
 </div>
 <div class="imageblock text-left">
@@ -3655,11 +3645,11 @@ If the namespace name is omitted, the default namespace in the current session i
 </dd>
 <dt class="hdlist1">bucket</dt>
 <dd>
-<p>(Optional) An <a href="identifiers.html" class="xref page">identifier</a> that refers to the bucket which contains the collection you want to delete.</p>
+<p>(Optional) An <a href="identifiers.html" class="xref page">identifier</a> that refers to the <a href="../n1ql-intro/sysinfo.html#logical-hierarchy" class="xref page">bucket</a> which contains the collection you want to delete.</p>
 </dd>
 <dt class="hdlist1">scope</dt>
 <dd>
-<p>(Optional) An <a href="identifiers.html" class="xref page">identifier</a> that refers to the scope which contains the collection you want to delete.</p>
+<p>(Required) An <a href="identifiers.html" class="xref page">identifier</a> that refers to the scope which contains the collection you want to delete.</p>
 </dd>
 <dt class="hdlist1">collection</dt>
 <dd>
@@ -3674,8 +3664,8 @@ If the namespace name is omitted, the default namespace in the current session i
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If there is a hyphen (-) inside the bucket name, the scope name, or the collection name, you must wrap that part of the path in backticks (` `).
-For example, <code>default:`travel-sample`</code> indicates the <code>travel-sample</code> keyspace in the <code>default</code> namespace.
+If there is a hyphen (-) inside the database, scope, or collection name, you must wrap that part of the path in backticks (` `).
+For example, <code>`travel-db-abc123`.samples.hotel</code> will be interpreted correctly, but <code>travel-db-abc123.samples.hotel</code> will result in a syntax error
 </td>
 </tr>
 </table>
@@ -3691,7 +3681,7 @@ For example, <code>default:`travel-sample`</code> indicates the <code>travel-sam
 <p>Include its <em class="def">full path</em>, containing the namespace, bucket, and scope, followed by the collection name;</p>
 </li>
 <li>
-<p>Include a <em class="def">relative path</em>, containing just the bucket and scope, followed by the connection name;</p>
+<p>Include a <em class="def">relative path</em>, containing either the bucket and scope, or just the scope, followed by the collection name;</p>
 </li>
 <li>
 <p>Specify just the collection name without a path.</p>
@@ -3700,7 +3690,7 @@ For example, <code>default:`travel-sample`</code> indicates the <code>travel-sam
 </div>
 <div class="paragraph">
 <p>When you specify a collection name without a path, you must set the <a href="../n1ql-intro/queriesandresults.html#query-context" class="xref page">query context</a> to indicate the required namespace, bucket, and scope.
-If you specify a collection name by itself without setting a valid query context, an error is generated.</p>
+If you specify a collection name by itself without setting a valid query context, the database drops a collection of that name in the default scope.</p>
 </div>
 </div>
 <div class="sect2">
@@ -3729,11 +3719,11 @@ If the collection does not exist within the specified scope, then:</p>
 <div class="title">Example 1. Delete collection with full path</div>
 <div class="content">
 <div class="paragraph">
-<p>This statement deletes a collection called <code>city</code> in the <code>inventory</code> scope within the <code>travel-sample</code> bucket.</p>
+<p>This statement deletes a collection called <code>city</code> in the <code>samples</code> scope within the database.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">DROP COLLECTION `travel-sample`.inventory.city</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">DROP COLLECTION samples.city</code></pre>
 </div>
 </div>
 </div>
@@ -3742,11 +3732,11 @@ If the collection does not exist within the specified scope, then:</p>
 <div class="title">Example 2. Delete collection with query context</div>
 <div class="content">
 <div class="paragraph">
-<p>For this example, set the query context to the <code>inventory</code> scope in the travel sample dataset.
+<p>For this example, set the query context to the <code>samples</code> scope in the sample dataset.
 For more information, see <a href="../n1ql-intro/queriesandresults.html#query-context" class="xref page">Query Context</a>.</p>
 </div>
 <div class="paragraph">
-<p>Assuming that the query context is set, this statement deletes a collection called <code>country</code> in the <code>inventory</code> scope within the <code>travel-sample</code> bucket.</p>
+<p>Assuming that the query context is set, this statement deletes a collection called <code>country</code> in the <code>samples</code> scope within the bucket.</p>
 </div>
 <div class="listingblock">
 <div class="content">
