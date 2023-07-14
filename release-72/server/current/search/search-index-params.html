@@ -481,6 +481,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="simple-search-ui.html">Run A Simple Search with the Web Console</a>
   </span>
 </li>
+<li class="menu_list" data-depth="4">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="geo-search-ui.html">Run a Geospatial Search Query with the Web Console</a>
+  </span>
+</li>
 <li class="menu_list is-parent closed" data-depth="4">
   <span class="menu_line">
     <span class="in-toggle"></span>
@@ -494,6 +499,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </li>
 </ul>
 </li>
+<li class="menu_list" data-depth="4">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="geo-search-rest-api.html">Run a Geospatial Search Query with the REST API and curl/HTTP</a>
+  </span>
+</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="3">
@@ -504,7 +514,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <ul class="menu_row">
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="search-query-auto-complete-ui.html">Configure and Test Autocomplete with the Web Console</a>
+    <a class="menu_title menu_link" href="search-query-auto-complete-ui.html">Configure an Autocomplete Search Index</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4665,17 +4675,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list is-parent closed" data-depth="3">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <a class="menu_title menu_link" href="../rest-api/logs-rest-api.html">Logging API</a>
+    <a class="menu_title menu_link" href="../rest-api/logs-rest-api.html">Logging</a>
   </span>
 <ul class="menu_row">
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../rest-api/rest-logs-get.html">Retrieving Log Information</a>
+    <a class="menu_title menu_link" href="../rest-api/rest-logs-get.html">Retrieving Diagnostic and Log Information</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../rest-api/rest-client-logs.html">Creating Client Logs</a>
+    <a class="menu_title menu_link" href="../rest-api/rest-manage-log-collection.html">Collecting Logs</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="4">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../rest-api/rest-client-logs.html">Logging Client-Side Errors</a>
   </span>
 </li>
 </ul>
@@ -5409,11 +5424,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="../metrics-reference/xdcr-metrics.html">XDCR Metrics</a>
   </span>
 </li>
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../metrics-reference/all-services-metrics.html">Metrics for All Services</a>
-  </span>
-</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="1">
@@ -5735,8 +5745,8 @@ Use a JSON payload to control the settings for a Search index.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L2-L17">{
-    "name": "travel-sample._default.gfx",
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L2-L17">{
+    "name": "gfx",
     "type": "fulltext-index",
     "uuid": "28b999e9e17dd4a7",
     "sourceType": "gocbcore",
@@ -5786,7 +5796,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 <td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the Search index.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the Search index. A Search index name must be unique for each cluster.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">type</p></td>
@@ -5808,14 +5818,15 @@ For more information about Search index aliases, see <a href="../fts/fts-creatin
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">uuid</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="uuid"></a>uuid</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>The UUID for the Search index.</p>
+<p>The Search Service automatically generates a UUID for a Search index.</p>
 </div>
 <div class="paragraph">
-<p>The Search Service automatically generates a UUID for a Search index.</p>
+<p>If you use an existing UUID, the Search Service updates the existing Search index.
+Don&#8217;t include the <code>uuid</code> property when you want to copy an index to a different cluster or create a new index.</p>
 </div></div></td>
 </tr>
 <tr>
@@ -5836,10 +5847,18 @@ For more information about Search index aliases, see <a href="../fts/fts-creatin
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">sourceUUID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="sourceuuid"></a>sourceUUID</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The UUID of the bucket where you want to create the Search index.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The UUID of the bucket where you want to create the Search index.</p>
+</div>
+<div class="paragraph">
+<p>The Search Service automatically finds the UUID for the bucket.</p>
+</div>
+<div class="paragraph">
+<p>Don&#8217;t include the <code>sourceUUID</code> property when you want to copy an index to a different cluster, or create a new index.</p>
+</div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">sourceParams</p></td>
@@ -5878,7 +5897,7 @@ For more information, see <a href="#params">Params Object</a>.</p></td>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L11-L15">    "planParams": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L11-L15">    "planParams": {
         "maxPartitionsPerPIndex": 1024,
         "indexPartitions": 1,
         "numReplicas": 0
@@ -5926,7 +5945,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 <td class="tableblock halign-left valign-top"><p class="tableblock">indexPartitions</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The number of partitions to split the Search index into, across the nodes you have available in your database with the Search Service enabled.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The number of partitions to split the Search index into, across the nodes you have available in your database with the Search Service enabled. Use index partitions to increase index and query performance on large datasets.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">numReplicas</p></td>
@@ -5937,6 +5956,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 </div>
 <div class="paragraph">
 <p>You can create up to three replicas for a Search index.
+Each replica creates a full copy of the Search index to increase high-availability.
 To turn off replication for the Search index, set <code>numReplicas</code> to <code>0</code>.</p>
 </div>
 <div class="paragraph">
@@ -5995,7 +6015,7 @@ For more information, see <a href="#mapping">Mapping Object</a>.</p></td>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L20-L25">        "doc_config": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L20-L25">        "doc_config": {
             "docid_prefix_delim": "",
             "docid_regexp": "",
             "mode": "scope.collection.type_field",
@@ -6039,7 +6059,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Set how the Search index identifies a document&#8217;s type:</p>
+<p>Set a <a href="#customize-search-index.adoc#type-identifiers" class="xref unresolved">type identifier</a> for the Search index to filter documents from search results:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -6047,7 +6067,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 <p><code>type_field</code>: Use the value from a specific field in the documents.</p>
 </li>
 <li>
-<p><code>docid_prefix_delim</code>: Use the characters in the documents' ID values, up to but not including a specified separator.</p>
+<p><code>docid_prefix_delim</code>: Use the leading characters in the documents' ID values, up to but not including a specified separator.</p>
 </li>
 <li>
 <p><code>docid_regexp</code>: Use a regular expression on the documents' ID values.</p>
@@ -6071,19 +6091,34 @@ If you want your Search index to only include documents from a specific collecti
 <td class="tableblock halign-left valign-top"><p class="tableblock">docid_prefix_delim</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>mode</code> is <code>docid_prefix_delim</code>, set the separator character to use on a document&#8217;s ID value to determine its type.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If <code>mode</code> is <code>docid_prefix_delim</code>, set the separator character to use on a document&#8217;s ID value.</p>
+</div>
+<div class="paragraph">
+<p>For example, to filter documents based on the characters before a <code><em></code> in their ID values, set <code>docid_prefix_delim</code> to <code></em></code>.</p>
+</div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">docid_regexp</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>mode</code> is <code>docid_regexp</code>, set the regular expression to use on a document&#8217;s ID value to determine its type.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If <code>mode</code> is <code>docid_regexp</code>, set the regular expression to use on a document&#8217;s ID value to determine its type.</p>
+</div>
+<div class="paragraph">
+<p>For example, to filter documents that contain the characters <code><em>40</code> in their ID value, set <code>docid_regexp</code> to <code></em>[3-5]0</code>.</p>
+</div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">type_field</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If <code>mode</code> is <code>type_field</code>, set the name of the field to use to determine a document&#8217;s type.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If <code>mode</code> is <code>type_field</code>, set the name of the field to use to filter documents.</p>
+</div>
+<div class="paragraph">
+<p>For example, to filter documents based on the value of their <code>type</code> field, set <code>type_field</code> to <code>type</code>.</p>
+</div></div></td>
 </tr>
 </tbody>
 </table>
@@ -6095,7 +6130,7 @@ If you want your Search index to only include documents from a specific collecti
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L28-L78">        "mapping": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L28-L78">        "mapping": {
             "analysis": {
                 "analyzers": {
                     "My_Analyzer": {
@@ -6315,7 +6350,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L31-L47">                "analyzers": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L31-L47">                "analyzers": {
                     "My_Analyzer": {
                         "token_filters": [
                             "apostrophe",
@@ -6386,7 +6421,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L33-L45">                    "My_Analyzer": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L33-L45">                    "My_Analyzer": {
                         "token_filters": [
                             "apostrophe",
                             "My_Token_Filter"
@@ -6473,7 +6508,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L50-L58">                "char_filters": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L50-L58">                "char_filters": {
                     "My_Char_Filter": {
                         "regexp": "[']",
                         "replace": " ",
@@ -6536,7 +6571,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L52-L56">                    "My_Char_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L52-L56">                    "My_Char_Filter": {
                         "regexp": "[']",
                         "replace": " ",
                         "type": "regexp"
@@ -6594,7 +6629,7 @@ It contains the following properties:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L61-L75">                "tokenizers": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L61-L75">                "tokenizers": {
                     "My_Tokenizer_Excep": {
                         "exceptions": [
                             "[*]"
@@ -6665,7 +6700,7 @@ For example, the following <code>My_Tokenizer_Excep</code> object defines an <co
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L63-L69">                    "My_Tokenizer_Excep": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L63-L69">                    "My_Tokenizer_Excep": {
                         "exceptions": [
                             "[*]"
                         ],
@@ -6763,7 +6798,7 @@ The tokenizer uses any matches to the regular expressions and creates tokens fro
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L78-L87">                "token_filters": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L78-L87">                "token_filters": {
                     "My_Token_Filter": {
                         "min": 3,
                         "max": 255,
@@ -6828,7 +6863,7 @@ For example, the following <code>My_Token_Filter</code> object defines a custom 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L81-L85">                    "My_Token_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L81-L85">                    "My_Token_Filter": {
                         "min": 3,
                         "max": 255,
                         "type": "length"
@@ -6907,7 +6942,7 @@ If the token filter finds a subword inside a compound word, it turns it into a s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L60-L63">      "My_Dict_Compound_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L60-L63">      "My_Dict_Compound_Filter": {
         "dict_token_map": "articles_ca",
         "type": "dict_compound"
       },</code></pre>
@@ -6971,7 +7006,7 @@ You can also choose whether to create the new token from the start or backward f
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L66-L71">      "My_Edge_ngram_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L66-L71">      "My_Edge_ngram_Filter": {
         "back": false,
         "min": 4,
         "max": 5,
@@ -7052,7 +7087,7 @@ Start --&gt; (brewe)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L74-L77">      "My_Elision_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L74-L77">      "My_Elision_Filter": {
         "articles_token_map": "stop_fr",
         "type": "elision"
       },</code></pre>
@@ -7116,7 +7151,7 @@ Start --&gt; (John)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L80-L83">      "My_Keyword_Marker_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L80-L83">      "My_Keyword_Marker_Filter": {
         "keywords_token_map": "articles_ca",
         "type": "keyword_marker"
       },</code></pre>
@@ -7176,7 +7211,7 @@ Start --&gt; (beer)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L86-L90">      "My_Length_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L86-L90">      "My_Length_Filter": {
        "min": 2,
        "max": 4,
        "type": "length"
@@ -7237,7 +7272,7 @@ Start --&gt; (and)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L93-L97">      "My_Ngram_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L93-L97">      "My_Ngram_Filter": {
         "min": 4,
         "max": 5,
         "type": "ngram"
@@ -7300,7 +7335,7 @@ Start --&gt; (eers)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L100-L103">      "My_Normalize_Unicode_Filter": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L100-L103">      "My_Normalize_Unicode_Filter": {
         "form": "nfkd",
         "type": "normalize_unicode"
       },</code></pre>
@@ -7359,7 +7394,7 @@ Start --&gt; (eers)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L106-L113">      "My_Shingle_Filter":{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L106-L113">      "My_Shingle_Filter":{
         "min": 2,
         "max": 3,
         "output_original": true,
@@ -7449,7 +7484,7 @@ Start --&gt; (abc def)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L116-L119">      "My_Stop_Tokens_Filter":{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L116-L119">      "My_Stop_Tokens_Filter":{
         "stop_token_map": "articles_ca",
         "type": "stop_tokens"
       },</code></pre>
@@ -7515,7 +7550,7 @@ Start --&gt; (breweries)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/complex-search-index-payload.jsonc#L122-L125">      "My_Truncate_Token_Filter":{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/complex-search-index-payload.jsonc#L122-L125">      "My_Truncate_Token_Filter":{
         "length": 4,
         "type": "truncate_token"
       }</code></pre>
@@ -7579,7 +7614,7 @@ Start --&gt; (brewe)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L90-L101">                "token_maps": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L90-L101">                "token_maps": {
                     "My_Wordlist": {
                         "type": "custom",
                         "tokens": [
@@ -7646,7 +7681,7 @@ It contains any number of <a href="#wordlist-name">{wordlist_name} objects</a>:<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L92-L99">                    "My_Wordlist": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L92-L99">                    "My_Wordlist": {
                         "type": "custom",
                         "tokens": [
                             "the",
@@ -7701,7 +7736,7 @@ It contains the following properties:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L104-L113">                "date_time_parsers": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L104-L113">                "date_time_parsers": {
                     "My_Date_Time_Parser": {
                         "type": "flexiblego",
                         "layouts": [
@@ -7766,7 +7801,7 @@ It contains any number of <a href="#dt-parser-name">{date_time_parser_name} obje
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L106-L111">                    "My_Date_Time_Parser": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L106-L111">                    "My_Date_Time_Parser": {
                         "type": "flexiblego",
                         "layouts": [
                             "RFC850"
@@ -7825,7 +7860,7 @@ The default type mapping is a legacy feature and only included for compatibility
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L120-L123">            "default_mapping": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L120-L123">            "default_mapping": {
                 "dynamic": false,
                 "enabled": false
             },</code></pre>
@@ -7901,7 +7936,7 @@ This can increase index size and indexing time.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L131-L181">            "types": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L131-L181">            "types": {
                 "inventory.hotel": {
                     "dynamic": false,
                     "enabled": true,
@@ -7991,6 +8026,18 @@ For example, <code>inventory.airline</code>.</p>
 </div>
 <div class="paragraph">
 <p>For more information about the properties in an <code>{scope}.{collection}</code> object, see <a href="#scope-collection">{Scope}.{collection} Object</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To add a type identifier as an additional filter to your type mapping, add the filter to the end of your <code>{scope}.{collection}</code> object. For example, to use a <code>type_field</code> filter that uses the <code>type</code> field, and add only documents with a <code>type</code> value of <code>hotel</code>, the object name would be <code>{scope}.{collection}.hotel</code>
+</td>
+</tr>
+</table>
 </div></div></td>
 </tr>
 </tbody>
@@ -8002,7 +8049,7 @@ For example, <code>inventory.airline</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L133-L179">                "inventory.hotel": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L133-L179">                "inventory.hotel": {
                     "dynamic": false,
                     "enabled": true,
                     "properties": {
@@ -8114,7 +8161,7 @@ You can have multiple <code>{field_name}</code> objects in a <a href="#propertie
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L138-L161">                        "reviews": {
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L138-L161">                        "reviews": {
                             "dynamic": false,
                             "enabled": true,
                             "properties": {
@@ -8212,7 +8259,7 @@ To view the entire JSON payload, click <b class="button">View</b>.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/simple-search-index-payload.jsonc#L146-L157">                                    "fields": [
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/simple-search-index-payload.jsonc#L146-L157">                                    "fields": [
                                         {
                                             "docvalues": true,
                                             "include_in_all": true,

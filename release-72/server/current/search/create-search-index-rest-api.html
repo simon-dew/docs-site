@@ -481,6 +481,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="simple-search-ui.html">Run A Simple Search with the Web Console</a>
   </span>
 </li>
+<li class="menu_list" data-depth="4">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="geo-search-ui.html">Run a Geospatial Search Query with the Web Console</a>
+  </span>
+</li>
 <li class="menu_list is-parent closed" data-depth="4">
   <span class="menu_line">
     <span class="in-toggle"></span>
@@ -494,6 +499,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </li>
 </ul>
 </li>
+<li class="menu_list" data-depth="4">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="geo-search-rest-api.html">Run a Geospatial Search Query with the REST API and curl/HTTP</a>
+  </span>
+</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="3">
@@ -504,7 +514,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <ul class="menu_row">
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="search-query-auto-complete-ui.html">Configure and Test Autocomplete with the Web Console</a>
+    <a class="menu_title menu_link" href="search-query-auto-complete-ui.html">Configure an Autocomplete Search Index</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
@@ -4665,17 +4675,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="menu_list is-parent closed" data-depth="3">
   <span class="menu_line">
     <span class="in-toggle"></span>
-    <a class="menu_title menu_link" href="../rest-api/logs-rest-api.html">Logging API</a>
+    <a class="menu_title menu_link" href="../rest-api/logs-rest-api.html">Logging</a>
   </span>
 <ul class="menu_row">
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../rest-api/rest-logs-get.html">Retrieving Log Information</a>
+    <a class="menu_title menu_link" href="../rest-api/rest-logs-get.html">Retrieving Diagnostic and Log Information</a>
   </span>
 </li>
 <li class="menu_list" data-depth="4">
   <span class="menu_line">
-    <a class="menu_title menu_link" href="../rest-api/rest-client-logs.html">Creating Client Logs</a>
+    <a class="menu_title menu_link" href="../rest-api/rest-manage-log-collection.html">Collecting Logs</a>
+  </span>
+</li>
+<li class="menu_list" data-depth="4">
+  <span class="menu_line">
+    <a class="menu_title menu_link" href="../rest-api/rest-client-logs.html">Logging Client-Side Errors</a>
   </span>
 </li>
 </ul>
@@ -5409,11 +5424,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="menu_title menu_link" href="../metrics-reference/xdcr-metrics.html">XDCR Metrics</a>
   </span>
 </li>
-<li class="menu_list" data-depth="2">
-  <span class="menu_line">
-    <a class="menu_title menu_link" href="../metrics-reference/all-services-metrics.html">Metrics for All Services</a>
-  </span>
-</li>
 </ul>
 </li>
 <li class="menu_list is-parent closed" data-depth="1">
@@ -5765,7 +5775,7 @@ You can create a Search index with the Search Service API.
 <p>Enter your username, password, and the Search Service endpoint on port <code>8094</code> with the name of the index you want to create:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/create-search-index-header.sh">curl -s -XPUT -H "Content-Type: application/json" \
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/create-search-index-header.sh">curl -s -XPUT -H "Content-Type: application/json" \
     -u $CB_USERNAME:$CB_PASSWORD http://$CB_HOSTNAME:8094/api/index/landmark-content-index 
     -d \</code></pre>
 </div>
@@ -5773,6 +5783,9 @@ You can create a Search index with the Search Service API.
 </li>
 <li>
 <p>Enter the JSON payload for the settings you want in your index.</p>
+<div class="paragraph">
+<p>Don&#8217;t include the <a href="search-index-params.html#uuid" class="xref page">uuid</a> or <a href="search-index-params.html#sourceuuid" class="xref page">sourceUUID</a> parameters.</p>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -5780,7 +5793,7 @@ You can create a Search index with the Search Service API.
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can copy the Index Definition from the Couchbase Server Web Console to use in your REST API call.
+If you remove the <a href="search-index-params.html#uuid" class="xref page">uuid</a> and <a href="search-index-params.html#sourceuuid" class="xref page">sourceUUID</a> parameters, you can copy the Search index definition JSON payload from the Couchbase Capella UI to use in your REST API call.
 For more information about how to create an index with the UI, see <a href="create-search-index-ui.html" class="xref page">Create a Basic Search Index with the Web Console</a>.
 </td>
 </tr>
@@ -5791,7 +5804,7 @@ For more information about how to create an index with the UI, see <a href="crea
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="https://github.com/simon-dew/docs-devex/blob/660a57d3303763d027a1e03146d3f5de5087b8ef/modules/search/examples/create-search-index-payload.sh">curl -s -XPUT -H "Content-Type: application/json" \
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console" data-source-url="https://github.com/simon-dew/docs-devex/blob/6c752e53f09ce1b850cff7e564821bb623ce4eb8/modules/search/examples/create-search-index-payload.sh">curl -s -XPUT -H "Content-Type: application/json" \
   -u $CB_USERNAME:$CB_PASSWORD http://$CB_HOSTNAME:8094/api/index/landmark-content-index 
   -d \
   '{
@@ -5870,6 +5883,9 @@ For more information about how to create an index with the UI, see <a href="crea
 <div class="sectionbody">
 <div class="paragraph">
 <p>After you create a Search index, you can <a href="simple-search-rest-api.html" class="xref page">Run a Simple Search with the REST API and curl/HTTP</a> to test your Search index.</p>
+</div>
+<div class="paragraph">
+<p>If you want to edit your index with another REST API call, include the <a href="search-index-params.html#uuid" class="xref page">uuid</a> parameter with the UUID the Search Service assigned to your Search index.</p>
 </div>
 <div class="paragraph">
 <p>You can also <a href="simple-search-ui.html" class="xref page">Run A Simple Search with the Web Console</a> or with one of the Couchbase SDKs:</p>
