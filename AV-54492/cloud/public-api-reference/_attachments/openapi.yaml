@@ -4117,75 +4117,90 @@ components:
             hour: 23
             minute: 30
         - state: "off"
-        properties:
-          timezone:
-            type: string
-            default: Europe/London
-          days:
-            type: array
-            items:
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: custom
-                from:
-                  type: object
-                  properties:
-                    hour:
-                      type: integer
-                      default: 21
-                    minute:
-                      type: integer
-                      default: 30
-                  required:
-                  - hour
-                  - minute
-                to:
-                  type: object
-                  properties:
-                    hour:
-                      type: integer
-                      default: 23
-                    minute:
-                      type: integer
-                      default: 30
-                  required:
-                  - hour
-                  - minute
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: "on"
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: "off"
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: "off"
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: "off"
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: "on"
-            - type: object
-              properties:
-                state:
-                  type: string
-                  default: "on"
-        required:
-        - timezone
-        - days
+      properties:
+        timezone:
+          default: Europe/London
+          description: The timezone for scheduled on/off, in IANA format.
+          type: string
+        days:
+          description: |
+            An array of seven objects, one for each day of the week, starting with Monday. Each item specifies whether the database is on all day, off all day, or on between the given times.
+          items:
+            $ref: '#/components/schemas/V3Day'
+          maxItems: 7
+          minItems: 7
+          type: array
+      required:
+      - days
+      - timezone
+    V3Day:
+      oneOf:
+      - $ref: '#/components/schemas/V3DayAll'
+      - $ref: '#/components/schemas/V3DayCustom'
+    V3DayAll:
+      properties:
+        state:
+          description: Specifies whether the database is on all day or off all day.
+          enum:
+          - "on"
+          - "off"
+          type: string
+      required:
+      - state
+      type: object
+    V3DayCustom:
+      properties:
+        state:
+          description: Specifies that the database is on between the given times.
+          enum:
+          - custom
+          type: string
+        from:
+          $ref: '#/components/schemas/V3DayCustomTimeFrom'
+        to:
+          $ref: '#/components/schemas/V3DayCustomTimeTo'
+      required:
+      - from
+      - state
+      title: v3DayCustom
+      type: object
+    V3DayCustomTimeFrom:
+      description: Specifies the time when the database turns on.
+      properties:
+        hour:
+          default: 21
+          maximum: 23
+          minimum: 0
+          type: integer
+        minute:
+          default: 30
+          enum:
+          - 0
+          - 30
+          type: integer
+      required:
+      - hour
+      - minute
+      type: object
+    V3DayCustomTimeTo:
+      description: |
+        Specifies the time when the database turns off. If omitted, the database stays on for the rest of the day.
+      properties:
+        hour:
+          default: 23
+          maximum: 23
+          minimum: 0
+          type: integer
+        minute:
+          default: 30
+          enum:
+          - 0
+          - 30
+          type: integer
+      required:
+      - hour
+      - minute
+      type: object
     ListEventsResponse:
       example:
         cursor:
