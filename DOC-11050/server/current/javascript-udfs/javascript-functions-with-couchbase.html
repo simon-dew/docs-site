@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>JavaScript Functions with Couchbase | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/server/current/javascript-udfs/javascript-functions-with-couchbase.html">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="Writing Couchbase extension functions in the JavaScript Language.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="7.2">
+<meta name="page-url" content="/server/current/javascript-udfs/javascript-functions-with-couchbase.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="2">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/simon-dew/docs-devex/edit/release/7.2/modules/javascript-udfs/pages/javascript-functions-with-couchbase.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<style>
+
+</style>
+<div class="feedback">
+  
+
+  <a href="#" class="btn any-feedback-btn" 
+    id="feedbackTrigger"
+    data-jira-component-id="">
+    Report Feedback? </a>
+
+</div>
+
+<main
+    class="article " 
+    data-ceiling="topbar">
+
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../index.html">server</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">JavaScript Functions with Couchbase</h1>
+<div class="labels">
+<ul></ul>
+</div>
+<div class="labels">
+<ul>
+<li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
+</ul>
+</div>
+
+
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Writing Couchbase extension functions in the JavaScript Language.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SQL++ includes a large number of <a href="../n1ql/n1ql-language-reference/index.html" class="xref page">operations and generic functions</a> that cover every aspect of data manipulation.
+In addition to the built-in functions, Couchbase also allows you to create your own extensions to the language.</p>
+</div>
+<div class="paragraph">
+<p>Using User-Defined Functions, you can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create reuseable, domain-specific functions for use in your applications.</p>
+</li>
+<li>
+<p>Execute complex logic that may be difficult to do in SQL++.</p>
+</li>
+<li>
+<p>Migrate from RDBMS stored procedures.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you want to learn how to create JavaScript function libraries using the administration console and/or the REST-API then take a look at our <a href="../guides/javascript-udfs.html" class="xref page">JavaScript UDF Guides</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="added-constructs"><a class="anchor" href="#added-constructs"></a>Added Constructs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Javascript functions in Couchbase support most of the language constructs available in <a href="https://en.wikipedia.org/wiki/ECMAScript">ECMAScript</a>, though there are a number of restrictions related to the Couchbase environment.
+There are also additions that have been made to the language for working specifically with Couchbase.</p>
+</div>
+<div class="sect2">
+<h3 id="sql-embedded-statements"><a class="anchor" href="#sql-embedded-statements"></a>SQL++ Embedded Statements</h3>
+<div class="paragraph">
+<p>Top level SQL++ keywords, such as SELECT, UPDATE, INSERT and DELETE, are available as inline keywords in functions.
+Operations that return values such as SELECT are accessible through a returned iterable handle.
+SQL++ Query results, via a SELECT, are streamed in batches to the iterable handle as the iteration progresses through the result set.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/javascript-udfs/examples/select-airline-inline.js">function selectAirline(country) {
+
+    var q = SELECT name as airline_name, callsign as airline_callsign 
+    FROM `travel-sample`.`inventory`.`airline` 
+    WHERE country = $country;  <i class="conum" data-value="1"></i><b>(1)</b>
+
+    var res = [];
+
+    for (const doc of q) {
+
+        var airline = {}
+        airline.name = doc.airline_name  <i class="conum" data-value="2"></i><b>(2)</b>
+        airline.callsign = doc.airline_callsign  <i class="conum" data-value="2"></i><b>(2)</b>
+        res.push(airline);
+
+    }
+
+    return res;
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The SQL++ is written directly into the JavaScript code without having to be used as part of a function call.
+We can even provide parameters that can be used in the SQL++ statement.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A standard JavaScript iterator is used to access the values returned from the SQL++ statement.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="libraries-and-scopes"><a class="anchor" href="#libraries-and-scopes"></a>Libraries and Scopes</h3>
+<div class="paragraph">
+<p>JavaScript functions are stored inside a <em>library</em>.
+A library can contain one or more functions, and can also be assigned to a scope, which allows libraries to be partitioned for logical grouping.</p>
+</div>
+<div id="javascript-scopes" class="literalblock">
+<div class="title">Javascript UDFs Structure</div>
+<div class="content">
+<pre>@startuml
+
+frame Cluster {
+
+    frame "global library" as globalLibrary #white {
+    
+        component function3 #Ivory [
+                        
+function globalUKHoliday(... args) {
+    ...       
+}
+        
+        ]
+    
+        component function4 #Ivory [
+                        
+function globalUSHoliday(... args) {
+    ...       
+}
+        
+        ]
+    }
+
+    database "Bucket" {
+        
+        node "Scope" #White {
+          
+            frame "my-library" #White {
+                    
+             component function1 #Ivory [
+                            
+function add(x, y) {
+    ...       
+}
+            
+            ]
+                   
+        }     
+    }
+}
+
+@enduml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As shown in <a href="#javascript-scopes">Javascript UDFs Structure</a>, a JavaScript function library can exist as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A global library accessible across the cluster.</p>
+</li>
+<li>
+<p>A library accessible within a scope.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can find an introduction to scopes in our <a href="../tutorials/buckets-scopes-and-collections.html#scopes_and_collections" class="xref page">Couchbase Tutorials</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Furthermore, access restrictions can be applied to scopes, so that only certain groups of users will be able to access collections and libraries within that scope.</p>
+</div>
+<div id="scopes-for-udf" class="literalblock">
+<div class="title">Scopes for JavaScript Libraries</div>
+<div class="content">
+<pre>@startuml
+allow_mixing
+
+left to right direction
+skinparam actorStyle Awesome
+skinparam linetype polyline
+skinparam linetype ortho
+
+component "getBusinessDays(...)" <<SQL++ User-Defined Function>> as n1qlUDFunction
+
+  frame "my-library" as MyLibrary {
+  
+   file "getBusinessDays(startDate, \nendDate)" as getBusinessDays
+
+  }
+
+
+
+n1qlUDFunction ---> getBusinessDays 
+actor "user" as user
+
+
+
+database "bucket" as bucket {
+  node "**scope**" as scope
+}
+
+
+scope <...r.... MyLibrary
+
+
+
+user --> n1qlUDFunction
+
+note top of user #Ivory
+  can access the getBusinessDays function
+  as long as s/he is working 
+  inside the "**bucket.scope**" context
+end note
+
+@enduml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You do not call a JavaScript function directly&#8201;&#8212;&#8201;for example, <code>getBusinessDays(startDate, endDate)</code> as shown here.
+Instead, you must define a SQL++ User-Defined Function to act as a reference caller to the JavaScript function.</p>
+</div>
+<div class="paragraph">
+<p>In Couchbase terminology, you would set the query context to <code>travel-sample.inventory</code> in order to run the functions in <code>my-library</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="unsupported-features"><a class="anchor" href="#unsupported-features"></a>Unsupported Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="browser-extensions"><a class="anchor" href="#browser-extensions"></a>Browser Extensions</h3>
+<div class="paragraph">
+<p>Because JavaScript UDF functions do not execute in the context of a browser, the extensions that browsers add to the core language, such as window methods, DOM events etc. are not available.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="global-state"><a class="anchor" href="#global-state"></a>Global State</h3>
+<div class="paragraph">
+<p>All variables  must be local to the function; global state is not permitted.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/javascript-udfs/examples/illegal-global-variable.js">var count = 0;                         // Not allowed - global variable.
+function increment() {
+    count++;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Along with global state, global <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow functions</a> are not supported.
+Arrow functions local to individual javascript functions are supported.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="logging"><a class="anchor" href="#logging"></a>Logging</h3>
+<div class="paragraph">
+<p>Logging using the <code>console.log(..)</code> function is not supported.</p>
+</div>
+<div class="paragraph">
+<p>In the rest of this section, we&#8217;re going to look at the concepts behind JavaScript User-Defined Functions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="calling-javascript-from-n1ql.html" class="xref page">Calling JavaScript from SQL++ User-Defined Functions</a></p>
+</li>
+<li>
+<p><a href="calling-n1ql-from-javascript.html" class="xref page">Calling SQL++ from JavaScript</a></p>
+</li>
+<li>
+<p><a href="handling-errors-javascript-udf.html" class="xref page">Handling Errors in Javascript Functions</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Server","components":["server"],"url":"/home/server.html","latestVersions":{"server":"7.2"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>Prepared Statements | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/server/current/guides/prep-statements.html">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="How to create and execute prepared statements, including placeholder parameters.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="7.2">
+<meta name="page-url" content="/server/current/guides/prep-statements.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/simon-dew/docs-devex/edit/release/7.2/modules/guides/pages/prep-statements.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<style>
+
+</style>
+<div class="feedback">
+  
+
+  <a href="#" class="btn any-feedback-btn" 
+    id="feedbackTrigger"
+    data-jira-component-id="">
+    Report Feedback? </a>
+
+</div>
+
+<main
+    class="article " 
+    data-ceiling="topbar">
+
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../index.html">server</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Prepared Statements</h1>
+<div class="labels">
+<ul><li class="guide"><span><i class="far fa-check-square"></i> how-to</span></li>
+</ul>
+</div>
+
+
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+<div class="paragraph">
+<p>How to create and execute prepared statements, including placeholder parameters.<br>
+This
+guide
+is for Couchbase Server.
+For Couchbase Capella, see <a href="../../../cloud/guides/prep-statements.html" class="xref page">Prepare Statements for Reuse</a>.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you need to execute certain SQL++ statements repeatedly, you can use placeholder parameters and prepared statements to optimize query reuse.</p>
+</div>
+<div class="paragraph">
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="#getting-started:do-a-quick-install.adoc" class="xref unresolved">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
+Read the following for further information about the tools available for editing and executing queries:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#tools:cbq-shell.adoc" class="xref unresolved">tools:cbq-shell.adoc</a></p>
+</li>
+<li>
+<p><a href="#tools:query-workbench.adoc" class="xref unresolved">Query Workbench</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="placeholders"><a class="anchor" href="#placeholders"></a>Adding Placeholder Parameters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can add placeholder parameters to a statement, so that you can safely supply variable values when you run the statement.
+You can add placeholder parameters in the WHERE clause, the LIMIT clause, or the OFFSET clause.</p>
+</div>
+<div class="paragraph">
+<p>A placeholder parameter may be a <em>named parameter</em> or a <em>positional parameter</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To add a named parameter to a query, enter a dollar sign <code>$</code> followed by the parameter name.</p>
+</li>
+<li>
+<p>To add a positional parameter to a query, either enter a dollar sign <code>$</code> followed by the number of the parameter, or enter a question mark <code>?</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example includes two named parameters.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::settings:example$param-names.n1ql[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To execute this query, the parameters must be supplied by name.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The following example includes two numbered positional parameters.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::settings:example$param-numbers.n1ql[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To execute this query, the parameters must be supplied as a list, in order of the placeholder numbers.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The following example includes two unnumbered positional parameters.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::settings:example$param-positions.n1ql[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To execute this query, the parameters must be supplied as a list, in the order in which the placeholders appear in the statement.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="values"><a class="anchor" href="#values"></a>Supplying Parameter Values</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To run a query containing placeholder parameters, you must supply values for the parameters.</p>
+</div>
+<div id="tabs-1" class="openblock tabs is-sync is-loading">
+<div class="content">
+<div class="ulist tablist">
+<ul>
+<li id="tabs-1-sql" class="tab">
+<p>SQL++</p>
+</li>
+<li id="tabs-1-net" class="tab">
+<p>.NET</p>
+</li>
+<li id="tabs-1-java" class="tab">
+<p>Java</p>
+</li>
+<li id="tabs-1-node-js" class="tab">
+<p>Node.js</p>
+</li>
+<li id="tabs-1-python" class="tab">
+<p>Python</p>
+</li>
+</ul>
+</div>
+<div id="tabs-1-sql--panel" class="tabpanel" aria-labelledby="tabs-1-sql">
+<div class="paragraph">
+<p>To supply values for placeholder parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you are using the cbq shell, use the <code>\SET</code> command to set the parameters, then run the statement.</p>
+</li>
+<li>
+<p>If you are using the SQL++ REST API, specify the parameters in the request body or the query URI, alongside the statement.</p>
+</li>
+<li>
+<p>If you are using the Query Workbench, use the cog icon <span class="icon"><i class="fa fa-cog"></i></span> to display the Run-Time Preferences window and set the parameters, then run the statement.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+When you are executing a prepared statement, the <code>EXECUTE</code> statement provides another, easier way to supply parameter values.
+Refer to <a href="#execute">Executing a Prepared Statement</a> below.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>For this example, set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="paragraph">
+<div class="title">Queries</div>
+<p>The following query supplies positional parameter values, using the cbq shell.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::settings:example$param-numbers.n1ql[]</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In the cbq shell, parameter names must be prefixed by a hyphen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In the cbq shell or the REST API, the <code>args</code> parameter specifies positional parameters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>args</code> parameter takes an array, each element of which is a value for a positional parameter.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following query supplies named parameter values, using the cbq shell.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::settings:example$param-names.n1ql[]</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In the cbq shell, parameter names must be prefixed by a hyphen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In the cbq shell, the REST API, or the Query Workbench, named parameters must begin with a dollar sign <code>$</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="#settings:query-settings.adoc" class="xref unresolved">Settings and Parameters</a>.</p>
+</div>
+</div>
+<div id="tabs-1-net--panel" class="tabpanel" aria-labelledby="tabs-1-net">
+<div class="paragraph">
+<p>To supply values for placeholder parameters, use the <code>Parameter</code> method on the <code>QueryOptions</code> object.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There are different versions of the <code>Parameter</code> method for supplying a single named parameter, a collection of named parameters, a single positional parameter, or a list of positional parameters.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example supplies a single positional parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::dotnet-sdk:howtos:example$/n1ql-queries-sdk/n1ql-queries-sdk/Program.cs[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following example supplies a single named parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::dotnet-sdk:howtos:example$/n1ql-queries-sdk/n1ql-queries-sdk/Program.cs[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Query.QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-1-java--panel" class="tabpanel" aria-labelledby="tabs-1-java">
+<div class="paragraph">
+<p>To supply values for placeholder parameters, use the <code>parameter</code> method on the <code>QueryOptions</code> object.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There are different versions of the <code>parameter</code> method for supplying named parameters or positional parameters.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example supplies a single positional parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::java-sdk:howtos:example$Queries.java[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following example supplies a single named parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::java-sdk:howtos:example$Queries.java[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-java-client/com/couchbase/client/java/query/QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-1-node-js--panel" class="tabpanel" aria-labelledby="tabs-1-node-js">
+<div class="paragraph">
+<p>To supply values for placeholder parameters, use the <code>parameters</code> property on the <code>QueryOptions</code> interface.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>parameters</code> property may be an object for supplying named parameters, or an array for supplying positional parameters.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example supplies a single positional parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::nodejs-sdk:devguide:example$nodejs/n1ql-queries-scoped.js[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following example supplies a single named parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::nodejs-sdk:devguide:example$nodejs/n1ql-queries-scoped.js[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-1-python--panel" class="tabpanel" aria-labelledby="tabs-1-python">
+<div class="paragraph">
+<p>To supply positional parameter values for a query or prepared statement, use the <code>positional_parameters</code> parameter in the <code>QueryOptions</code>.</p>
+</div>
+<div class="paragraph">
+<p>To supply named parameter values for a query or prepared statement, use the <code>named_parameters</code> parameter in the <code>QueryOptions</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Alternatively, you can supply positional parameters or named parameters as keyword arguments for the <code>query()</code> function.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following examples supply a single positional parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::python-sdk:howtos:example$n1ql_ops.py[]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::python-sdk:howtos:example$n1ql_ops.py[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following examples supply a single named parameter.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::python-sdk:howtos:example$n1ql_ops.py[]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::python-sdk:howtos:example$n1ql_ops.py[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/couchbase_api/options.html#queryoptions" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prepare"><a class="anchor" href="#prepare"></a>Creating a Prepared Statement</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you need to run a statement more than once, you can prepare the execution plan for the statement and cache it for reuse.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can include placeholder parameters in the prepared statement, if necessary.
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs-2" class="openblock tabs is-sync is-loading">
+<div class="content">
+<div class="ulist tablist">
+<ul>
+<li id="tabs-2-sql" class="tab">
+<p>SQL++</p>
+</li>
+<li id="tabs-2-net" class="tab">
+<p>.NET</p>
+</li>
+<li id="tabs-2-java" class="tab">
+<p>Java</p>
+</li>
+<li id="tabs-2-node-js" class="tab">
+<p>Node.js</p>
+</li>
+<li id="tabs-2-python" class="tab">
+<p>Python</p>
+</li>
+</ul>
+</div>
+<div id="tabs-2-sql--panel" class="tabpanel" aria-labelledby="tabs-2-sql">
+<div class="paragraph">
+<p>To create a prepared statement, use the <code>PREPARE</code> statement.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If necessary, set the <a href="../n1ql/n1ql-intro/queriesandresults.html#query-context" class="xref page">query context</a> to the bucket and scope where you want to create the prepared statement.</p>
+</li>
+<li>
+<p>Use the FROM / AS clause to specify a name for the prepared statement, if required.
+If you don&#8217;t, a name is generated automatically.</p>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>For this example, set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="paragraph">
+<div class="title">Query</div>
+<p>The following query prepares the execution plan for the given statement, including the specified positional parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/utility/prepare-numbers.n1ql">PREPARE NumParam AS
+SELECT * FROM hotel
+WHERE city=$1 AND country=$2;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/utility/prepare-numbers.jsonc#L10">"name": "[127.0.0.1:8091]NumParam", <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The query returns the name of the prepared statement.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<div class="title">Query</div>
+<p>The following query prepares the execution plan for the given statement, including the specified named parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/utility/prepare-names.n1ql">PREPARE NameParam AS
+SELECT * FROM hotel
+WHERE city=$city AND country=$country;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/utility/prepare-names.jsonc#L10">"name": "[127.0.0.1:8091]NameParam", <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The query returns the name of the prepared statement.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/prepare.html" class="xref page">PREPARE</a>.</p>
+</div>
+</div>
+<div id="tabs-2-net--panel" class="tabpanel" aria-labelledby="tabs-2-net">
+<div class="paragraph">
+<p>To create a prepared statement, use the <code>Cluster.QueryAsync&lt;T&gt;</code> method with the <code>adhoc</code> query option set to false.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If this query has not been executed before, the query plan is cached for reuse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/prepared/adhoc.cs">var result = await cluster.QueryAsync&lt;dynamic&gt;(
+    "select count(*) from `travel-sample`.inventory.airport where country = ?",
+    options =&gt;
+        options.Parameter("France")
+        .AdHoc(false);
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-2-java--panel" class="tabpanel" aria-labelledby="tabs-2-java">
+<div class="paragraph">
+<p>To create a prepared statement, use the <code>query()</code> method with the <code>AdHoc</code> query option set to false.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If this query has not been executed before, the query plan is cached for reuse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::java-sdk:concept-docs:example$N1qlQueryExample.java[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Query.QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-2-node-js--panel" class="tabpanel" aria-labelledby="tabs-2-node-js">
+<div class="paragraph">
+<p>To create a prepared statement, use the <code>query()</code> function with the <code>adhoc</code> query option set to false.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If this query has not been executed before, the query plan is cached for reuse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/prepared/adhoc.js">async function queryNamed() {
+  const query = `
+  SELECT airportname, city FROM \`travel-sample\`.inventory.airport
+  WHERE city=$1
+  `;
+  var options = { adhoc: false, parameters: ['London'] }
+
+  try {
+    let result = await cluster.query(query, options)
+    console.log("Result:", result)
+    return result
+  } catch (error) {
+    console.error('Query failed: ', error)
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-2-python--panel" class="tabpanel" aria-labelledby="tabs-2-python">
+<div class="paragraph">
+<p>To create a prepared statement, use the <code>query()</code> function with the <code>adhoc</code> query option set to false.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If this query has not been executed before, the query plan is cached for reuse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/prepared/adhoc.py">result = cluster.query(
+    """SELECT airportname, city
+    FROM \`travel-sample\`.inventory.airport
+    WHERE city=$1;""",
+    'London', QueryOptions(adhoc=false))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/couchbase_api/options.html#queryoptions" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="execute"><a class="anchor" href="#execute"></a>Executing a Prepared Statement</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you execute a prepared statement, the cached execution plan is reused, so the query executes faster.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can supply parameter values for a prepared statement, just as you can for a query.
+These can be different to the parameter values that you supplied when you created the prepared statement.
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs-3" class="openblock tabs is-sync is-loading">
+<div class="content">
+<div class="ulist tablist">
+<ul>
+<li id="tabs-3-sql" class="tab">
+<p>SQL++</p>
+</li>
+<li id="tabs-3-net" class="tab">
+<p>.NET</p>
+</li>
+<li id="tabs-3-java" class="tab">
+<p>Java</p>
+</li>
+<li id="tabs-3-node-js" class="tab">
+<p>Node.js</p>
+</li>
+<li id="tabs-3-python" class="tab">
+<p>Python</p>
+</li>
+</ul>
+</div>
+<div id="tabs-3-sql--panel" class="tabpanel" aria-labelledby="tabs-3-sql">
+<div class="paragraph">
+<p>To execute a prepared statement, use the <code>EXECUTE</code> statement.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If necessary, set the <a href="../n1ql/n1ql-intro/queriesandresults.html#query-context" class="xref page">query context</a> to the bucket and scope where you created the prepared statement.</p>
+</li>
+<li>
+<p>Supply the name of the prepared statement, as provided when you created the prepared statement.</p>
+</li>
+<li>
+<p>If necessary, use the USING clause to supply the values for parameters in the prepared statement.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Specify positional parameters using an array of values.</p>
+</li>
+<li>
+<p>Specify named parameters using an object containing name / value properties.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>For this example, set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="paragraph">
+<div class="title">Queries</div>
+<p>The following query executes a prepared statement, including the specified positional parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/utility/execute-numbers.n1ql">EXECUTE NumParam
+USING ["Paris", "France"];</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following query executes a prepared statement, including the specified named parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/utility/execute-names.n1ql">EXECUTE NameParam
+USING {"city": "Paris", "country": "France"};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/execute.html" class="xref page">EXECUTE</a>.</p>
+</div>
+</div>
+<div id="tabs-3-net--panel" class="tabpanel" aria-labelledby="tabs-3-net">
+<div class="paragraph">
+<p>To execute a prepared statement, use the <code>Cluster.QueryAsync&lt;T&gt;</code> method to run the prepared statement query string again, with the <code>adhoc</code> query option set to false.</p>
+</div>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If a prepared statement has been created from this query previously, the cached query plan is reused.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/prepared/adhoc.cs">var result = await cluster.QueryAsync&lt;dynamic&gt;(
+    "select count(*) from `travel-sample`.inventory.airport where country = ?",
+    options =&gt;
+        options.Parameter("France")
+        .AdHoc(false);
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-3-java--panel" class="tabpanel" aria-labelledby="tabs-3-java">
+<div class="paragraph">
+<p>To execute a prepared statement, use the <code>query()</code> method to run the prepared statement query string again, with the <code>AdHoc</code> query option set to false.</p>
+</div>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If a prepared statement has been created from this query previously, the cached query plan is reused.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/prep-statements.adoc - include::java-sdk:concept-docs:example$N1qlQueryExample.java[]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-net-client/api/Couchbase.Query.QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-3-node-js--panel" class="tabpanel" aria-labelledby="tabs-3-node-js">
+<div class="paragraph">
+<p>To execute a prepared statement, use the <code>query()</code> function to run the prepared statement query string again, with the <code>adhoc</code> query option set to false.</p>
+</div>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If a prepared statement has been created from this query previously, the cached query plan is reused.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript hljs" data-lang="javascript" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/prepared/adhoc.js">async function queryNamed() {
+  const query = `
+  SELECT airportname, city FROM \`travel-sample\`.inventory.airport
+  WHERE city=$1
+  `;
+  var options = { adhoc: false, parameters: ['London'] }
+
+  try {
+    let result = await cluster.query(query, options)
+    console.log("Result:", result)
+    return result
+  } catch (error) {
+    console.error('Query failed: ', error)
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-node-client/interfaces/QueryOptions.html" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+<div id="tabs-3-python--panel" class="tabpanel" aria-labelledby="tabs-3-python">
+<div class="paragraph">
+<p>To execute a prepared statement, use the <code>query()</code> function to run the prepared statement query string again, with the <code>adhoc</code> query option set to false.</p>
+</div>
+<div class="paragraph">
+<p>Specify parameter values for the query, if necessary.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>The following example executes a query with the specified parameters.
+If a prepared statement has been created from this query previously, the cached query plan is reused.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/prepared/adhoc.py">result = cluster.query(
+    """SELECT airportname, city
+    FROM \`travel-sample\`.inventory.airport
+    WHERE city=$1;""",
+    'London', QueryOptions(adhoc=false))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For details, refer to <a href="https://docs.couchbase.com/sdk-api/couchbase-python-client/couchbase_api/options.html#queryoptions" target="_blank" rel="noopener">QueryOptions</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Overview:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../n1ql/n1ql-intro/queriesandresults.html" class="xref page">SQL++ Queries and Results</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Reference:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#manage:monitor/monitoring-n1ql-query.adoc#sys-prepared" class="xref unresolved">Monitoring Prepared Statements</a></p>
+</li>
+<li>
+<p><a href="#n1ql:n1ql-rest-api/admin.adoc#_prepared_statements_resource" class="xref unresolved">SQL++ Admin REST API for Prepared Statements</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Querying with SDKs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">C</a>
+| <a href="#dotnet-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">.NET</a>
+| <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Go</a>
+| <a href="#java-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Java</a>
+| <a href="#nodejs-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Node.js</a>
+| <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">PHP</a>
+| <a href="#python-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Python</a>
+| <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Ruby</a>
+| <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Scala</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Prepared statements with SDKs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#c-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">C</a>
+| <a href="#dotnet-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">.NET</a>
+| <a href="#go-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">Go</a>
+| <a href="#java-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">Java</a>
+| <a href="#nodejs-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">Node.js</a>
+| <a href="#php-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">PHP</a>
+| <a href="#python-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">Python</a>
+| <a href="#ruby-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">Ruby</a>
+| <a href="#scala-sdk:concept-docs:n1ql-query.adoc#prepared-statements-for-query-optimization" class="xref unresolved">Scala</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Server","components":["server"],"url":"/home/server.html","latestVersions":{"server":"7.2"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>SQL++ Queries and Results | Couchbase Docs (Staging)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/n1ql/n1ql-intro/queriesandresults.html">
+<link rel="stylesheet" href="../../../../_/css/site.css">
+<script src="../../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="An overview of common concepts that you will need to understand in order to use the Query service.">
+<meta name="keywords" content="n1ql, sqlpp, query, result, parameter, prepared, prepared statement, consistent, consistency">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="cloud">
+<meta name="dcterms.identifier" content="serverless">
+<meta name="page-url" content="/cloud/serverless/n1ql/n1ql-intro/queriesandresults.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html">
+                    <img src="../../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+    <template id="page-versions" style="display: none">
+      <select class="version_list" data-component="cloud">
+        <option value="" data-url="../../../n1ql/n1ql-intro/queriesandresults.html">Provisioned</option>
+        <option value="serverless" data-url="queriesandresults.html" selected>Serverless</option>
+      </select>
+    </template>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/simon-dew/docs-devex/edit/elixir/modules/n1ql/pages/n1ql-intro/queriesandresults.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<style>
+
+</style>
+<div class="feedback">
+  
+
+  <a href="#" class="btn any-feedback-btn" 
+    id="feedbackTrigger"
+    data-jira-component-id="">
+    Report Feedback? </a>
+
+</div>
+
+<main
+    class="article " 
+    data-ceiling="topbar">
+
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../../index.html">Couchbase Capella</a></li>
+<li class="crumb">Develop</li>
+<li class="crumb"><a href="../query.html">Query</a></li>
+<li class="crumb"><a href="index.html">Running Queries</a></li>
+<li class="crumb"><a href="queriesandresults.html">SQL++ Queries and Results</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">SQL++ Queries and Results</h1>
+<div class="labels">
+<ul>
+<li class="concept"><span><i class="far fa-lightbulb"></i> concept</span></li>
+</ul>
+</div>
+
+
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+An overview of common concepts that you will need to understand in order to use the Query service.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="queries"><a class="anchor" href="#queries"></a>Queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A SQL++ query is a string parsed by the query service.
+The SQL++ query language is based on SQL, but designed for structured and flexible JSON documents.</p>
+</div>
+<div class="paragraph">
+<p>As with SQL, you can have nested sub-queries.
+SQL++ queries run on JSON documents, and you can query over multiple documents by using the <code>JOIN</code> clause.</p>
+</div>
+<div class="paragraph">
+<p>Because data in SQL++ can be nested, there are operators and functions that let you navigate through nested arrays.
+Because data can be irregular, you can specify conditions in the <code>WHERE</code> clause to retrieve data.</p>
+</div>
+<div class="paragraph">
+<p>You can use standard <code>GROUP BY</code>, <code>ORDER BY</code>, <code>LIMIT</code>, and <code>OFFSET</code> clauses as well as a rich set of functions to transform the results as needed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="results"><a class="anchor" href="#results"></a>Results</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The result for each query is a set of JSON documents.
+The returned document set is not required to be uniform, though it can be.
+A <code>SELECT</code> statement that specifies a fixed set of attribute (column) names results in a uniform set of documents and a <code>SELECT</code> statement that specifies the wild card (*) results in a non-uniform result set.
+The only guarantee is that every returned document meets the query criteria.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a sample query and the result returned:</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">SELECT name, callsign from samples.airline WHERE callsign IS NOT MISSING LIMIT 2;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Result</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[
+  {
+    "name": "40-Mile Air",
+    "callsign": "MILE-AIR"
+  },
+  {
+    "name": "AD Aviation",
+    "callsign": "FLIGHTVUE"
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="keyspace-reference"><a class="anchor" href="#keyspace-reference"></a>Keyspace References</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase stores data within a logical hierarchy of buckets, scopes, and collections.
+This enables separation between documents of different types.
+For most queries, you must provide one or more keyspace references to specify the data sources for the query.</p>
+</div>
+<div class="paragraph">
+<p>A keyspace reference may be a <em>full</em> keyspace reference: a path comprising the bucket, the scope, and the collection which contains the documents you want.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively, the keyspace reference may be a <em>partial</em> keyspace reference, comprising the collection name only.
+When a query contains partial keyspace references, you must set the <a href="#query-context">query context</a> to specify a bucket and scope before running a query.
+Partial keyspace references are resolved using the bucket and scope supplied by the query context.</p>
+</div>
+<div class="paragraph">
+<p>For compatibility with legacy versions of Couchbase Server, a keyspace reference may comprise the bucket name only, when referring to the default collection in the default scope within a bucket.
+In this case, the <a href="#query-context">query context</a> must not be set.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="query-context"><a class="anchor" href="#query-context"></a>Query Context</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <em class="def">query context</em> specifies the the namespace, bucket, and scope used to resolve partial keyspace references.</p>
+</div>
+<div class="paragraph">
+<p>When the query context is set, you can refer to a collection using just the collection name, without having to enter the keyspace path.
+When the query context is not set, it defaults to the <code>default</code> namespace, with no bucket, scope, or collection.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="../../clusters/query-service/query-workbench.html#specify-bucket-and-scope-context" class="xref page">Query Workbench</a> for how to set the Query Context in a Capella Serverless database.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="title">Tenant separation</div>
+<div class="paragraph">
+<p>By using queries with partial keyspace references, which are resolved using the query context, a database application can be switched from one scope to another simply by changing the query context.
+This can be used to support the separation of tenant data in a multi-tenancy environment.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="paths"><a class="anchor" href="#paths"></a>Paths</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the main differences between JSON and flat rows is that JSON supports a nested structure, allowing documents to contain other documents, also known as sub-documents.
+SQL++ provides <em class="term">paths</em> to support nested data.
+Paths use dot notation syntax to identify the logical location of an attribute within a document.
+For example, to get the street from a customer order, use the path <code>orders.billTo.street</code>.
+This path refers to the value for <code>street</code> in the <code>billTo</code> object.
+A path is used with arrays or nested objects to get to attributes within the data structure.</p>
+</div>
+<div class="paragraph">
+<p>Array syntax in the path can also be used to get to information.
+For example, the path <code>orders.items[0].productId</code> evaluates to the <code>productId</code> value for the first array element under the order item, <code>items</code>.</p>
+</div>
+<div class="paragraph">
+<p>Paths provide a method for finding data in document structures without having to retrieve the entire document or handle it within an application.
+Any document data can be requested and returned to an application.
+When only relevant information is returned to an application, querying bandwidth is reduced.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="../n1ql-language-reference/index.html#nested-path-exp" class="xref page">Nested Path Expressions</a> for more details.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="named-placeholders"><a class="anchor" href="#named-placeholders"></a>Parameterized Queries</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SQL++ allows the use of placeholders to declare dynamic query parameters.
+When the query is constructed, it may receive arguments, with each argument being used as the placeholder value in the query.</p>
+</div>
+<div class="paragraph">
+<p>Placeholders in the query may be numbered positional placeholders, unnumbered positional placeholders, or named placeholders.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A numbered positional placeholder takes the form <code>$1</code>.
+Thus, in the query, <code>$1</code> refers to the first argument,<code>$2</code> to the second, and so on.</p>
+</li>
+<li>
+<p>An unnumbered positional parameter takes the form of a question mark <code>?</code>.
+The first occurrence of <code>?</code> refers to the first argument, the second occurrence of <code>?</code> to the second, and so on.</p>
+</li>
+<li>
+<p>Named placeholders take the form of <code>$name</code>.
+This is particularly useful when there are many query parameters, and ensuring that they are all in the correct order may be cumbersome.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can set query parameter values when you run the query, using
+the Query Workbench, or the SQL++ REST API.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prepare-stmts"><a class="anchor" href="#prepare-stmts"></a>Query Optimization Using Prepared Statements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When a SQL++ query is sent to the server, the server inspects the query and parses it, planning which indexes to use, if any.
+Once this is done, it generates a <em>query plan</em>.
+The computation for the plan adds some additional processing time and overhead for the query.</p>
+</div>
+<div class="paragraph">
+<p>A frequently-used query can be <em>prepared</em> so that its plan is generated only once.
+Subsequent queries using the same query will use the pre-generated plan instead, saving on the overhead and processing of the plan each time.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Parameterized queries are considered the same query for caching and planning purposes, even if the supplied parameters are different.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information on how to optimize queries using prepared statements, refer to the <a href="../n1ql-language-reference/prepare.html" class="xref page">PREPARE</a> statement.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="indexes"><a class="anchor" href="#indexes"></a>Indexes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Indexes help to improve the performance of a query.
+An index replicates a subset of the fields and documents stored in the Data service.
+This allows specific data (for example, specific fields) to be retrieved quickly.</p>
+</div>
+<div class="paragraph">
+<p>The Index service enables you to create two types of index: primary indexes and global secondary indexes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can define a <em>primary index</em> on a keyspace.
+Primary indexes are based on the unique key of every item in a specified collection. A primary index is intended to be used for simple queries, which have no filters or predicates.</p>
+</li>
+<li>
+<p>You can also create a <em>secondary index</em> on specific fields in a keyspace.
+Secondary indexes, often referred to as Global Secondary Indexes or GSIs, constitute the principal means of indexing documents to be accessed by the Query service.</p>
+<div class="paragraph">
+<p>For example, creating a secondary index on the <code>name</code> and <code>email</code> fields in the <code>users</code> keyspace would allow you to query the keyspace regarding a document&#8217;s <code>name</code> or <code>email</code> properties.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that you do not need to create an index on a keyspace to be able to query that keyspace.
+If no indexes exist on a keyspace, Couchbase Capella uses a key range scan to query that index.</p>
+</div>
+<div class="paragraph">
+<p>For more information, refer to <a href="../../learn/services-and-indexes/indexes/global-secondary-indexes.html" class="xref page">Using Indexes</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-building"><a class="anchor" href="#index-building"></a>Index Building</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Index creation happens in two phases: the <em class="def">creation phase</em> and the <em class="def">build phase</em>.
+During the creation phase, the Index Service validates the user input, decides the host node for the index, and creates the index metadata on the host node.
+During the build phase, the Index Service reads the documents from the Data Service and builds the index.
+The build phase cannot start until the creation phase is complete.</p>
+</div>
+<div class="paragraph">
+<p>Creating and building indexes can take a long time on keyspaces with lots of existing documents.
+When you create an index, you can choose to <em>defer</em> the build phase, and then build the deferred index later.
+This allows multiple indexes to be built at once rather than having to re-scan the entire keyspace for each index.</p>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql-language-reference/createprimaryindex.html" class="xref page">CREATE PRIMARY INDEX</a>, <a href="../n1ql-language-reference/createindex.html" class="xref page">CREATE INDEX</a>, and <a href="../n1ql-language-reference/build-index.html" class="xref page">BUILD INDEX</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="index-consistency"><a class="anchor" href="#index-consistency"></a>Index Consistency</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>
+
+Because indexes are by design outside the data service, they are eventually consistent with respect to changes to documents and, depending on how you issue the query, may at times not contain the most up-to-date information.
+This may especially be the case when deployed in a write-heavy environment: changes may take some time to propagate over to the index nodes.</p>
+</div>
+<div class="paragraph">
+<p>The asynchronous updating nature of global secondary indexes means that they can be very quick to query and do not require the additional overhead of index recalculations at the time documents are modified.
+SQL++ queries are forwarded to the relevant indexes and the queries are done based on indexed information, rather than the documents as they exist in the data service.</p>
+</div>
+<div class="paragraph">
+<p>With default query options, the query service will rely on the current index state: the most up-to-date document versions are not retrieved, and only the indexed versions are queried.
+This provides the best performance.
+Only updates occurring with a small time frame may not yet have been indexed.</p>
+</div>
+<div class="paragraph">
+<p>The query service can use the latest versions of documents by modifying the <code class="api">consistency</code> of the query.
+This is done by setting the <code class="api">scan_consistency</code> parameter to <code class="api">REQUEST_PLUS</code>.
+When using this consistency mode, the query service will ensure that the indexes are synchronized with the data service before querying.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Capella","components":["cloud"],"url":"/cloud/index.html","latestVersions":{"cloud":""}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
