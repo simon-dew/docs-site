@@ -12,17 +12,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Monitor App Services | Couchbase Docs (Preview)</title>
-<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/app-services/monitoring/monitoring-app-services.html">
+<title>Log Streaming | Couchbase Docs (Preview)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/app-services/monitoring/log-streaming.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
-<meta name="description" content="App Services can be monitored through the Capella UI, or by extracting metrics data using the App Services REST API.">
+<meta name="description" content="Log Streaming provides a mechanism for real-time streaming of App Services operational logs to third-party observability platforms or self-hosted HTTP logs collectors.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
 
 
 <meta name="dcterms.subject" content="cloud">
 <meta name="dcterms.identifier" content="">
-<meta name="page-url" content="/cloud/app-services/monitoring/monitoring-app-services.html">
+<meta name="page-url" content="/cloud/app-services/monitoring/log-streaming.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
 <link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
@@ -113,11 +113,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </aside>
 <aside class="toc sidebar"
       data-title="Contents"
-      data-levels="1">
+      data-levels="2">
   <div class="sidebar-box">
     <div class="tools" role="navigation">
 <ul>
-<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbaselabs/project-avengers/docs/public/modules/app-services/pages/monitoring/monitoring-app-services.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbaselabs/project-avengers/docs/public/modules/app-services/pages/monitoring/log-streaming.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
 </ul>
 </div>
     <div class="toc-menu"></div>
@@ -178,14 +178,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li class="crumb"><a href="../../index.html">Couchbase Capella</a></li>
 <li class="crumb">Administer Capella</li>
 <li class="crumb"><a href="../index.html">Manage App Services for Mobile and Edge</a></li>
-<li class="crumb">Work with App Services</li>
-<li class="crumb"><a href="monitoring-app-services.html">Monitor App Services</a></li>
+<li class="crumb">Monitor App Services</li>
+<li class="crumb"><a href="log-streaming.html">Log Streaming</a></li>
 </ul>
 </nav>
 </div>
 <article class="doc">
 <div class="page-heading-title">
-<h1 class="page">Monitor App Services</h1>
+<h1 class="page">Log Streaming</h1>
 <div class="labels">
 <ul></ul>
 </div>
@@ -200,87 +200,289 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-App Services can be monitored through the Capella UI, or by extracting metrics data using the App Services REST API.
+Log Streaming provides a mechanism for real-time streaming of App Services operational logs to third-party observability platforms or self-hosted HTTP logs collectors.
+This is a crucial tool to gain instant insights into application behavior, enabling rapid issue detection and resolution to enhance application reliability, performance, and security.
 </blockquote>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="accessing-metrics-through-the-capella-ui"><a class="anchor" href="#accessing-metrics-through-the-capella-ui"></a>Accessing Metrics through the Capella UI</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Metrics data for an App Service can be accessed through its configuration screen:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>From the project page, select the <b class="menuref">App Services</b> tab.</p>
-</li>
-<li>
-<p>Now, click on the <b class="menuref">Monitoring</b> tab to access the metrics screen.</p>
-</li>
-</ol>
+<p>As a managed, distributed service, Capella App Services is implemented by multiple nodes.
+In a self-hosted service, like Couchbase&#8217;s Sync Gateway, you can directly connect to a node to figure figuring out the root cause and fix for issues with access control and synchronization.
+With a managed service, however, access to a given node&#8217;s logging data is not exposed directly.</p>
 </div>
 <div class="paragraph">
-<p>You can select the metrics you wish to monitor from the <b class="menuref">Services</b> list.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/monitoring/app-service-monitoring.png" alt="App Service monitoring screen">
-</div>
-<div class="title">Figure 1. App Service monitoring screen.</div>
+<p>With the opt-in Log Streaming feature, we can request to stream the logs from each of the nodes to an industry standard log collector for full analysis.</p>
 </div>
 <div class="paragraph">
-<p>You can click on any of the time interval settings: (<span class="image"><img src="../_images/monitoring/time-interval-settings.png" alt="time interval settings" width="180"></span>) to set the time-span that the graphs will cover.</p>
+<p>Log Streaming has implications for <a href="#resource-consideration">cost and sizing</a>, and is turned off by default.</p>
 </div>
-<div class="paragraph">
-<p>You can examine the underlying data for any point on a graph by moving the mouse pointer over it.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/monitoring/show-underlying-data.png" alt="show underlying data" width="700">
-</div>
-<div class="title">Figure 2. Show Underlying data for point on graph.</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+When configuring Log Streaming for App Services, you must make sure that all streamed log data complies with your company&#8217;s security and privacy standards as well as with any regulatory standards you adhere to.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="accessing-metrics-through-the-rest-api"><a class="anchor" href="#accessing-metrics-through-the-rest-api"></a>Accessing Metrics through the REST API</h2>
+<h2 id="supported-providers"><a class="anchor" href="#supported-providers"></a>Supported Log Collector Providers</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The App Service metrics are also accessible through a secure <a href="../references/rest_api_metrics_static.html" class="xref page">REST API</a> in the <a href="https://prometheus.io/">Prometheus format</a>.</p>
+<p>We support log streaming to <a href="https://www.datadoghq.com/">Datadog</a>, <a href="https://www.sumologic.com/">Sumo Logic</a>, and to self-hosted log collectors via HTTP.
+See <a href="configure-log-collector-app-service.html" class="xref page">Enable Log Streaming</a> for full details.</p>
+</div>
+<div class="paragraph">
+<p>You must set up your Log Collector as a prerequisite to using the Log Streaming feature.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Couchbase is not responsible for any third-party endpoints you configure.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="activity-logs-and-alerts"><a class="anchor" href="#activity-logs-and-alerts"></a>Activity Logs and Alerts</h2>
+<h2 id="resource-consideration"><a class="anchor" href="#resource-consideration"></a>Resource Considerations</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>App Service events are written to the Capella-wide
-<a href="../../clusters/monitoring/activity-log.html" class="xref page">View Activity Logs</a>.</p>
-</div>
-<div class="paragraph">
-<p>Alerts can also be posted as email messages,
-by <a href="../../organizations/manage-account.html#update-email-notifications" class="xref page">setting up email notifications</a> in your account preferences.</p>
-</div>
-<div class="paragraph">
-<p>High-severity alerts will also trigger on Capella UI screens. For example:</p>
+<p>The amount of data will depend on factors such as:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A large number of data sync errors were reported in the last 5 minutes.</p>
+<p>Which logging filters and level you have requested.</p>
 </li>
 <li>
-<p>A large number of import errors were reported in the last 5 minutes.</p>
+<p>How many App Services endpoints are running.</p>
 </li>
 <li>
-<p>A large number of access errors were reported in the last 5 minutes</p>
+<p>The number and size of documents in the database.</p>
+</li>
+<li>
+<p>Read/write/import throughput.</p>
+</li>
+<li>
+<p>Number of client connections per node.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Use the <b class="button">ACK</b> button to acknowledge the error and clear it from the screen.</p>
+<p>You will incur egress data charges from the App Services nodes for the logging data.
+It is therefore important to configure this feature carefully, to make sure that you receive useful information at a reasonable cost.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Do not enable log streaming until you have validated what data you want, and understand the costs and resources involved in streaming it for your current and predicted data patterns.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By default, we stream everything from <code>Info</code> level and below, and enable a preset set of filters as detailed in <a href="configure-log-streaming-app-endpoint.html" class="xref page">App Endpoint configuration page</a>.</p>
+</div>
+<div class="paragraph">
+<p>The log level and log filters are configurable, and can dramatically affect the amount of data streamed, which will have cost implications.</p>
+</div>
+<div class="paragraph">
+<p>Couchbase recommends keeping the defaults until you have verified that you need the data, and understand the costs involved.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In addition to network traffic, a node that is streaming logs will have some marginal impact on CPU and RAM usage.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="troubleshooting"><a class="anchor" href="#troubleshooting"></a>Troubleshooting</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h3>
+<div class="paragraph">
+<p>Log Streaming is available for App Services on version 3.1.2 or later.
+Upgrade your App Services clusters to the newest version if you want to utilize this feature.</p>
+</div>
+<div class="paragraph">
+<p>You must set up your Log Collector (see <a href="configure-log-collector-app-service.html" class="xref page">Enable Log Streaming</a>),ensure that it is reachable, and configure its location in the Capella UI.</p>
+</div>
+<div class="paragraph">
+<p>You must make sure that the log collector is able to keep up with the rate of logs streamed.
+App Services will not indefinitely buffer or maintain logs, therefore if the log collector falls behind, then you may lose logs. See <a href="#log-rotation-and-retention">Log rotation and retention</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="restarts-and-redeployments"><a class="anchor" href="#restarts-and-redeployments"></a>Restarts and Redeployments</h3>
+<div class="paragraph">
+<p>The logs are transient in App Services.
+Therefore if you redeploy (including to effect a log configuration change), then any logs that weren&#8217;t already streamed before the restart will be lost.</p>
+</div>
+<div class="paragraph">
+<p>When App Services comes back again, logging will also restart, with an entirely fresh set of logs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="turning-the-app-service-or-database-off-or-on"><a class="anchor" href="#turning-the-app-service-or-database-off-or-on"></a>Turning the App Service or Database Off or On</h3>
+<div class="paragraph">
+<p>When an <a href="../turn-app-services-on-and-off/turn-app-services-on-and-off.html" class="xref page">App Service is turned Off</a>, any Log Streaming, if enabled for those App Services, will also be turned off.</p>
+</div>
+<div class="paragraph">
+<p>This also holds when the when the  <a href="../../clusters/off-on-database.html" class="xref page">Capella database is turned Off</a> to reduce costs, and any linked App Services are also turned off.</p>
+</div>
+<div class="paragraph">
+<p>When the App Services is turned back on again, Log Streaming will be started, if enabled, in that state it was in before the App Service was turned off
+(Paused or Running).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="log-rotation-and-retention"><a class="anchor" href="#log-rotation-and-retention"></a>Log rotation and retention</h3>
+<div class="paragraph">
+<p>You may want to know our log retention, to understand the maximum partition window.
+This may help identify if there is any danger of missing logs due to disruption.</p>
+</div>
+<div class="paragraph">
+<p>Due to the many factors previously discussed in <a href="#resource-consideration">Resource Considerations</a> which affect your log streaming throughput (flow rate), we cannot give a general figure.
+However, once you know that rate, you can calculate a value for your use-case.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you stream at 10&#160;MB/hour/node, then the partition window is 100&#160;hours
+(1&#160;GB/node log retention, divided by 10&#160;MB/hour/node).</p>
+</div>
+<div class="paragraph">
+<p>Calculate the log streaming throughput from the Prometheus metric <code>fluentbit_output_proc_bytes_total</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="role-based-access"><a class="anchor" href="#role-based-access"></a>Role-Based Access</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Roles are enforced as follows:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Role</th>
+<th class="tableblock halign-left valign-top">Permissions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Org Owner, Project Owner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ability to update and view log.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Project Manager</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Streaming configuration for App Services associated with projects that the user has access to.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Project Viewer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ability to only view log streaming configuration for App Services associated with projects that the user has access to.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Org Member</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Depends on Project level access granted to user. User with only Org Member role and no project access will not be able to access this feature.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database Data Reader, Database Data Reader/Writer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cannot view or update configuration.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="compatibility-guarantees"><a class="anchor" href="#compatibility-guarantees"></a>Compatibility guarantees</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The structure of the JSON logs (the key names and type of values sent) is stable.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The contents of the message string in the JSON <code>log</code> field are an internal detail.
+The format and contents of this string are subject to change.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="migration-from-sync-gateway"><a class="anchor" href="#migration-from-sync-gateway"></a>Migration from Sync Gateway</h3>
+<div class="paragraph">
+<p>The underlying logging is based on <a href="#sync-gateway::logging.adoc" class="xref unresolved">Sync Gateway logging</a>.
+This means that existing self-managed users of Sync Gateway should find the logging format familiar from console logging, and should in general be able to point App Services log streaming to any existing Datadog or Sumo Logic log collector agents.</p>
+</div>
+<div class="paragraph">
+<p>We expect that your log processing code on prem should continue to work with Capella App Services log streaming with no or minimal changes.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Though the structure of the logs is stable, if your processing code relies on specific format of the <code>log</code> message, it may not work after migration.
+We don&#8217;t recommend scraping information from this field.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="billing"><a class="anchor" href="#billing"></a>Billing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase bills data transfer costs for Log Streaming at the same rate as all other egress costs from App Services, and bundles these costs together in your account statement.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="next-steps"><a class="anchor" href="#next-steps"></a>Next Steps</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="configure-log-collector-app-service.html" class="xref page">Enable Log Streaming</a></p>
+</li>
+<li>
+<p><a href="configure-log-streaming-app-endpoint.html" class="xref page">Configure Log Streaming for an App Endpoint</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
