@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>SET TRANSACTION | Couchbase Docs (Staging)</title>
+<title>SET TRANSACTION | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/n1ql/n1ql-language-reference/set-transaction.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
@@ -25,7 +25,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/cloud/n1ql/n1ql-language-reference/set-transaction.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -55,7 +56,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -109,12 +109,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
-    <template id="page-versions" style="display: none">
-      <select class="version_list" data-component="cloud">
-        <option value="" data-url="set-transaction.html" selected>Provisioned</option>
-        <option value="serverless" data-url="../../serverless/n1ql/n1ql-language-reference/set-transaction.html">Serverless</option>
-      </select>
-    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -127,7 +121,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -138,28 +131,47 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
@@ -182,7 +194,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -324,30 +340,20 @@ COMMIT WORK;</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="file:///Users/simondew/GitHub/couchbaselabs/docs-devex/modules/n1ql/examples/transactions/results.jsonc">[
   {
-    "_sequence_num": 1,
-    "_sequence_query": "-- Start the transaction\nBEGIN WORK;",
-    "_sequence_query_status": "success",
-    "_sequence_result": [
+    "batchQuery": "-- Start the transaction\nBEGIN WORK;",
+    "batchQueryResult": [
       {
-        "txid": "d81d9b4a-b758-4f98-b007-87ba262d3a51" <i class="conum" data-value="1"></i><b>(1)</b>
+        "txid": "d3bbf182-1179-42ba-8900-eb20fda69e42" <i class="conum" data-value="1"></i><b>(1)</b>
       }
     ]
   },
   {
-    "_sequence_num": 2,
-    "_sequence_query": "\n\n-- Specify transaction settings\nSET TRANSACTION ISOLATION LEVEL READ COMMITTED;",
-    "_sequence_query_status": "success",
-    "_sequence_result": {
-      "results": []
-    }
+    "batchQuery": "\n\n-- Specify transaction settings\nSET TRANSACTION ISOLATION LEVEL READ COMMITTED;",
+    "batchQueryResult": []
   },
   {
-    "_sequence_num": 3,
-    "_sequence_query": "\n\n-- Create a booking document\nUPSERT INTO `travel-sample`.tenant_agent_00.bookings\nVALUES(\"bf7ad6fa-bdb9-4099-a840-196e47179f03\", {\n  \"date\": \"07/24/2021\",\n  \"flight\": \"WN533\",\n  \"flighttime\": 7713,\n  \"price\": 964.13,\n  \"route\": \"63986\"\n});",
-    "_sequence_query_status": "success",
-    "_sequence_result": {
-      "results": []
-    }
+    "batchQuery": "\n\n-- Create a booking document\nUPSERT INTO bookings\nVALUES(\"bf7ad6fa-bdb9-4099-a840-196e47179f03\", {\n  \"date\": \"07/24/2021\",\n  \"flight\": \"WN533\",\n  \"flighttime\": 7713,\n  \"price\": 964.13,\n  \"route\": \"63986\"\n});",
+    "batchQueryResult": []
   },
 // ...</code></pre>
 </div>
@@ -370,7 +376,7 @@ COMMIT WORK;</code></pre>
 <div class="ulist">
 <ul>
 <li>
-<p>For an overview of Couchbase transactions, refer to <a href="#server:learn:data/transactions.adoc" class="xref unresolved">server:learn:data/transactions.adoc</a>.</p>
+<p>For an overview of Couchbase transactions, refer to <a href="../../../server/current/learn/data/transactions.html" class="xref page">Transactions</a>.</p>
 </li>
 <li>
 <p>To begin a transaction, refer to <a href="begin-transaction.html" class="xref page">BEGIN TRANSACTION</a>.</p>

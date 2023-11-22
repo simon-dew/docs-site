@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Search Service | Couchbase Docs (Staging)</title>
+<title>Search Service | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/clusters/search-service/search-service.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
@@ -24,7 +24,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/cloud/clusters/search-service/search-service.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -54,7 +55,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -108,12 +108,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
-    <template id="page-versions" style="display: none">
-      <select class="version_list" data-component="cloud">
-        <option value="" data-url="search-service.html" selected>Provisioned</option>
-        <option value="serverless" data-url="../../serverless/clusters/search-service/search-service.html">Serverless</option>
-      </select>
-    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -126,7 +120,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -137,28 +130,47 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
@@ -176,7 +188,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -261,8 +277,8 @@ For each matched document, the hits field shows the document id, the score, the 
 </div>
 </div>
 <div class="paragraph">
-<p>The indexes that the Search Service creates and uses are entirely separate from and different to those of the <a href="../index-service/index-service.html" class="xref page">Index Service</a>.
-However, if the Index Service and <a href="../query-service/query-service.html" class="xref page">Query Service</a> are also deployed on the cluster, the facilities of the Search Service can be called on by means of the <em>SQL++</em> language&#8201;&#8212;&#8201;which provides the principal interface to the Query and Index Services.
+<p>The indexes that the Search Service creates and uses are entirely separate from and different to those of the <a href="../../learn/services-and-indexes/indexes/global-secondary-indexes.html" class="xref page">Index Service</a>.
+However, if the Index Service and <a href="../../n1ql/query.html" class="xref page">Query Service</a> are also deployed on the cluster, the facilities of the Search Service can be called on by means of the <em>SQL++</em> language&#8201;&#8212;&#8201;which provides the principal interface to the Query and Index Services.
 This is principally done through the use of <a href="../../n1ql/n1ql-language-reference/searchfun.html" class="xref page">Search Functions</a>.</p>
 </div>
 </div>
@@ -274,7 +290,7 @@ This is principally done through the use of <a href="../../n1ql/n1ql-language-re
 <p>Like the other Couchbase services, the Search Service can be deployed during <a href="../create-database.html" class="xref page">database creation</a>, or by <a href="../scale-database.html" class="xref page">adding it to an existing cluster</a>.
 The Search Service depends on the <a href="../data-service/data-service.html" class="xref page"><em>Data Service</em></a>.
 This service must also be deployed on the cluster in order to use the Search Service.
-(Information about how these services interact with one another can be found in the <a href="#server:learn:services-and-indexes/services/search-service.adoc" class="xref unresolved">Couchbase Server documentation</a>.)</p>
+(Information about how these services interact with one another can be found in the <a href="../../../server/current/learn/services-and-indexes/services/search-service.html" class="xref page">Couchbase Server documentation</a>.)</p>
 </div>
 <div class="paragraph">
 <p>If a cluster has the Search Service deployed, Full Text Indexes can be managed and searched from the <a href="manage-full-text-indexes.html" class="xref page">Capella UI</a> or by using the Couchbase SDK.

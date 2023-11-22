@@ -12,14 +12,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Use the Cost-Based Optimizer with Queries | Couchbase Docs (Staging)</title>
+<title>Use the Cost-Based Optimizer with Queries | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/guides/cbo.html">
 <link rel="stylesheet" href="../../_/css/site.css">
 <script src="../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="How to use the Cost-Based Optimizer and manage optimizer statistics.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
         <link rel="prev" href="../n1ql/n1ql-language-reference/cost-based-optimizer.html">
-        <link rel="next" href="../n1ql/n1ql-language-reference/time-series.html">
+        <link rel="next" href="../n1ql/n1ql-language-reference/transactions.html">
 
 
 
@@ -32,7 +32,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/cloud/guides/cbo.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -62,7 +63,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -116,12 +116,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
-    <template id="page-versions" style="display: none">
-      <select class="version_list" data-component="cloud">
-        <option value="" data-url="cbo.html" selected>Provisioned</option>
-        <option value="serverless" data-url="../serverless/guides/cbo.html">Serverless</option>
-      </select>
-    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -134,7 +128,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -145,35 +138,54 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
 <li class="crumb"><a href="../index.html">Couchbase Capella</a></li>
 <li class="crumb">Develop</li>
 <li class="crumb"><a href="../n1ql/query.html">Query Data with SQL++</a></li>
-<li class="crumb"><a href="../n1ql/advanced.html">Advanced Features</a></li>
+<li class="crumb"><a href="../n1ql/advanced.html">Advanced Query Features</a></li>
 <li class="crumb"><a href="cbo.html">Use the Cost-Based Optimizer with Queries</a></li>
 </ul>
 </nav>
@@ -188,7 +200,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -237,7 +253,7 @@ Read the following for further information about the tools available for editing
 <div class="ulist">
 <ul>
 <li>
-<p><a href="../clusters/query-service/query-workbench.html" class="xref page">Query Workbench</a></p>
+<p><a href="../clusters/query-service/query-workbench.html" class="xref page">Query Tab</a></p>
 </li>
 </ul>
 </div>
@@ -258,25 +274,22 @@ You can also activate or deactivate the Cost-Based Optimizer for a query node, o
 <li id="tabs-1-query-workbench" class="tab">
 <p>Query Workbench</p>
 </li>
-<li id="tabs-1-cbq-shell" class="tab">
-<p>CBQ Shell</p>
-</li>
 </ul>
 </div>
 <div id="tabs-1-query-workbench--panel" class="tabpanel" aria-labelledby="tabs-1-query-workbench">
 <div class="paragraph">
-<p>To activate or deactivate the Cost-Based Optimizer for a request, use the Query Run-Time Preferences window.</p>
+<p>To activate or deactivate the Cost-Based Optimizer for a request, use the Query Options window.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Click the cog icon <span class="icon"><i class="fa fa-cog"></i></span> to display the Run-Time Preferences window.</p>
+<p>Click <strong>Query Options</strong> to display the Query Options window.</p>
 </li>
 <li>
 <p>Check or uncheck the <strong>Use Cost-Based Optimizer</strong> box as required.</p>
 </li>
 <li>
-<p>Choose <b class="button">Save Preferences</b> to save the preferences and return to the Query Workbench.</p>
+<p>Choose <b class="button">Save</b> to save the preferences and return to the Query tab.</p>
 </li>
 </ol>
 </div>
@@ -298,45 +311,7 @@ You can also activate or deactivate the Cost-Based Optimizer for a query node, o
 </div>
 </div>
 </div>
-<div id="tabs-1-cbq-shell--panel" class="tabpanel" aria-labelledby="tabs-1-cbq-shell">
-<div class="paragraph">
-<p>To activate or deactivate the Cost-Based Optimizer for a request, use <code>\SET</code> command with the <code>use_cbo</code> parameter.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The parameter name must be prefixed by a hyphen.
-The parameter is set to <code>true</code> by default.
-</td>
-</tr>
-</table>
-</div>
-<hr>
-<div class="paragraph">
-<p>For example, the following code deactivates the Cost-Based Optimizer for subsequent requests on this Query node.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">\SET -use_cbo false;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The following code activates the Cost-Based Optimizer for subsequent requests on this Query node.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp">\SET -use_cbo true;</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>For more information and examples, refer to <a href="#settings:query-settings.adoc" class="xref unresolved">Settings and Parameters</a>.</p>
 </div>
 </div>
 </div>
@@ -568,12 +543,12 @@ For more information, see <a href="select.html#query-context" class="xref page">
 <ul>
 <li>
 <p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">C</a>
-| <a href="#dotnet-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">.NET</a>
+| <a href="../../dotnet-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">.NET</a>
 | <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Go</a>
-| <a href="#java-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Java</a>
-| <a href="#nodejs-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Node.js</a>
+| <a href="../../java-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Java</a>
+| <a href="../../nodejs-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Node.js</a>
 | <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">PHP</a>
-| <a href="#python-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Python</a>
+| <a href="../../python-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Python</a>
 | <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Ruby</a>
 | <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Scala</a></p>
 </li>

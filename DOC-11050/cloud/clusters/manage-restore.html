@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Restore a Backup | Couchbase Docs (Staging)</title>
+<title>Restore a Backup | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/clusters/manage-restore.html">
 <link rel="stylesheet" href="../../_/css/site.css">
 <script src="../../_/js/vendor/jquery.js"></script>
@@ -25,7 +25,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/cloud/clusters/manage-restore.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -55,7 +56,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -109,12 +109,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
-    <template id="page-versions" style="display: none">
-      <select class="version_list" data-component="cloud">
-        <option value="" data-url="manage-restore.html" selected>Provisioned</option>
-        <option value="serverless" data-url="../serverless/clusters/manage-restore.html">Serverless</option>
-      </select>
-    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -127,7 +121,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -138,28 +131,47 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
@@ -180,7 +192,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -231,10 +247,6 @@ If you have the <code>Organization Owner</code> role, you already have the <a hr
 <li>
 <p>You can only restore data to an existing bucket with the same name and <a href="data-service/manage-buckets.html#add-bucket" class="xref page">conflict resolution methods</a> as the bucket from the backup.</p>
 </li>
-</ul>
-</div>
-<div class="ulist">
-<ul>
 <li>
 <p>Owing to the way backups are stored in Capella, you can only restore to a bucket in the <em>same</em> Cloud Service Provider (CSP) as the one used to create the backup&#8201;&#8212;&#8201;such as from Azure to Azure.
 Should you need a backup that can be restored across different CSPs, you can use a locally-stored backup&#8201;&#8212;&#8201;see <a href="backup-restore.html#downloading-backups" class="xref page">Downloadable backups</a>,
@@ -352,14 +364,6 @@ By default, this option is deselected.</p>
 </div>
 </li>
 <li>
-<p><a id="create-missing-bucket"></a><strong>Automatically Create Missing Buckets</strong></p>
-<div class="paragraph">
-<p>Use this option to restore a deleted bucket.
-If you leave this option disabled and try to restore a backup for a bucket that no longer exists, the restore process will fail.
-By default, this option is disabled.</p>
-</div>
-</li>
-<li>
 <p><strong>Filter Keys</strong></p>
 <div class="paragraph">
 <p>Use this field to enter a regular expression (RE2) to filter keys.
@@ -412,6 +416,7 @@ Excludes are defined as follows: <code>bucket.scope</code>, and <code>bucket.sco
 <div class="paragraph">
 <p>There can be a delay while Capella schedules the restore.
 Once the restore starts, its status appears on the Database page.
+The restore automatically recreates any missing buckets.
 Capella also adds backup and restore events to the <a href="monitoring/activity-log.html" class="xref page">Activity Log</a>.</p>
 </div>
 </li>

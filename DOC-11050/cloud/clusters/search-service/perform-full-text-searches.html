@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Perform Full Text Searches | Couchbase Docs (Staging)</title>
+<title>Perform Full Text Searches | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/clusters/search-service/perform-full-text-searches.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
@@ -24,7 +24,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/cloud/clusters/search-service/perform-full-text-searches.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -54,7 +55,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -108,12 +108,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
-    <template id="page-versions" style="display: none">
-      <select class="version_list" data-component="cloud">
-        <option value="" data-url="perform-full-text-searches.html" selected>Provisioned</option>
-        <option value="serverless" data-url="../../serverless/clusters/search-service/perform-full-text-searches.html">Serverless</option>
-      </select>
-    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -126,7 +120,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -137,28 +130,47 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
@@ -176,7 +188,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -338,7 +354,7 @@ The total number of documents matching the search is displayed at the top-right 
 <p><strong class="ui">Set consistency level to <code>at_plus</code></strong>: When checked, bounded consistency is implemented for the query.
 The request includes a <code>scan_vector</code> parameter and value, which is used as a lower bound, allowing you to implement Read-Your-Own-Writes (RYOW).
 Specify the value of the <code>scan_vector</code> parameter in the <strong class="ui">Consistency Vectors</strong> field.
-For more information, refer to the page <a href="#server:fts:fts-queries.adoc#scan-consistency" class="xref unresolved">Understanding Queries</a> in the Couchbase Server documentation.</p>
+For more information, refer to the page <a href="../../../server/current/fts/fts-search-request.html#scan-consistency" class="xref page">Understanding Queries</a> in the Couchbase Server documentation.</p>
 </li>
 <li>
 <p><strong class="ui">Timeout (ms)</strong>: The amount of time that the Search Service will allow the query to run, specified in milliseconds.
@@ -391,7 +407,7 @@ If the query time reaches the specified timeout value, only partial results are 
 <div class="paragraph">
 <p>The configurable options in the <strong class="ui">Settings</strong> panel are essentially a convenient user interface for applying some of the common features available in the <em>query string syntax</em>.
 The <strong class="ui">Search</strong> field supports full query string queries, which can be used in conjunction with, or in place of, the configuration in the <strong class="ui">Settings</strong> panel.
-For an explanation of the supported query syntax, you can click <strong class="ui">query syntax help</strong> underneath the <strong class="ui">Search</strong> field, which opens the page <a href="#server:fts:query-string-queries.adoc" class="xref unresolved">server:fts:query-string-queries.adoc</a> in the Couchbase Server documentation.
+For an explanation of the supported query syntax, you can click <strong class="ui">query syntax help</strong> underneath the <strong class="ui">Search</strong> field, which opens the page <a href="../../../server/current/fts/fts-query-string-syntax.html" class="xref page">Query String Syntax</a> in the Couchbase Server documentation.
 Note that a Query String Query is the only type of query that can be executed by the <strong class="ui">Search</strong> field.</p>
 </div>
 <div class="paragraph">

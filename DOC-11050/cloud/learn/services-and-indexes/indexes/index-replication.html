@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Index Availability and Performance | Couchbase Docs (Staging)</title>
+<title>Index Availability and Performance | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/cloud/learn/services-and-indexes/indexes/index-replication.html">
 <link rel="stylesheet" href="../../../../_/css/site.css">
 <script src="../../../../_/js/vendor/jquery.js"></script>
@@ -26,7 +26,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/cloud/learn/services-and-indexes/indexes/index-replication.html">
 <meta name="page-nav-header-levels" content="1">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -56,7 +57,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -110,12 +110,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
-    <template id="page-versions" style="display: none">
-      <select class="version_list" data-component="cloud">
-        <option value="" data-url="index-replication.html" selected>Provisioned</option>
-        <option value="serverless" data-url="../../../serverless/learn/services-and-indexes/indexes/index-replication.html">Serverless</option>
-      </select>
-    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -128,7 +122,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -139,28 +132,47 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
@@ -183,7 +195,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -225,7 +241,7 @@ This ensures:</p>
 </div>
 <div class="paragraph">
 <p>Index-replicas can be created with the SQL++ <code>CREATE INDEX</code> statement.
-Note that whenever a given number of index-replicas is specified for creation, the number must be less than the number of database-nodes currently running the <a href="../../../clusters/index-service/index-service.html" class="xref page">Index Service</a>.
+Note that whenever a given number of index-replicas is specified for creation, the number must be less than the number of database-nodes currently running the <a href="global-secondary-indexes.html" class="xref page">Index Service</a>.
 If it is not, the index creation fails.
 Note also that if, following creation of the maximum number of copies, the number of nodes running the Index Service decreases, Couchbase Capella progressively assigns replacement index-replicas to any and all Index-Service nodes subsequently be added to the database, until the required number of index-replicas again exists for each replicated index.</p>
 </div>
@@ -287,7 +303,7 @@ Note that this call only succeeds if the database contains enough Index Service 
 </ul>
 </div>
 <div class="paragraph">
-<p>You can change index replication settings via the <a href="#server:manage:manage-settings/general-settings.adoc#index-storage-mode" class="xref unresolved">UI</a> or the <a href="#server:manage:manage-settings/general-settings.adoc#index-settings-via-rest" class="xref unresolved">REST API</a>.
+<p>You can change index replication settings via the <a href="../../../../server/current/manage/manage-settings/general-settings.html#index-storage-mode" class="xref page">UI</a> or the <a href="../../../../server/current/manage/manage-settings/general-settings.html#index-settings-via-rest" class="xref page">REST API</a>.
 For further information on using SQL++, refer to <a href="../../../n1ql/query.html" class="xref page">Query Fundamentals</a>.</p>
 </div>
 </div>
@@ -328,7 +344,20 @@ For further information on using SQL++, refer to <a href="../../../n1ql/query.ht
 <div class="paragraph">
 <p>
 
-Whereas Couchbase Capella handles data-mutations with <em>full consistency</em> — all mutations to a given key are applied to the same vBucket, and become immediately available — it maintains indexes with degrees of <em>eventual consistency</em>, determined by means of the following query consistency-options, specified per query:</p>
+Whereas Couchbase Capella handles data-mutations with <em>full consistency</em> — all mutations to a given key are applied to the same vBucket, and become immediately available — it maintains indexes with degrees of <em>eventual consistency</em>.
+This means that indexes may at times not contain the most up-to-date information, especially when deployed in a write-heavy environment: changes may take some time to propagate over to the index nodes.</p>
+</div>
+<div class="paragraph">
+<p>The asynchronous updating nature of global secondary indexes means that they can be very quick to query and do not require the additional overhead of index recalculations at the time documents are modified.
+SQL++ queries are forwarded to the relevant indexes and the queries are done based on indexed information, rather than the documents as they exist in the data service.</p>
+</div>
+<div class="paragraph">
+<p>With default query options, the query service will rely on the current index state: the most up-to-date document versions are not retrieved, and only the indexed versions are queried.
+This provides the best performance.
+Only updates occurring with a small time frame may not yet have been indexed.</p>
+</div>
+<div class="paragraph">
+<p>The query service can use the latest versions of documents by modifying the <code class="api">scan_consistency</code> parameter, specified per query:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -347,10 +376,11 @@ If index-maintenance is running behind, the query waits for it to catch up.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>For SQL++, the default consistency is <code>not_bounded</code>.</p>
+<p>For SQL++, the default consistency is <code>not_bounded</code>.
+When using the <code>request_plus</code> consistency mode, the query service will ensure that the indexes are synchronized with the data service before querying.</p>
 </div>
 <div class="paragraph">
-<p>You can specify the scan consistency via the <a href="../../../clusters/query-service/query-workbench.html#query-settings" class="xref page">run-time preferences</a> in the Query Workbench, or by setting the <a href="#server:settings:query-settings.adoc#scan_consistency" class="xref unresolved">scan_consistency</a> request-level parameter.</p>
+<p>You can specify the scan consistency via the <a href="../../../clusters/query-service/query-workbench.html#query-settings" class="xref page">run-time preferences</a> in the Query Workbench, or by setting the <a href="../../../../server/current/settings/query-settings.html#scan_consistency" class="xref page">scan_consistency</a> request-level parameter.</p>
 </div>
 </div>
 </div>
@@ -363,7 +393,7 @@ In cases where recovery requires an Index-Service node to be restarted, the node
 </div>
 <div class="paragraph">
 <p>By default, two index snapshots are stored on disk.
-You can change index snapshot settings via the <a href="#server:manage:manage-settings/general-settings.adoc#index-storage-settings-via-cli" class="xref unresolved">CLI</a> or the <a href="#server:manage:manage-settings/general-settings.adoc#index-settings-via-rest" class="xref unresolved">REST API</a>.</p>
+You can change index snapshot settings via the <a href="../../../../server/current/manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="xref page">CLI</a> or the <a href="../../../../server/current/manage/manage-settings/general-settings.html#index-settings-via-rest" class="xref page">REST API</a>.</p>
 </div>
 </div>
 </div>
@@ -371,16 +401,16 @@ You can change index snapshot settings via the <a href="#server:manage:manage-se
 <h2 id="index-rollback"><a class="anchor" href="#index-rollback"></a>Index Rollback</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The index service also maintains a <a href="#server:learn:clusters-and-availability/intra-cluster-replication.adoc#database-change-protocol" class="xref unresolved">DCP failover log</a>.
+<p>The index service also maintains a <a href="../../../../server/current/learn/clusters-and-availability/intra-cluster-replication.html#database-change-protocol" class="xref page">DCP failover log</a>.
 If necessary, the data service can request the index service to return to a specified rollback point and update its history.</p>
 </div>
 <div class="paragraph">
-<p>You can change index rollback settings via the <a href="#server:manage:manage-settings/general-settings.adoc#index-storage-settings-via-cli" class="xref unresolved">CLI</a> or the <a href="#server:manage:manage-settings/general-settings.adoc#index-settings-via-rest" class="xref unresolved">REST API</a>.</p>
+<p>You can change index rollback settings via the <a href="../../../../server/current/manage/manage-settings/general-settings.html#index-storage-settings-via-cli" class="xref page">CLI</a> or the <a href="../../../../server/current/manage/manage-settings/general-settings.html#index-settings-via-rest" class="xref page">REST API</a>.</p>
 </div>
 <div class="sect2">
 <h3 id="index-rollback-after-failover"><a class="anchor" href="#index-rollback-after-failover"></a>Index Rollback After Failover</h3>
 <div class="paragraph">
-<p>When a data node <a href="#server:learn:clusters-and-availability/failover.adoc" class="xref unresolved">fails over</a>, a replica data node is promoted to active.
+<p>When a data node <a href="../../../../server/current/learn/clusters-and-availability/failover.html" class="xref page">fails over</a>, a replica data node is promoted to active.
 If the index service has more recent data than the new active data node, the data node issues a rollback request to the index service.</p>
 </div>
 <div class="paragraph">

@@ -8,13 +8,18 @@ info:
     This API documentation specifies the endpoints, request and response formats, and authentication requirements for seamless integration with Couchbase Capella.
 
     To access the Management API, you need an API key.
-    To create an initial bootstrap API key you must use the Capella UI. Once you have created an initial bootstrap API key, you can use the Management API itself to create further API keys.
-
-    API Base URL - https://cloudapi.cloud.couchbase.com
-
+    To create an initial bootstrap API key you must use the Capella UI.
+    Once you have created an initial bootstrap API key, you can use the Management API itself to create further API keys.
     To learn more, see [Get Started with the Management API v4.0](https://docs.couchbase.com/cloud/management-api-guide/management-api-start.html).
 
-    [Back to Management API v4.0 Documentation](https://docs.couchbase.com/cloud/management-api-guide/management-api-intro.html)
+    For a history of updates to the Management API, see [Management API v4.0 Change Log](https://docs.couchbase.com/cloud/management-api-guide/management-api-log.html).
+
+    **API Base URL:**
+
+    `https://cloudapi.cloud.couchbase.com`
+externalDocs:
+  description: Back to Management API v4.0 Documentation
+  url: 'https://docs.couchbase.com/cloud/management-api-guide/management-api-intro.html'
 servers:
   - url: 'https://cloudapi.cloud.couchbase.com'
 security:
@@ -30,7 +35,7 @@ paths:
 
         Organization Owners can create Organization and Project scoped API keys.
 
-        Organization Members and Project Creators can create Project scoped API keys for which they are Project Owner.
+        Project Owner and Project Creator can create project scoped keys.
 
         To learn more, see [Organization, Project, and Database Access Overview](https://docs.couchbase.com/cloud/organizations/organization-projects-overview.html).
       tags:
@@ -93,8 +98,6 @@ paths:
 
         Organization Members and Project Creators can list all the Project scoped API key for which they are Project Owner.
 
-        Valid fields to sort the results are: "name", "expiry", "description".
-
         To learn more, see [Organization, Project, and Database Access Overview](https://docs.couchbase.com/cloud/organizations/organization-projects-overview.html).
       tags:
         - apikeys
@@ -102,7 +105,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/APIKeysSortBy'
         - $ref: '#/components/parameters/SortDirection'
       responses:
         '200':
@@ -295,8 +298,6 @@ paths:
         - Database Data Reader/Writer
         - Database Data Reader
 
-        Valid fields to sort the results are: "id", "name".
-
         To learn more, see [Organization, Project, and Database Access Overview](https://docs.couchbase.com/cloud/organizations/organization-projects-overview.html).
       tags:
         - projects
@@ -304,7 +305,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/ProjectsSortBy'
         - $ref: '#/components/parameters/SortDirection'
       responses:
         '200':
@@ -755,8 +756,6 @@ paths:
         - Database Data Reader/Writer
         - Database Data Reader
 
-        Valid fields to sort the results are: "id", "availability", "cloudProvider", "couchbaseServer", "currentState", "name".
-
         Returned set of clusters is reduced to what the caller has access to view.
         To learn more, see [Organization, Project, and Database Access Overview](https://docs.couchbase.com/cloud/organizations/organization-projects-overview.html).
       tags:
@@ -765,7 +764,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/ClustersSortBy'
         - $ref: '#/components/parameters/SortDirection'
       responses:
         '200':
@@ -942,9 +941,6 @@ paths:
                 description: We don't need to explicitly add the resources field if the user is an organizationOwner
       responses:
         '201':
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
           description: Successfully sent invite to the user.
           content:
             application/json:
@@ -976,8 +972,6 @@ paths:
 
         When retrieving a list of users through a GET request, if a user holds the organization owner role, the response will exclude project-level permissions for those users. This is because organization owners have full access to all resources within the organization, making project-level permissions irrelevant for them.
 
-        Valid fields to sort the results are: "id", "name", "email", "status", "inactive".
-
         To learn more about the roles, see [Organization Roles](https://docs.couchbase.com/cloud/organizations/organization-user-roles.html) and [Project Roles](https://docs.couchbase.com/cloud/projects/project-roles.html).
       tags:
         - users
@@ -985,7 +979,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/UsersSortBy'
         - $ref: '#/components/parameters/SortDirection'
         - $ref: '#/components/parameters/ProjectIdQuery'
       responses:
@@ -1255,9 +1249,6 @@ paths:
                     path: '/resources/{resourceId}'
       responses:
         '200':
-          headers:
-            ETag:
-              $ref: '#/components/headers/ETag'
           description: Successfully updated the user metadata.
           content:
             application/json:
@@ -1542,8 +1533,6 @@ paths:
         - Database Data Reader/Writer
         - Database Data Reader
 
-        Valid fields to sort the results are: "id", "type", "status".
-
         To learn more, see [Organization, Project, and Database Access Overview](https://docs.couchbase.com/cloud/organizations/organization-projects-overview.html).
       tags:
         - allowedCIDRs(Cluster)
@@ -1551,7 +1540,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/AllowedCidrsSortBy'
         - $ref: '#/components/parameters/SortDirection'
       responses:
         '200':
@@ -1656,7 +1645,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/DatabaseCredentialsSortBy'
         - $ref: '#/components/parameters/SortDirection'
       responses:
         '200':
@@ -1692,8 +1681,8 @@ paths:
                           version: 1
                         access:
                           - privileges:
-                              - read
-                              - write
+                              - data_reader
+                              - data_writer
                             resources:
                               buckets:
                                 - name: travel-sample
@@ -1731,8 +1720,8 @@ paths:
                   name: ReadWriteOnSpecificCollections
                   access:
                     - privileges:
-                        - read
-                        - write
+                        - data_reader
+                        - data_writer
                       resources:
                         buckets:
                           - name: travel-sample
@@ -1758,20 +1747,20 @@ paths:
                   name: ReadAccessForAllBuckets
                   access:
                     - privileges:
-                        - read
+                        - data_reader
               SeparateAccessForDifferentScopes:
                 value:
                   name: SeparateAccessForDifferentScopes
                   access:
                     - privileges:
-                        - read
+                        - data_reader
                       resources:
                         buckets:
                           - name: travel-sample
                             scopes:
                               - name: inventory
                     - privileges:
-                        - write
+                        - data_writer
                       resources:
                         buckets:
                           - name: travel-sample
@@ -1782,13 +1771,13 @@ paths:
                   name: WriteAccessForAllBuckets
                   access:
                     - privileges:
-                        - write
+                        - data_writer
               MultipleLevelOfAccess:
                 value:
                   name: MultipleLevelOfAccess
                   access:
                     - privileges:
-                        - read
+                        - data_reader
                       resources:
                         buckets:
                           - name: travel-sample
@@ -1798,7 +1787,7 @@ paths:
                                   - airport
                                   - airline
                     - privileges:
-                        - write
+                        - data_writer
                       resources:
                         buckets:
                           - name: travel-sample
@@ -1847,7 +1836,16 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - $ref: '#/components/parameters/SortBy'
+        - in: query
+          name: sortBy
+          description: ' Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **name**, **id**, **description**.'
+          example:
+            - name
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
         - $ref: '#/components/parameters/SortDirection'
         - $ref: '#/components/parameters/ProjectIdQuery'
       responses:
@@ -2074,8 +2072,8 @@ paths:
                 value:
                   access:
                     - privileges:
-                        - read
-                        - write
+                        - data_reader
+                        - data_writer
                       resources:
                         buckets:
                           - name: travel-sample
@@ -2092,6 +2090,8 @@ paths:
           $ref: '#/components/responses/AccessForbidden'
         '404':
           $ref: '#/components/responses/ResourceNotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
         '429':
           $ref: '#/components/responses/RateLimitExceeded'
         '500':
@@ -2490,6 +2490,8 @@ paths:
       description: |
         Lists the latest backup for all buckets in a cluster.
 
+        Note: This endpoint doesn’t return queued backups and only returns ones that are actively being processed or are completed/failed.
+
         To learn more about backup and restore, see [Backup and Restore Data](https://docs.couchbase.com/cloud/clusters/backup-restore.html).
 
         In order to access this endpoint, the provided API key must have at least one of the following roles:
@@ -2554,9 +2556,9 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     delete:
-      summary: Delete Backup
+      summary: Delete Backup Cycle
       description: |
-        Deletes an existing backup.
+        Deletes the backup records that belong to the same cycle from the DB by using the backup ID.
 
         To learn more about backup and restore, see [Backup and Restore Data](https://docs.couchbase.com/cloud/clusters/backup-restore.html).
 
@@ -2901,7 +2903,7 @@ components:
       description: A precondition header that specifies the entity tag of a resource.
       schema:
         type: string
-        example: 'Version: 12'
+        example: '12'
     OrganizationId:
       name: organizationId
       description: |
@@ -3015,10 +3017,76 @@ components:
       required: false
       schema:
         type: integer
-    SortBy:
+    APIKeysSortBy:
       in: query
       name: sortBy
-      description: Sets the order of how you would like to sort the results and the key you would like to order by.
+      description: ' Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **name**, **expiry**, **description**.'
+      example:
+        - name
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    ProjectsSortBy:
+      in: query
+      name: sortBy
+      description: 'Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **id**, **name**.'
+      example:
+        - name
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    ClustersSortBy:
+      in: query
+      name: sortBy
+      description: 'Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **id**, **availability**, **cloudProvider**, **couchbaseServer**, **currentState**, **name**.'
+      example:
+        - name
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    UsersSortBy:
+      in: query
+      name: sortBy
+      description: 'Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **id**, **name**, **email**, **status**, **inactive**.'
+      example:
+        - name
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    AllowedCidrsSortBy:
+      in: query
+      name: sortBy
+      description: ' Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **id**, **type**, **status**.'
+      example:
+        - id
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    DatabaseCredentialsSortBy:
+      in: query
+      name: sortBy
+      description: ' Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **name**, **id**.'
+      example:
+        - name
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    AppServicesSortBy:
+      in: query
+      name: sortBy
+      description: ' Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **name**, **id**, **description**.'
       example:
         - name
       required: false
@@ -3317,6 +3385,7 @@ components:
         - serviceGroups
         - availability
         - support
+        - configurationType
       properties:
         name:
           type: string
@@ -3328,13 +3397,15 @@ components:
           description: Description of the cluster (up to 1024 characters).
           example: Description of the cluster
           maxLength: 1024
+        configurationType:
+          $ref: '#/components/schemas/ConfigurationType'
         cloudProvider:
           $ref: '#/components/schemas/CloudProvider'
         couchbaseServer:
           $ref: '#/components/schemas/CouchbaseServer'
         serviceGroups:
           type: array
-          description: The couchbase service groups to be run. At least one service group must contain the data service.
+          description: 'The couchbase service groups to be run. - The set of nodes that share the same disk, number of nodes and services. - At least one service group must contain the data service.'
           minItems: 1
           items:
             $ref: '#/components/schemas/ServiceGroup'
@@ -3358,6 +3429,8 @@ components:
         - id
         - name
         - description
+        - configurationType
+        - connectionString
         - cloudProvider
         - couchbaseServer
         - serviceGroups
@@ -3386,6 +3459,12 @@ components:
           description: Description of the cluster (up to 1024 characters).
           example: Description of the cluster
           maxLength: 1024
+        configurationType:
+          $ref: '#/components/schemas/ConfigurationType'
+        connectionString:
+          type: string
+          description: ConnectionString specifies the Capella database endpoint for your client connection.
+          example: 'couchbases://cb.irxmynm6vekhe5.aws-cb.couchbase.com'
         cloudProvider:
           $ref: '#/components/schemas/CloudProvider'
         couchbaseServer:
@@ -3491,14 +3570,33 @@ components:
       properties:
         name:
           type: string
-          description: Username for the database credential (up to 256 characters).
+          description: |
+            Username for the database credential. The name should be according to the following rules:
+
+            1. The name must be between 2 & 128 characters.
+
+            2. The name cannot contain spaces.
+
+            3. The name cannot contain the following characters - `) ( > < , ; : " \ / ] [ ? = } {`
+
+            4. The name cannot begin with `@` character.
           example: RW
-          maxLength: 256
+          maxLength: 128
           minLength: 2
         password:
           type: string
-          description: 'A password associated with the database credential. If this field is left empty, a password will be auto-generated.'
+          description: |
+            A password associated with the database credential. If this field is left empty, a password will be auto-generated.
+
+            - The password should be according to the following rules:
+
+              1. Password should have at least 8 or more characters.
+
+              2. Characters used for the password should contain at least one uppercase (A-Z), one lowercase (a-z), one numerical (0-9), and one special character.
+
+              3. Forbidden special characters for the password are: `< > ; . * & | £`
           example: Passw0rd!
+          minLength: 8
         access:
           type: array
           description: Describes the access information of the database credential.
@@ -3508,6 +3606,7 @@ components:
       type: object
       required:
         - id
+        - password
       properties:
         id:
           type: string
@@ -3640,18 +3739,17 @@ components:
       items:
         $ref: '#/components/schemas/PatchEntry'
     ServiceGroup:
-      description: 'The set of nodes that share the same disk, number of nodes and services.'
       type: object
       properties:
         node:
           $ref: '#/components/schemas/Node'
         numOfNodes:
           type: integer
-          description: Number of nodes. The minimum number of nodes for the cluster can be 3 and maximum can be 27 nodes. Additional service groups can have 2 nodes minimum and 24 nodes maximum.
+          description: Number of nodes. The minimum number of nodes for the cluster can be 3 and maximum can be 27 nodes. - Additional service groups can have 2 nodes minimum and 24 nodes maximum. - SingleNode cluster can have only 1 node.
           example: 3
         services:
           type: array
-          description: The couchbase service to run on the node.
+          description: 'The couchbase service to run on the node. The allowed services for singleNode cluster are one or all of - data, index, query and search.'
           minItems: 1
           uniqueItems: true
           items:
@@ -3695,12 +3793,11 @@ components:
       required:
         - type
         - region
-        - cidr
       properties:
         type:
           type: string
           description: |
-            Cloud provider type.
+            Cloud provider type. Note: For singleNode cluster, only AWS type cloud provider is allowed.
 
             1. `aws`: Amazon Web Services
 
@@ -3735,7 +3832,7 @@ components:
       properties:
         type:
           type: string
-          description: 'Availability zone type, either ''single'' or ''multi''.'
+          description: 'Availability zone type, either ''single'' or ''multi''. Availability zone type allowed for singleNode cluster is only ''single''.'
           example: single
           enum:
             - single
@@ -3748,7 +3845,7 @@ components:
       properties:
         plan:
           type: string
-          description: 'Plan type, either ''Basic'', ''Developer Pro'', or ''Enterprise''.'
+          description: 'Plan type, either ''Basic'', ''Developer Pro'', or ''Enterprise''. Plan type allowed for singleNode cluster is either ''Basic'', or ''Developer Pro''.'
           enum:
             - basic
             - developer pro
@@ -3873,6 +3970,12 @@ components:
         - analytics
         - eventing
       example: data
+    ConfigurationType:
+      type: string
+      description: null
+      enum:
+        - singleNode
+        - multiNode
     AllowedCidr:
       type: object
       required:
@@ -3972,10 +4075,19 @@ components:
           type: array
           items:
             type: string
-          description: The list of privileges granted on the resources.
+          description: |
+            The `privileges` field in this API represents the privilege level for users.
+            It accepts one of the following values:
+
+            - `data_reader`
+            - `data_writer`
+            - `read`: Equivalent to `data_reader`.
+            - `write`: Equivalent to `data_writer`.
           example:
-            - Read
-            - Write
+            - data_reader
+            - data_writer
+            - read
+            - write
         resources:
           type: object
           description: The resources for which access will be granted on. Leaving this empty will grant access to all buckets.

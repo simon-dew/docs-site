@@ -12,13 +12,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Creating Indexes | Couchbase Docs (Staging)</title>
+<title>Creating Indexes | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/server/current/guides/create-index.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="How to create primary indexes and secondary indexes.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+        <link rel="prev" href="indexes.html">
+        <link rel="next" href="place-index.html">
 
+
+
+                <link rel="prev" href="indexes.html">
+
+
+                <link rel="next" href="place-index.html">
 
 
 <meta name="dcterms.subject" content="server">
@@ -26,7 +34,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/server/current/guides/create-index.html">
 <meta name="page-nav-header-levels" content="0">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -56,7 +65,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -122,7 +130,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -133,32 +140,55 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
-<li class="crumb"><a href="../index.html">server</a></li>
+<li class="crumb"><a href="../introduction/intro.html">Couchbase Server</a></li>
+<li class="crumb">Develop</li>
+<li class="crumb"><a href="intro.html">Developer Guides</a></li>
+<li class="crumb"><a href="indexes.html">Indexes</a></li>
+<li class="crumb"><a href="create-index.html">Creating Indexes</a></li>
 </ul>
 </nav>
 </div>
@@ -172,7 +202,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -195,16 +229,16 @@ For Couchbase Capella, see <a href="../../../cloud/guides/create-index.html" cla
 The Index service enables you to create two types of index: primary indexes and secondary indexes.</p>
 </div>
 <div class="paragraph">
-<p>If you want to try out the examples in this section, follow the instructions given in <a href="#getting-started:do-a-quick-install.adoc" class="xref unresolved">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="xref page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
 Read the following for further information about the tools available for editing and executing queries:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#tools:cbq-shell.adoc" class="xref unresolved">tools:cbq-shell.adoc</a></p>
+<p><a href="../tools/cbq-shell.html" class="xref page">cbq: The Command Line Shell for SQL++</a></p>
 </li>
 <li>
-<p><a href="#tools:query-workbench.adoc" class="xref unresolved">Query Workbench</a></p>
+<p><a href="../tools/query-workbench.html" class="xref page">Query Workbench</a></p>
 </li>
 </ul>
 </div>
@@ -281,7 +315,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/n1ql-language-reference/create-pri-nameless.n1ql#L2">CREATE PRIMARY INDEX ON airline;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/n1ql-language-reference/create-pri-nameless.n1ql#L2">CREATE PRIMARY INDEX ON airline;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -289,7 +323,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/n1ql-language-reference/create-pri-name.n1ql">CREATE PRIMARY INDEX travel_primary ON airline;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/n1ql-language-reference/create-pri-name.n1ql">CREATE PRIMARY INDEX travel_primary ON airline;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -329,7 +363,17 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/create-index.adoc - include::dotnet-sdk:hello-world:example$IndexHelloWorld.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/33e79fe47bd6497fca95b1c4d8dbd992908a6056/modules/hello-world/examples/IndexHelloWorld.csx#L28-L38">try
+{
+	await cluster.QueryIndexes.CreatePrimaryIndexAsync(
+		"`travel-sample`",
+		options =&gt; options.IgnoreIfExists(true)
+	);
+}
+catch (InternalServerFailureException)
+{
+	Console.WriteLine("Index already exists");
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -337,7 +381,10 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/create-index.adoc - include::dotnet-sdk:hello-world:example$IndexHelloWorld.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/33e79fe47bd6497fca95b1c4d8dbd992908a6056/modules/hello-world/examples/IndexHelloWorld.csx#L46-L49">await cluster.QueryIndexes.CreatePrimaryIndexAsync(
+	"`travel-sample`",
+	options =&gt; options.IndexName("named_primary_index")
+);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -380,7 +427,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/create-index.adoc - include::java-sdk:hello-world:example$IndexHelloWorld.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/841c6e7ca8bd2052fa246a284cb63285e8de7c18/modules/hello-world/examples/IndexHelloWorld.java#L31-L35">CreatePrimaryQueryIndexOptions opts = CreatePrimaryQueryIndexOptions
+    .createPrimaryQueryIndexOptions()
+    .ignoreIfExists(true);
+
+cluster.queryIndexes().createPrimaryIndex("travel-sample", opts);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -388,7 +439,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/create-index.adoc - include::java-sdk:hello-world:example$IndexHelloWorld.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/841c6e7ca8bd2052fa246a284cb63285e8de7c18/modules/hello-world/examples/IndexHelloWorld.java#L43-L47">CreatePrimaryQueryIndexOptions opts = CreatePrimaryQueryIndexOptions
+    .createPrimaryQueryIndexOptions()
+    .indexName("named_primary_index");
+
+cluster.queryIndexes().createPrimaryIndex("travel-sample", opts);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -431,7 +486,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/create-index.adoc - include::nodejs-sdk:hello-world:example$index-hello-world.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/d18efa4b9ae49708fca897fd35947d8c5fb7ee24/modules/hello-world/examples/index-hello-world.js#L11-L15">await cluster.queryIndexes().createPrimaryIndex(
+  'travel-sample',
+  // Don't error if the primary index already exists.
+  { ignoreIfExists: true }
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -439,7 +498,9 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/create-index.adoc - include::nodejs-sdk:hello-world:example$index-hello-world.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/d18efa4b9ae49708fca897fd35947d8c5fb7ee24/modules/hello-world/examples/index-hello-world.js#L21-L23">await cluster
+  .queryIndexes()
+  .createPrimaryIndex('travel-sample', { name: 'named_primary_index' })</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -482,7 +543,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/create-index.adoc - include::python-sdk:hello-world:example$index_hello_world.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/0cb1a2b78691286855d8999e8f22362c665cd0dc/modules/hello-world/examples/index_hello_world.py#L16-L20">cluster.query_indexes().create_primary_index(
+    "travel-sample",
+    # Don't error if the primary index already exists.
+    CreatePrimaryQueryIndexOptions(ignore_if_exists=True)
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -490,7 +555,10 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/create-index.adoc - include::python-sdk:hello-world:example$index_hello_world.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/0cb1a2b78691286855d8999e8f22362c665cd0dc/modules/hello-world/examples/index_hello_world.py#L26-L29">cluster.query_indexes().create_primary_index(
+    "travel-sample",
+    CreatePrimaryQueryIndexOptions(index_name="named_primary_index")
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -578,7 +646,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/n1ql-language-reference/create-idx-name.n1ql">CREATE INDEX `idx-name` ON airline(name);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/n1ql-language-reference/create-idx-name.n1ql">CREATE INDEX `idx-name` ON airline(name);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -586,7 +654,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/learn/examples/services-and-indexes/indexes/create-idx-expr.n1ql">CREATE INDEX travel_cxname ON airport(LOWER(name));</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/create-idx-expr.n1ql">CREATE INDEX travel_cxname ON airport(LOWER(name));</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -616,7 +684,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/create-index.adoc - include::dotnet-sdk:hello-world:example$IndexHelloWorld.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/33e79fe47bd6497fca95b1c4d8dbd992908a6056/modules/hello-world/examples/IndexHelloWorld.csx#L57-L61">await cluster.QueryIndexes.CreateIndexAsync(
+	"`travel-sample`",
+	"index_name",
+	new[] { "name" }
+);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -649,7 +721,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/create-index.adoc - include::java-sdk:hello-world:example$IndexHelloWorld.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/841c6e7ca8bd2052fa246a284cb63285e8de7c18/modules/hello-world/examples/IndexHelloWorld.java#L55-L59">cluster.queryIndexes().createIndex(
+  "travel-sample", 
+  "index_name",
+  Arrays.asList("name")
+);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -682,7 +758,9 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/create-index.adoc - include::nodejs-sdk:hello-world:example$index-hello-world.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/d18efa4b9ae49708fca897fd35947d8c5fb7ee24/modules/hello-world/examples/index-hello-world.js#L29-L31">await cluster
+  .queryIndexes()
+  .createIndex('travel-sample', 'index_name', ['name'])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -715,7 +793,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/create-index.adoc - include::python-sdk:hello-world:example$index_hello_world.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/0cb1a2b78691286855d8999e8f22362c665cd0dc/modules/hello-world/examples/index_hello_world.py#L35">cluster.query_indexes().create_index("travel-sample", "index_name", ["name"])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -785,7 +863,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/learn/examples/services-and-indexes/indexes/create-idx-composite.n1ql">CREATE INDEX travel_info ON airline(name, id, icao, iata);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/create-idx-composite.n1ql">CREATE INDEX travel_info ON airline(name, id, icao, iata);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -802,7 +880,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/create-index.adoc - include::dotnet-sdk:hello-world:example$IndexHelloWorld.csx[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/33e79fe47bd6497fca95b1c4d8dbd992908a6056/modules/hello-world/examples/IndexHelloWorld.csx#L69-L73">await cluster.QueryIndexes.CreateIndexAsync(
+	"`travel-sample`",
+	"index_travel_info",
+	new[] { "name", "id", "icao", "iata" }
+);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -822,7 +904,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/create-index.adoc - include::java-sdk:hello-world:example$IndexHelloWorld.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/841c6e7ca8bd2052fa246a284cb63285e8de7c18/modules/hello-world/examples/IndexHelloWorld.java#L67-L71">cluster.queryIndexes().createIndex(
+  "travel-sample", 
+  "index_travel_info", 
+  Arrays.asList("name", "id", "icao", "iata")
+);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -842,7 +928,14 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/create-index.adoc - include::nodejs-sdk:hello-world:example$index-hello-world.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/d18efa4b9ae49708fca897fd35947d8c5fb7ee24/modules/hello-world/examples/index-hello-world.js#L37-L44">await cluster
+  .queryIndexes()
+  .createIndex('travel-sample', 'index_travel_info', [
+    'name',
+    'id',
+    'icao',
+    'iata',
+  ])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -862,7 +955,11 @@ For more information, see <a href="select.html#query-context" class="xref page">
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/create-index.adoc - include::python-sdk:hello-world:example$index_hello_world.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/0cb1a2b78691286855d8999e8f22362c665cd0dc/modules/hello-world/examples/index_hello_world.py#L41-L45">cluster.query_indexes().create_index(
+    "travel-sample",
+    "index_travel_info",
+    ["name", "id", "icao", "iata"]
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -896,7 +993,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/n1ql-language-reference/meta-idx-id.n1ql">CREATE INDEX idx_hotel_id ON hotel (META().id);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/n1ql-language-reference/meta-idx-id.n1ql">CREATE INDEX idx_hotel_id ON hotel (META().id);</code></pre>
 </div>
 </div>
 </div>
@@ -936,7 +1033,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/learn/examples/services-and-indexes/indexes/create-idx-array.n1ql">CREATE INDEX travel_sched ON route
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/create-idx-array.n1ql">CREATE INDEX travel_sched ON route
 (DISTINCT ARRAY v.day FOR v IN schedule END);</code></pre>
 </div>
 </div>
@@ -967,7 +1064,7 @@ For more information, see <a href="select.html#query-context" class="xref page">
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/learn/examples/services-and-indexes/indexes/create-idx-partial.n1ql">CREATE INDEX travel_eat ON landmark(name, id, address)
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/create-idx-partial.n1ql">CREATE INDEX travel_eat ON landmark(name, id, address)
 WHERE activity='eat';</code></pre>
 </div>
 </div>
@@ -1012,10 +1109,10 @@ If a query uses a covering index, the query can get all the data it needs from t
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#manage:manage-indexes/manage-indexes.adoc" class="xref unresolved">Manage Indexes</a></p>
+<p><a href="../manage/manage-indexes/manage-indexes.html" class="xref page">Manage Indexes</a></p>
 </li>
 <li>
-<p><a href="#manage:monitor/monitoring-indexes.adoc" class="xref unresolved">Monitor Indexes</a></p>
+<p><a href="../manage/monitor/monitoring-indexes.html" class="xref page">Monitor Indexes</a></p>
 </li>
 </ul>
 </div>
@@ -1026,12 +1123,12 @@ If a query uses a covering index, the query can get all the data it needs from t
 <ul>
 <li>
 <p><a href="#c-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">C</a>
-| <a href="#dotnet-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">.NET</a>
+| <a href="../../../dotnet-sdk/current/concept-docs/n1ql-query.html#indexes" class="xref page">.NET</a>
 | <a href="#go-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">Go</a>
-| <a href="#java-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">Java</a>
-| <a href="#nodejs-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">Node.js</a>
+| <a href="../../../java-sdk/current/concept-docs/n1ql-query.html#indexes" class="xref page">Java</a>
+| <a href="../../../nodejs-sdk/current/concept-docs/n1ql-query.html#indexes" class="xref page">Node.js</a>
 | <a href="#php-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">PHP</a>
-| <a href="#python-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">Python</a>
+| <a href="../../../python-sdk/current/concept-docs/n1ql-query.html#indexes" class="xref page">Python</a>
 | <a href="#ruby-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">Ruby</a>
 | <a href="#scala-sdk:concept-docs:n1ql-query.adoc#indexes" class="xref unresolved">Scala</a></p>
 </li>
@@ -1039,6 +1136,13 @@ If a query uses a covering index, the query can get all the data it needs from t
 </div>
 </div>
 </div>
+
+        <nav class="pagination">
+
+                    <span class="prev"><a href="indexes.html">Indexes</a></span>
+
+
+                    <span class="next"><a href="place-index.html">Index Placement</a></span>
 
 </article>
 </main>

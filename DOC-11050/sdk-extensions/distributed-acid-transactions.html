@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>Distributed ACID Transactions | Couchbase Docs (Preview)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/sdk-extensions/distributed-acid-transactions.html">
+<link rel="stylesheet" href="../_/css/site.css">
+<script src="../_/js/vendor/jquery.js"></script>
+<meta name="description" content="A &lt;em&gt;transaction&lt;/em&gt; is an atomic unit of work that contains one or more operations. It is a group of operations that are either committed to the database together or they are all undone from the database.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="sdk-extensions">
+<meta name="dcterms.identifier" content="master">
+<meta name="page-url" content="/sdk-extensions/distributed-acid-transactions.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon" sizes="any">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html">
+                    <img src="../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11050/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-extensions/edit/main/modules/ROOT/pages/distributed-acid-transactions.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="index.html">SDK Extension Libraries</a></li>
+<li class="crumb"><a href="distributed-acid-transactions.html">Distributed ACID Transactions</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Distributed ACID Transactions</h1>
+<div class="labels">
+<ul></ul>
+</div>
+
+
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+A <em>transaction</em> is an atomic unit of work that contains one or more operations. It is a group of operations that are either committed to the database together or they are all undone from the database.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Couchbase provides Distributed ACID Transactions for K-V (data) and Query operations&#8201;&#8212;&#8201;these are available through APIs in:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#cxx-txns::distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">C++</a></p>
+</li>
+<li>
+<p><a href="../dotnet-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">.NET</a></p>
+</li>
+<li>
+<p><a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">Java</a></p>
+</li>
+<li>
+<p><a href="#go-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">Go</a></p>
+</li>
+<li>
+<p><a href="#node-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">Node.js</a></p>
+</li>
+<li>
+<p><a href="#php-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">PHP</a></p>
+</li>
+<li>
+<p><a href="../python-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">Python</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="overview"><a class="anchor" href="#overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase transactions support ACID properties for protected actions on the database.</p>
+</div>
+<div class="paragraph">
+<p><strong>Atomicity</strong> ensures that a transaction provides all-or-nothing semantics&#8201;&#8212;&#8201;i.e.,  either all the documents modified in a transaction are committed, or none of the changes are committed. If there is a failure during transaction execution (such as the client crashing) all its changes are rolled back.</p>
+</div>
+<div class="paragraph">
+<p><strong>Consistency</strong> - Couchbase transactions ensure that the database moves from one consistent state to another and all derived artifacts such as indexes are updated automatically (though asynchronously from the transaction). Note that the traditional definition of consistency is not relevant as there are no foreign key constraints in Couchbase.</p>
+</div>
+<div class="paragraph">
+<p><strong>Isolation</strong> - Couchbase transactions guarantee that the changes made in a transaction are not visible until the transaction is committed. This is the ‘Read Committed’ level of isolation.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The isolation provided to transactional reads is stricter than Read Committed - it is Monotonic Atomic View (MAV). Monotonic Atomic View ensures that all effects of a previously committed transaction are observed  i.e. after commit a transaction is never partially observed.</p>
+</li>
+<li>
+<p>Lost Updates are always prevented by checking against the CAS value which behaves like an optimistic lock.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Durability</strong> is a property that ensures changes made by committed transactions are not lost if failures occur. Couchbase transactions provide tunable durability to tolerate different failure scenarios with 3 different levels:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>majority</code> - replicate to a majority of the replicas before acknowledging the write. This is the default level.</p>
+</li>
+<li>
+<p><code>majorityAndPersistActive</code> - replicate to a majority of the replicas and persist to disk on the primary before acknowledging the write</p>
+</li>
+<li>
+<p><code>persistToMajority</code> - persist to disk on a majority of the replicas before acknowledging the write.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>persistToMajority</code> provides the strongest protection from failures but is the least performant amongst the Durability levels. For more information, see <a href="../server/current/learn/data/durability.html#durability-requirements" class="xref page">Durability Levels</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Statement Level Atomicity is provided for N1QL statements that are executed inside a transaction. This means that if a query statement fails during execution for a reason like a unique key violation that statement is completely rolled back and the rest of the transaction continues. It is as though the statement is not part of the transaction. No other work in the transaction is affected by the failure of this statement. If the query statement succeeds, it would be committed or rolled back based on the outcome of the overall transaction.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="distributed-transactions-multi-node-and-multi-bucket"><a class="anchor" href="#distributed-transactions-multi-node-and-multi-bucket"></a>Distributed Transactions: Multi-node and Multi-Bucket</h3>
+<div class="paragraph">
+<p>Couchbase transactions are distributed and work across multiple documents which can reside on multiple nodes. Only nodes that contain data to be updated are affected by a transaction.</p>
+</div>
+<div class="paragraph">
+<p>Further, these documents can belong to multiple collections, scopes, and buckets.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="operations-supported-by-transactions-api"><a class="anchor" href="#operations-supported-by-transactions-api"></a>Operations Supported by Transactions API</h3>
+<div class="paragraph">
+<p>Transaction APIs support:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Key-Value <em>insert</em>, <em>update</em>, and <em>delete</em> operations, across any number of documents</p>
+</li>
+<li>
+<p>Seamless integration between Key-Value(KV) and Query DML statements (SELECT, INSERT, UPDATE, DELETE, UPSERT, MERGE) within transactions</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Multiple Key-Value and Query DML statements can be used together inside a transaction.</p>
+</div>
+<div class="paragraph">
+<p>When query DML statements are used within a transaction, <a href="../server/current/n1ql/n1ql-rest-api/index.html#table_xmr_grl_lt" class="xref page">request_plus</a> semantics are automatically used to ensure all updates done (and committed if done in a transaction) before the start of the transaction are visible to the query statements within it.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-transactions"><a class="anchor" href="#using-transactions"></a>Using Transactions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Consider a basic debit and credit transaction to transfer $1000.00 from Beth’s account to Andy’s account with an ACID transaction.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((txnctx) -&gt; {
+    // get the account documents for Andy and Beth
+    var andy = txnctx.get(collection, "Andy");
+    var andyContent = andy.contentAsObject();
+
+    int andyBalance = andyContent.getInt("account_balance");
+    var beth = txnctx.get(collection, "Beth");
+
+	var bethContent = beth.contentAsObject();
+    int bethBalance = bethContent.getInt("account_balance");
+
+    // if Beth has sufficient funds, make the transfer
+    if (bethBalance &gt; transferAmount) {
+	 	andyContent.put("account_balance", andyBalance + transferAmount);
+        txnctx.replace(andy, andyContent);
+
+        bethContent.put("account_balance", bethBalance - transferAmount);
+        txnctx.replace(beth, bethContent)
+        }
+        else throw new InsufficientFunds();
+   	// commit transaction - optional, can be omitted
+   	txnctx.commit();
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Java example above is a classic example to transfer money between two accounts.
+Note the use of a lambda function to express the transaction.</p>
+</div>
+<div class="paragraph">
+<p>The application supplies the logic for the transaction inside a lambda, including any conditional logic required, and the transactions API takes care of getting the transaction committed. If the transactions API encounters a transient error, such as a temporary conflict with another transaction, then it can rollback what has been done so far and run the lambda again.
+The application does not have to do these retries and error handling itself.</p>
+</div>
+<div class="paragraph">
+<p>For more information and examples of using the transactions API, see Java, C++, and C SDK documentation.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Use transactions only on documents less than 10 MB in size.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For application-level transactions, create and use transactions through Couchbase SDK APIs.</p>
+</div>
+<div class="paragraph">
+<p>Here is another example that combines the usage of key-value and query operations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">transactions.run((ctx) -&gt; {
+    QueryResult qr = ctx.query(inventory, "UPDATE hotel SET price = $1 WHERE name = $2",
+    TransactionQueryOptions.queryOptions()
+    .parameters(JsonArray.from("from £89", "Glasgow Grand Central")));
+    assert(qr.metaData().metrics().get().mutationCount() == 1);
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on distributed transactions through the SDK APIs, see:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">Java SDK</a></p>
+</li>
+<li>
+<p><a href="../dotnet-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">.NET SDK</a></p>
+</li>
+<li>
+<p><a href="#cxx-txns:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">C++ API</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For use-cases which need to run ad-hoc data changes, you can directly use transactional constructs in N1QL. This can be accomplished using cbq, Query Workbench, CLI, or REST API in Couchbase Server, or through SDKs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-n1ql hljs" data-lang="n1ql">START TRANSACTION;
+UPDATE CUSTOMER SET C_BALANCE = C_BALANCE - 1000 WHERE C_FIRST="Beth";
+UPDATE CUSTOMER SET C_BALANCE = C_BALANCE + 1000 WHERE C_FIRST=“Andy”;
+COMMIT ;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on using Query statements in transactions, see <a href="../server/current/n1ql/n1ql-language-reference/transactions.html" class="xref page">SQL++ Support for Couchbase Transactions</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Take a look at the <a href="https://transactions.couchbase.com">Query Transaction Simulator</a> which demonstrates how query statements work in transactions.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="structure-of-a-transaction"><a class="anchor" href="#structure-of-a-transaction"></a>Structure of a Transaction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Every transaction has a beginning and a commit or a rollback at the end.</p>
+</div>
+<div class="paragraph">
+<p>Every transaction consists of one or more KV operations, and optionally one or more query statements.</p>
+</div>
+<div class="sect2">
+<h3 id="create-transaction"><a class="anchor" href="#create-transaction"></a>Create Transaction</h3>
+<div class="paragraph">
+<p>A transaction begins when one of the following conditions are true:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A transactions is started from the SDK (<code>transactions.run((ctx)</code> in the example above)</p>
+</li>
+<li>
+<p>The <a href="../server/current/n1ql/n1ql-language-reference/begin-transaction.html" class="xref page"><code>BEGIN TRANSACTION</code></a> statement is executed (for example, say from the Query Workbench).</p>
+</li>
+<li>
+<p>A single query transaction which implicitly starts a transaction is executed, using <code>transactions.query(statement)</code> from the SDK, enabling "Run as TX" from the Query Workbench, or using the <code>tximplicit</code> query parameter.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="end-transaction"><a class="anchor" href="#end-transaction"></a>End Transaction</h3>
+<div class="paragraph">
+<p>A transaction can end when one of the following conditions are true:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A commit operation is executed (<code>ctx.commit()</code> in the example above)</p>
+</li>
+<li>
+<p>A rollback is executed (<code>ctx.rollback()</code>) or by executing the <a href="../server/current/n1ql/n1ql-language-reference/rollback-transaction.html" class="xref page"><code>ROLLBACK TRANSACTION</code></a> statement.</p>
+</li>
+<li>
+<p>Transaction callback completes successfully, in which case the transaction is committed implicitly.</p>
+</li>
+<li>
+<p>The application encounters an issue that can’t be resolved, in which case the transaction is automatically rolled back.</p>
+</li>
+<li>
+<p>A transaction expiry also results in a rollback.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="savepoint"><a class="anchor" href="#savepoint"></a>Savepoint</h3>
+<div class="paragraph">
+<p>A savepoint is a user-defined intermediate state that is available for the duration of the transaction. In a long running transaction, savepoints can be used to rollback to that state instead of rolling back the entire transaction in case of an error.</p>
+</div>
+<div class="paragraph">
+<p>Note that savepoints are only available within the context of a transaction (for example, 'ctx.query("SAVEPOINT")' inside the lambda) and are removed once a transaction is committed or rolled back.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="transactions-and-couchbase-services"><a class="anchor" href="#transactions-and-couchbase-services"></a>Transactions and Couchbase Services</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All Couchbase services only see committed data. Uncommitted transaction modifications (i.e. dirty data) are never visible to any Couchbase service.</p>
+</div>
+<div class="paragraph">
+<p>The indexes provided by the Index, Search, and Analytics services are not synchronously updated with the commits performed by transactions, and instead they are updated with <em>Eventual Consistency</em>. Hence, a query performed immediately after committing a transaction may not see the effects of the transaction.</p>
+</div>
+<div class="paragraph">
+<p>The Query Service provides the transactional scan consistency parameter, <code>request_plus</code>, which allows queries to wait for indexes to be appropriately updated, following a transaction. This <code>request_plus</code> parameter ensures that your queries operate on the latest visible data.
+When a query is used inside a transaction, the transactional scan consistency is set to <code>request_plus</code> by default, and hence ensures that the query will see all the committed changes.</p>
+</div>
+<div class="paragraph">
+<p>Note that you can choose to update the scan consistency level to <code>not_bounded</code> in some cases such as the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If your query uses USE KEYS.</p>
+</li>
+<li>
+<p>If you know that the data being accessed or consumed by the transaction has not been recently updated.</p>
+</li>
+<li>
+<p>If your transaction does not care about the latest data, for example UPSERT or INSERT statements.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="transactions-and-replication-xdcr"><a class="anchor" href="#transactions-and-replication-xdcr"></a>Transactions and Replication (XDCR)</h3>
+<div class="paragraph">
+<p><a href="../server/current/learn/clusters-and-availability/xdcr-overview.html" class="xref page">Cross Data Center Replication</a> (XDCR) supports eventual consistency of transactional changes. No uncommitted changes will be ever sent to the target clusters.  Once committed, the transactional changes will arrive one by one at the target. If the connection is lost midway while receiving a transaction it is possible for the target to receive a partial transaction.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Transactionally modified documents should only be replicated across clusters if no transactions involving the same documents can occur on those clusters simultaneously in a bidirectional XDCR.</p>
+</li>
+<li>
+<p>Always follow the steps to <a href="../server/current/learn/clusters-and-availability/xdcr-conflict-resolution.html#ensuring_safe_failover" class="xref page">Ensure Safe Failover</a> for information on failing a transactional application from one data center to another.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="transaction-mechanics"><a class="anchor" href="#transaction-mechanics"></a>Transaction Mechanics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Consider the transaction example to transfer funds from Beth’s account to Andy’s account.</p>
+</div>
+<div class="paragraph">
+<p>Assuming that the 2 documents involved in this transaction live in two different nodes, here are the high-level steps that the transaction follows:</p>
+</div>
+<div class="imageblock unresolved">
+<div class="content">
+<img src="transaction-mechanics-steps.png" alt="Transaction mechanics explaining the high-level steps that a transaction follows">
+</div>
+</div>
+<div class="paragraph">
+<p>Each execution of the transaction logic in an application is called an 'attempt' inside the overall transaction.</p>
+</div>
+<div class="sect2">
+<h3 id="active-transaction-record-entries"><a class="anchor" href="#active-transaction-record-entries"></a>Active Transaction Record Entries</h3>
+<div class="paragraph">
+<p>The first mechanic is that each of these attempts adds an entry to a metadata document in the Couchbase cluster. These metadata documents are called <em>Active Transaction Records</em>, or ATRs.
+ATRs are created and maintained automatically and are easily distinguishable by their prefix <code><em>_txn:atr-</code>. They are viewable and _should not be modified externally</em>.</p>
+</div>
+<div class="paragraph">
+<p>Each ATR contains entries for multiple attempts. Each ATR entry stores some metadata and, crucially, whether the attempt has been committed or not. In this way, the entry acts as the single point of truth for the transaction, which is essential for providing an 'atomic commit' during reads.
+In Step 1 above, a new entry is added to the ATR.</p>
+</div>
+<div class="paragraph">
+<p>By default, the metadata documents are created in the default collection of the bucket of the first mutated document in the transaction. However, you can choose to use a named collection to store metadata documents. See <a href="#Custom metadata collections">[Custom metadata collections]</a> for details.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="staged-mutations"><a class="anchor" href="#staged-mutations"></a>Staged Mutations</h3>
+<div class="paragraph">
+<p>The second mechanic is that mutating a document inside a transaction, does not directly change the body of the document. Instead, the post-transaction version of the document is staged alongside the document (technically in its <a href="#java-sdk:concept-docs/xattr.adoc" class="xref unresolved">extended attributes</a> (XATTRs)). In this way, all changes are invisible to all parts of the Couchbase cluster until the commit point is reached.</p>
+</div>
+<div class="paragraph">
+<p>These staged document changes effectively act as a lock against other transactions trying to modify the document, preventing write-write conflicts.</p>
+</div>
+<div class="paragraph">
+<p>In Steps 2 and 3 in the illustration above, the transaction id and the content for the first and second mutations are staged in the XATTRs of their respective documents.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cleanup"><a class="anchor" href="#cleanup"></a>Cleanup</h3>
+<div class="paragraph">
+<p>There are safety mechanisms to ensure that leftover staged changes from a failed transaction cannot block live transactions indefinitely. These include an asynchronous cleanup process that is started with the creation of the <code>Transactions</code> object, and scans for expired transactions created by any application, on all buckets.</p>
+</div>
+<div class="paragraph">
+<p>Note that if an application is not running, then this cleanup is also not running.</p>
+</div>
+<div class="paragraph">
+<p>The cleanup process is detailed in <a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html#asynchronous-cleanup" class="xref page">Asynchronous Cleanup</a>.</p>
+</div>
+<div class="paragraph">
+<p>In Steps 4 and 5 in the illustration above, the documents “userA” and “userB” are unstaged, i.e., removed from xAttrs and replaced with the document body.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="committing"><a class="anchor" href="#committing"></a>Committing</h3>
+<div class="paragraph">
+<p>Only once the application logic (lambda) has successfully run to conclusion, will the attempt be committed. This updates the attempt entry, which can be used as a signal by transactional actors as to whether to use the post-transaction version of a document from its XATTRs. Hence updating the ATR entry is effectively an 'atomic commit' switch for the transaction.</p>
+</div>
+<div class="paragraph">
+<p>After this atomic commit point is reached, the individual documents are committed (or "unstaged"). This provides an eventually consistent commit for non-transactional actors (including standard Key-Value reads). Transactions will begin reading the post-transactional version of documents as soon as the ATR entry is changed to committed.</p>
+</div>
+<div class="paragraph">
+<p>In Step 4 in the illustration above, the transaction attempt is marked as “Committed” in the ATR and the list of document ids involved in the transaction is updated.</p>
+</div>
+<div class="paragraph">
+<p>In Step 7 in the illustration above, the transaction attempt is marked as “Completed” and is removed from the ATR.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-metadata-collections"><a class="anchor" href="#custom-metadata-collections"></a>Custom Metadata Collections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, metadata documents are created in the default collection of the bucket of the first mutated document in the transaction.</p>
+</div>
+<div class="paragraph">
+<p>The metadata documents contain, for documents involved in each transaction, the document’s key and the name of the bucket, scope, and collection it exists on.</p>
+</div>
+<div class="paragraph">
+<p>In cases where deployments need a more granular way of organizing and sharing data across buckets, scopes, and collections, a custom metadata collection with appropriate RBAC permissions can be used to control visibility.  You can also use a custom metadata collection if you wish to remove the default collection.</p>
+</div>
+<div class="paragraph">
+<p>To define a custom metadata collection, use the following configuration parameter:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Transactions transactions = Transactions.create(cluster,
+        TransactionConfigBuilder.create()
+                .metadataCollection(metadataCollection));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When specified:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Any transactions created from this Transactions object, will create and use metadata in that collection.</p>
+</li>
+<li>
+<p>The asynchronous cleanup started by this Transactions object will be looking for expired transactions only in this collection.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more information, see <a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html#custom-metadata-collections" class="xref page">Custom Metadata Collections</a> in the Transactions API documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="implications-when-using-transactions"><a class="anchor" href="#implications-when-using-transactions"></a>Implications When Using Transactions</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The number of writes required by a transactional update is greater than the number required for a non-transactional update. Thus transactional updates may be less performant than non-transactional updates.</p>
+<div class="paragraph">
+<p>Note that data within a single document is always updated atomically (without the need for transactions): therefore,whenever practical, design your data model such that a single document holds values that need to be updated atomically.</p>
+</div>
+</li>
+<li>
+<p>Non-transactional updates should not be made to any document involved in a transaction while the transaction is itself in progress: this prevents the non-transactional update from being overwritten.</p>
+</li>
+<li>
+<p>When using Query statements in a transaction, we recommend that you limit the number of mutations within a transaction as the delta table grows with every mutation resulting in increased memory usage. Use the “memory-quota” setting in the query service to manage the amount of memory consumed by delta tables.</p>
+<div class="paragraph">
+<p>For ETL-like loads or massive updates that need ACID guarantees, consider using <a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html#single-query-transactions" class="xref page">single query transactions</a>  directly from the Query Workbench, CLI, or cbq. Single query transactions, also referred to as <em>implicit transactions</em>, do not require a delta table to be maintained.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deployment-considerations"><a class="anchor" href="#deployment-considerations"></a>Deployment Considerations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If using a single node cluster (for example, during development), then note that the default number of replicas for a newly created bucket is 1. If left at this default, then all durable Key-Value writes, which are used by transactions, will fail with a DurabilityImpossibleException. This setting can be changed via <a href="../server/current/manage/manage-buckets/create-bucket.html#couchbase-bucket-settings" class="xref page">GUI</a> or <a href="#server:cli:cbcli/couchbase-cli-bucket-create.adoc#options" class="xref unresolved">command line</a>. If changed on a bucket that already exists, the server needs to be rebalanced.</p>
+</div>
+<div class="paragraph">
+<p>Use of transactions requires Network Time Protocol (NTP) to be used to synchronize time across all cluster-nodes. See <a href="../server/current/install/synchronize-clocks-using-ntp.html" class="xref page">Clock Sync with NTP</a> for details.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="settings-and-parameters"><a class="anchor" href="#settings-and-parameters"></a>Settings and Parameters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Transactions can be configured using a number of settings and request-level parameters.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Durability level</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html#configuration" class="xref page">java-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc#configuration</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scan consistency</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../server/current/settings/query-settings.html#transactional-scan-consistency" class="xref page">server:settings:query-settings.adoc#transactional-scan-consistency</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Request-level Query parameters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Request-level parameters when using queries within transactions. See <a href="../server/current/n1ql/n1ql-language-reference/transactions.html#settings-and-parameters" class="xref page">N1QL Transactions Settings</a> for details.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transaction expiry timer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Configures how long a transaction should last before it is rolled back.
+The transaction expiry timer (which is configurable) will begin ticking once the transaction starts.
+The default value is 15 seconds. Within this timeframe, if there are concurrency or node issues, a combination of wait and retry operations are used until the transaction reaches this time.
+For more information, see <a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html#error-handling" class="xref page">Transactions Error Handling</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tximplicit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies that a DML statement is a singleton transaction. By default, it is set to false.
+See <a href="../server/current/settings/query-settings.html#tximplicit" class="xref page">tximplicit</a> for details.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kvtimeout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the maximum time to wait for a KV operation before timing out. The default value is 2.5s. See <a href="../server/current/settings/query-settings.html#kvtimeout" class="xref page">kvtimeout</a> for details.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">atrcollection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the collection where the active transaction records (ATRs) and client records are stored. The collection must be present. If not specified, the ATR is stored in the default collection in the default scope in the bucket containing the first mutated document within the transaction. See
+<a href="../server/current/settings/query-settings.html#atrcollection_req" class="xref page">atrcollection</a> for details.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="related-topics"><a class="anchor" href="#related-topics"></a>Related Topics</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#cxx-txns::distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">cxx-txns::distributed-acid-transactions-from-the-sdk.adoc</a></p>
+</li>
+<li>
+<p><a href="../dotnet-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">Distributed Transactions from the .NET SDK</a></p>
+</li>
+<li>
+<p><a href="../java-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">Distributed ACID Transactions from the Java SDK</a></p>
+</li>
+<li>
+<p><a href="#go-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">go-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc</a></p>
+</li>
+<li>
+<p><a href="#node-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">node-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc</a></p>
+</li>
+<li>
+<p><a href="#php-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc" class="xref unresolved">php-sdk:howtos:distributed-acid-transactions-from-the-sdk.adoc</a></p>
+</li>
+<li>
+<p><a href="../python-sdk/current/howtos/distributed-acid-transactions-from-the-sdk.html" class="xref page">Distributed Transactions from the Python SDK</a></p>
+</li>
+<li>
+<p><a href="../server/current/n1ql/n1ql-language-reference/transactions.html" class="xref page">SQL++ Support for Couchbase Transactions</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"SDKs","components":["dotnet-sdk","java-sdk","nodejs-sdk","python-sdk","sdk-extensions"],"url":"/home/sdk.html","latestVersions":{"dotnet-sdk":"3.3","java-sdk":"3.3","nodejs-sdk":"4.1","python-sdk":"4.0","sdk-extensions":"master"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../_/js/site.js"></script>
+<script async src="../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+</body>
+</html>

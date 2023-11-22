@@ -12,13 +12,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
-<title>Selecting Data | Couchbase Docs (Staging)</title>
+<title>Selecting Data | Couchbase Docs (Preview)</title>
 <link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11050/server/current/guides/select.html">
 <link rel="stylesheet" href="../../../_/css/site.css">
 <script src="../../../_/js/vendor/jquery.js"></script>
 <meta name="description" content="How to use a SQL++ selection query to read data from a data source and return results.">
 <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+        <link rel="prev" href="query.html">
+        <link rel="next" href="join.html">
 
+
+
+                <link rel="prev" href="query.html">
+
+
+                <link rel="next" href="join.html">
 
 
 <meta name="dcterms.subject" content="server">
@@ -26,7 +34,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="page-url" content="/server/current/guides/select.html">
 <meta name="page-nav-header-levels" content="0">
 <meta name="generator" content="Antora 3.1.4">
-<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
 </head>
 <body class="article">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -56,7 +65,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </nav>
       </div>
   </div>
-
   <div class="header-bottom-row" id="topbar-menu">
     <div class="container">
         <nav  class="navbar navbar-new-bottom">
@@ -122,7 +130,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </ul>
 </div>
     <div class="toc-menu"></div>
-    
     <div class="is-this-helpful-box">
       <h4> Is this page helpful?</h4>
       <div class="btn-row">
@@ -133,32 +140,55 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </a>
         <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
       </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 
 </aside>
 
-<style>
-
-</style>
-<div class="feedback">
-  
-
-  <a href="#" class="btn any-feedback-btn" 
-    id="feedbackTrigger"
-    data-jira-component-id="">
-    Report Feedback? </a>
-
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
 </div>
 
-<main
-    class="article " 
-    data-ceiling="topbar">
-
+<main class="article" data-ceiling="topbar">
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
-<li class="crumb"><a href="../index.html">server</a></li>
+<li class="crumb"><a href="../introduction/intro.html">Couchbase Server</a></li>
+<li class="crumb">Develop</li>
+<li class="crumb"><a href="intro.html">Developer Guides</a></li>
+<li class="crumb"><a href="query.html">Selection Queries</a></li>
+<li class="crumb"><a href="select.html">Selecting Data</a></li>
 </ul>
 </nav>
 </div>
@@ -172,7 +202,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 
 </div>
-<div id="preamble">
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
@@ -200,7 +234,7 @@ To read data from a data source using SQL++, you must use a selection query; tha
 <h2 id="before-you-begin"><a class="anchor" href="#before-you-begin"></a>Before You Begin</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>If you want to try out the examples in this section, follow the instructions given in <a href="#getting-started:do-a-quick-install.adoc" class="xref unresolved">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.</p>
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="xref page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.</p>
 </div>
 </div>
 </div>
@@ -213,7 +247,7 @@ To read data from a data source using SQL++, you must use a selection query; tha
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#tools:cbq-shell.adoc" class="xref unresolved">tools:cbq-shell.adoc</a></p>
+<p><a href="../tools/cbq-shell.html" class="xref page">cbq: The Command Line Shell for SQL++</a></p>
 <div class="literalblock">
 <div class="content">
 <pre>cbq&gt;</pre>
@@ -221,10 +255,10 @@ To read data from a data source using SQL++, you must use a selection query; tha
 </div>
 </li>
 <li>
-<p><a href="#tools:query-workbench.adoc" class="xref unresolved">Query Workbench</a></p>
-<div class="imageblock text-left unresolved">
+<p><a href="../tools/query-workbench.html" class="xref page">Query Workbench</a></p>
+<div class="imageblock text-left">
 <div class="content">
-<img src="manage:manage-ui/queryTab.png" alt="queryTab" width="100">
+<img src="../manage/_images/manage-ui/queryTab.png" alt="queryTab" width="100">
 </div>
 </div>
 </li>
@@ -269,13 +303,13 @@ To read data from a data source using SQL++, you must use a selection query; tha
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/query/select-clause.n1ql">SELECT "Hello world" AS greeting;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/guides/examples/query/select-clause.n1ql">SELECT "Hello world" AS greeting;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/query/select-clause.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/guides/examples/query/select-clause.jsonc">[
   {
     "greeting": "Hello world"
   }
@@ -290,7 +324,13 @@ The result includes each row found.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">Unresolved include directive in modules/guides/pages/select.adoc - include::dotnet-sdk:hello-world:example$StartUsing.cs[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp" data-source-url="https://github.com/couchbase/docs-sdk-dotnet/blob/33e79fe47bd6497fca95b1c4d8dbd992908a6056/modules/hello-world/examples/StartUsing.cs#L42-L48">// Call the QueryAsync() function on the cluster object and store the result.
+var queryResult = await cluster.QueryAsync&lt;dynamic&gt;("select \"Hello World\" as greeting");
+
+// Iterate over the rows to access result data and print to the terminal.
+await foreach (var row in queryResult) {
+    Console.WriteLine(row);
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -304,7 +344,11 @@ The result object includes each row found.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Unresolved include directive in modules/guides/pages/select.adoc - include::java-sdk:hello-world:example$StartUsing.java[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java" data-source-url="https://github.com/couchbase/docs-sdk-java/blob/841c6e7ca8bd2052fa246a284cb63285e8de7c18/modules/hello-world/examples/StartUsing.java#L67-L71">// Call the query() method on the cluster object and store the result.
+QueryResult result = cluster.query("select \"Hello World\" as greeting");
+
+// Return the result rows with the rowsAsObject() method and print to the terminal.
+System.out.println(result.rowsAsObject());</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -318,7 +362,13 @@ The result object includes an array of rows found.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs">Unresolved include directive in modules/guides/pages/select.adoc - include::nodejs-sdk:hello-world:example$n1ql-hello-world.js[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-nodejs hljs" data-lang="nodejs" data-source-url="https://github.com/couchbase/docs-sdk-nodejs/blob/d18efa4b9ae49708fca897fd35947d8c5fb7ee24/modules/hello-world/examples/n1ql-hello-world.js#L10-L16">// Call the query() function on the cluster object and store the result.
+const result = await cluster.query('SELECT "Hello World" as greeting')
+
+// Iterate over the rows to access result data and print to the terminal.
+result.rows.forEach((row) =&gt; {
+  console.log(row)
+})</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -332,7 +382,12 @@ The result object includes an array of rows found.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">Unresolved include directive in modules/guides/pages/select.adoc - include::python-sdk:hello-world:example$n1ql_hello_world.py[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python" data-source-url="https://github.com/couchbase/docs-sdk-python/blob/0cb1a2b78691286855d8999e8f22362c665cd0dc/modules/hello-world/examples/n1ql_hello_world.py#L9-L14"># Call the query() function on the cluster object and store the result.
+result = cluster.query("SELECT \"Hello World\" as greeting")
+
+# Iterate over the rows to access result data and print to the terminal.
+for row in result.rows():
+    print(row)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -378,14 +433,14 @@ The sample dataset already contains all the indexes you need to run the example 
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/query/from-clause.n1ql">SELECT airportname, city
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/guides/examples/query/from-clause.n1ql">SELECT airportname, city
 FROM `travel-sample`.inventory.airport;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/query/from-clause.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/guides/examples/query/from-clause.jsonc">[
   {
     "airportname": "Calais Dunkerque",
     "city": "Calais"
@@ -455,9 +510,9 @@ When a query specifies a data source using the full path to a keyspace, the quer
 </li>
 </ol>
 </div>
-<div class="imageblock unresolved">
+<div class="imageblock">
 <div class="content">
-<img src="tools:query-workbench-context.png" alt="The query context menu with `travel-sample.inventory` selected">
+<img src="../tools/_images/query-workbench-context.png" alt="The query context menu with `travel-sample.inventory` selected">
 </div>
 </div>
 </div>
@@ -471,7 +526,7 @@ When a query specifies a data source using the full path to a keyspace, the quer
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/query/context-set.n1ql">\SET -query_context travel-sample.inventory;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/guides/examples/query/context-set.n1ql">\SET -query_context travel-sample.inventory;</code></pre>
 </div>
 </div>
 </div>
@@ -500,9 +555,9 @@ To specify the data source using the bucket name only, you must unset the query 
 <div class="paragraph">
 <p>The scope drop-down menu disappears.</p>
 </div>
-<div class="imageblock unresolved">
+<div class="imageblock">
 <div class="content">
-<img src="tools:query-workbench-context-unset.png" alt="The context controls with the query context unset">
+<img src="../tools/_images/query-workbench-context-unset.png" alt="The context controls with the query context unset">
 </div>
 </div>
 </div>
@@ -516,7 +571,7 @@ To specify the data source using the bucket name only, you must unset the query 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/guides/examples/query/context-unset.n1ql">\UNSET -query_context;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/guides/examples/query/context-unset.n1ql">\UNSET -query_context;</code></pre>
 </div>
 </div>
 </div>
@@ -547,7 +602,7 @@ For more information, see <a href="#query-context">Setting the Query Context</a>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/select/query-keyspace-idx.n1ql">SELECT t.airportname, t.city
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/select/query-keyspace-idx.n1ql">SELECT t.airportname, t.city
 FROM   airport t
 WHERE  tz = "America/Anchorage"
        AND geo.alt &gt;= 2100;</code></pre>
@@ -556,7 +611,7 @@ WHERE  tz = "America/Anchorage"
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/select/query-keyspace-idx.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/select/query-keyspace-idx.jsonc">[
   {
         "airportname": "Anaktuvuk Pass Airport",
         "city": "Anaktuvuk Pass",
@@ -590,7 +645,7 @@ For more information, see <a href="#query-context">Setting the Query Context</a>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/select/limit-number.n1ql">SELECT name, address, city, country, url
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/select/limit-number.n1ql">SELECT name, address, city, country, url
 FROM hotel
 WHERE vacancy = true
 LIMIT 2;</code></pre>
@@ -599,7 +654,7 @@ LIMIT 2;</code></pre>
 <div class="listingblock">
 <div class="title">Result</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/select/limit-result.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/select/limit-result.jsonc">[
   {
     "address": "Capstone Road, ME7 3JE",
     "city": "Medway",
@@ -643,7 +698,7 @@ For more information, see <a href="#query-context">Setting the Query Context</a>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/select/order-by.n1ql">SELECT city, name
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/select/order-by.n1ql">SELECT city, name
 FROM landmark
 ORDER BY city DESC, name ASC
 LIMIT 5;</code></pre>
@@ -652,7 +707,7 @@ LIMIT 5;</code></pre>
 <div class="listingblock">
 <div class="title">Results:</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/b017bb844aec65a56af2089501b8e7deb60d6589/modules/n1ql/examples/select/order-by.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/select/order-by.jsonc">[
   {
     "city": "Évreux",
     "name": "Cafe des Arts"
@@ -723,12 +778,12 @@ LIMIT 5;</code></pre>
 <ul>
 <li>
 <p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">C</a>
-| <a href="#dotnet-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">.NET</a>
+| <a href="../../../dotnet-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">.NET</a>
 | <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Go</a>
-| <a href="#java-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Java</a>
-| <a href="#nodejs-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Node.js</a>
+| <a href="../../../java-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Java</a>
+| <a href="../../../nodejs-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Node.js</a>
 | <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">PHP</a>
-| <a href="#python-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Python</a>
+| <a href="../../../python-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Python</a>
 | <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Ruby</a>
 | <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Scala</a></p>
 </li>
@@ -736,6 +791,13 @@ LIMIT 5;</code></pre>
 </div>
 </div>
 </div>
+
+        <nav class="pagination">
+
+                    <span class="prev"><a href="query.html">Selection Queries</a></span>
+
+
+                    <span class="next"><a href="join.html">Querying Across Relationships</a></span>
 
 </article>
 </main>
