@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>Migrating from SDK2 to SDK3 API | Couchbase Docs (Preview)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11568/dotnet-sdk/current/project-docs/migrating-sdk-code-to-3.n.html">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="The 3.0 API breaks the existing 2.0 APIs in order to provide a number of improvements. Collections and Scopes are introduced.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="dotnet-sdk">
+<meta name="dcterms.identifier" content="3.3">
+<meta name="page-url" content="/dotnet-sdk/current/project-docs/migrating-sdk-code-to-3.n.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/couchbase/docs-sdk-dotnet/edit/release/3.3/modules/project-docs/pages/migrating-sdk-code-to-3.n.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../hello-world/overview.html">.NET SDK</a></li>
+<li class="crumb">Project Docs</li>
+<li class="crumb"><a href="compatibility.html">Compatibility</a></li>
+<li class="crumb"><a href="migrating-sdk-code-to-3.n.html">Migrating to SDK 3 API</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Migrating from SDK2 to SDK3 API</h1>
+<div class="labels">
+<ul>
+<li class="concept"><span><i class="far fa-lightbulb"></i> concept</span></li>
+</ul>
+</div>
+
+
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+The 3.0 API breaks the existing 2.0 APIs in order to provide a number of improvements. Collections and Scopes are introduced.
+The Document class and structure has been completely removed from the API, and the returned value is now <code>Result</code>.
+Retry behavior is more proactive, and lazy bootstrapping moves all error handling to a single place.
+Individual behaviour changes across services are explained here.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>In following Microsoft recommendations on .NET, the API has also been changed to surface many of the APIs as async using Tasks.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fundamentals"><a class="anchor" href="#fundamentals"></a>Fundamentals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before this guide dives into the language-specific technical component of the migration, it is important to understand the high level changes first.
+As a migration guide, this document assumes you are familiar with the previous generation of the SDK and does not re-introduce SDK API 2 concepts.
+We recommend familiarizing yourself with the new SDK first by reading at least the <a href="../hello-world/start-using-sdk.html" class="xref page">getting started guide</a>, and browsing through the other chapters a little.</p>
+</div>
+<div class="sect2">
+<h3 id="terminology"><a class="anchor" href="#terminology"></a>Terminology</h3>
+<div class="paragraph">
+<p>The concept of a <code>Cluster</code> and a <code>Bucket</code> remain the same, but a fundamental new layer is introduced into the API: <code>Collections</code> and their <code>Scopes</code>.
+Collections are logical data containers inside a Couchbase bucket that let you group similar data just like a <em>Table</em> does in a relational database&#8201;&#8212;&#8201;although documents inside a collection do not need to have the same structure.
+Scopes allow the grouping of collections into a namespace, which is very usfeul when you have multilpe tenants acessing the same bucket.
+Couchbase Server includes support for collections as a <a href="#6.5@server:developer-preview:preview-mode.adoc" class="xref unresolved">developer preview</a> in version 6.5, and as a first class concept of the programming model from <a href="#7.1@server:learn:data/scopes-and-collections.adoc" class="xref unresolved">version 7.0.</a></p>
+</div>
+<div class="paragraph">
+<p>Note that the SDKs include the feature from SDK 3.0, to allow easier migration.</p>
+</div>
+<div class="paragraph">
+<p>In the previous SDK generation, particularly with the <code>KeyValue</code> API, the focus has been on the codified concept of a <code>Document</code>.
+Documents were read and written and had a certain structure, including the <code>id</code>/<code>key</code>, content, expiry (<code>ttl</code>), and so forth.
+While the server still operates on the logical concept of documents, we found that this model in practice didn&#8217;t work so well for client code in certain edge cases.
+As a result we have removed the <code>Document</code> class/structure completely from the API.
+The new API follows a clear scheme: each command takes required arguments explicitly, and an option block for all optional values.
+The returned value is always of type <code>Result</code>.
+This avoids method overloading bloat in certain languages, and has the added benefit of making it easy to grasp APIs evenly across services.</p>
+</div>
+<div class="paragraph">
+<p>As an example here is a KeyValue document fetch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">IGetResult getResult = await collection.GetAsync("doc1");
+var docContent = getResult.ContentAs&lt;dynamic&gt;();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compared to the 2.x SDK, you will note that the result is now oriented around the result of the operation.
+Retrieval of the content of the document is accomplished through the <code>ContentAs()</code> method.
+Also, in most cases you do not need to check the result object returned as exceptions are thrown for most error conditions.
+Check the API reference for details.</p>
+</div>
+<div class="paragraph">
+<p>Compare this to a SQL++ (formerly N1QL) query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">IQueryResult&lt;dynamic&gt; result = await cluster.QueryAsync&lt;dynamic&gt;("select 1 = 1", QueryOptions.Create().Timeout(TimeSpan.FromSeconds(3)));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since documents also fundamentally handled the serialization aspects of content, two new concepts are introduced: the <code>Serializer</code> and the <code>Transcoder</code>.
+Out of the box the SDKs ship with a JSON serializer which handles the encoding and decoding of JSON.
+You&#8217;ll find the serializer exposes the options for methods like N1QL queries and KeyValue subdocument operations,.</p>
+</div>
+<div class="paragraph">
+<p>The KV API extends the concept of the serializer to the <code>Transcoder</code>.
+Since you can also store non-JSON data inside a document, the <code>Transcoder</code> allows the writing of binary data as well.
+It handles the object/entity encoding and decoding, and if it happens to deal with JSON makes uses of the configured <code>Serializer</code> internally.
+See the <em>Serialization and Transcoding</em> section below for details.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="what-to-look-out-for"><a class="anchor" href="#what-to-look-out-for"></a>What to look out for</h3>
+<div class="paragraph">
+<p>The SDKs are more proactive in retrying with certain errors and in certain situations, within the timeout budget given by the user&#8201;&#8212;&#8201;as an example, temporary failures or locked documents are now being retried by default&#8201;&#8212;&#8201;making it even easier to program against certain error cases.
+This behavior is customizable in a <code>RetryStrategy</code>, which can be overridden on a per operation basis for maximum flexibility if you need it.</p>
+</div>
+<div class="paragraph">
+<p>Note, most of the bootstrap sequence is now lazy (happening behind the scenes).
+For example, opening a bucket is not raising an error anymore, but it will only show up once you perform an actual operation.
+The reason behind this is to spare the application developer the work of having to do error handling in more places than needed.
+A bucket can go down 2ms after you opened it, so you have to handle request failures anyway.
+By delaying the error into the operation result itself, there is only one place to do the error handling.
+There will still be situations why you want to check if the resource you are accessing is available before continuing the bootstrap;
+for this, we have the diagnostics and ping commands at each level which allow you to perform those checks eagerly.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="language-specifics"><a class="anchor" href="#language-specifics"></a>Language Specifics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that you are familiar with the general theme of the migration, the next sections dive deep into the specifics.
+First, installation and configuration are covered, then we talk about exception handling, and then each service (i.e. Key/Value, Query,&#8230;&#8203;) is covered separately.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installation-and-configuration"><a class="anchor" href="#installation-and-configuration"></a>Installation and Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The .NET SDK 3.x is available for download from the same resources as the previous generation 2.0 SDK:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>From NuGet (the most popular choice): <code>Install-Package CouchbaseNetClient -Version 3.2.7</code></p>
+</li>
+<li>
+<p>By downloading a <a href="https://packages.couchbase.com/clients/net/3.0/CouchbaseNetClient-3.2.7.zip">zip</a> file directly</p>
+</li>
+<li>
+<p>(Not officially supported) By cloning and building the source code directly on <a href="https://github.com/couchbase/couchbase-net-client/tree/master">github</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Please see the <a href="sdk-release-notes.html" class="xref page">Release Notes</a> for up-to-date information.</p>
+</div>
+<div class="paragraph">
+<p>Couchbase .NET SDK 3.2.7 build targets include .NET Standard 2.0, .NET Standard 2.1, .NET CoreApp 3.1, .NET 5 and .NET 6.
+This was chosen so .NET Full Framework 4.8 can be supported along with .NET Core 3.x and earlier and follows the suggested path for library authors as well as the latest .NET Versions.
+The goal is to use the latest and greatest .NET Core libraries available, but still allow fallback for developers still using .NET Full Framework as they progress towards .NET Standard compliance.</p>
+</div>
+<div class="paragraph">
+<p>While the older target Frameworks are still targeted, Couchbase suggests that users target .NET 6 as it provides the latest, most performant .NET version.</p>
+</div>
+<div class="sect2">
+<h3 id="dependencies"><a class="anchor" href="#dependencies"></a>Dependencies</h3>
+<div class="paragraph">
+<p>There are few dependency changes from SDK 2.x.
+SDK 3.0 and later no longer has any dependencies on .NET Framework 4.5.2.
+It is based on .NET Standard 2.0 and .NET Standard 2.1.
+One dependency addition is DnsClient, which was previously in SDK 2.x through a transitive dependency via the <a href="https://github.com/couchbaselabs/Couchbase.Extensions/blob/master/docs/dns-srv.md">Couchbase.Extensions.DnsDiscovery</a> project.</p>
+</div>
+<div class="paragraph">
+<p>Current dependencies (as of 3.2.7):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>App.Metrics (&gt;= 4.2.0)</p>
+</li>
+<li>
+<p>App.Metrics.Abstractions (&gt;= 4.2.0)</p>
+</li>
+<li>
+<p>DnsClient (&gt;= 1.3.2)</p>
+</li>
+<li>
+<p>Microsoft.CSharp (&gt;= 4.7.0)</p>
+</li>
+<li>
+<p>Microsoft.Extensions.Logging.Abstractions (&gt;= 3.1.21)</p>
+</li>
+<li>
+<p>Microsoft.Extensions.ObjectPool (&gt;= 6.0.0)</p>
+</li>
+<li>
+<p>Newtonsoft.Json (&gt;= 11.0.2)</p>
+</li>
+<li>
+<p>System.Diagnostics.DiagnosticSource (&gt;= 5.0.1)</p>
+</li>
+<li>
+<p>System.IO.Pipelines (&gt;= 5.0.1)</p>
+</li>
+<li>
+<p>System.Linq.Async (&gt;= 4.1.1)</p>
+</li>
+<li>
+<p>System.Runtime.CompilerServices.Unsafe (&gt;= 6.0.0)</p>
+</li>
+<li>
+<p>System.Text.Json (&gt;= 6.0.0)</p>
+</li>
+<li>
+<p>System.Threading.Channels (&gt;= 5.0.0)</p>
+</li>
+<li>
+<p>System.Threading.Tasks.Dataflow (&gt;= 5.0.0)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that if using the NuGet package these dependencies will all be handled for you by the NuGet Package Manager tool in Visual Studio or Visual Studio Code.
+See the <a href="../hello-world/start-using-sdk.html" class="xref page">Start Using</a> document for information on adding it via NuGet.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring-the-environment"><a class="anchor" href="#configuring-the-environment"></a>Configuring the Environment</h3>
+<div class="paragraph">
+<p>Configuration is essentially the same as SDK 2.x retaining capabilites with less tunable properties.
+Instead of using a <code>ClientConfiguration</code> object, you would use a <code>ClusterOptions</code> object.
+For example, to use a custom timeout for Key/Value (K/V) operations in SDK 2.x you would do something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 2.0 custom k/v timeout
+var config = new ClientConfiguration
+{
+    DefaultOperationLifespan = (uint)TimeSpan.FromMilliseconds(5).TotalMilliseconds
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can perform the same custom K/V timeout in SDK 3.0, however, you will use the <code>ClusterOptions</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 3.0 custom k/v timeout
+var options = new ClusterOptions
+{
+    KvTimeout = TimeSpan.FromMilliseconds(5)
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The configuration options are passed into one of the static <code>Cluster.ConnectAsync(&#8230;&#8203;)</code> methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = await Cluster.ConnectAsync("couchbase://localhost", options);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to free all resources associated with a cluster, simply call the <code>.Dispose()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">cluster.Dispose();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When creating a configuration, you may customize settings through the ClusterOptions or the connection string.
+See <a href="../ref/client-settings.html" class="xref page">client configuration</a> for further configuration details.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">  // Will set the max http connections to 23
+  var config = new ClusterOptions()
+  {
+      UserName = "user",
+      Password = "pass",
+      MaxHttpConnections =  23
+  };
+
+  config.WithConnectionString("couchbase://localhost");
+
+  cluster = await Cluster.ConnectAsync(config);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above has this equivalent with a connection string</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// Will set the max http connections to 23
+var config = new ClusterOptions()
+{
+    Password = "pass",
+    Username = "user"
+};
+
+config.WithConnectionString("couchbase://localhost?max_kv_connections=23");
+
+cluster = await Cluster.ConnectAsync(config);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The SDK offers a configuration API for customizing bootstrapping, timeouts, reliability and performance tuning.
+Configuration options have changed since the 2.x release.
+See the <a href="../ref/client-settings.html" class="xref page">configuration section</a> for specifics.</p>
+</div>
+<div class="paragraph">
+<p>At the end of this guide you&#8217;ll find a <a href="#configurations-options-reference">reference</a> that describes the SDK 2 environment options and their SDK 3 equivalents where applicable.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="authentication"><a class="anchor" href="#authentication"></a>Authentication</h3>
+<div class="paragraph">
+<p>Since SDK 2 supports Couchbase Server clusters older than 5.0, it had to support both Role-Based access control as well as bucket-level passwords.
+The minimum cluster version supported by SDK 3 is Server 5.0, which means that only RBAC is supported.
+This is why you can set the username and password when directly connecting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = await Cluster.ConnectAsync("couchbase://localhost", "user", "pass");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is just a shorthand for:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = await Cluster.ConnectAsync("couchbase://localhost", new ClusterOptions
+{
+    UserName = "user",
+    Password = "pass"
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configuring TLS/SSL is done by using the "couchbases://" scheme in the connection string:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = await Cluster.ConnectAsync("couchbases://localhost", new ClusterOptions
+{
+    UserName = "user",
+    Password = "pass"
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may also use this approach to configure certificate-based authentication:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = await Cluster.ConnectAsync("couchbases://127.0.0.1", new ClusterOptions().
+    WithX509CertificateFactory(CertificateFactory.GetCertificatesFromStore(
+    new CertificateStoreSearchCriteria
+    {
+        FindValue = "value",
+        X509FindType = X509FindType.FindBySubjectName,
+        StoreLocation = StoreLocation.CurrentUser,
+        StoreName = StoreName.CertificateAuthority
+    })));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we are using the scheme "couchbases://" as opposed to "couchbase://" this is an indication to the SDK to use TLS/SSL encryption on the wire. Note that you can
+also set the <code>ClusterOptions.EnableTls</code> flag as well to do this.</p>
+</div>
+<div class="paragraph">
+<p>Please see the <a href="#howtos:authentication.adoc" class="xref unresolved">documentation on certificate-based authentication</a> for detailed information on how to configure this properly.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connection-lifecycle"><a class="anchor" href="#connection-lifecycle"></a>Connection Lifecycle</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From a high-level perspective, bootstrapping and shutdown is very similar to SDK 2.
+One notable difference is that the <code>Collection</code> is introduced and that the individual methods like <code>bucket</code> immediately return, and do not throw an exception.
+Compare SDK 2: the <code>openBucket</code> method would not work if it could not open the bucket.</p>
+</div>
+<div class="paragraph">
+<p>The reason behind this change is that even if a bucket can be opened, a millisecond later it may not be available any more.
+All this state has been moved into the actual operation so there is only a single place where the error handling needs to take place.
+This simplifies error handling and retry logic for an application.</p>
+</div>
+<div class="paragraph">
+<p>In SDK 2, you connected, opened a bucket, performed a KV op, and disconnected like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = new Cluster(new ClientConfiguration
+{
+    Servers = new List&lt;Uri&gt; { new Uri("http://localhost:8091") }
+});
+
+var authenticator = new PasswordAuthenticator("user", "pass");
+cluster.Authenticate(authenticator);
+var bucket = cluster.OpenBucket("travel-sample");
+
+var result = bucket.Get&lt;dynamic&gt;("airline_10");
+
+bucket.Dispose();
+cluster.Dispose();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is the SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var cluster = await Cluster.ConnectAsync("127.0.0.1", "user", "pass");
+var bucket = await cluster.BucketAsync("travel-sample");
+var collection = bucket.DefaultCollection();
+
+var getResult = await collection.GetAsync("airline_10");
+
+cluster.Dispose();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Collections</code> will be generally available with an upcoming Couchbase Server release, but the SDK already encodes it in its API to be future-proof.
+If you are using a Couchbase Server version which does not support <code>Collections</code> such as 6.0, always use the <code>DefaultCollection()</code> method to access the KV API; it will map to the full bucket.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You&#8217;ll notice that <code>BucketAsync(String)</code> returns immediately, even if the bucket resources are not completely opened.
+This means that the subsequent <code>Get</code> operation may be dispatched even before the connection is opened in the background.
+The SDK will handle this case transparently, and reschedule the operation until the bucket is opened properly.
+This also means that if a bucket could not be opened (say, because no server was reachable) the operation will time out.
+Please check the logs to see the cause of the timeout.
+In this example case, you&#8217;ll see network socket connection failures.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Also note you will now find Query, Search, and Analytics at the <code>Cluster</code> level.
+This is where they logically belong as they are Cluster level services as opposed to KV which is bucket specific.
+If you are using Couchbase Server 6.5 or later, you will be able to perform cluster-level queries even if no bucket is open.
+If you are using an earlier version of the cluster you must open at least one bucket, otherwise cluster-level queries will fail.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="async-and-await-by-default"><a class="anchor" href="#async-and-await-by-default"></a>Async and Await by Default</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SDK 2 followed a pattern of having a <code>Method()</code> and a <code>MethodAsync()</code> as was the common approach in most C# code at the time.
+Subsequently, it has become more common in contemporary C# code for all methods to return a Task from all asynchronous methods.
+This is now considered to be the best practice.
+Read more about it in MSDN&#8217;s post <a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way">Async All the Way</a>.
+With this change, the SDK follows the same idioms in the base class library&#8217;s HttpClient.
+The application then waits as appropriate on these calls with either the <code>await</code> keyword or by calling the <code>.Wait()</code> method, depending on how it fits into the rest of the applciation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="serialization-and-transcoding"><a class="anchor" href="#serialization-and-transcoding"></a>Serialization and Transcoding</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In SDK 2 the API was oriented around an <code>IDocument</code> or using the <code>IOperationRequest</code> interface with additonal methods to get to metadata.
+As earlier mentioned, in SDK 3 many methods return 'result' objects with all metadata and content, where transcoding to either a C# POCO or to a dynamic object is done via method calls.
+While most of the time decoding to a dynamic object or a POCO is all that is necessary, these can, optionally, have custom deserializers.</p>
+</div>
+<div class="paragraph">
+<p>In SDK 2 the main method to control transcoding was through providing different <code>IDocument</code> or <code>IOperationRequest</code> instances (which in turn had their own transcoder associated), such as the <code>JsonDocument</code>.
+This only worked for the KV APIs though&#8201;&#8212;&#8201;Query, Search, Views, and other services exposed their JSON rows/hits in different ways.
+All of this has been unified in SDK 3 under a single concept: serializers and transcoders.</p>
+</div>
+<div class="paragraph">
+<p>By default, all KV APIs transcode to and from JSON either with <code>dynamic</code> objects or POCOs.
+In general this will suffice for the vast number of use cases, however, sometimes another transcoder will be needed.</p>
+</div>
+<div class="paragraph">
+<p>If you want to write already-encoded JSON, you would pass in the <code>RawJsonTranscoder</code> in the options block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var content = System.Text.Encoding.UTF8.GetBytes("{}");
+var upsertTranscoded = await collection.UpsertAsync(
+    "foo",
+    content,
+    new UpsertOptions().Transcoder(new RawJsonTranscoder())
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is a mapping table from the SDK 2 <code>Document&lt;T&gt;</code> and/or <code>IOperationResult&lt;T&gt;</code> types to the new transcoder types:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. SDK 2.x Document vs. SDK 3.x Transcoder*</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>string</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JsonTranscoder</code> (default)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>byte[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawJsonTranscoder</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>byte[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawStringTranscoder</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>byte[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>RawBinaryTranscoder</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>*Note that .NET SDK 2 had a <code>DefaultTranscoder</code> for storing JSON, a <code>BinaryTranscoder</code> for storing binary content and a <code>BinaryToJsonTranscoder</code> for handling legacy upgrades from very early server versions.</p>
+</div>
+<div class="paragraph">
+<p>Serializers and transcoders can also be customized and overwritten on a per-operation basis, please see the appropriate documentation section for details.</p>
+</div>
+<div class="paragraph">
+<p>The JSON <code>Transcoders</code> use a <code>Serializer</code> underneath.
+While a transcoder can handle many different storage types, the serializer is specialized for JSON encoding and decoding.
+On all JSON-only APIs (i.e. Sub-doc, Query, Search,&#8230;&#8203;) you&#8217;ll only find a <code>Serializer</code>, not a <code>Transcoder</code>, in the operation options.
+Usually there is no need to override it unless you want to provide your own implementation (i.e. if you have your own POCO mapping json logic in place, and want to reuse it).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="exception-handling"><a class="anchor" href="#exception-handling"></a>Exception Handling</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>While how to <em>handle</em> exceptions is unchanged from SDK 2, using a try/catch clause, the way common errors are exposed to the application layer by SDK3 is significantly different.
+In SDK2, exceptions are not thrown for most operations, only for terminal failures within the SDK.
+Instead an <code>IResult</code> implementation was returned which contained a <code>Success</code>, <code>Status</code> and <code>Exception</code> fields.
+In SDK3, this has changed and now all errors are thrown from the SDK (as well as terminal failures) and must be handled by the application code.</p>
+</div>
+<div class="paragraph">
+<p>There have been changes made in the following areas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Exception hierachy and naming.</p>
+</li>
+<li>
+<p>Proactive retry where possible.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="exception-hierachy"><a class="anchor" href="#exception-hierachy"></a>Exception hierachy</h3>
+<div class="paragraph">
+<p>CouchbaseException is the root of all Couchbase-specific exceptions thrown by the SDK, serving as a base exception for many more detailed exceptions.
+Each <code>CouchbaseException</code> has an associated <code>ErrorContext</code> which is populated with as much information as possible and then dumped alongside the stack trace if an error happens.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example of the error context if a SQL++ query is performed with an invalid syntax (i.e. <code>select 1= from</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">try
+{
+    IQueryResult&lt;dynamic&gt; result = await cluster.QueryAsync&lt;dynamic&gt;("select 1");
+}
+catch (CouchbaseException ex) {
+    Console.WriteLine(ex);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Besides the stacktrace and exception message, there is also additional context information returned by the exceptions which derive from <code>CouchbaseException</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">-----------------------Context Info---------------------------
+{"Statement":"[{\"statement\":\"select 1 = \",\"timeout\":\"3000ms\",\"client_context_id\":\"e3003393-e54b-4f5b-b620-f91903556282\"}]","ClientContextId":"e3003393-e54b-4f5b-b620-f91903556282","Parameters":"{\"Named\":{},\"Raw\":{},\"Positional\":[]}","HttpStatus":400,"QueryStatus":6,"Errors":[{"msg":"syntax error - at end of input","Code":3000,"Name":null,"Severity":0,"Temp":false}],"Message":null}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The expectation is that the application catches the <code>CouchbaseException</code> and deals with it as an unexpected error (e.g. logging with subsequent bubbling up of the exception or failing).
+In addition to that, each method exposes exceptions that can be caught separately if needed.
+For example, a <code>GetAsync()</code> may throw a <code>DocumentNotFoundException</code> or a <code>TimeoutException</code> in addition to a more generic <code>CouchbaseException</code>.
+These exceptions extend <code>CouchbaseException</code>, but both the <code>TimeoutException</code> and the <code>DocumentNotFoundException</code> can be caught individually if specific logic should be executed to handle them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">try
+{
+    IQueryResult&lt;dynamic&gt; result = await cluster.QueryAsync&lt;dynamic&gt;("select 1");
+}
+catch(DocumentNotFoundException ex){
+  //Handle the case where the document does not exist
+}
+catch (CouchbaseException ex) {
+    Console.WriteLine(ex);
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="proactive-retry"><a class="anchor" href="#proactive-retry"></a>Proactive Retry</h3>
+<div class="paragraph">
+<p>One reason why the APIs do not expose a long list of exceptions is that the SDK now retries as many operations as it can if it can do so safely.
+This depends on the type of operation (idempotent or not), in which state of processing it is (already dispatched or not), and what the actual response code is if it arrived already.
+As a result, many transient cases&#8201;&#8212;&#8201;such as locked documents, or temporary failure&#8201;&#8212;&#8201;are now retried by default and should less often impact applications.
+It also means, when migrating to the new SDK API, you may observe a longer period of time until an error is returned by default.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Operations are retried by default as described above with the default <code>BestEffortRetryStrategy</code>.
+Like in SDK 2 you can configure fail-fast retry strategies to not retry certain or all operations.
+The <code>RetryStrategy</code> interface has been extended heavily in SDK 3&#8201;&#8212;&#8201;please see the <a href="../howtos/error-handling.html" class="xref page">error handling documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When migrating your SDK 2 exception handling code to SDK 3, make sure to wrap every call with a catch for <code>CouchbaseException</code> (or let it bubble up immediately).
+You can likely remove your user-level retry code for temporary failures, backpressure exception, and so on.
+One notable exception from this is the <code>CasMismatchException</code>, which is still thrown since it requires more app-level code to handle (most likely identical to SDK 2).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="logging-and-events"><a class="anchor" href="#logging-and-events"></a>Logging and Events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configuring and consuming logs has not greatly changed.</p>
+</div>
+<div class="paragraph">
+<p>The SDK is still compatible with multiple loggers and works well with the .NET Core Runtime abstraction interface in Microsoft.Extensions.Logging.
+The biggest impact you&#8217;ll see from it is that the log messages now look very structured and contain contextual information where possible.</p>
+</div>
+<div class="paragraph">
+<p>The logger may be configured from the ClusterOptions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">using Microsoft.Extensions.Logging;
+…
+var loggerFactory = new LoggerFactory().AddConsole();
+
+var config = new ClusterOptions()
+{
+    UserName = "user",
+    Password = "pass",
+    Logging = loggerFactory
+};
+
+config.WithConnectionString("couchbase://localhost");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Couchbase recommends <a href="https://serilog.net/">Serilog</a>, however, any 3rd party logging library (Log4Net and others) will work as long as it is based off Microsoft.Extensions.Logging.
+Please see the 3rd party logging libraries documentation for details on its idiomatic logging configuration.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">2022-02-18T13:46:48.1829565-08:00  [DBG] Waiting for 00:00:02.5000000 before polling. (c8639b24)
+2022-02-18T13:46:50.0150580-08:00  [DBG] Setting TCP Keep-Alives using SocketOptions - enable keep-alives True, time 00:01:00, interval 00:00:01. (d66a37aa)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please see <a href="../howtos/collecting-information-and-logging.html" class="xref page">the logging documentation</a> for further information.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="migrating-services"><a class="anchor" href="#migrating-services"></a>Migrating Services</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following section discusses each service in detail and covers specific bits that have not been covered by the more generic sections above.</p>
+</div>
+<div class="sect2">
+<h3 id="key-value"><a class="anchor" href="#key-value"></a>Key Value</h3>
+<div class="paragraph">
+<p>The Key/Value (KV) API is now located under the <code>Collection</code> interface, so even if you do not use collections, the <code>DefaultCollection()</code> needs to be opened in order to access it.</p>
+</div>
+<div class="paragraph">
+<p>The following table describes the SDK 2 KV APIs and where they are now located in SDK 3:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. SDK 2.x KV API vs. SDK 3.x KV API</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Upsert</code> and <code>Bucket.UpsertAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.UpsertAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Get</code> and <code>Bucket.GetAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.GetAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Exists</code> and <code>Bucket.ExistsAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.ExistsAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.GetFromReplica</code> and <code>Bucket.GetFromReplicaAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.GetAnyReplicaAsync</code> and <code>Collection.GetAllReplicasAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.GetAndLock</code> and <code>Bucket.GetAndLockAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.GetAndLockAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.GetAndTouch</code> and <code>Bucket.GetAndTouchAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.GetAndTouchAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Insert</code> and <code>Bucket.InsertAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.InsertAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Upsert</code> and <code>Bucket.UpsertAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.UpsertAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Replace</code> and <code>Bucket.ReplaceAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.ReplaceAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Remove</code> and <code>Bucket.RemoveAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.RemoveAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Unlock</code> and <code>Bucket.UnlockAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.UnlockAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Touch</code> and <code>Bucket.TouchAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.TouchAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.LookupIn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.LookupInAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.MutateIn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.MutateInAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Increment</code>, <code>Bucket.IncrementAsync</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Decrement</code> and <code>Bucket.DecrementAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Binary.IncrementAsync</code> and <code>Collection.Binary.DecrementAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Append</code> and  <code>Bucket.AppendAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Binary.IncrementAsync.AppendAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.Prepend</code> and <code>Bucket.PrependAsync</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Binary.IncrementAsync.PrependAsync</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>In addition, the datastructure APIs have been renamed and moved:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Datastructure API Changes</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapAdd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Dictionary&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapGet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Dictionary&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapRemove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Dictionary&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.mapSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Dictionary&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listGet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.List&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listAppend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.List&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listRemove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.List&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listPrepend</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.List&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listSet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.List&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.listSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.List&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setAdd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Set&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setContains</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Set&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setRemove</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Set&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.setSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Set&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.queuePush</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Queue&lt;T&gt;</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Bucket.queuePop</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Collection.Queue&lt;T&gt;</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>There are two important API changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On the request side, overloads have been reduced and moved under a <code>Options</code> block</p>
+</li>
+<li>
+<p>On the response side, the return types have been unified.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The signatures now look very similar.
+The concept of the <code>IDocument</code> as a type is gone in SDK 3 and instead you need to pass in the properties explicitly.
+This makes it very clear what is returned, especially on the response side.</p>
+</div>
+<div class="paragraph">
+<p>Thus, the <code>GetAsync</code> method does not return a <code>IDocumentResult</code> or a <code>IOperationResult</code> but a <code>IGetResult</code> instead, and the <code>UpsertAsync</code> does not return a <code>IDocumentResult</code> or a <code>IOperationResult</code> but a <code>IMutationResult</code>.
+Each of those results only contain the field that the specific method can actually return, making it impossible to accidentally try to access the <code>expiry</code> on the <code>IDocumentResult</code> after a mutation, for example.</p>
+</div>
+<div class="paragraph">
+<p>Instead of having many overloads, all optional params are now part of the <code>Option</code> block.
+All required params are still part of the method signature, making it clear what is required and what is not (or has default values applied if not overridden).</p>
+</div>
+<div class="paragraph">
+<p>The timeout can be overridden on every operation and now takes a <code>TimeSpan</code>.
+Compare SDK 2 and SDK 3 custom timeout setting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 2 custom timeout
+IOperationResult getResult = bucket.Get&lt;dynamic&gt;("mydoc-id", TimeSpan.FromMilliseconds(2250));</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">IGetResult getaResult = await collection.GetAsync("mydoc-id", options =&gt; options.Timeout(TimeSpan.FromMilliseconds(2250)));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In SDK 2, the <code>GetFromReplica</code> method was available for replica reads, this has been split into two methods that simplify usage significantly.
+There is now a <code>GetAllReplicasAsync</code> method and a <code>GetAnyReplicaAsync</code> method.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>GetAllReplicasAsync</code> asks the active node and all available replicas and returns the results as a stream.</p>
+</li>
+<li>
+<p><code>GetAnyReplicaAsync</code> uses <code>GetAllReplicasAsync</code>, and returns the first result obtained.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Unless you want to build some kind of consensus between the different replica responses, we recommend <code>GetAnyReplicaAsync</code> for a fallback to a regular <code>GetAsync</code> when the active node times out.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Operations which cannot be performed on JSON documents have been moved to the <code>IBinaryCollection</code>, accessible through <code>ICollection.Binary()</code>.
+These operations include <code>AppendAsync</code>, <code>PrependAsync</code>, <code>IncrementAsync</code>, and <code>DecrementAsync</code> (previously called <code>counter</code> in SDK 2).
+These operations should only be used against non-json data.
+Similar functionality is available through <code>MutateIn</code> on JSON documents.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="query"><a class="anchor" href="#query"></a>Query</h3>
+<div class="paragraph">
+<p>SQL++ querying is now available at the <code>Cluster</code> level instead of the bucket level, because you can also write SQL++ queries that span multiple buckets.
+Querying is now async by default as discussed earlier.
+One related change is that query results come back in an async stream by default as well.
+To convert results to IEnumerable to iterate like you would in the 2.x SDK, you can call <code>.ToEnumerable()</code> on the results.</p>
+</div>
+<div class="paragraph">
+<p>Compare a simple SQL++ query from SDK 2 with its SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 2 simple query
+var query = new QueryRequest("SELECT * FROM `travel-sample` LIMIT 10");
+foreach (var row in bucket.Query&lt;dynamic&gt;(query))
+{
+    Console.WriteLine(JsonConvert.SerializeObject(row));
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">try {
+    var queryResult = await cluster.QueryAsync&lt;dynamic&gt;("SELECT `travel-sample`.* FROM `travel-sample` LIMIT 10").ConfigureAwait(false);
+
+    await foreach (var o in queryResult.ConfigureAwait(false))
+    {
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(o, Newtonsoft.Json.Formatting.None));
+    }
+}
+catch (CouchbaseException) {
+    // SDK 3 throws exceptions where possible
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An example using named parameters:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">try {
+    var queryResult = await cluster.QueryAsync&lt;dynamic&gt;("SELECT `travel-sample`.* FROM `travel-sample` LIMIT 10 WHERE type=$type",
+        options =&gt;
+        {
+            options.Parameter("type", "airline");
+        }).ConfigureAwait(false);
+
+    await foreach (var o in queryResult.ConfigureAwait(false))
+    {
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(o, Newtonsoft.Json.Formatting.None));
+    }
+}
+catch (CouchbaseException) {
+    // SDK 3 throws exceptions where possible
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another similar query using positional parameters:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">try {
+    var queryResult = await cluster.QueryAsync&lt;dynamic&gt;("SELECT `travel-sample`.* FROM `travel-sample` LIMIT 10 WHERE type=$1",
+        options =&gt;
+        {
+            options.Parameter("airline");
+        }).ConfigureAwait(false);
+
+    await foreach (var o in queryResult.ConfigureAwait(false))
+    {
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(o, Newtonsoft.Json.Formatting.None));
+    }
+}
+catch (CouchbaseException) {
+    // SDK 3 throws exceptions where possible
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to use prepared statements, the <code>AdHoc()</code> method is still available on the <code>QueryOptions</code>, alongside every other option that used to be exposed on the SDK 2 Query options.</p>
+</div>
+<div class="paragraph">
+<p>Much of the non-row metadata has been moved into a specific <code>QueryMetaData</code> section:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Query Metadata Changes</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.Signature</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.QueryMetaData.Signature</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.Metrics</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.QueryMetaData.Metrics</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.Profile</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.QueryMetaData.Profile</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.Success</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.Status</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.QueryMetaData.status</code> containing any warnings</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.Errors</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">throws an Exception on <code>QueryResult</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.RequestId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.QueryMetaData.RequestId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IQueryResult.ClientContextId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryResult.QueryMetaData.ClientContextId</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>It is no longer necessary to check for a specific error in the stream: if an error happened during processing it will throw an exception at the top level of the query.
+The stream with terminate with an error as soon as one is received.</p>
+</div>
+<div class="paragraph">
+<p>In SDK 2 you had to manually check for errors, otherwise you would get an empty row collection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var queryResult = await bucket.QueryAsync("select 1=");
+if (queryResult.Errors().Any()) {
+  // errors contain [{"msg":"syntax error - at end of input","code":3000}]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In SDK 3 the top level <code>query</code> method will throw an exception:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var results = await cluster.QueryAsync&lt;dynamic&gt;("SELECT * FROM DOESNOTEXIST");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Throws the following exception:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">Couchbase.Core.Exceptions.IndexFailureException: 'Keyspace not found in CB datastore: default:DOESNOTEXIST - cause: No bucket named DOESNOTEXIST [12003]'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Not only does it throw a <code>CouchbaseException</code>, it also tries to map it to a specific exception type and include extensive contextual information for a better troubleshooting experience.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="analytics"><a class="anchor" href="#analytics"></a>Analytics</h3>
+<div class="paragraph">
+<p>Analytics querying, like Query, is also moved to the <code>Cluster</code> level: it is now accessible through the <code>Cluster.AnalyticsQueryAsync</code> method.
+As with the Query service, parameters for the Analytics queries have moved into the <code>AnalyticsOptions</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var analyticsResult = await cluster.AnalyticsQueryAsync&lt;TestRequest&gt;("SELECT \"hello\" as greeting;").ConfigureAwait(false);
+var result = await analyticsResult.ToListAsync().First().Greeting;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 3 named parameters for analytics
+var result  var result = await cluster.AnalyticsQueryAsync(
+  "SELECT * FROM dataset WHERE type = $type",
+  options=&gt;options.Parameter("type", "airline"))
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also, errors will now be thrown as top level exceptions and it is no longer necessary to explicitly check for errors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 2 error check
+var result  var result = await cluster.AnalyticsQueryAsync("select * from foo"));
+if (analyticsQueryResult.Errors.Any()) {
+  // errors contain [{"msg":"Cannot find dataset foo in dataverse Default nor an alias with name foo! (in line 1, at column 15)","code":24045}]
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">// SDK 3 top level exception
+Analytics query failed: 24045</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="search"><a class="anchor" href="#search"></a>Search</h3>
+<div class="paragraph">
+<p>The Search API has changed a bit in SDK 3 so that it aligns with the other query APIs.
+The type of queries have stayed the same, but all optional parameters moved into <code>SearchOptions</code>.
+Also, similar to the other query APIs, it is now available at the <code>Cluster</code> level.</p>
+</div>
+<div class="paragraph">
+<p>Here is a SDK 2 Search query with some options, and its SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">//  SDK 2 search query
+var searchResult = bucket.Query(new SearchQuery
+      {
+          Index = "indexname",
+          Query = new QueryStringQuery("airports"),
+      }.Limit(5).Fields("a", "b", "c").Timeout(TimeSpan.FromSeconds(2)));
+foreach(var hit in results.Hits)
+{
+  //
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 3 search query
+var result  = await cluster.SearchQueryAsync("indexname", new QueryStringQuery("airports"),
+          options =&gt;
+      {
+          options.Timeout(TimeSpan.FromSeconds(2));
+          options.Limit(5);
+          options.Fields("a", "b", "c");
+      });
+
+foreach (var hit in results.Hits)
+{
+    //
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Error handling for streaming is handled differently.
+While fatal errors will still raise top-level exceptions, any errors that happend during streaming (for example if one node is down, and only partial results are returned) they will not terminate the result.
+The reasoning behind this is that usually with search results, having partial results is better than none.</p>
+</div>
+<div class="paragraph">
+<p>Here is a top level exception, for <em>the index does not exist</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">Exception of type 'Couchbase.Core.Exceptions.IndexNotFoundException' was thrown.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to be absolutely sure that you didn&#8217;t get only partial data, you can check the error map:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result  = await cluster.SearchQueryAsync("indexname", new QueryStringQuery("airports"),
+    options =&gt;
+{
+    options.Timeout(TimeSpan.FromSeconds(2));
+    options.Limit(5);
+    options.Fields("a", "b", "c");
+});
+if (!result.MetaData.Errors.Any()) {
+  // no errors present, so full data got returned
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="views"><a class="anchor" href="#views"></a>Views</h3>
+<div class="paragraph">
+<p>Views have stayed at the <code>Bucket</code> level, because it does not have the concept of collections and is scoped at the bucket level on the server as well.
+The API has stayed mostly the same, the most important change is that <code>staleness</code> is unified under the <code>ViewConsistency</code> enum.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. View Staleness Mapping</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.TRUE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewScanConsistency.NotBounded</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.FALSE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewScanConsistency.RequestPlus</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Stale.UPDATE_AFTER</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewScanConsistency.UpdateAfter</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Compare this SDK 2 view query with its SDK 3 equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">// SDK 2 view query
+var query = bucket.CreateQuery("design", "view")
+                    .Limit(1)
+                    .Skip(2)
+                    .ConnectionTimeout(10);
+
+var result bucket.Query&lt;dynamic&gt;(query);
+foreach (var row in result.Rows)
+{
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-csharp hljs" data-lang="csharp">var result = await bucket.ViewQueryAsync&lt;string[], object&gt;("design", "view", options =&gt;
+{
+    options.Limit(1);
+    options.Skip(2);
+    options.Timeout(TimeSpan.FromSeconds(10));
+}).ConfigureAwait(false);
+
+await foreach (var row in result)
+{
+  //
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exceptions are exclusively raised at the top level: for example, if the design document is not found:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">Couchbase.Core.Exceptions.View.ViewNotFoundException: 'http://localhost:8092/default/_design/design/_view/view?stale=false&amp;descending=true&amp;on_error=continue&amp;limit=1&amp;skip=2'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="management-apis"><a class="anchor" href="#management-apis"></a>Management APIs</h3>
+<div class="paragraph">
+<p>In SDK 2, the management APIs were centralized in the <code>ClusterManager</code> at the cluster level and the <code>BucketManager</code> at the bucket level.
+Since SDK 3 provides more management APIs, they have been split up in their respective domains.
+So for example when in SDK 2 you needed to remove a bucket you would call <code>ClusterManager.removeBucket</code> you will now find it under <code>BucketManager.dropBucket</code>.
+Also, creating a SQL++ index now lives in the <code>QueryIndexManager</code>, which is accessible through the <code>Cluster</code>.</p>
+</div>
+<div class="paragraph">
+<p>The following table provides a mapping from the SDK 2 management APIs to those of SDK 3:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. SDK 2.x vs SDK 3.x ClusterManager</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.ClusterInfo</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.ListBuckets</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.GetAllBucketsAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DNE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.GetBucketAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.InsertBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.CreateBucketAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.UpdateBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.UpdateBucketAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.RemoveBucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.DropBucketAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ClusterManager.UpsertUser</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.UpsertUserAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DNE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.DropUserAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DNE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.GetAllUsersAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DNE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UserManager.GetUserAsync</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>*DNE: Does not exist</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. SDK 2.x vs SDK 3.x BucketManager</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.Flush</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.FlushBucketAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.GetDesignDocuments</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.GetAllDesignDocumentsAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.GetDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.GetDesignDocumentAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.InsertDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.UpsertDesignDocumentAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.UpsertDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.UpsertDesignDocumentAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.RemoveDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.DropDesignDocumentAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.PublishDesignDocument</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewIndexManager.PublishDesignDocumentAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.ListN1qlIndexes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.GetAllIndexesAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.CreateN1qlIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.CreateIndexAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.CreateN1qlPrimaryIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.CreatePrimaryIndexAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.DropN1qlIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.DropIndexAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.DropN1qlPrimaryIndex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.DropPrimaryIndexAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.BuildN1qlDeferredIndexes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.BuildDeferredIndexesAsync</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BucketManager.WatchN1qlIndexes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryIndexManager.WatchIndexesAsync</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Note: SDK2 has both synchronous and asynchronous methods; the asynchronous methods have been omitted for brevity.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuration-options-reference"><a class="anchor" href="#configuration-options-reference"></a>Configuration Options Reference</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following table provides commonly used configuration options in SDK 2 and where they can be now applied in SDK 3.
+Note that some options have been removed, and others have different ways to configure them.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. SDK 2.x vs SDK 3.x Environment Configs</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">SDK 2</th>
+<th class="tableblock halign-left valign-top">SDK 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryRequestTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>AnalyticsRequestTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>AnalyticsTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableQueryTiming</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UseSsl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableTls</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SslPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ApiPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DirectPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>MgmtPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BootstrapHttpPort</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HttpsMgmtPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BootstrapHttpPortTls</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HttpsApiPort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ObserveInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ObserveTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>KvDurableTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>MaxViewRetries</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewHardTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ConfigPollInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ConfigPollInterval</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ConfigPollCheckFloor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ConfigPollFloorInterval</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ConfigPollEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableConfigPolling</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewRequestTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ViewTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SearchRequestTimeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SearchTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>VBucketRetrySleepTime</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DefaultConnectionLimit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>MaxKvConnections</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Expect100Continue</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableExpect100Continue</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>MaxServicePointIdleTime</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IdleHttpConnectionTimeout</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableOperationTiming</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BufferSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DefaultOperationLifespan</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QueryFailedThreshold</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableTcpKeepAlives</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableTcpKeepAlives</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TcpKeepAliveTime</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TcpKeepAliveTime</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TcpKeepAliveInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TcpKeepAliveInterval</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NodeAvailableCheckInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IOErrorCheckInterval</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IOErrorThreshold</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UseConnectionPooling</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableDeadServiceUriPing</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ForceSaslPlain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OperationTracingEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TracingOptions.Enabled</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OperationTracingServerDurationEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ThresholdOptions.Enabled</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OrphanedResponseLoggingEnabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OrphanOptions.Enabled</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableCertificateRevocation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableCertificateRevocation</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableCertificateAuthentication</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EnableCertificateAuthentication</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NetworkType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NetworkResolution</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IgnoreRemoteCertificateNameMismatch</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>KvIgnoreRemoteCertificateNameMismatch</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>KvServerCertificateValidationCallback</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>KvCertificateCallbackValidation</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PoolConfiguration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removed</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CertificateFactory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>X509CertificateFactory</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Serializer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Serializer</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="comparing-older-documentation"><a class="anchor" href="#comparing-older-documentation"></a>Comparing Older Documentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You may want to visit documentation for older versions of the SDK, to help to understand application code that you are migrating.
+Versions that have reached end of life can be found in the <a href="https://docs-archive.couchbase.com/home/index.html">archive</a>.
+In the release notes pages of these older docs, you will also find links to the API reference for each no-longer-supported release.</p>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"SDKs","components":["dotnet-sdk","java-sdk","nodejs-sdk","python-sdk","sdk-extensions"],"url":"/home/sdk.html","latestVersions":{"dotnet-sdk":"3.3","java-sdk":"3.3","nodejs-sdk":"4.1","python-sdk":"4.0","sdk-extensions":"master"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>

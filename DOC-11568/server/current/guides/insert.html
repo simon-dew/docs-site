@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>Inserting Data with SQL++ | Couchbase Docs (Preview)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11568/server/current/guides/insert.html">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="How to insert documents using SQL++.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+        <link rel="prev" href="manipulate.html">
+        <link rel="next" href="update.html">
+
+
+
+                <link rel="prev" href="manipulate.html">
+
+
+                <link rel="next" href="update.html">
+
+
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="7.2">
+<meta name="page-url" content="/server/current/guides/insert.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/simon-dew/docs-devex/edit/release/7.2/modules/guides/pages/insert.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../introduction/intro.html">Couchbase Server</a></li>
+<li class="crumb">Develop</li>
+<li class="crumb"><a href="intro.html">Developer Guides</a></li>
+<li class="crumb"><a href="manipulate.html">Data Manipulation Queries</a></li>
+<li class="crumb"><a href="insert.html">Inserting Data with SQL++</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Inserting Data with SQL++</h1>
+<div class="labels">
+<ul><li class="guide"><span><i class="far fa-check-square"></i> how-to</span></li>
+</ul>
+</div>
+
+
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+<div class="paragraph">
+<p>How to insert documents using SQL++.<br>
+This
+guide
+is for Couchbase Server.
+For Couchbase Capella, see <a href="../../../cloud/guides/insert.html" class="xref page">Insert Data with a Query</a>.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="introduction"><a class="anchor" href="#introduction"></a>Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To insert documents in a keyspace, you can use the INSERT statement, the UPSERT statement, or the MERGE statement.</p>
+</div>
+<div class="paragraph">
+<p>If you want to try out the examples in this section, follow the instructions given in <a href="../getting-started/do-a-quick-install.html" class="xref page">Do a Quick Install</a> to install Couchbase Server, configure a cluster, and load a sample dataset.
+Read the following for further information about the tools available for editing and executing queries:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../tools/cbq-shell.html" class="xref page">cbq: The Command Line Shell for SQL++</a></p>
+</li>
+<li>
+<p><a href="../tools/query-workbench.html" class="xref page">Query Workbench</a></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Please note that the examples in this guide will alter the data in your sample database.
+To restore your sample data, remove and reinstall the travel sample data.
+Refer to <a href="../manage/manage-settings/install-sample-buckets.html" class="xref page">Sample Buckets</a> for details.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="inserting-a-document"><a class="anchor" href="#inserting-a-document"></a>Inserting a Document</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To insert a document by providing the value, use the INSERT statement with the VALUES clause:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use the INTO keyword to specify the keyspace into which the document is inserted.</p>
+</li>
+<li>
+<p>Optionally, use the bracketed KEY and VALUE keywords to specify that you&#8217;re inserting a document key and body.</p>
+</li>
+<li>
+<p>Use the VALUES clause to specify the document key and the body of the document.</p>
+</li>
+<li>
+<p>If required, use the RETURNING clause specifies what the query returns when the document is inserted.</p>
+</li>
+</ol>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query creates a document in the <code>airline</code> keyspace.</p>
+</div>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/insert-doc.n1ql">INSERT INTO airline (KEY,VALUE)
+  VALUES ( "1025",
+            {     "callsign": "MY-AIR",
+                  "country": "United States",
+                  "iata": "Z1",
+                  "icao": "AQZ",
+                  "id": "1011",
+                  "name": "80-My Air",
+                  "type": "airline"
+            } )
+RETURNING *;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/insert-doc.jsonc">{
+  "requestID": "c3bd0276-5d7d-425f-98f9-b333b9ae4302",
+  "signature": {
+      "*": "*"
+  },
+  "results": [
+  {
+      "airline": {
+          "callsign": "MY-AIR",
+          "country": "United States",
+          "iata": "Z1",
+          "icao": "AQZ",
+          "id": "1011",
+          "name": "80-My Air",
+          "type": "airline"
+      }
+  }
+  ],
+  "status": "success",
+  "metrics": {
+      "elapsedTime": "5.9133ms",
+      "executionTime": "5.6264ms",
+      "resultCount": 1,
+      "resultSize": 254,
+      "serviceLoad": 4,
+      "mutationCount": 1
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/insert.html" class="xref page">INSERT</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="inserting-documents-in-bulk"><a class="anchor" href="#inserting-documents-in-bulk"></a>Inserting Documents in Bulk</h3>
+<div class="paragraph">
+<p>To insert several documents at once, use multiple VALUES clauses.
+The VALUES keyword itself is optional in the second and later iterations of the clause.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query creates two documents in the <code>airline</code> keyspace.</p>
+</div>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/insert-batch.n1ql">INSERT INTO airline (KEY,VALUE)
+VALUES ( "airline_4444",
+    { "callsign": "MY-AIR",
+      "country": "United States",
+      "iata": "Z1",
+      "icao": "AQZ",
+      "name": "80-My Air",
+      "id": "4444",
+      "type": "airline"} ),
+VALUES ( "airline_4445",
+    { "callsign": "AIR-X",
+      "country": "United States",
+      "iata": "X1",
+      "icao": "ARX",
+      "name": "10-AirX",
+      "id": "4445",
+      "type": "airline"} )
+RETURNING *;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/insert-batch.jsonc">{
+  "requestID": "2fabc03a-ea9b-49fd-a044-6ef667381311",
+  "signature": {
+      "*": "*"
+  },
+  "results": [
+  {
+      "airline": {
+          "callsign": "MY-AIR",
+          "country": "United States",
+          "iata": "Z1",
+          "icao": "AQZ",
+          "id": "4444",
+          "name": "80-My Air",
+          "type": "airline"
+      }
+  },
+  {
+      "airline": {
+          "callsign": "AIR-X",
+          "country": "United States",
+          "iata": "X1",
+          "icao": "ARX",
+          "id": "4445",
+          "name": "10-AirX",
+          "type": "airline"
+      }
+  }
+  ],
+  "status": "success",
+  "metrics": {
+      "elapsedTime": "5.7617ms",
+      "executionTime": "5.4635ms",
+      "resultCount": 2,
+      "resultSize": 505,
+      "serviceLoad": 4,
+      "mutationCount": 2
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="inserting-the-results-of-a-query"><a class="anchor" href="#inserting-the-results-of-a-query"></a>Inserting the Results of a Query</h3>
+<div class="paragraph">
+<p>To insert documents using a query, use the INSERT statement with a SELECT statement.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use the bracketed KEY keyword to specify the document key.</p>
+</li>
+<li>
+<p>Use the optional VALUE keyword to specify the body of the document to insert.
+The body of the inserted document is usually based on the result returned by the SELECT statement.</p>
+</li>
+<li>
+<p>Use the SELECT statement to return a resultset which is used as a basis for the inserted documents.
+The INSERT statement inserts a document for every result returned by the SELECT statement.</p>
+</li>
+<li>
+<p>If required, use the RETURNING clause specifies what the query returns when the document is inserted.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The document key that you specify must be unique for every document that you insert.
+For example, you can use the <a href="../n1ql/n1ql-language-reference/metafun.html#uuid" class="xref page">UUID()</a> function to generate a unique key for each document.
+</td>
+</tr>
+</table>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query creates a copy in the <code>airport</code> keyspace of any document whose <code>airportname</code> is "Heathrow".</p>
+</div>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/insert-select.n1ql">INSERT INTO airport (KEY UUID(), VALUE _airport)
+    SELECT _airport FROM airport _airport
+    WHERE airportname = "Heathrow"
+RETURNING *;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/insert-select.jsonc">[
+  {
+    "airport": {
+      "airportname": "Heathrow",
+      "city": "London",
+      "country": "United Kingdom",
+      "faa": "LHR",
+      "geo": {
+        "alt": 83,
+        "lat": 51.4775,
+        "lon": -0.461389
+      },
+      "icao": "EGLL",
+      "id": 507,
+      "type": "airport",
+      "tz": "Europe/London"
+    }
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="replacing-existing-documents"><a class="anchor" href="#replacing-existing-documents"></a>Replacing Existing Documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The INSERT statement fails if a document with the same document key already exists in the keyspace.</p>
+</div>
+<div class="paragraph">
+<p>To insert documents into a keyspace and replace any existing documents with the same key, use the UPSERT statement.
+This has the same syntax as the INSERT statement.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query creates two documents in the <code>landmark</code> keyspace.
+If documents with the same keys already exist, the existing documents are replaced.</p>
+</div>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/upsert-batch.n1ql">UPSERT INTO landmark (KEY, VALUE)
+VALUES ("upsert-1", { "name": "The Minster Inn", "type": "landmark-pub"}),
+("upsert-2", {"name": "The Black Swan", "type": "landmark-pub"})
+RETURNING VALUE name;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/upsert-batch.jsonc">[
+  "The Minster Inn",
+  "The Black Swan"
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/upsert.html" class="xref page">UPSERT</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="merging-and-inserting-documents"><a class="anchor" href="#merging-and-inserting-documents"></a>Merging and Inserting Documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can also insert documents by merging: that is, by joining one data source to another, and inserting documents any documents that do not match.</p>
+</div>
+<div class="paragraph">
+<p>To insert documents using a merge, use the MERGE statement with the INSERT action:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Use the INTO keyword to specify the target data source.
+This is the data source into which documents will be inserted.</p>
+</li>
+<li>
+<p>Use the USING keyword to specify the source.
+This is the data source to check against the target.</p>
+</li>
+<li>
+<p>Use the ON keyword to specify the merge predicate.
+This is a condition that must be met to match an object in the source with an object in the target.</p>
+</li>
+<li>
+<p>Use WHEN NOT MATCHED THEN INSERT to specify that when a document in the source does not match a document in the target, the document should be inserted in the target.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>If necessary, use the bracketed KEY keyword to specify the document key.</p>
+</li>
+<li>
+<p>If necessary, use the bracketed VALUE keyword to specify the body of the document to insert.</p>
+</li>
+<li>
+<p>If necessary, use the WHERE clause to specify any further conditions that must be met for documents to be inserted.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>If required, use the LIMIT clause to specify the greatest number of documents that may be inserted.</p>
+</li>
+<li>
+<p>If required, use the RETURNING clause to specify what should be returned when the documents are inserted.</p>
+</li>
+</ol>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>The following query compares a source set of airport data with the target <code>airport</code> keyspace.
+If the airport already exists in the <code>airport</code> keyspace, the record is updated.
+If the airport does not exist in the <code>airport</code> keyspace, a new record is inserted.</p>
+</div>
+<div class="paragraph">
+<div class="title">Context</div>
+<p>Set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="select.html#query-context" class="xref page">Setting the Query Context</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Query</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/ansi-merge-else.n1ql">MERGE INTO airport AS target
+USING [
+  {"iata":"DSA", "name": "Doncaster Sheffield Airport"},
+  {"iata":"VLY", "name": "Anglesey Airport / Maes Awyr Môn"}
+] AS source
+ON target.faa = source.iata
+WHEN MATCHED THEN
+  UPDATE SET target.old_name = target.airportname,
+             target.airportname = source.name,
+             target.updated = true
+WHEN NOT MATCHED THEN
+  INSERT (KEY UUID(),
+          VALUE {"faa": source.iata,
+                 "airportname": source.name,
+                 "type": "airport",
+                 "inserted": true} )
+RETURNING *;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Results</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/ansi-merge-else.jsonc">[
+  {
+    "target": {
+      "airportname": "Anglesey Airport / Maes Awyr Môn",
+      "faa": "VLY",
+      "inserted": true,
+      "type": "airport"
+    }
+  },
+  {
+    "source": {
+      "iata": "DSA",
+      "name": "Doncaster Sheffield Airport"
+    },
+    "target": {
+      "airportname": "Doncaster Sheffield Airport",
+      "city": "Doncaster, Sheffield",
+      "country": "United Kingdom",
+      "faa": "DSA",
+      "geo": {
+        "alt": 55,
+        "lat": 53.474722,
+        "lon": -1.004444
+      },
+      "icao": "EGCN",
+      "id": 5562,
+      "old_name": "Robin Hood Doncaster Sheffield Airport",
+      "type": "airport",
+      "tz": "Europe/London",
+      "updated": true
+    }
+  }
+]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information and examples, refer to <a href="../n1ql/n1ql-language-reference/merge.html" class="xref page">MERGE</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="related-links"><a class="anchor" href="#related-links"></a>Related Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Reference and explanation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../n1ql/n1ql-language-reference/insert.html" class="xref page">INSERT</a></p>
+</li>
+<li>
+<p><a href="../n1ql/n1ql-language-reference/upsert.html" class="xref page">UPSERT</a></p>
+</li>
+<li>
+<p><a href="../n1ql/n1ql-language-reference/merge.html" class="xref page">MERGE</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Querying with SDKs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#c-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">C</a>
+| <a href="../../../dotnet-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">.NET</a>
+| <a href="#go-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Go</a>
+| <a href="../../../java-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Java</a>
+| <a href="../../../nodejs-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Node.js</a>
+| <a href="#php-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">PHP</a>
+| <a href="../../../python-sdk/current/howtos/n1ql-queries-with-sdk.html" class="xref page">Python</a>
+| <a href="#ruby-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Ruby</a>
+| <a href="#scala-sdk:howtos:n1ql-queries-with-sdk.adoc" class="xref unresolved">Scala</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+        <nav class="pagination">
+
+                    <span class="prev"><a href="manipulate.html">Data Manipulation Queries</a></span>
+
+
+                    <span class="next"><a href="update.html">Modifying Data with SQL++</a></span>
+
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Server","components":["server"],"url":"/home/server.html","latestVersions":{"server":"7.2"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>

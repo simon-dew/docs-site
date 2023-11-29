@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>MERGE | Couchbase Docs (Preview)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11568/server/current/n1ql/n1ql-language-reference/merge.html">
+<link rel="stylesheet" href="../../../../_/css/site.css">
+<script src="../../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="A MERGE statement provides the ability to update, insert into, or delete from a keyspace based on the results of a join with another keyspace or subquery.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="7.2">
+<meta name="page-url" content="/server/current/n1ql/n1ql-language-reference/merge.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html">
+                    <img src="../../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="https://github.com/simon-dew/docs-devex/edit/release/7.2/modules/n1ql/pages/n1ql-language-reference/merge.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../../introduction/intro.html">Couchbase Server</a></li>
+<li class="crumb">Develop</li>
+<li class="crumb"><a href="../query.html">Query</a></li>
+<li class="crumb"><a href="index.html">SQL++ Language Reference</a></li>
+<li class="crumb">Statements</li>
+<li class="crumb"><a href="merge.html">MERGE</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">MERGE</h1>
+<div class="labels">
+<ul><li class="reference"><span><i class="fas fa-book"></i></i> reference</span></li>
+</ul>
+</div>
+
+
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<style type="text/css">
+  /* DOC-10177 */
+  .hdlist table tr td.hdlist1,
+  .hdlist table tr td.hdlist2 {
+    padding: 1.5rem 0 0;
+  }
+
+  /* Compact horizontal definition lists */
+  .hdlist.compact,
+  .hdlist.compact {
+    padding-top: 1rem;
+  }
+  .hdlist.compact table tr td.hdlist1,
+  .hdlist.compact table tr td.hdlist2 {
+    padding: 0.5rem 0 0;
+  }
+
+  /* Descriptions in horizontal description lists should have left padding */
+  .hdlist table tr td.hdlist2,
+  .hdlist.compact table tr td.hdlist2 {
+    padding-left: 1rem;
+  }
+
+  /* Paragraphs in horizontal description lists should not have left margin */
+  .hdlist table .hdlist1 + .hdlist2 p {
+    margin-left: 0; !important
+  }
+
+  /* Horizontal definitions should match style of vertical definitions */
+  td.hdlist1 {
+    font-weight: 600;
+  }
+</style>
+<div class="quoteblock abstract">
+<blockquote>
+A MERGE statement provides the ability to update, insert into, or delete from a keyspace based on the results of a join with another keyspace or subquery.
+It is possible to specify actions (insert, update, delete) on the keyspace based on a match or no match in the join.
+Multiple actions can be specified in the same query.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Couchbase Server supports two types of merge clause, which are described in the sections below: <a href="#ansi-merge">ANSI Merge</a> and <a href="#lookup-merge">Lookup Merge</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The ANSI merge clause has much more flexible functionality than its earlier legacy equivalent.
+Since it is standard compliant and more flexible, we recommend you to use ANSI merge exclusively, where possible.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="privileges"><a class="anchor" href="#privileges"></a>Privileges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>User executing the MERGE statement must have the following privileges:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Query Select</em> privileges on the source keyspace</p>
+</li>
+<li>
+<p><em>Query Insert</em>, <em>Query Update</em>, or <em>Query Delete</em> privileges on the target keyspace as per the MERGE actions</p>
+</li>
+<li>
+<p><em>Query Select</em> privileges on the keyspaces referred in the RETURNING clause</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more details about user roles, refer to
+<a href="../../learn/security/authorization-overview.html" class="xref page">Authorization</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A user with the <em>Data Writer</em> privilege may set documents to expire.
+When the document expires, the data service deletes the document, even though the user may not have the <em>Query Delete</em> privilege.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L46">merge ::= 'MERGE' 'INTO' ( ansi-merge | lookup-merge ) limit-clause? returning-clause?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+ansi-merge
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge">ANSI Merge</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+lookup-merge
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge">Lookup Merge</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+limit-clause
+</td>
+<td class="hdlist2">
+<p><a href="#limit-clause">LIMIT Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+returning-clause
+</td>
+<td class="hdlist2">
+<p><a href="#returning-clause">RETURNING Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansi-merge"><a class="anchor" href="#ansi-merge"></a>ANSI Merge</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L50-L51">ansi-merge ::= target-keyspace use-index-clause 'USING' ansi-merge-source
+               ansi-merge-predicate ansi-merge-actions</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ansi-merge.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+target-keyspace
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-target">ANSI Merge Target</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+use-index-clause
+</td>
+<td class="hdlist2">
+<p><a href="#target-hint">ANSI Merge Target Hint</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+ansi-merge-source
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-source">ANSI Merge Source</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+ansi-merge-predicate
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-predicate">ANSI Merge Predicate</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+ansi-merge-actions
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-actions">ANSI Merge Actions</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="ansi-merge-target"><a class="anchor" href="#ansi-merge-target"></a>ANSI Merge Target</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L138">target-keyspace ::= keyspace-ref ( 'AS'? alias )?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/target-keyspace.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge target is the keyspace which you want to update, insert into, or delete from.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+keyspace-ref
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-target-ref">Keyspace Reference</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+alias
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-target-alias">AS Alias</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="ansi-target-ref"><a class="anchor" href="#ansi-target-ref"></a>Keyspace Reference</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L86">keyspace-ref ::= keyspace-path | keyspace-partial</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-ref.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div id="keyspace-path" class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L90">keyspace-path ::= ( namespace ':' )? bucket ( '.' scope '.' collection )?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-path.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div id="keyspace-partial" class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L94">keyspace-partial ::= collection</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-partial.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Keyspace reference for the merge target.
+For more details, refer to <a href="from.html#from-keyspace-ref" class="xref page">Keyspace Reference</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-target-alias"><a class="anchor" href="#ansi-target-alias"></a>AS Alias</h4>
+<div class="paragraph">
+<p>Assigns another name to the keyspace reference.
+For details, refer to <a href="from.html#section_ax5_2nx_1db" class="xref page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>Assigning an alias to the keyspace reference is optional.
+If you assign an alias to the keyspace reference, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="target-hint"><a class="anchor" href="#target-hint"></a>ANSI Merge Target Hint</h3>
+<div class="paragraph">
+<p>You can use a <code>USE INDEX</code> hint on the merge target to specify that the merge should use a particular index.
+For details, refer to <a href="hints.html#use-index-clause" class="xref page">USE INDEX Clause</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>USE INDEX</code> hint is the only hint allowed on the target.
+You cannot specify a <code>USE KEYS</code> hint or a join hint (<code>USE NL</code> or <code>USE HASH</code>) on the target of a merge statement.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansi-merge-source"><a class="anchor" href="#ansi-merge-source"></a>ANSI Merge Source</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L55-L56">ansi-merge-source ::= ( merge-source-keyspace | merge-source-subquery | merge-source-expr )
+                      ansi-join-hints?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ansi-merge-source.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge source is the recordset that you want to merge with the merge target.
+It can be a keyspace reference, a subquery, or a generic expression.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+merge-source-keyspace
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-source-keyspace">ANSI Merge Keyspace</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+merge-source-subquery
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-source-subquery">ANSI Merge Subquery</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+merge-source-expr
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-source-expr">ANSI Merge Expression</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+ansi-join-hints
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-source-hints">ANSI Merge Source Hints</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-source-keyspace"><a class="anchor" href="#ansi-merge-source-keyspace"></a>ANSI Merge Keyspace</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L96">merge-source-keyspace ::= keyspace-ref ( 'AS'? alias )?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge-source-keyspace.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+keyspace-ref
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-keyspace-ref">Keyspace Reference</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+alias
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-keyspace-alias">AS Alias</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="ansi-keyspace-ref"><a class="anchor" href="#ansi-keyspace-ref"></a>Keyspace Reference</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L86">keyspace-ref ::= keyspace-path | keyspace-partial</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-ref.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div id="source-keyspace-path" class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L90">keyspace-path ::= ( namespace ':' )? bucket ( '.' scope '.' collection )?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-path.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div id="source-keyspace-partial" class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L94">keyspace-partial ::= collection</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/keyspace-partial.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Keyspace reference for the merge source.
+For details, refer to <a href="from.html#from-keyspace-ref" class="xref page">Keyspace Reference</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="ansi-keyspace-alias"><a class="anchor" href="#ansi-keyspace-alias"></a>AS Alias</h5>
+<div class="paragraph">
+<p>Assigns another name to the keyspace reference.
+For details, refer to <a href="from.html#section_ax5_2nx_1db" class="xref page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>Assigning an alias to the keyspace reference is optional.
+If you assign an alias to the keyspace reference, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-source-subquery"><a class="anchor" href="#ansi-merge-source-subquery"></a>ANSI Merge Subquery</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L100">merge-source-subquery ::= subquery-expr 'AS'? alias</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge-source-subquery.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+subquery-expr
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-subquery-expr">Subquery Expression</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+alias
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-subquery-alias">AS Alias</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="ansi-subquery-expr"><a class="anchor" href="#ansi-subquery-expr"></a>Subquery Expression</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L118">subquery-expr ::= '(' select ')'</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/subquery-expr.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Use parentheses to specify a subquery for the merge source.
+For details, refer to <a href="subqueries.html" class="xref page">Subqueries</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="ansi-subquery-alias"><a class="anchor" href="#ansi-subquery-alias"></a>AS Alias</h5>
+<div class="paragraph">
+<p>Assigns another name to the subquery.
+For details, refer to <a href="from.html#section_ax5_2nx_1db" class="xref page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>You must assign an alias to a subquery on the merge source.
+However, when you assign an alias to the subquery, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-source-expr"><a class="anchor" href="#ansi-merge-source-expr"></a>ANSI Merge Expression</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L104">merge-source-expr ::= expr ( 'AS'? alias )?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge-source-expr.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+expr
+</td>
+<td class="hdlist2">
+<p>A SQL++ <a href="index.html" class="xref page">expression</a> generating JSON documents or objects for the merge source.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+alias
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-generic-alias">AS Alias</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="ansi-generic-alias"><a class="anchor" href="#ansi-generic-alias"></a>AS Alias</h5>
+<div class="paragraph">
+<p>Assigns another name to the generic expression.
+For details, refer to <a href="from.html#section_ax5_2nx_1db" class="xref page">AS Clause</a>.</p>
+</div>
+<div class="paragraph">
+<p>Assigning an alias to the generic expression is optional.
+If you assign an alias to the generic expression, the <code>AS</code> keyword may be omitted.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-source-hints"><a class="anchor" href="#ansi-merge-source-hints"></a>ANSI Merge Source Hints</h4>
+<div class="paragraph">
+<p>You can specify ANSI join hints (<code>USE HASH</code> or <code>USE NL</code>) on the source of an ANSI merge.
+For details, refer to <a href="join.html#ansi-join-hints" class="xref page">ANSI JOIN Hints</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If the merge source is a keyspace, you can also specify a <code>USE KEYS</code> or <code>USE INDEX</code> hint on the merge source. For details, refer to <a href="join.html#multiple-hints" class="xref page">Multiple Hints</a>.</p>
+</div>
+<div class="paragraph">
+<p>If the merge action is <a href="#ansi-merge-update">update</a> or <a href="#ansi-merge-delete">delete</a>, you can specify any of the join methods: <code>USE HASH(BUILD)</code>, <code>USE HASH(PROBE)</code>, or <code>USE NL</code>.</p>
+</div>
+<div class="paragraph">
+<p>If the merge action is <a href="#ansi-merge-insert">insert</a>, the only join methods you can specify are <code>USE HASH(PROBE)</code> or <code>USE NL</code>.
+In this case, if you specify <code>USE HASH(BUILD)</code>, the join method will default to <code>USE NL</code>.</p>
+</div>
+<div class="paragraph">
+<p>The ANSI join hint is optional.
+If omitted, the default hint is <code>USE NL</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you are using a nested-loop join, i.e. <code>USE NL</code> is specified or no join hint is specified, the target keyspace reference must have an appropriate secondary index defined for the join to work.
+If such an index cannot be found an error will be returned.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansi-merge-predicate"><a class="anchor" href="#ansi-merge-predicate"></a>ANSI Merge Predicate</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L60">ansi-merge-predicate ::= 'ON' expr</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ansi-merge-predicate.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge predicate enables you to specify an ANSI join between the <a href="#ansi-merge-source">merge source</a> and the <a href="#ansi-merge-target">merge target</a>.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+expr
+</td>
+<td class="hdlist2">
+<p>Boolean expression representing the join condition.
+This expression may contain fields, constant expressions, or any complex SQL++ expression.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansi-merge-actions"><a class="anchor" href="#ansi-merge-actions"></a>ANSI Merge Actions</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L64">ansi-merge-actions ::= merge-update? merge-delete? ansi-merge-insert?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ansi-merge-actions.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge actions enable you to specify insert, update, and delete actions on the target keyspace, based on a match or no match in the join.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+merge-update
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-update">ANSI Merge Update</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+merge-delete
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-delete">ANSI Merge Delete</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+ansi-merge-insert
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-merge-insert">ANSI Merge Insert</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-update"><a class="anchor" href="#ansi-merge-update"></a>ANSI Merge Update</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L108">merge-update ::= 'WHEN' 'MATCHED' 'THEN' 'UPDATE' set-clause? unset-clause? where-clause?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge-update.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Updates a document that already exists with updated values.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+set-clause
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-set-clause">SET Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+unset-clause
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-unset-clause">UNSET Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+where-clause
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-update-where">WHERE Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="ansi-set-clause"><a class="anchor" href="#ansi-set-clause"></a>SET Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L147-L148">set-clause ::= 'SET' ( meta '=' expiration | path '=' expr update-for? )
+               ( ',' ( meta '=' expiration | path '=' expr update-for? ) )*</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/set-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies the value for an attribute to be changed.
+Also enables you to set the expiration of the document.
+For more details, refer to <a href="update.html#set-clause" class="xref page">SET Clause</a>.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+update-for
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-update-for">FOR Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="ansi-unset-clause"><a class="anchor" href="#ansi-unset-clause"></a>UNSET Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L152">unset-clause ::= 'UNSET' path update-for? (',' path update-for?)*</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/unset-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Removes a specified attribute from the document.
+For more details, refer to <a href="update.html#unset-clause" class="xref page">UNSET Clause</a>.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+update-for
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-update-for">FOR Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="ansi-update-for"><a class="anchor" href="#ansi-update-for"></a>FOR Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L156-L158">update-for ::= ('FOR' (name-var ':')? var ('IN' | 'WITHIN') path
+               (','   (name-var ':')? var ('IN' | 'WITHIN') path)* )+
+               ('WHEN' cond)? 'END'</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/update-for.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div id="ansi-path" class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L66">path ::= identifier ( '[' expr ']' )* ( '.' identifier ( '[' expr ']' )* )*</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/path.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Iterates over a nested array to SET or UNSET the given attribute for every matching element in the array.
+For more details, refer to <a href="update.html#update-for" class="xref page">FOR Clause</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="ansi-update-where"><a class="anchor" href="#ansi-update-where"></a>WHERE Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L362">where-clause ::= 'WHERE' cond</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/where-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Optionally specifies a condition that must be met for data to be updated.
+For more details, refer to <a href="update.html#where-clause" class="xref page">WHERE Clause</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-delete"><a class="anchor" href="#ansi-merge-delete"></a>ANSI Merge Delete</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L112">merge-delete ::= 'WHEN' 'MATCHED' 'THEN' 'DELETE' where-clause?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/merge-delete.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Removes the specified document from the keyspace.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+where-clause
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-delete-where">WHERE Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="ansi-delete-where"><a class="anchor" href="#ansi-delete-where"></a>WHERE Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L362">where-clause ::= 'WHERE' cond</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/where-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Optionally specifies a condition that must be met for data to be deleted.
+For more details, refer to <a href="update.html#where-clause" class="xref page">WHERE Clause</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansi-merge-insert"><a class="anchor" href="#ansi-merge-insert"></a>ANSI Merge Insert</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L68-L69">ansi-merge-insert ::= 'WHEN' 'NOT' 'MATCHED' 'THEN' 'INSERT' '(' 'KEY'? key
+                      ( ',' 'VALUE'? value )? ( ',' 'OPTIONS'? options )? ')' where-clause?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/ansi-merge-insert.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Inserts a new document into the keyspace.
+Use parentheses to specify the key and value for the inserted document, separated by a comma.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Use the <a href="metafun.html#uuid" class="xref page">UUID()</a> function to generate a random, unique document key.
+</td>
+</tr>
+</table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+key
+</td>
+<td class="hdlist2">
+<p>An expression specifying the key for the inserted document.</p>
+<div class="paragraph">
+<p>The <code>KEY</code> keyword may be omitted.
+If it is omitted, the <code>VALUE</code> keyword must be omitted also.</p>
+</div>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+value
+</td>
+<td class="hdlist2">
+<p>[Optional] An expression specifying the value for the inserted document.
+If the value is omitted, an empty document is inserted.</p>
+<div class="paragraph">
+<p>The <code>VALUE</code> keyword may be omitted.
+If it is omitted, the <code>KEY</code> keyword must be omitted also.</p>
+</div>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+options
+</td>
+<td class="hdlist2">
+<p>[Optional] An object representing the metadata to be set for the inserted document.
+Only the <code>expiration</code> attribute has any effect; any other attributes are ignored.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">expiration</dt>
+<dd>
+<p>An integer, or an expression resolving to an integer, representing the <a href="../../../../java-sdk/current/howtos/kv-operations.html#document-expiration" class="xref page">document expiration</a> in seconds.</p>
+<div class="paragraph">
+<p>If the document expiration is not specified, it defaults to <code>0</code>, meaning the document expiration is the same as the <a href="../../learn/data/expiration.html" class="xref page">bucket expiration</a>.</p>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The <code>OPTIONS</code> keyword may be omitted.
+If it is omitted, the <code>KEY</code> and <code>VALUE</code> keywords must be omitted also.</p>
+</div>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+where-clause
+</td>
+<td class="hdlist2">
+<p><a href="#ansi-insert-where">WHERE Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="ansi-insert-where"><a class="anchor" href="#ansi-insert-where"></a>WHERE Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L362">where-clause ::= 'WHERE' cond</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/where-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Optionally specifies a condition that must be met for data to be inserted.
+For more details, refer to <a href="update.html#where-clause" class="xref page">WHERE clause</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lookup-merge"><a class="anchor" href="#lookup-merge"></a>Lookup Merge</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L73-L74">lookup-merge ::= target-keyspace 'USING' lookup-merge-source lookup-merge-predicate
+                 lookup-merge-actions</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/lookup-merge.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+target-keyspace
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-target">Lookup Merge Target</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+lookup-merge-source
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-source">Lookup Merge Source</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+lookup-merge-predicate
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-predicate">Lookup Merge Predicate</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+lookup-merge-actions
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-actions">Lookup Merge Actions</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="lookup-merge-target"><a class="anchor" href="#lookup-merge-target"></a>Lookup Merge Target</h3>
+<div class="paragraph">
+<p>Keyspace reference for the merge target.
+The syntax is the same as for an ANSI merge.
+Refer to <a href="#ansi-merge-target">ANSI Merge Target</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lookup-merge-source"><a class="anchor" href="#lookup-merge-source"></a>Lookup Merge Source</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L78-L80">lookup-merge-source ::= merge-source-keyspace use-clause? |
+                        merge-source-subquery |
+                        merge-source-expr</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/lookup-merge-source.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge source is the recordset that you want to merge with the merge target.
+It can be a keyspace reference, a subquery, or a generic expression.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+merge-source-keyspace
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-source-keyspace">Lookup Merge Keyspace</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+use-clause
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-source-hints">Lookup Merge Source Hint</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+merge-source-subquery
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-source-subquery">Lookup Merge Subquery</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+merge-source-expression
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-source-expr">Lookup Merge Expression</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-source-keyspace"><a class="anchor" href="#lookup-merge-source-keyspace"></a>Lookup Merge Keyspace</h4>
+<div class="paragraph">
+<p>Keyspace reference for the merge source.
+The syntax is the same as for an ANSI merge.
+Refer to <a href="#ansi-merge-source-keyspace">ANSI Merge Keyspace</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-source-hints"><a class="anchor" href="#lookup-merge-source-hints"></a>Lookup Merge Source Hint</h4>
+<div class="paragraph">
+<p>If the merge source is a keyspace, you can specify a USE KEYS or USE INDEX hint on the merge source.
+For details, refer to <a href="hints.html" class="xref page">USE clause</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-source-subquery"><a class="anchor" href="#lookup-merge-source-subquery"></a>Lookup Merge Subquery</h4>
+<div class="paragraph">
+<p>Specifies a subquery for the merge source.
+The syntax is the same as for an ANSI merge.
+Refer to <a href="#ansi-merge-source-subquery">ANSI Merge Subquery</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-source-expr"><a class="anchor" href="#lookup-merge-source-expr"></a>Lookup Merge Expression</h4>
+<div class="paragraph">
+<p>Specifies a generic expression for the merge source.
+The syntax is the same as for an ANSI merge.
+Refer to <a href="#ansi-merge-source-expr">ANSI Merge Expression</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lookup-merge-predicate"><a class="anchor" href="#lookup-merge-predicate"></a>Lookup Merge Predicate</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L84">lookup-merge-predicate ::= 'ON' 'PRIMARY'? 'KEY' expr</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/lookup-merge-predicate.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge predicate produces a document key for the target of the lookup merge.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+expr
+</td>
+<td class="hdlist2">
+<p>[Required] String or expression representing the primary key of the documents for the target keyspace.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lookup-merge-actions"><a class="anchor" href="#lookup-merge-actions"></a>Lookup Merge Actions</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L88">lookup-merge-actions ::= merge-update? merge-delete? lookup-merge-insert?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/lookup-merge-actions.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>The merge actions enable you to specify insert, update, and delete actions on the target keyspace, based on a match or no match in the join.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+merge-update
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-update">Lookup Merge Update</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+merge-delete
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-delete">Lookup Merge Delete</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+lookup-merge-insert
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-insert">Lookup Merge Insert</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-update"><a class="anchor" href="#lookup-merge-update"></a>Lookup Merge Update</h4>
+<div class="paragraph">
+<p>Updates a document that already exists with updated values.
+The syntax is the same as for an ANSI merge.
+Refer to <a href="#ansi-merge-update">ANSI Merge Update</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-delete"><a class="anchor" href="#lookup-merge-delete"></a>Lookup Merge Delete</h4>
+<div class="paragraph">
+<p>Removes the specified document from the keyspace.
+The syntax is the same as for an ANSI merge.
+Refer to <a href="#ansi-merge-delete">ANSI Merge Delete</a> for details.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lookup-merge-insert"><a class="anchor" href="#lookup-merge-insert"></a>Lookup Merge Insert</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L92">lookup-merge-insert ::= 'WHEN' 'NOT' 'MATCHED' 'THEN' 'INSERT' expr where-clause?</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/lookup-merge-insert.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Inserts a new document into the keyspace.
+The key specified in the <a href="#lookup-merge-predicate">Lookup Merge Predicate</a> is used as the key for the newly inserted document.</p>
+</div>
+<div class="hdlist compact">
+<table>
+<tr>
+<td class="hdlist1">
+expr
+</td>
+<td class="hdlist2">
+<p>An expression specifying the value for the inserted document.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+where-clause
+</td>
+<td class="hdlist2">
+<p><a href="#lookup-merge-insert-where">WHERE Clause</a> <span class="icon"><i class="fa fa-caret-down"></i></span></p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Lookup Merge Insert syntax does not enable you to specify the document expiration.
+If you need to specify the document expiration, rewrite the query using the ANSI Merge Insert syntax.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="lookup-merge-insert-where"><a class="anchor" href="#lookup-merge-insert-where"></a>WHERE Clause</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L362">where-clause ::= 'WHERE' cond</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/where-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Optionally specifies a condition that must be met for data to be inserted.
+For more details, refer to <a href="update.html#where-clause" class="xref page">WHERE clause</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="common-clauses"><a class="anchor" href="#common-clauses"></a>Common Clauses</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following clauses are common to both ANSI Merge and Lookup Merge.</p>
+</div>
+<div class="sect2">
+<h3 id="limit-clause"><a class="anchor" href="#limit-clause"></a>LIMIT Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dql.ebnf#L453">limit-clause ::= 'LIMIT' expr</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/limit-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies the <em>minimum</em> number of records to be processed.
+For more details, refer to <a href="insert.html#limit-clause" class="xref page">LIMIT Clause</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="returning-clause"><a class="anchor" href="#returning-clause"></a>RETURNING Clause</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ebnf hljs" data-lang="ebnf" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/partials/grammar/dml.ebnf#L142-L143">returning-clause ::= 'RETURNING' (result-expr (',' result-expr)* |
+                    ('RAW' | 'ELEMENT' | 'VALUE') expr)</code></pre>
+</div>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="../_images/n1ql-language-reference/returning-clause.png" alt="Syntax diagram: refer to source code listing">
+</div>
+</div>
+<div class="paragraph">
+<p>Specifies the information to be returned by the operation as a query result.
+For more details, refer to <a href="insert.html#returning-clause" class="xref page">RETURNING Clause</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To try the examples in this section, set the query context to the <code>inventory</code> scope in the travel sample dataset.
+For more information, see <a href="../n1ql-intro/queriesandresults.html#query-context" class="xref page">Query Context</a>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Please note that the examples below will alter the data in your sample buckets.
+To restore your sample data, remove and reinstall the <code>travel-sample</code> bucket.
+Refer to <a href="../../manage/manage-settings/install-sample-buckets.html" class="xref page">Sample Buckets</a> for details.
+</td>
+</tr>
+</table>
+</div>
+<div id="example-1" class="exampleblock">
+<div class="title">Example 1. ANSI merge with expression source</div>
+<div class="content">
+<div class="paragraph">
+<p>This example updates the vacancy field based on the source expression.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/ansi-merge-expr.n1ql">MERGE INTO hotel t
+USING [
+  {"id":"21728", "vacancy": true},
+  {"id":"21730", "vacancy": true}
+] source
+ON meta(t).id = "hotel_" || source.id
+WHEN MATCHED THEN
+  UPDATE SET t.old_vacancy = t.vacancy,
+             t.vacancy = source.vacancy
+RETURNING meta(t).id, t.old_vacancy, t.vacancy;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-2" class="exampleblock">
+<div class="title">Example 2. ANSI merge with keyspace source</div>
+<div class="content">
+<div class="paragraph">
+<p>This example finds all BA routes whose source airport is in France.
+If any flights are using equipment 319, they are updated to use 797.
+If any flights are using equipment 757, they are deleted.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/ansi-merge-keyspace.n1ql">MERGE INTO route
+USING airport
+ON route.sourceairport = airport.faa
+WHEN MATCHED THEN UPDATE
+  SET route.old_equipment = route.equipment,
+      route.equipment = "797",
+      route.updated = true
+  WHERE airport.country = "France"
+    AND route.airline = "BA"
+    AND CONTAINS(route.equipment, "319")
+WHEN MATCHED THEN DELETE
+  WHERE airport.country = "France"
+    AND route.airline = "BA"
+    AND CONTAINS(route.equipment, "757")
+RETURNING route.old_equipment, route.equipment, airport.faa;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-3" class="exampleblock">
+<div class="title">Example 3. ANSI merge with updates and inserts</div>
+<div class="content">
+<div class="paragraph">
+<p>This example compares a source set of airport data with the <code>airport</code> keyspace data.
+If the airport already exists in the <code>airport</code> keyspace, the record is updated.
+If the airport does not exist in the <code>airport</code> keyspace, a new record is created.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/ansi-merge-else.n1ql">MERGE INTO airport AS target
+USING [
+  {"iata":"DSA", "name": "Doncaster Sheffield Airport"},
+  {"iata":"VLY", "name": "Anglesey Airport / Maes Awyr Môn"}
+] AS source
+ON target.faa = source.iata
+WHEN MATCHED THEN
+  UPDATE SET target.old_name = target.airportname,
+             target.airportname = source.name,
+             target.updated = true
+WHEN NOT MATCHED THEN
+  INSERT (KEY UUID(),
+          VALUE {"faa": source.iata,
+                 "airportname": source.name,
+                 "type": "airport",
+                 "inserted": true} )
+RETURNING *;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="example-4" class="exampleblock">
+<div class="title">Example 4. ANSI merge with expiration</div>
+<div class="content">
+<div class="paragraph">
+<p>This example compares a source set of airport data with the <code>airport</code> keyspace data.
+If the airport already exists in the <code>airport</code> keyspace, the record is updated, and the existing document expiration is preserved.
+If the airport does not exist in the <code>airport</code> keyspace, a new record is created with an expiration of one week.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/ansi-merge-expire.n1ql">MERGE INTO airport AS target
+USING [
+  {"iata":"DSA", "name": "Doncaster Sheffield Airport"},
+  {"iata":"VLY", "name": "Anglesey Airport / Maes Awyr Môn"}
+] AS source
+ON target.faa = source.iata
+WHEN MATCHED THEN
+  UPDATE SET target.old_name = target.airportname,
+             target.airportname = source.name,
+             target.updated = true,
+             meta(target).expiration = meta(target).expiration
+WHEN NOT MATCHED THEN
+  INSERT (KEY UUID(),
+          VALUE {"faa": source.iata,
+                 "airportname": source.name,
+                 "type": "airport",
+                 "inserted": true},
+          OPTIONS {"expiration": 7*24*60*60} );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that it is possible to preserve the document expiration using the request-level <a href="../../settings/query-settings.html#preserve_expiration" class="xref page">preserve_expiration</a> parameter.</p>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. Lookup merge with expression source</div>
+<div class="content">
+<div class="paragraph">
+<p>Lookup merge version of <a href="#example-1">Example 1</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/lookup-merge-expr.n1ql">MERGE INTO hotel t
+USING [
+  {"id":"21728", "vacancy": true},
+  {"id":"21730", "vacancy": true}
+] source
+ON KEY "hotel_"|| source.id
+WHEN MATCHED THEN
+  UPDATE SET t.old_vacancy = t.vacancy, t.vacancy = source.vacancy
+RETURNING meta(t).id, t.old_vacancy, t.vacancy;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 6. Lookup merge with keyspace source</div>
+<div class="content">
+<div class="paragraph">
+<p>The following statement updates product based on orders.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/lookup-merge-keyspace.n1ql">MERGE INTO product p USING orders o ON KEY o.productId
+WHEN MATCHED THEN
+  UPDATE SET p.lastSaleDate = o.orderDate
+WHEN MATCHED THEN
+  DELETE WHERE p.inventoryCount  &lt;= 0;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 7. Lookup merge with updates and inserts</div>
+<div class="content">
+<div class="paragraph">
+<p>The following statement merges two datasets containing employee information.
+It then updates <code>all_empts</code> on match with <code>emps_deptb</code> and inserts when there is no match.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/n1ql/examples/dml/lookup-merge-else.n1ql">MERGE INTO all_empts a USING emps_deptb b ON KEY b.empId
+WHEN MATCHED THEN
+  UPDATE SET a.depts = a.depts + 1
+  a.title = b.title || ", " || b.title
+WHEN NOT MATCHED THEN
+  INSERT { "name": b.name,
+           "title": b.title,
+           "depts": b.depts,
+           "empId": b.empId,
+           "dob": b.dob };</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Server","components":["server"],"url":"/home/server.html","latestVersions":{"server":"7.2"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../../_/js/site.js"></script>
+<script async src="../../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
