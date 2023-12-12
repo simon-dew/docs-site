@@ -109,6 +109,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+    <template id="page-versions" style="display: none">
+      <select class="version_list" data-component="server">
+        <option value="7.6" data-url="../../../../7.6/learn/services-and-indexes/indexes/early-filters-and-pagination.html">7.6 Prerelease</option>
+        <option value="7.2" data-url="early-filters-and-pagination.html" selected>7.2</option>
+      </select>
+    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -175,11 +181,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
-<li class="crumb"><a href="../../../introduction/intro.html">Couchbase Server</a></li>
-<li class="crumb">Develop</li>
-<li class="crumb"><a href="../../../n1ql/query.html">Query</a></li>
-<li class="crumb"><a href="global-secondary-indexes.html">Using Indexes</a></li>
-<li class="crumb"><a href="early-filters-and-pagination.html">Early Filters, Order, and Pagination</a></li>
+<li class="crumb"><a href="../../../index.html">server</a></li>
 </ul>
 </nav>
 </div>
@@ -210,7 +212,7 @@ When covering indexes and index pushdowns are not available, the Query Service m
 <div class="title">Examples on this Page</div>
 <div class="paragraph">
 <p>The examples in this topic use the travel-sample dataset which is shipped with Couchbase Server.
-For instructions on how to install the sample bucket, see <a href="../../../manage/manage-settings/install-sample-buckets.html" class="xref page">Sample Buckets</a>.</p>
+For instructions on how to install the sample bucket, see <a href="#manage:manage-settings/install-sample-buckets.adoc" class="xref unresolved">Sample Buckets</a>.</p>
 </div>
 <div class="paragraph">
 <p>To use the examples on this page, you must set the query context to the <code>inventory</code> scope in the travel sample dataset.
@@ -432,7 +434,7 @@ For an illustration of early filtering, consider the following index.</p>
 <div id="early-filter-idx" class="listingblock">
 <div class="title">Index I</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-idx.n1ql">CREATE INDEX idx_eat_city_name
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-idx.n1ql">CREATE INDEX idx_eat_city_name
 ON landmark(city DESC, name)
 WHERE activity = "eat";</code></pre>
 </div>
@@ -448,7 +450,7 @@ WHERE activity = "eat";</code></pre>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-1.n1ql">EXPLAIN SELECT city, name FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-1.n1ql">EXPLAIN SELECT city, name FROM landmark
 WHERE city = "Paris" AND activity = "eat";</code></pre>
 </div>
 </div>
@@ -458,7 +460,7 @@ In addition, the predicate <code>city = "Paris"</code> is applied as a span by t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-1.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-1.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -514,7 +516,7 @@ Now the query is no longer covered, and the Query service needs to fetch documen
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-2.n1ql">EXPLAIN SELECT city, name, address FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-2.n1ql">EXPLAIN SELECT city, name, address FROM landmark
 WHERE city = "Paris" AND activity = "eat";</code></pre>
 </div>
 </div>
@@ -524,7 +526,7 @@ The index only returns document keys for documents matching the predicate.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-2.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-2.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -588,7 +590,7 @@ The index only returns document keys for documents matching the predicate.</p>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-3.n1ql">EXPLAIN SELECT city, name, address FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-3.n1ql">EXPLAIN SELECT city, name, address FROM landmark
 WHERE LOWER(city) = "paris" AND activity = "eat";</code></pre>
 </div>
 </div>
@@ -599,7 +601,7 @@ The Query service can apply the specified filter to the results of the index sca
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-3.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-3.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -658,7 +660,7 @@ Inside the filter, <code>_index_key ((`landmark`.`city`))</code> is analogous to
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-4.n1ql">EXPLAIN SELECT city, name, address FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-4.n1ql">EXPLAIN SELECT city, name, address FROM landmark
 WHERE city = "Paris" AND name LIKE "%Paris%" AND activity = "eat";</code></pre>
 </div>
 </div>
@@ -668,7 +670,7 @@ As a result, the early filters only contain the predicates that were not pushed 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-filter-4.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-filter-4.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -734,7 +736,7 @@ As an illustration, consider the following index.</p>
 <div id="early-paginate-idx" class="listingblock">
 <div class="title">Index II</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-idx.n1ql">CREATE INDEX idx_landmark_city_name
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-idx.n1ql">CREATE INDEX idx_landmark_city_name
 ON landmark(city DESC, name);</code></pre>
 </div>
 </div>
@@ -749,7 +751,7 @@ ON landmark(city DESC, name);</code></pre>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-1.n1ql">EXPLAIN SELECT city, name FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-1.n1ql">EXPLAIN SELECT city, name FROM landmark
 WHERE city IS NOT MISSING
 ORDER BY city DESC, name OFFSET 100 LIMIT 5;</code></pre>
 </div>
@@ -760,7 +762,7 @@ In addition, the ordering, offset, and limit are performed by the Index service.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-1.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-1.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -829,7 +831,7 @@ Now the query is no longer covered.</p>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-2.n1ql">EXPLAIN SELECT city, name, address FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-2.n1ql">EXPLAIN SELECT city, name, address FROM landmark
 WHERE city IS NOT MISSING
 ORDER BY city DESC, name OFFSET 100 LIMIT 5;</code></pre>
 </div>
@@ -839,7 +841,7 @@ ORDER BY city DESC, name OFFSET 100 LIMIT 5;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-2.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-2.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -899,7 +901,7 @@ ORDER BY city DESC, name OFFSET 100 LIMIT 5;</code></pre>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-3.n1ql">EXPLAIN SELECT city, name, address FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-3.n1ql">EXPLAIN SELECT city, name, address FROM landmark
 WHERE city IS NOT MISSING
 ORDER BY name, city DESC OFFSET 100 LIMIT 5;</code></pre>
 </div>
@@ -909,7 +911,7 @@ ORDER BY name, city DESC OFFSET 100 LIMIT 5;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-3.jsonc">[
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-3.jsonc">[
   {
     "plan": {
       "#operator": "Sequence",
@@ -989,7 +991,7 @@ ORDER BY name, city DESC OFFSET 100 LIMIT 5;</code></pre>
 <div class="listingblock">
 <div class="title">Query</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-4.n1ql">EXPLAIN SELECT city, name, address FROM landmark
+<pre class="highlightjs highlight"><code class="language-sqlpp hljs" data-lang="sqlpp" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-4.n1ql">EXPLAIN SELECT city, name, address FROM landmark
 WHERE city IS NOT MISSING
 ORDER BY city ASC, name OFFSET 100 LIMIT 5;</code></pre>
 </div>
@@ -999,7 +1001,7 @@ ORDER BY city ASC, name OFFSET 100 LIMIT 5;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/3531cb2dc92a92cc0f8d1d32946bc2b9d30e3803/modules/learn/examples/services-and-indexes/indexes/early-paginate-4.jsonc">// ...
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json" data-source-url="https://github.com/simon-dew/docs-devex/blob/23afad6885daed3d748d7d6dc9be06c2c3660763/modules/learn/examples/services-and-indexes/indexes/early-paginate-4.jsonc">// ...
             {
               "#operator": "Order",
               "flags": 1,

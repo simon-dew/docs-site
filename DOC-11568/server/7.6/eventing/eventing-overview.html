@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>Eventing Service: Fundamentals | Couchbase Docs (Preview)</title>
+<link rel="stylesheet" href="../../../_/css/site.css">
+<script src="../../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="The Couchbase Eventing Service is a framework to operate on changes to data in real time. Events are changes to data in the Couchbase cluster.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="server">
+<meta name="dcterms.identifier" content="7.6">
+<meta name="page-url" content="/server/7.6/eventing/eventing-overview.html">
+<meta name="page-nav-header-levels" content="0">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon" sizes="any">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html">
+                    <img src="../../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11568/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../cloud/index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+    <template id="page-versions" style="display: none">
+      <select class="version_list" data-component="server">
+        <option value="7.6" data-url="eventing-overview.html" selected>7.6 Prerelease</option>
+        <option value="7.2" data-url="../../current/index.html">7.2</option>
+      </select>
+    </template>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="1">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/simon-dew/docs-server/modules/eventing/pages/eventing-overview.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-banner">
+<i class="fas fa-file-alt"></i> <p>You are viewing the documentation for a prerelease version.</p>
+</div>
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../introduction/intro.html">server</a></li>
+<li class="crumb">Develop</li>
+<li class="crumb"><a href="eventing-overview.html">Eventing</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Eventing Service: Fundamentals</h1>
+<div class="labels">
+<ul></ul>
+</div>
+<div class="labels">
+<ul>
+<li class="edition"><a href="https://www.couchbase.com/products/editions">Enterprise Edition</a></li>
+</ul>
+</div>
+
+
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+The Couchbase Eventing Service is a framework to operate on changes to data in real time. Events are changes to data in the Couchbase cluster.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The term 'mutation' generally refers to document changes happening in the Couchbase cluster.
+The Couchbase cluster considers create, update, expiry, or delete operations as a data mutation.</p>
+</div>
+<div class="paragraph">
+<p>Natively integrated with the Couchbase Data Platform, the Eventing Service does not require any third party solutions to manage and respond to data mutations.
+In an event-based architecture, all data changes are reactive and in real-time.</p>
+</div>
+<div class="paragraph">
+<p>For example, consider the number of mutations in the data cluster of an e-Commerce application when a customer places a new order.
+You can observe that: a new transaction record gets created, a new purchase-transaction gets appended to the User&#8217;s account, seller&#8217;s stock-inventory gets updated with a new purchase order.
+Each of these data mutations qualifies as an event in the cluster.</p>
+</div>
+<div class="paragraph">
+<p>A few sample events are listed below:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Capturing the sensor output from a patient.</p>
+</li>
+<li>
+<p>Placing an order in an e-Commerce application.</p>
+</li>
+<li>
+<p>A customer’s order causing a drop in the inventory.</p>
+</li>
+<li>
+<p>Change in the status of a project.</p>
+</li>
+<li>
+<p>Removing a user from a transaction scoring application.</p>
+</li>
+<li>
+<p>News article expires after a certain period of time.</p>
+</li>
+<li>
+<p>Notify a customer that their order has shipped.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using the Eventing Service, you can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Set alerts in a document when a preconfigured threshold is breached</p>
+</li>
+<li>
+<p>Monitor specific parameters in a document</p>
+</li>
+<li>
+<p>Propagate changes to other systems</p>
+</li>
+<li>
+<p>Enrich a document in real time</p>
+</li>
+<li>
+<p>Cascade deletes to avoid orphaned documents</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Why use the Eventing Service?</strong></p>
+</div>
+<div class="paragraph">
+<p>The Eventing Service helps you to streamline your business workflows.
+Using the Couchbase Eventing Service you can:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Manage a data-driven business logic across business-critical applications in a timely manner, thereby increasing your customer engagement.</p>
+</li>
+<li>
+<p>Handle inconsistencies in business logic while working with multiple client applications across domains.</p>
+</li>
+<li>
+<p>Design new data products by leveraging lower technical barriers in the Eventing Service.</p>
+</li>
+<li>
+<p>Develop a reliable infrastructure that can execute your business logic in a rapidly changing data platform.</p>
+</li>
+<li>
+<p>Scale your throughput without making changes to your data configuration and infrastructure.</p>
+</li>
+<li>
+<p>Create specialized point tools to clean, enhance, or transform your data.</p>
+</li>
+<li>
+<p>Maximize your return on investment by minimizing your TCO.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Eventing Service versus Message Queue and Polling Implementations</strong></p>
+</div>
+<div class="paragraph">
+<p>The following table compares the implementation of the Eventing Service with the message queue method that is used to solve the tracking of data mutations.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 38.1679%;">
+<col style="width: 61.8321%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Message Queue or Bus Implementation</th>
+<th class="tableblock halign-left valign-top">Eventing Service Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Needs an additional layer to propagate data changes.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inherent to Couchbase Server and does not need a new layer to propagate data changes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Encounters dual-write problems.
+Every write operation gets pushed twice; once to the message queue and the second time to the cluster.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eliminates the dual-write problem.
+Multiple application servers can perform simultaneous write operations.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">At any point, a write-failure condition can happen.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eliminates the write-failure condition; no transaction semantics.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No easy debug option during troubleshooting.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integrated with native debugger support.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Leads to inefficient data governance and data leakages.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides a centralized control for aspects such as data auditing and data governance, thereby reduces data leakages.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">With the added license, infrastructure, and deployment expenses, the Total Cost of Ownership (TCO) increases many fold.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No additional expenses, the TCO is reduced.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The following table compares the implementation of the Eventing Service with the polling method that is used to solve the tracking of data mutations.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 38.1679%;">
+<col style="width: 61.8321%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Polling Implementation</th>
+<th class="tableblock halign-left valign-top">Eventing Service Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To record and propagate data changes, multiple applications are needed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can record and propagate data changes to a database, message queue, an end-point, or to another bucket inside the Couchbase cluster.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Batch systems are highly inefficient and are not reactive.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handles data mutations in real-time.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consumes a lot of CPU resources.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Implements as a state-less compute operation and utilizes latest trends in compute (multi-core CPU).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Leads to code duplications across multiple infrastructure applications.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No code duplication.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Difficult to scale.
+You need to scale for applications and also scale for transport layer requirements.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built in support to provide easy horizontal or vertical scaling options.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="eventing-functions"><a class="anchor" href="#eventing-functions"></a><strong>Couchbase Eventing Functions</strong></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Couchbase Eventing Functions offer a computing paradigm that developers can use to handle data changes.
+In the Couchbase cluster, you can use the Functions to process and respond to data-changes according to an Event-Condition-Action model.</p>
+</div>
+<div class="paragraph">
+<p>For application developers, Functions offer a platform in which you can focus on building business logic, rather than configuration or infrastructure.
+Functions handle and process events that are generated when documents are created, updated, expired, or deleted.
+The serverless computing infrastructure gets closer to the datastore as the Couchbase Functions integrates with the Couchbase Data Platform.</p>
+</div>
+<div class="paragraph">
+<p><strong>Features of Functions</strong></p>
+</div>
+<div class="paragraph">
+<p>Since Couchbase is a NoSQL document-oriented data platform that utilizes the JSON data model, thus it is only natural that the Eventing Service exposes the
+ability to write JavaScript code to analyze and manipulate your JSON documents on any type mutations.</p>
+</div>
+<div class="paragraph">
+<p>You can configure Functions to generate threshold-based alerts.
+If your business logic requires you to monitor specific parameters inside a document, then you can use Functions to trigger an alert upon logic such as a threshold breach.</p>
+</div>
+<div class="paragraph">
+<p>Additionally as part of Functions you can</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Data Service integration to Read, Write, and Delete documents from within a Function.</p>
+</li>
+<li>
+<p>Data Service integration to work with Atomic Counters, CAS and TTLs from within a Function.</p>
+</li>
+<li>
+<p>Query Service integration to utilize inline SQL++ queries or statements from within a Function.</p>
+</li>
+<li>
+<p>Enable a Timer from within a Function, essentially a callback in the future, for the Function to perform more work.</p>
+</li>
+<li>
+<p>Integrate with external REST endpoints via cURL functionality from within a Function.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Apart from notifications and alerts, Functions provide an option to propagate data changes via mutations such as data enrichment.
+You can also propagate data changes by altering other documents or moving documents between buckets inside your Couchbase cluster.
+For example, Functions can easily be used to perform cascading deletes.</p>
+</div>
+<div class="paragraph">
+<p><strong>Benefits of Functions</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Improves customer experience and engagement</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Data enrichment: Before the introduction of the Eventing Service, data enrichment was accomplished through batch jobs.
+These batch jobs were not in real-time and often resulted in increasing the cost of infrastructure and management.
+Using the Eventing Service, the data enrichment capability was achievable in real-time.
+Functions involve moderate coding effort, time to market and restart capabilities can be achieved easily.</p>
+</li>
+<li>
+<p>Simple to use: Since Functions are developed within the Eventing Service framework, tracking data changes in your cluster is manageable.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Faster innovation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>With a focus on business logic, development cycles are reduced.
+The Eventing Service platform offers a developer-friendly environment, which in turn aids the faster creation of Minimum-Viable-Products (MVPs).</p>
+</li>
+<li>
+<p>Using Functions, Application Developers can rapidly remodel their business workflows and thereby stay in-sync with any business change conditions.</p>
+</li>
+<li>
+<p>Functions offer a lower barrier to technology-adoption by emphasizing on business operations.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Reducing infrastructure and operations-cost</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Since the implementation of the Eventing Service is intrinsic to the Couchbase cluster, it offers a simple to deploy working model.</p>
+</li>
+<li>
+<p>The Eventing Service provides optimum utilization of resources and controls essential aspects such as data auditing, data governance, and node scaling.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="eventing-use-cases"><a class="anchor" href="#eventing-use-cases"></a><strong>Use Cases</strong></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As an Organization, you can use the Eventing Service in a wide variety of use cases.
+Be it in domains such as retail, healthcare, telecommunications, finance, marketing, media, or travel; you can leverage the Eventing Service to track data mutations.</p>
+</div>
+<div class="paragraph">
+<p>For an easy understanding, consider a sample use case in the banking and financial domain.
+Let us say the user performs a credit card transaction.
+Using the Event-Condition-Action model, you can design a custom workflow based on factors such as user&#8217;s credit limit, usage currency, and risk propositions.</p>
+</div>
+<div class="paragraph">
+<p>As another sample use case, consider an organization operating in the Supply Chain Management domain.
+As a developer, using the Function&#8217;s Event-Condition-Action model, you can design a custom workflow in your inventory for stock replenishment.
+Functions help you to construct a business workflow that automatically triggers new stock replacements and maintains a set stock threshold.</p>
+</div>
+<div class="paragraph">
+<p>The rows in the below table list some popular scenarios where the Eventing Service across domains can be used.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Eventing Service - Use Cases</caption>
+<colgroup>
+<col style="width: 21.645%;">
+<col style="width: 35.0649%;">
+<col style="width: 21.645%;">
+<col style="width: 21.6451%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Domain</th>
+<th class="tableblock halign-left valign-top">Eventing Trigger</th>
+<th class="tableblock halign-left valign-top">Condition Check</th>
+<th class="tableblock halign-left valign-top">Sample Workflow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Banking &amp; Financial Services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Card transaction</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transaction threshold</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Generate risk alerts and quarantine user upon threshold breach.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Inventory/</p>
+<p class="tableblock">Warehousing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New sales voucher</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stock availability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Generate invoice for stock replenishment.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New purchase order</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Saved wishlist/cart</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notify price alerts for wishlist items.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Airline</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New booking</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Booking history</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enroll for frequent flyer program and notify special promotions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enquiry</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User profile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notify price drop alerts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Healthcare</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New report</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check for vitals</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schedule an appointment.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sports/</p>
+<p class="tableblock">Gaming</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New user creation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User profile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Generate notification about leaderboard and other statistics.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Media/ Entertainment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Breaking news</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Query archives</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enrich existing news with archival information.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="eventing-onboarding"><a class="anchor" href="#eventing-onboarding"></a>Eventing Service - Onboarding Information</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In your organization, if you are using the Couchbase data platform, then the Eventing Service is a good fit for managing data mutations.
+The use of <a href="../learn/services-and-indexes/services/services.html#multi-dimensional-scaling" class="xref page">MDS services</a> in Couchbase enables workload isolation and independent scalability of any service in a Couchbase cluster.
+Like Data, Query, GSI, FTS, and Analytics, the Eventing Service supports Multi-Dimensional Scaling (MDS).
+Adding a new Eventing node is a simple process allowing your business logic to scale in addition the Eventing Service integrates seamlessly
+with other Couchbase services such as the Data, Query, GSI, FTS, and Analytics nodes.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/eventing-service-onboarding-information.jpg" alt="eventing service onboarding information" width="100%">
+</div>
+<div class="title">Figure 1. Eventing Service Onboarding Information</div>
+</div>
+<div class="paragraph">
+<p>Following are a few aspects of the onboarding process:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The Eventing Service is intrinsic to Couchbase Server; unlike Polling and Message Queue based external systems, it eliminates the need for an additional layer without involving multiple applications for tracking data mutations.
+All data mutations are handled in real-time, and the Eventing Service offers a centralized control for data governance.</p>
+</li>
+<li>
+<p>When you transition to leverage the Eventing Service, application developers can use Couchbase Functions to manage business workflow changes swiftly.
+Application developers can program, test, debug and troubleshoot on a single Eventing Service platform, instead of managing multiple applications across different network layers.</p>
+</li>
+<li>
+<p>After onboarding, you can manage and optimize the system throughput efficiently.
+If your data resides in the Couchbase cluster, based on aspects such as data workload, data mutation rate, and Function execution latency, you can either scale up vertically by adding additional workers or scale out horizontally via Couchbase’s  elastic scaling option by adding another node.</p>
+</li>
+<li>
+<p>The Eventing Service provides an export and import option for code portability.
+Using this option, you can reuse the Eventing Function code to validate the execution logic in different environments with workload variations.</p>
+</li>
+<li>
+<p>The Eventing Service is highly performant during the recursive restartability operations.
+You can undeploy a Function, pause for few cycles and then start the Eventing Function code.
+Deploying a Function after a time-lapse ensures that the Function execution is tested for restartability.</p>
+</li>
+<li>
+<p>Eventing is compute oriented and leverages the latest trends in multi-core CPUs; therefore nodes selected for Eventing should optimally have a higher number of cores than nodes used for indexing.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2023 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Server","components":["server"],"url":"/home/server.html","latestVersions":{"server":"7.2"}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+</body>
+</html>

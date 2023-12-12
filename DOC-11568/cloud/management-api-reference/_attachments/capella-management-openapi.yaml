@@ -1475,6 +1475,40 @@ paths:
           $ref: '#/components/responses/RateLimitExceeded'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Update Username
+      description: |
+        Updates the user name of the user.
+
+         In order to access this endpoint, the provided API key must have the following role:
+        - Organization Owner
+
+        To learn more about the roles, see [Organization Roles](https://docs.couchbase.com/cloud/organizations/organization-user-roles.html).
+      tags:
+        - users
+      operationId: putUsername
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUsernameRequest'
+      responses:
+        '204':
+          description: Successfully updated the username.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/AccessForbidden'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   '/v4/organizations/{organizationId}/projects/{projectId}/clusters/{clusterId}/allowedcidrs':
     parameters:
       - $ref: '#/components/parameters/OrganizationId'
@@ -1836,16 +1870,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
-        - in: query
-          name: sortBy
-          description: ' Sets the order of how you would like to sort the results and the key you would like to order by. Valid fields to sort the results are: **name**, **id**, **description**.'
-          example:
-            - name
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
+        - $ref: '#/components/parameters/AppServicesSortBy'
         - $ref: '#/components/parameters/SortDirection'
         - $ref: '#/components/parameters/ProjectIdQuery'
       responses:
@@ -3738,6 +3763,15 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/PatchEntry'
+    UpdateUsernameRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The new name of the user.
+          example: John
     ServiceGroup:
       type: object
       properties:

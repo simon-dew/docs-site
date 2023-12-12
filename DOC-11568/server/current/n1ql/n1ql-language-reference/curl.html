@@ -109,6 +109,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <aside class="nav left-sidebar">
   <div class="nav-container">
     <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+    <template id="page-versions" style="display: none">
+      <select class="version_list" data-component="server">
+        <option value="7.6" data-url="../../../7.6/n1ql/n1ql-language-reference/curl.html">7.6 Prerelease</option>
+        <option value="7.2" data-url="curl.html" selected>7.2</option>
+      </select>
+    </template>
   </div>
 </aside>
 <aside class="toc sidebar"
@@ -175,13 +181,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="article-header">
 <nav class="crumbs" aria-label="breadcrumbs">
 <ul>
-<li class="crumb"><a href="../../introduction/intro.html">Couchbase Server</a></li>
-<li class="crumb">Develop</li>
-<li class="crumb"><a href="../query.html">Query</a></li>
-<li class="crumb"><a href="index.html">SQL++ Language Reference</a></li>
-<li class="crumb"><a href="functions.html">Functions</a></li>
-<li class="crumb"><a href="metafun.html">Miscellaneous Utility Functions</a></li>
-<li class="crumb"><a href="curl.html">CURL Function</a></li>
+<li class="crumb"><a href="../../index.html">server</a></li>
 </ul>
 </nav>
 </div>
@@ -559,97 +559,16 @@ To enable access based on the access list, a Full Administrator must create the 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh" data-source-url="file:///Users/simondew/GitHub/simon-dew/cb-swagger/docs/modules/rest-api/examples/query-settings-post-access.sh">#!/bin/sh
-
-# tag::request[]
-curl -v -X POST -u Administrator:password \
-http://localhost:8091/settings/querySettings/curlWhitelist \
--d '{"all_access": false,
-     "allowed_urls": ["https://company1.com"],
-     "disallowed_urls": ["https://company2.com"]}'
-# end::request[]</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">Unresolved include directive in modules/n1ql/pages/n1ql-language-reference/curl.adoc - include::rest-api:example$query-settings-post-access.sh[]</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The access list file command structure is described in the following table.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Structure of Access List for CURL()</caption>
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 61.1111%;">
-<col style="width: 22.2223%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-middle">Name</th>
-<th class="tableblock halign-left valign-middle">Description</th>
-<th class="tableblock halign-left valign-middle">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>all_access</strong><br>
-<em>required</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>Defines whether the user has access to all URLs, or only URLs specified by the access list.</p>
-</div>
 <div class="paragraph">
-<p>This field set must be set to <code>false</code> to enable the <code class="param">allowed_urls</code> and <code class="param">disallowed_urls</code> fields.</p>
+<div class="title">Structure of Access List for CURL()</div>
+<p>Unresolved include directive in modules/n1ql/pages/n1ql-language-reference/curl.adoc - include::rest-api:partial$query-settings/definitions.adoc[]</p>
 </div>
-<div class="paragraph">
-<p>Setting this field to <code>true</code> enables access to all endpoints.<br>
-<strong>Default</strong> : <code>false</code></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>boolean</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>allowed_urls</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>An array of strings, each of which is a URL to which you wish to grant access.
-Each URL is a prefix match.
-The CURL() function will allow any URL that starts with this value.</p>
-</div>
-<div class="paragraph">
-<p>For example, if you wish to allow access to all Google APIs, add the URL <code>https://maps.googleapis.com</code> to the array.
-To allow complete access to <code>localhost</code>, use <code>http://localhost</code>.</p>
-</div>
-<div class="paragraph">
-<p>Note that each URL must include the port, protocol, and all other components of the URL.</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>&lt; string &gt; array</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>disallowed_urls</strong><br>
-<em>optional</em></p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>An array of strings, each of which is a URL that will be restricted for all roles.
-Each URL is a prefix match.
-The CURL() function will disallow any URL that starts with this value.</p>
-</div>
-<div class="paragraph">
-<p>If both <code class="param">allowed_urls</code> and <code class="param">disallowed_urls</code> fields are populated, the <code class="param">disallowed_urls</code> field takes precedence over <code class="param">allowed_urls</code>.</p>
-</div>
-<div class="paragraph">
-<p>Note that each URL must include the port, protocol, and all other components of the URL.</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>&lt; string &gt; array</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 </div>
@@ -1025,7 +944,7 @@ So, we extract the result documents appropriately with the expression <code>CURL
 <div class="title">Example 4. Full text search (FTS) in a SQL++ query</div>
 <div class="content">
 <div class="paragraph">
-<p>The following example shows how to use the <code>CURL()</code> function to include a full text search from the <a href="../../fts/fts-introduction.html" class="xref page">Search service</a> in a SQL++ query.
+<p>The following example shows how to use the <code>CURL()</code> function to include a full text search from the <a href="#fts:full-text-intro.adoc" class="xref unresolved">Search service</a> in a SQL++ query.
 Assuming the FTS index <code>fts_travel</code> is created on the default collection in the default scope of the travel sample dataset, running the following SQL++ query finds all documents that have "sanfrancisco" anywhere in the document.</p>
 </div>
 <div class="paragraph">
@@ -1074,7 +993,7 @@ FROM CURL("http://Administrator:password@127.0.0.1:8094/api/index/fts_index/quer
 It uses the Yahoo finance API to find the day&#8217;s low value (i.e <code>DaysLow</code>) of HDP stock and finds all the documents in the <code>users</code> keyspace that have <code>min_threshold</code> attribute value greater than the DaysLow stock value.</p>
 </div>
 <div class="paragraph">
-<p>For this example, unset the query context using the <a href="#tools/query-workbench.adoc#query-context" class="xref unresolved">query context</a> drop-down menu in the Query Workbench, or the <a href="../../settings/query-settings.html#query_context" class="xref page">query_context</a> request-level parameter.</p>
+<p>For this example, unset the query context using the <a href="#tools/query-workbench.adoc#query-context" class="xref unresolved">query context</a> drop-down menu in the Query Workbench, or the <a href="#settings:query-settings.adoc#query_context" class="xref unresolved">query_context</a> request-level parameter.</p>
 </div>
 <div class="paragraph">
 <p>Insert the following documents, representing customers and their minimum thresholds, into the default collection in the default scope of the travel sample data, and then run the <code>SELECT</code> query:</p>
