@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv=content-security-policy content="default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https:; img-src 'self' data: https:; connect-src 'self' https:; worker-src blob:;">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://metrics.couchbase.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MVPNN2');</script>
+<!-- End Google Tag Manager -->
+<title>Backup and Restore with Command Line Tools | Couchbase Docs (Preview)</title>
+<link rel="canonical" href="https://simon-dew.github.io/docs-site/DOC-11696/cloud/clusters/cli-backup-restore.html">
+<link rel="stylesheet" href="../../_/css/site.css">
+<script src="../../_/js/vendor/jquery.js"></script>
+<meta name="description" content="Use Couchbase command line tools to manage ad hoc backups.">
+<link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+
+
+<meta name="dcterms.subject" content="cloud">
+<meta name="dcterms.identifier" content="">
+<meta name="page-url" content="/cloud/clusters/cli-backup-restore.html">
+<meta name="page-nav-header-levels" content="1">
+<meta name="generator" content="Antora 3.1.4">
+<link rel="icon" href="../../_/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon" sizes="any">
+</head>
+<body class="article">
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVPNN2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<header class="header fixed-top">
+  <div class="header-top-row">
+      <div class="container">
+          <nav class="navbar navbar-expand-md flex-nowrap justify-content-between navbar-new-top">
+              <ul class="navbar-brand-list">
+                <li class="brand-logo">
+                  <a class="navbar-brand" href="https://www.couchbase.com">
+                    <img src="../../_/img/couchbase-logo.svg" alt="Couchbase" />
+                  </a>
+                </li>
+                <li>
+                  <a class="navbar-brand cb-documentation" href="https://simon-dew.github.io/docs-site/DOC-11696/home/index.html">
+                    <img src="../../_/img/cb-documentation.svg" alt="Couchbase Documentation" class="cb-docs" />
+                    <img src="../../_/img/cb-docs-hover.svg" alt="Couchbase Documentation" class="hide cb-hover-docs" />
+                  </a>
+                </li>
+              </ul>
+              <button class="navbar-burger" data-target="topbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+          </nav>
+      </div>
+  </div>
+  <div class="header-bottom-row" id="topbar-menu">
+    <div class="container">
+        <nav  class="navbar navbar-new-bottom">
+
+              <div class="navbar-collapse collapse" id="navbar2">
+                <ul class="navbar-nav w-100 justify-content-start">
+                  <li class="nav-item">
+                    <a href="https://simon-dew.github.io/docs-site/DOC-11696/home/index.html" class="nav-link">
+                      <i class="fas fa-home"></i>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/server.html">
+                      Server
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/mobile.html">
+                      Mobile
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../index.html">
+                      Capella
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../home/sdk.html">
+                      SDKs
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="primary-action">
+                <a class="btn btn-primary btn-grey-reverse" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Download'});" href="https://www.couchbase.com/downloads">
+                  Downloads
+                  <i class="far fa-arrow-to-bottom fa-fw"></i>
+                </a>
+                <a href="https://cloud.couchbase.com/sign-up" class="btn btn-primary" onclick="(window.dataLayer=window.dataLayer||[]).push({'event':'customEvent', 'category':'CTA', 'action':'Button Click',  'label':'Free Trial'});" >
+                  Start Free Trial
+                  <i class="far fa-cloud fa-fw"></i>
+                </a>
+
+              </div>
+
+        </nav>
+    </div>
+   </div>
+</header>
+<div class="body container">
+<aside class="nav left-sidebar">
+  <div class="nav-container">
+    <a href="#" class="menu-expand-toggle"><span>Navigation</span><i class="fas fa-times-circle"></i><i class="fas fa-chevron-circle-left"></i></a>
+  </div>
+</aside>
+<aside class="toc sidebar"
+      data-title="Contents"
+      data-levels="2">
+  <div class="sidebar-box">
+    <div class="tools" role="navigation">
+<ul>
+<li class="tool edit"><a href="file:///Users/simondew/GitHub/couchbaselabs/project-avengers/docs/public/modules/clusters/pages/cli-backup-restore.adoc" title="Edit Page" target="_blank" rel="noopener" class="remove-ext-icon">Edit on GitHub</a></li>
+</ul>
+</div>
+    <div class="toc-menu"></div>
+    <div class="is-this-helpful-box">
+      <h4> Is this page helpful?</h4>
+      <div class="btn-row">
+        <a href="#" class="like-btn helpful-btn" id="yesBtn" data-page-rating="like" >
+                <i class="far fa-thumbs-up"></i>
+            Yes
+
+            </a>
+        <a href="#" class="dislike-btn helpful-btn" id="noBtn"  data-page-rating="dislike"> <i class="far fa-thumbs-down"></i> No</a>
+      </div>
+      <div class="any-feedback">
+        <a href="#" class="btn any-feedback-btn" id="myCustomTrigger">Leave Additional Feedback? </a>
+      </div>
+      <div class="dialog-box" id="dialogBox">
+        <form>
+            <div class="form-group " id="additionalFeedbackBox">
+              <textarea class="input-control feed-back-msg" rows="8" placeholder="Any Additonal Feedback?"></textarea>
+
+              <div class="action-btn-row ">
+                <a href="#" class="skip-btn" id="skipBtnMsg">Skip</a>
+                  <button class="submit-btn btn blue-btn disabled" > Submit  </button>
+                  <a href="#" class="info-btn"><i class="fas fa-info-circle"></i></a>
+              </div>
+
+
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<div class="feedback-modal modal-popup">
+  <div class="modal-popup-dialogue">
+    <div class="popup-header">
+      <a href="#" class="close-popup"><i class="fa fa-times"></i></a>
+    </div>
+    <div class="popup-content">
+      <p>
+        Please use the form below to provide your feedback. Because your feedback is valuable to us,
+         the information you submit in this form is recorded in our issue tracking system (JIRA), which is publicly available.
+        You can track the status of your feedback using the ticket number displayed in the dialog once you submit the form.
+      </p>
+    </div>
+  </div>
+</div>
+
+<main class="article" data-ceiling="topbar">
+<div class="article-header">
+<nav class="crumbs" aria-label="breadcrumbs">
+<ul>
+<li class="crumb"><a href="../index.html">Couchbase Capella</a></li>
+<li class="crumb">Administer Capella</li>
+<li class="crumb"><a href="data-service/data-service.html">Manage Your Data</a></li>
+<li class="crumb"><a href="backup-restore.html">Backup &amp; Restore</a></li>
+<li class="crumb"><a href="cli-backup-restore.html">Backup &amp; Restore with Command Line Tools</a></li>
+</ul>
+</nav>
+</div>
+<article class="doc">
+<div class="page-heading-title">
+<h1 class="page">Backup and Restore with Command Line Tools</h1>
+<div class="labels">
+<ul></ul>
+</div>
+
+
+</div>
+<div class="contributor-list-box">
+<span class="last-commit-date" id="commitdate">    </span>
+<ul id="contributorList"></ul>
+<span  id="otherContributor"> + </span>
+</div><div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Use Couchbase command line tools to manage ad hoc backups.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>You can use the <code>cbbackupmgr</code> command line tool included with Couchbase Server with a Couchbase Capella database.
+The command line tools are available as a separate package.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>cbbackupmgr</code> to back up and restore data across multiple Capella databases, either in development or production environments.
+For more information about <code>cbbackupmgr</code>, see <a href="#server:backup-restore:cbbackupmgr.adoc" class="xref unresolved">cbbackupmgr</a> in the Couchbase Server documentation.</p>
+</div>
+<div class="paragraph">
+<p>For data migration between Couchbase databases, Cross Data Center Replication (XDCR) is generally recommended.
+When XDCR cannot be used, the recommended method is to use <code>cbbackupmgr backup</code> and <code>cbbackupmgr restore</code>.
+Using cbexport and cbimport to migrate data from a Couchbase bucket that holds Sync Gateway data can cause the data to be corrupted.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All procedures and examples on this page assume the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You&#8217;ve <a href="manage-database-users.html" class="xref page">configured database access</a> by creating database access credentials.
+You&#8217;ll need the username and password for the database credentials to connect to the database.</p>
+</li>
+<li>
+<p>You&#8217;ve <a href="allow-ip-address.html" class="xref page">added your IP address</a> to the database&#8217;s list of allowed IPs.</p>
+</li>
+<li>
+<p>You&#8217;ve <a href="../get-started/create-account.html#next-steps" class="xref page">downloaded your security certificate</a> for your database.</p>
+</li>
+<li>
+<p>You&#8217;ve <a href="../reference/command-line-tools.html" class="xref page">downloaded and installed</a> the command line tools package.</p>
+</li>
+<li>
+<p>You’ve set the following <code>--disable</code> options when you created your repository:</p>
+<div class="paragraph">
+<p><code>--disable-analytics</code></p>
+</div>
+<div class="paragraph">
+<p><code>--disable-cluster-analytics</code></p>
+</div>
+<div class="paragraph">
+<p><code>--disable-bucket-query</code></p>
+</div>
+<div class="paragraph">
+<p><code>--disable-cluster-query</code></p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="backup-and-restore-examples"><a class="anchor" href="#backup-and-restore-examples"></a>Backup and Restore Examples</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For full examples, see <a href="#server:backup-restore:cbbackupmgr.adoc" class="xref unresolved">cbbackupmgr</a> in the Couchbase Server documentation.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For production environments, use the secure <code>--cacert &lt;cert_file&gt;</code> option shown in the examples.
+For development environments, replace <code>--cacert &lt;cert_file&gt;</code> with <code>--no-ssl-verify</code>.</p>
+</div>
+<div class="paragraph">
+<p>Use the <code>cbbackupmgr backup</code> and <code>cbbackupmgr restore</code> commands to back up and restore your Capella database.</p>
+</div>
+<div class="paragraph">
+<p>Use <code>--disable</code> options to disable backup or restore of data that can&#8217;t be read or written by your Capella database access credentials.</p>
+</div>
+<div class="paragraph">
+<p>With Capella databases running Couchbase Server version 7.1.3 and later, use the following <code>--disable</code> options with <code>cbbackupmgr config</code> to configure the backup repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">--disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If you did not set these <code>--disable</code> options when you created your repository, you must add them to the <code>cbbackupmgr restore</code> command when you restore a backup form your repository to Capella.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With Capella databases running Couchbase Server version 7.0.4, use <code>--disable-eventing</code> when using <code>cbbackupmgr</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you are restoring data backed up from a self-managed cluster to a Capella database with <code>cbbackupmgr restore</code>, use <code>--disable-views</code>.
+Capella databases don&#8217;t support <a href="#7.1@server:learn:views/views-basics.adoc" class="xref unresolved">views</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you want to restore a backup of the <code>beer-sample</code> and <code>gamesim-sample</code> data sets, you must use <code>--disable-views</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr config --archive /home/couchbase/backups --repo capella_db1 --disable-eventing --disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Back up all buckets</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr backup --archive /home/couchbase/backups --repo capella_db1 --cluster couchbases://cb.zjhxs-12ab3cd4e5.cloud.couchbase.com --username dbuser --password ‘******’ --cacert /root/capella.pem --full-backup --threads 4</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To only restore <code>mybucket1</code> data, and restore it to bucket <code>newbucket1</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr restore --archive /home/couchbase/backups --repo capella_db1 --cluster couchbases://cb.zjhxs-12ab3cd4e5.cloud.couchbase.com --username dbuser --password ‘******’ --cacert /root/capella.pem --include-data mybucket1 --map-data mybucket1=newbucket1 --threads 4</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="backup-a-capella-trial-database-and-restore-to-a-paid-provisioned-database"><a class="anchor" href="#backup-a-capella-trial-database-and-restore-to-a-paid-provisioned-database"></a>Backup a Capella Trial Database and Restore to a Paid Provisioned Database</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This example uses <code>cbbackupmgr</code> CLI to migrate data from a trial database to a paid provisioned database.</p>
+</div>
+<div class="sect2">
+<h3 id="backup-a-trial-database"><a class="anchor" href="#backup-a-trial-database"></a>Backup a Trial Database</h3>
+<div class="paragraph">
+<p>To configure the <code>cbbackupmgr</code> archive repository to hold the backup:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr config --archive /home/couchbase/backups --repo capella_trial --disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query --disable-views</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To backup a Capella trial database:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr backup --archive /home/couchbase/backups --repo capella_trial -c couchbases://cb.ubibrahu6aizk5rm.cloud.couchbase.com -u trialuser -p '******' --cacert /root/capella.pem --full-backup --threads 2</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="restore-to-a-paid-provisioned-database"><a class="anchor" href="#restore-to-a-paid-provisioned-database"></a>Restore to a Paid Provisioned Database</h3>
+<div class="paragraph">
+<p>Ensure you have created the Couchbase buckets to restore to your paid provisioned database.
+Database access credentials do not provide have privileges to create a bucket, so you cannot use the <code>cbbackupgmr restore</code> option <code>--auto-create-buckets</code> when restoring to a Capella database.</p>
+</div>
+<div class="paragraph">
+<p>To restore to a paid provisioned database:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr restore --archive /home/couchbase/backups --repo capella_trial -c couchbases://cb.20xa2skdftoygjxe.cloud.couchbase.com -u dbuser -p '******' --cacert /root/capella.pem --disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query --disable-views</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You do not need to use the same disable options again during the restore because you used them when configuring the archive repository.
+There may be cases where you may not know how the backup was done.</p>
+</div>
+<div class="paragraph">
+<p>The <code>--purge</code> option cleans up restore progress information from the previous restore attempt.
+Add the <code>--purge</code> option to the restore command to rerun the restore if you get an error at the start of the restore.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="#allowed-ips-tips">Allowed IPs Tips</a> and <a href="#restore-tips">Restore Tips</a> for more restoring tips.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="build-indexes"><a class="anchor" href="#build-indexes"></a>Build Indexes</h3>
+<div class="paragraph">
+<p>Index definitions are restored but not built.</p>
+</div>
+<div class="paragraph">
+<p>To build the indexes in your database:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open your database in the Capella UI.</p>
+</li>
+<li>
+<p>Go to <span class="menuseq"><b class="menu">Data Tools</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Indexes</b></span>.</p>
+</li>
+<li>
+<p>Build the indexes that are in a “Created” state.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="backup-a-self-managed-database-and-restore-to-a-capella-provisioned-database"><a class="anchor" href="#backup-a-self-managed-database-and-restore-to-a-capella-provisioned-database"></a>Backup a Self-Managed Database and Restore to a Capella Provisioned Database</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This example uses <code>cbbackupmgr</code> CLI to migrate data from a self-managed database to a provisioned database.</p>
+</div>
+<div class="paragraph">
+<p>A self-managed database can be either an Enterprise or Community Edition.
+If you are using the Community Edition Couchbase Server, you need to use the <code>cbbackupmgr</code> CLI from the command line tools package to restore to the Capella provisioned database.
+You can also use the <code>cbbackupmgr</code> CLI from the command line tools package for backup.</p>
+</div>
+<div class="sect2">
+<h3 id="backup-a-self-managed-database"><a class="anchor" href="#backup-a-self-managed-database"></a>Backup a Self-Managed Database</h3>
+<div class="paragraph">
+<p>You can backup a self-managed database or use an existing backup.
+The example below is when you do not have an existing backup.</p>
+</div>
+<div class="paragraph">
+<p>To configure the <code>cbbackupmgr</code> archive repository to hold the backup:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr config --archive /home/couchbase/backups --repo repo_mydb</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To backup a self-managed database:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr backup --archive /home/couchbase/backups --repo repo_mydb -c localhost -u Administrator -p '******'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="restore-to-a-paid-provisioned-database-2"><a class="anchor" href="#restore-to-a-paid-provisioned-database-2"></a>Restore to a Paid Provisioned Database</h3>
+<div class="paragraph">
+<p>If your self-managed database is using the Community Edition Couchbase Server, you must use the <code>cbbackupmgr</code> CLI from the command line tools package to restore to the Capella provisioned database.</p>
+</div>
+<div class="paragraph">
+<p>Ensure you have created the Couchbase buckets to restore to your paid provisioned database.
+Capella database access credentials do not have privileges to create a bucket, so you cannot use the <code>cbbackupgmr restore</code> option <code>--auto-create-buckets</code> when restoring to a Capella database.</p>
+</div>
+<div class="paragraph">
+<p>To restore to a paid provisioned database:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr restore --archive /home/couchbase/backups --repo repo_mydb -c couchbases://cb.eqwqztkw5e5kf6l.cloud.couchbase.com --cacert /root/capella.pem -u dbuser -p '******' --disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query --disable-views</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>--purge</code> option cleans up restore progress information from the previous restore attempt.
+Add the <code>--purge</code> option to the restore command to rerun the restore if you get an error at the start of the restore.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="#allowed-ips-tips">Allowed IPs Tips</a> and <a href="#restore-tips">Restore Tips</a> for more restoring tips.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="build-indexes-2"><a class="anchor" href="#build-indexes-2"></a>Build Indexes</h3>
+<div class="paragraph">
+<p>Index definitions are restored but not built.</p>
+</div>
+<div class="paragraph">
+<p>To build the indexes in your database:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open your database in the Capella UI.</p>
+</li>
+<li>
+<p>Go to <span class="menuseq"><b class="menu">Data Tools</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Indexes</b></span>.</p>
+</li>
+<li>
+<p>Build the indexes that are in a “Created” state.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="allowed-ips-tips"><a class="anchor" href="#allowed-ips-tips"></a>Allowed IPs Tips</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you are running <code>cbbackupmgr</code> CLI from a VPC-peered environment, the Capella connection string may resolve to a private IP address in your environment.
+In this situation, you do not need to add the IP address of the machine you are running <code>cbbackupmgr</code> on to the Capella database’s list of allowed IPs.</p>
+</div>
+<div class="paragraph">
+<p>If you have a private endpoint set up in your Capella provisioned database, and you are using the Capella private endpoint DNS name to connect, you do not need to add the IP address of the machine you are running <code>cbbackupmgr</code> on to the list of allowed IPs.</p>
+</div>
+<div class="paragraph">
+<p>Example private endpoint DNS name connection:<br>
+<code>couchbases://private-endpoint.iml6stsfy4njxkx0.cloud.couchbase.com</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="restore-tips"><a class="anchor" href="#restore-tips"></a>Restore Tips</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>--purge</code> option cleans up restore progress information from the previous restore attempt.</p>
+</div>
+<div class="paragraph">
+<p>Add the <code>--purge</code> option to the restore command to rerun the restore if you get an error at the start of the restore because you omitted to do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create the buckets in the provisioned database.</p>
+</li>
+<li>
+<p>Create the database access credential.</p>
+</li>
+<li>
+<p>Specify the certificate option.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the restore process is running, and gets interrupted due to a temporary network issue, try restoring again from where you left off using the <code>--resume</code> option.</p>
+</div>
+<div class="paragraph">
+<p>Other specific restore options are shown in the following table:</p>
+</div>
+<table id="other-restore-options" class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--map-data</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restore to different bucket names.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--map-data oldbucket1=newbucket1,oldbucket2=newbucket2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--include-data</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restore only specific buckets, scopes, and collections.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--include-data bucket1.scope1,bucket2.scope2.collection3</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--exclude-data</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exclude specific buckets, scopes, and collections from the restore.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--exclude-data bucket2.scope1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--threads</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify the number of concurrent clients to use during backup or restore.
+The default is 1.
+More clients means more resource usage.
+The value should not exceed the number of CPUs on the machine running <code>cbbackupmgr</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--threads 4</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>There are other <code>cbbackupmgr restore</code> options.
+For example, if the backup you are restoring also includes FTS indexes, you may want to restore the data first, followed by restoring the FTS indexes.
+If you restore the data and the FTS indexes concurrently, the restore starts by creating the FTS indexes, followed by the restore data, which puts a very high load on the FTS nodes.</p>
+</div>
+<div class="paragraph">
+<p>The GSI indexes do not have the same issue as the FTS indexes because they are restored deferred.
+The index definitions are restored, but the indexes are not built.
+You must build the GSI indexes manually after the restore completes.</p>
+</div>
+<div class="paragraph">
+<p>To disable restoring FTS indexes, add the following disable options to your <code>cbbackupmgr restore</code> command:<br>
+<code>--disable-ft-indexes and --disable-ft-alias</code></p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr restore --archive /home/couchbase/backups --repo repo_mydb -c couchbases://cb.eqwqztkw5e5kf6l.cloud.couchbase.com --cacert /root/capella.pem -u dbuser -p '******' --disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query --disable-views --disable-ft-indexes --disable-ft-alias</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After restoring your data, GSI indexes, and eventing functions, to restore the FTS indexes by adding the disable options for data, GSI indexes, and eventing, run another <code>cbbackupmgr restore</code> command:<br>
+<code>--disable-data --disable-gsi-indexes --disable-eventing</code></p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cbbackupmgr restore --archive /home/couchbase/backups --repo repo_mydb -c couchbases://cb.eqwqztkw5e5kf6l.cloud.couchbase.com --cacert /root/capella.pem -u dbuser -p '******' --disable-analytics --disable-cluster-analytics --disable-bucket-query --disable-cluster-query --disable-views --disable-data --disable-gsi-indexes --disable-eventing</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <div class="col">
+        <div class="footer-logo">
+          <a href="https://www.couchbase.com" class="icon">
+            <img src="../../_/img/couchbase-logo.svg" alt="Couchbase">
+          </a>
+        </div>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://docs.couchbase.com" target="_blank" rel="noopener">Documentation</a></li>
+          <li><a href="https://forums.couchbase.com" target="_blank" rel="noopener">Forums</a></li>
+          <li><a href="https://support.couchbase.com" target="_blank" rel="noopener">Support</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://developer.couchbase.com" target="_blank" rel="noopener">Developer Portal</a></li>
+          <li><a href="https://blog.couchbase.com" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="https://www.couchbase.com/resources">Resources</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul>
+          <li><a href="https://www.couchbase.com/get-started-developing-nosql">Get Started</a></li>
+          <li><a href="https://www.couchbase.com/downloads">Downloads</a></li>
+          <li><a href="https://learn.couchbase.com/store?utf8=%E2%9C%93&ss=1&ct=78327&commit=Filter" target="_blank" rel="noopener">Training</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="social-icons">
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32.1 26.1"> <path id="twitter" class="cls-1" d="M32,7.1a11.836,11.836,0,0,1-3.8,1,6.462,6.462,0,0,0,2.9-3.6,12.606,12.606,0,0,1-4.2,1.6A6.492,6.492,0,0,0,22.1,4a6.594,6.594,0,0,0-6.6,6.6,7.719,7.719,0,0,0,.2,1.5A18.458,18.458,0,0,1,2.2,5.2a6.294,6.294,0,0,0-.9,3.3A6.765,6.765,0,0,0,4.2,14a6.109,6.109,0,0,1-3-.8v.1a6.543,6.543,0,0,0,5.3,6.4,4.678,4.678,0,0,1-1.7.2,4.869,4.869,0,0,1-1.2-.1,6.679,6.679,0,0,0,6.1,4.6,12.917,12.917,0,0,1-8.2,2.8,9.151,9.151,0,0,1-1.6-.1,18.438,18.438,0,0,0,10.1,3c12.1,0,18.7-10,18.7-18.7v-.8A13.336,13.336,0,0,0,32,7.2Z" transform="translate(0.1 -4)"/></svg>
+            <a href="https://twitter.com/couchbase" class="icon">
+              Twitter
+            </a>
+          </li>
+          <li>
+          <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="linkedin" class="cls-1" d="M29,0H3A3.076,3.076,0,0,0,0,3V29a3.009,3.009,0,0,0,3,3H29a2.946,2.946,0,0,0,3-3V3A3.009,3.009,0,0,0,29,0ZM12,26H8V12h4ZM10,10a2,2,0,1,1,2-2A2.006,2.006,0,0,1,10,10ZM26,26H22V18a2,2,0,0,0-4,0v8H14V12h4v2.5c.8-1.1,2.1-2.5,3.5-2.5A4.736,4.736,0,0,1,26,17Z"/></svg>
+              <a href="https://www.linkedin.com/company/couchbase" class="icon">
+             Linkedin
+            </a>
+          </li>
+          <li>
+            <svg  width="14" height="14" viewBox="0 0 32 32"> <path id="facebook" class="cls-1" d="M29,0H3A2.652,2.652,0,0,0,0,3V29a2.652,2.652,0,0,0,3,3H16V18H12V14h4V12a6.452,6.452,0,0,1,6-6h4v4H22a2.151,2.151,0,0,0-2,2v2h6l-1,4H20V32h9a2.652,2.652,0,0,0,3-3V3A2.652,2.652,0,0,0,29,0Z"/></svg>
+            <a href="https://www.facebook.com/Couchbase" class="icon">
+            Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-terms">
+      <div class="footer-terms-copyright">
+          <span>© 2024 Couchbase, Inc. Couchbase, Couchbase Lite and the Couchbase logo are registered trademarks of Couchbase, Inc.</span>
+      </div>
+      <div class="footer-terms-links">
+        <a href="https://www.couchbase.com/terms-of-use">Terms of Use</a>
+        <a href="https://www.couchbase.com/privacy-policy">Privacy Policy</a>
+        <a href="https://www.couchbase.com/cookie-policy">Cookie Policy</a>
+        <a href="https://www.couchbase.com/support-policy">Support Policy</a>
+        <a href="https://info.couchbase.com/unsubscribe-or-manage-preferences.html" target="_blank" rel="noopener">Marketing Preference Center</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../../_/js/site-navigation-data.js"></script>
+<script id="page-navigation-group" type="application/json">
+{"title":"Capella","components":["cloud"],"url":"/cloud/index.html","latestVersions":{"cloud":""}}
+</script>
+<template id="run-code-panel">
+<div class="action-panel">
+  <form class="action-panel-control" method="POST" action="https://couchbase.live/run" target="run-code-output">
+    <input type="hidden" name="lang">
+    <input type="hidden" name="code">
+    <input type="hidden" name="from" value="docs">
+    <div class="controls">
+      <button class="control-button rerun" type="submit"><i class="fas fa-redo"></i></button>
+      <span class="shell-name control-label">Output</span>
+      <button class="control-button close"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </form>
+  <iframe class="run-code-output" name="run-code-output"></iframe>
+</div>
+</template>
+<script id="site-script" src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/tabs.js" data-sync-storage-key="preferred-tab"></script>
+<script defer src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script defer src="../../_/js/vendor/fontawesome.js" data-search-pseudo-elements="true"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+</body>
+</html>
